@@ -1,7 +1,8 @@
 <template>
-	<div>
+	<div class="dashboard">
 		<SuperAdminHeader></SuperAdminHeader>
 		<super-admin-sidebar />
+		<div class="dashboard__body"></div>
 	</div>
 </template>
 
@@ -19,6 +20,9 @@ export default {
 };
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+	.dashboard {
+	  height: 100vh;
+	  background: #E5E5E5;
+	}
 </style>

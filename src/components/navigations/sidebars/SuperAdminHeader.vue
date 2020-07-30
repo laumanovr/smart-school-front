@@ -12,11 +12,11 @@
         </span>
         <span><img src="../../../assets/images/user.svg" alt=""></span>
         <span>
-	        <img src="../../../assets/images/chevron-down.svg" alt="">
+	        <img src="../../../assets/images/icons/chevron-down.svg" alt="">
         </span>
         <span class="divider"></span>
-        <span><img src="../../../assets/images/ring-bell.svg"></span>
-         <span><img src="../../../assets/images/logout.svg"></span>
+        <span><img src="../../../assets/images/icons/ring-bell.svg"></span>
+         <span><img src="../../../assets/images/icons/logout.svg"></span>
       </div>
     </div>
   </div>
@@ -42,7 +42,7 @@ export default {
 
     &__logo {
       background: linear-gradient(180deg, #4A27F3 0%, #34A0FF 100%);
-      width: 96px;
+      flex-basis: 96px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -50,8 +50,8 @@ export default {
     &__info {
       display: flex;
       justify-content: space-between;
-      width: 100%;
       align-items: center;
+      width: calc(100% - 96px);
     }
     &__title {
       color: rgba(29, 25, 76, 0.75);
