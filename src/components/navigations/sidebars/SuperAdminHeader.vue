@@ -1,0 +1,106 @@
+<template>
+  <div class="super-admin-header">
+    <div class="super-admin-header__logo">
+      <img :src="require('../../../assets/images/logo.svg')">
+    </div>
+    <div class="super-admin-header__info">
+      <div class="super-admin-header__title">Школа №45 по им. Хусейна Карасаева</div>
+      <div class="super-admin-header__user-info">
+        <span>
+	        <div>Азамат Жеенбеков</div>
+	        <div>Администратор</div>
+        </span>
+        <span><img src="../../../assets/images/user.svg" alt=""></span>
+        <span>
+	        <img src="../../../assets/images/chevron-down.svg" alt="">
+        </span>
+        <span class="divider"></span>
+        <span><img src="../../../assets/images/ring-bell.svg"></span>
+         <span><img src="../../../assets/images/logout.svg"></span>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+    name: 'SuperAdminHeader',
+	data: () => ({
+	})
+}
+</script>
+
+<style lang="scss" scoped>
+  .super-admin-header {
+    height: 76px;
+    background: #FFFFFF;
+    width: 100%;
+    display: flex;
+    font-family: Helvetica,sans-serif;
+    font-style: normal;
+    font-weight: normal;
+
+    &__logo {
+      background: linear-gradient(180deg, #4A27F3 0%, #34A0FF 100%);
+      width: 96px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    &__info {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      align-items: center;
+    }
+    &__title {
+      color: rgba(29, 25, 76, 0.75);
+      font-family: Open Sans,sans-serif;
+      font-style: normal;
+      font-weight: normal;
+      font-size: 18px;
+      line-height: 119%;
+      margin-left: 25px;
+    }
+    &__user-info {
+      display: flex;
+      align-items: center;
+      margin-right: 40px;
+
+      > span {
+        display: block;
+
+        &.divider {
+          border: 1px solid #EFF4F7;
+          transform: rotate(90deg);
+          width: 52px;
+          height: 0px;
+        }
+      }
+      span:nth-child(2) {
+        margin: 0 20px;
+      }
+      span:nth-child(5) {
+        margin: 0 20px 0 0;
+      }
+
+      > span:first-child {
+		margin: 0 20px;
+        div:first-child {
+          font-size: 14px;
+          line-height: 16px;
+          text-align: right;
+          letter-spacing: 0.01em;
+          color: #000000;
+        }
+        div:last-child {
+          font-size: 12px;
+          line-height: 14px;
+          text-align: right;
+          letter-spacing: 0.01em;
+          color: #A6ACBE;
+        }
+      }
+    }
+  }
+</style>

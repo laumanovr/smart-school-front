@@ -13,5 +13,11 @@ export default new Vuetify({
         error: '#b71c1c'
       }
     }
-  }
+  },
+  icons: {
+    iconfont: 'mdiSvg', // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4' || 'faSvg'
+    values: {
+      chevronDown: 'mdi-chevron-down'
+    }
+  },
 })
