@@ -23,6 +23,7 @@ export default new Vuetify({
       chevronDown: 'mdi-chevron-down',
       chevronRight: 'mdi-chevron-right',
       chevronLeft: 'mdi-chevron-left',
+      event: 'mdi-event'
     }
   },
 })

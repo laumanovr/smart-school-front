@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '@/views/login/Login'
 import Chronicle from '@/views/super-admin/Chronicle'
+import SchoolAdmin from '@/views/super-admin/SchoolAdmin'
 
 Vue.use(VueRouter)
 
@@ -36,6 +37,11 @@ const routes = [
               name: 'superAdminChronicle',
               path: 'chronicle',
               component: Chronicle
+          },
+          {
+              name: 'superSchoolAdmin',
+              path: 'school-admin',
+              component: SchoolAdmin
           }
 
       ]
