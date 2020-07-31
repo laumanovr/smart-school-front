@@ -17,7 +17,9 @@ export default new Vuetify({
   icons: {
     iconfont: 'mdiSvg', // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4' || 'faSvg'
     values: {
-      chevronDown: 'mdi-chevron-down'
+      chevronDown: 'mdi-chevron-down',
+      chevronRight: 'mdi-chevron-right',
+      chevronLeft: 'mdi-chevron-left',
     }
   },
 })
