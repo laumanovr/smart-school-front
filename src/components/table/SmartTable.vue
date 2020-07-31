@@ -9,7 +9,11 @@
 					</tr>
 				</thead>
 				<tbody>
-					<slot name="body"></slot>
+					<tr v-for="(item, index) in schools" :key="item.id">
+						<slot name="body" v-bind:item="item">
+							{{ item.name }}
+						</slot>
+					</tr>
 				</tbody>
 			</table>
 		</div>
@@ -20,6 +24,14 @@
 import TableHead from '@/components/table/TableHead'
 export default {
 	name: "SmartTable",
+	props: {
+	    schools: {
+	        type: Array,
+		    default () {
+	            return [];
+		    }
+	    }
+	},
     components: { TableHead }
 }
 </script>

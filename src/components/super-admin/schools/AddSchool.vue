@@ -1,5 +1,5 @@
 <template>
-	<v-form>
+	<v-form @submit.prevent="submit" ref="form">
 		<div class="form-head">
 			<span>Добавить Школу</span>
 			<img src="../../../assets/images/profile-icon.svg" alt="">
@@ -8,14 +8,14 @@
 			</button>
 		</div>
 		<div>
-			<v-text-field v-model="school.name" label="Название"></v-text-field>
+			<v-text-field v-model="school.name" :rules="ruleName" label="Название"></v-text-field>
 		</div>
 		<div class="spacer">
 			<v-text-field v-model="school.email" label="Email"></v-text-field>
 			<v-text-field v-model="school.phone" label="Номер телефона"></v-text-field>
 		</div>
 		<div>
-			<v-text-field v-model="school.address" label="Адрес"></v-text-field>
+			<v-text-field :rules="ruleName" v-model="school.address" label="Адрес"></v-text-field>
 		</div>
 		<div>
 			<v-textarea
@@ -28,6 +28,7 @@
 		</div>
 		<div>
 			<v-select
+					:rules="ruleName"
 					:items="schoolTypes"
 					item-text="title"
 					item-value="val"
@@ -37,10 +38,12 @@
 		</div>
 		<div>
 			<v-select
+					:rules="ruleName"
 					:items="languages"
 					item-value="id"
 					item-text="name"
 					label="Язык"
+					v-model="school.languageId"
 			></v-select>
 		</div>
 		<div>
@@ -54,20 +57,26 @@
 		</div>
 		<div>
 			<v-select
+					:rules="ruleName"
 					:items="rayons"
 					item-text="title"
 					item-value="id"
 					label="Район"
+					v-model="school.rayonId"
 			></v-select>
 		</div>
 		<div>
 			<v-select
+					:rules="ruleName"
 					:items="chronicles"
+					item-text="selectorTitle"
+					item-value="id"
 					label="Академический год"
+					v-model="school.chronicleYearId"
 			></v-select>
 		</div>
 		<div class="form-footer">
-			<v-btn color="primary">Сохранить</v-btn>
+			<v-btn type="submit" color="primary">Сохранить</v-btn>
 			<v-btn>Отменить</v-btn>
 		</div>
 	</v-form>
@@ -78,7 +87,9 @@ import { LanguageService } from '@/_services/language.service'
 import { RegionService } from '@/_services/region.service'
 import { RayonService } from '@/_services/rayon.service'
 import { ChronicleService } from '@/_services/chronicle.service'
+import { SchoolService } from '@/_services/school.service'
 
+const schoolService = new SchoolService()
 const chronicleService = new ChronicleService()
 const rayonService = new RayonService()
 const regionService = new RegionService();
@@ -101,7 +112,10 @@ export default {
 		languages: [],
 		regions: [],
 		rayons: [],
-		chronicles: []
+		chronicles: [],
+        ruleName: [
+            v => !!v || 'Name is required',
+        ],
 	}),
 	mounted () {
         this.fetchLanguage()
@@ -128,6 +142,15 @@ export default {
             chronicleService.list().then(res => {
                 this.chronicles = res;
             }).catch(err => console.log(err));
+	    },
+	    submit () {
+            if (this.$refs.form.validate()) {
+                schoolService.create(this.school).then(res => {
+                    this.$toast.success('Successfully created!');
+                    this.school = {}
+                    this.$emit('close');
+                }).catch(err => console.log(err));
+            }
 	    }
 	}
 }

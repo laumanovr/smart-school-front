@@ -12,14 +12,6 @@
 				<v-btn>Отменить</v-btn>
 			</div>
 		</v-form>
-		<v-snackbar
-				top
-				:color="color"
-				timeout="3000"
-				v-model="snackbar"
-		>
-			Success message
-		</v-snackbar>
 	</div>
 </template>
 
@@ -38,15 +30,12 @@ export default {
         ruleEndYear: [
             v => !!v || 'Name is required',
         ],
-        snackbar: false,
-		color: 'success'
 	}),
 	methods: {
 	    submit () {
 			if (this.$refs.form.validate()) {
 			    chronicleService.create(this.chronicle).then(res => {
-                    this.color = 'success';
-                    this.snackbar = true;
+                    this.$toast.success('Success message')
                     this.$emit('close');
 			    }).catch(err => {
 			        console.log(err)

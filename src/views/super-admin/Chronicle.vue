@@ -6,18 +6,14 @@
 				<v-btn color="primary" @click="onAdd">Добавить + </v-btn>
 			</template>
 		</SuperAdminSchoolHead>
-		<SmartTable>
+		<SmartTable :schools="chronicles">
 			<template v-slot:head>
-				<th>ID</th>
 				<th>Year</th>
 				<th><img src="../../assets/images/icons/plus.svg" alt=""></th>
 			</template>
-			<template v-slot:body>
-				<tr v-for="(item, index) in chronicles" :key="index">
-					<td>{{ index + 1 }}</td>
-					<td>{{ item.selectorTitle }}</td>
-					<td><img src="../../assets/images/icons/pen.svg" alt=""></td>
-				</tr>
+			<template slot="body" slot-scope="{item}">
+				<td>{{ item.selectorTitle }}</td>
+				<td><img src="../../assets/images/icons/pen.svg" alt=""></td>
 			</template>
 		</SmartTable>
 		<v-dialog
@@ -42,7 +38,7 @@ name: "Chronicle",
     components: { AddChronicle, SmartTable, SuperAdminSchoolHead },
 	data: () => ({
 		isAdd: false,
-		chronicles: []
+		chronicles: [],
 	}),
 	mounted () {
         this.fetchChronicles();
