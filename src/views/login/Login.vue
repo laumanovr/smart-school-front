@@ -2,11 +2,11 @@
 	<div class="login-page">
 		<div class="login-page__images">
 			<div>
-				<img src="/static/images/login-page/background-image.svg">
+				<img src="../../assets/images/background-image.svg">
 			</div>
 			<div class="globus-container">
 				<img
-					src="/static/images/login-page/globus.svg"
+					src="../../assets/images/globus.svg"
 					width="120"
 				>
 			</div>

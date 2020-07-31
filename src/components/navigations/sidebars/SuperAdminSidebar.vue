@@ -1,13 +1,11 @@
 <template>
   <div class="super-admin-sidebar">
 	  <div class="super-admin-sidebar__items">
-		  <button class="super-admin-sidebar__item active">
-			  <img :src="require(`../../../assets/images/icons/setting.svg`)" alt="">
-			  test
-		  </button>
 		  <button
 				  class="super-admin-sidebar__item"
-		          v-for="(sidebar, index) in sidebars" :key="index"
+				  v-for="(sidebar, index) in sidebars" :key="index"
+				  :class="{ 'active' : $route.path === sidebar.route }"
+				  @click="$router.push(sidebar.route)"
 		  >
 			  <img :src="require(`../../../assets/images/icons/${sidebar.icon}`)" alt="">
 			  {{  sidebar.name  }}

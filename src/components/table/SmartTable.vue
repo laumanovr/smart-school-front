@@ -45,7 +45,7 @@ name: "SmartTable",
 		&__table {
 		  width: 95%;
 		  margin: auto;
-		  background: #FFFFFF;
+          background: linear-gradient(180deg, rgba(74, 39, 243, 0.1) 0%, rgba(51, 157, 250, 0.1) 100%);
 		  border-top-left-radius: 4px;
 		  border-top-right-radius: 4px;
 		  text-align: center;
@@ -74,8 +74,8 @@ name: "SmartTable",
 		  tr {
             border: 1px solid rgba(0,0,0,0.1);
 
-		    th:nth-child(even), td:nth-child(even) {
-              background: rgba(74, 39, 243, 0.1);
+		    th:nth-child(odd), td:nth-child(odd) {
+              background: #FFFFFF;
 		    }
 		  }
 

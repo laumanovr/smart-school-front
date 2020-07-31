@@ -1,13 +1,13 @@
 import { authHeader, handleResponse } from '@/utils/authHeader';
 
 export const userService = {
-	login (data) {
+	login ({ username, password }) {
 		const options = {
 			method: 'POST',
-			header: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(data)
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ username, password })
 		};
-		return fetch('/v1/login', options).then(handleResponse, this.logout);
+		return fetch(`${process.env.VUE_APP_BASE_URL}/v1/auth/login`, options).then(handleResponse);
 	},
 	logout () {
 		localStorage.removeItem('user');
