@@ -43,5 +43,10 @@ export const superAdminSidebars = [
         name: 'Библиотека',
         icon: 'library.svg',
         route: '/super-admin'
+    },
+    {
+        name: 'Академический год',
+        icon: 'library.svg',
+        route: '/super-admin/chronicle'
     }
 ]

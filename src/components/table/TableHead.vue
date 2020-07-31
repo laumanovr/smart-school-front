@@ -2,13 +2,13 @@
 	<div class="smart-table__head">
 		<div class="smart-table__item">
 			<v-select
-					:items="items"
+					:items="[]"
 					label="Outlined style"
 					dense
 					outlined
 			></v-select>
 			<v-select
-					:items="items"
+					:items="[]"
 					label="Outlined style"
 					dense
 					outlined

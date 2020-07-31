@@ -5,27 +5,11 @@
 			<table class="smart-table__table">
 				<thead>
 					<tr>
-						<th>Электронная Почта</th>
-						<th>Телефон</th>
-						<th>Админ</th>
-						<th>Админ</th>
-						<th>Админ</th>
-						<th>Админ</th>
-						<th>Админ</th>
-						<th><img src="../../assets/images/icons/plus.svg" alt=""></th>
+						<slot name="head"></slot>
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="item in 10" :key="item">
-						<td>lindsey.stroud@gmail.com</td>
-						<td>lindsey.stroud@gmail.com</td>
-						<td>lindsey.stroud@gmail.com</td>
-						<td>lindsey.stroud@gmail.com</td>
-						<td>lindsey.stroud@gmail.com</td>
-						<td>lindsey.stroud@gmail.com</td>
-						<td>lindsey.stroud@gmail.com</td>
-						<td><img src="../../assets/images/icons/pen.svg" alt=""></td>
-					</tr>
+					<slot name="body"></slot>
 				</tbody>
 			</table>
 		</div>
@@ -35,7 +19,7 @@
 <script>
 import TableHead from '@/components/table/TableHead'
 export default {
-name: "SmartTable",
+	name: "SmartTable",
     components: { TableHead }
 }
 </script>

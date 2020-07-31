@@ -57,9 +57,10 @@ export default {
         line-height: 13px;
         letter-spacing: 0.01em;
         color: #FFFFFF;
-	    margin: 5px auto;
-        width: 68px;
-        height: 60px;
+	    margin: 10px auto;
+	    padding: 5px;
+	    min-height: 50px;
+	    min-width: 60px;
 
 	    &.active {
           background: linear-gradient(180deg, #4A27F3 -33.33%, #339DFA 66.67%);

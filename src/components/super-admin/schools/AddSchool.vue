@@ -8,17 +8,18 @@
 			</button>
 		</div>
 		<div>
-			<v-text-field label="Название"></v-text-field>
+			<v-text-field v-model="school.name" label="Название"></v-text-field>
 		</div>
 		<div class="spacer">
-			<v-text-field label="Email"></v-text-field>
-			<v-text-field label="Номер телефона"></v-text-field>
+			<v-text-field v-model="school.email" label="Email"></v-text-field>
+			<v-text-field v-model="school.phone" label="Номер телефона"></v-text-field>
 		</div>
 		<div>
-			<v-text-field label="Адрес"></v-text-field>
+			<v-text-field v-model="school.address" label="Адрес"></v-text-field>
 		</div>
 		<div>
 			<v-textarea
+					v-model="school.description"
 					outlined
 					name="input-7-4"
 					label="Outlined textarea"
@@ -27,31 +28,41 @@
 		</div>
 		<div>
 			<v-select
-					:items="items"
+					:items="schoolTypes"
+					item-text="title"
+					item-value="val"
 					label="Тип Школы"
+					v-model="school.schoolType"
 			></v-select>
 		</div>
 		<div>
 			<v-select
-					:items="items"
+					:items="languages"
+					item-value="id"
+					item-text="name"
 					label="Язык"
 			></v-select>
 		</div>
 		<div>
 			<v-select
-					:items="items"
+					:items="regions"
+					item-text="title"
+					item-value="id"
 					label="Регион"
+					@change="fetchRayons"
 			></v-select>
 		</div>
 		<div>
 			<v-select
-					:items="items"
+					:items="rayons"
+					item-text="title"
+					item-value="id"
 					label="Район"
 			></v-select>
 		</div>
 		<div>
 			<v-select
-					:items="items"
+					:items="chronicles"
 					label="Академический год"
 			></v-select>
 		</div>
@@ -63,8 +74,62 @@
 </template>
 
 <script>
+import { LanguageService } from '@/_services/language.service'
+import { RegionService } from '@/_services/region.service'
+import { RayonService } from '@/_services/rayon.service'
+import { ChronicleService } from '@/_services/chronicle.service'
+
+const chronicleService = new ChronicleService()
+const rayonService = new RayonService()
+const regionService = new RegionService();
+const languageService = new LanguageService();
+
 export default {
-    name: 'AddSchool'
+    name: 'AddSchool',
+	data: () => ({
+		school: {},
+		schoolTypes: [
+			{
+			    val: 'PUBLIC',
+				title: 'Public'
+			},
+			{
+			    val: 'PRIVATE',
+				title: 'Private'
+			}
+		],
+		languages: [],
+		regions: [],
+		rayons: [],
+		chronicles: []
+	}),
+	mounted () {
+        this.fetchLanguage()
+		this.fetchRegions();
+        this.fetchChronicles()
+    },
+    methods: {
+        fetchLanguage () {
+            languageService.list().then(res => {
+                this.languages = res;
+            }).catch(err => console.log(err));
+        },
+	    fetchRegions () {
+            regionService.list(0).then(res => {
+                this.regions = res.content;
+            }).catch(err => console.log(err));
+	    },
+	    fetchRayons (id) {
+            rayonService.listByRegion(id).then(res => {
+	            this.rayons = res;
+            }).catch(err => console.log(err));
+	    },
+	    fetchChronicles () {
+            chronicleService.list().then(res => {
+                this.chronicles = res;
+            }).catch(err => console.log(err));
+	    }
+	}
 }
 </script>
 

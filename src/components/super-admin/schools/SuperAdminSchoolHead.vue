@@ -1,16 +1,13 @@
 <template>
 	<div class="school-admin-school-head">
-		<div class="school-admin-school-head__item title">Школы</div>
-		<div class="school-admin-school-head__item">
-			<v-btn color="primary" depressed rounded @click="$emit('addSchool')">Добавить Школу + </v-btn>
-			<v-text-field
-					label="Искать"
-					required
-			></v-text-field>
+		<div class="school-admin-school-head__item school-admin-head__title">
+			<slot name="title"></slot>
 		</div>
 		<div class="school-admin-school-head__item">
-			<v-btn  depressed rounded>Распечатать</v-btn>
-			<v-btn depressed rounded>Экспорт</v-btn>
+			<slot name="center"></slot>
+		</div>
+		<div class="school-admin-school-head__item">
+			<slot name="right"></slot>
 		</div>
 	</div>
 </template>
@@ -37,15 +34,13 @@ export default {
 	    .v-btn{
 	      margin: 0 20px;
 	    }
-
-
-	    &.title {
+        &.school-admin-head__title {
           font-weight: bold;
           font-size: 28px;
           line-height: 48px;
           color: #333333;
-	    }
-
+        }
 	  }
+
 	}
 </style>
