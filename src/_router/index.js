@@ -11,10 +11,22 @@ const routes = [
     component: Home
   },
   {
-    path: '/dashboard',
-    name: 'superAdmin',
-    component: () => import(/* webpackChunkName: "admin" */ '@/views/super-admin/Dashboard')
-  }
+      name: 'superAdmin',
+      path: '/super-admin',
+      component: () => import('@/views/super-admin/Dashboard'),
+      children: [
+        {
+          path: '/',
+          name: 'superAdminDashboard',
+          component: () => import(/* webpackChunkName: "admin" */ '@/views/super-admin/SuperAdminDashboard')
+        },
+        {
+          name: 'superAdminSchools',
+          path: 'schools',
+          component: () => import('@/views/super-admin/Schools')
+        }
+      ]
+  },
 ]
 
 const router = new VueRouter({
