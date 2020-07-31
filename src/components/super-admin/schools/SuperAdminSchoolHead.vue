@@ -2,7 +2,7 @@
 	<div class="school-admin-school-head">
 		<div class="school-admin-school-head__item title">Школы</div>
 		<div class="school-admin-school-head__item">
-			<v-btn depressed rounded>Добавить Школу + </v-btn>
+			<v-btn depressed rounded @click="$emit('addSchool')">Добавить Школу + </v-btn>
 			<v-text-field
 					label="Искать"
 					required
