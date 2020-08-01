@@ -3,6 +3,11 @@
 		<TableHead></TableHead>
 		<div class="smart-table__body">
 			<table class="smart-table__table">
+				<div v-if="itemsSelected">
+					<span>{{ itemsSelected }}</span>
+					<p>1 Выбрано</p>
+					<button @click="$emit('addCourses')"> Add +</button>
+				</div>
 				<thead>
 					<tr>
 						<slot name="head"></slot>
@@ -22,6 +27,7 @@
 
 <script>
 import TableHead from '@/components/table/TableHead'
+
 export default {
 	name: "SmartTable",
 	props: {
@@ -32,15 +38,20 @@ export default {
 		    }
 	    }
 	},
-    components: { TableHead }
+    components: { TableHead },
+	computed: {
+	    itemsSelected () {
+	        return this.schools.filter(i => i.checked).length;
+	    }
+	},
 }
 </script>
 
 <style lang="scss" scoped>
 	.smart-table {
 	  &__body {
-	    height: 70vh;
-	    overflow-y: auto;
+        height: 66vh;
+        overflow-y: auto;
 	  }
 		&__table {
 		  width: 95%;
@@ -50,6 +61,44 @@ export default {
 		  border-top-right-radius: 4px;
 		  text-align: center;
           border-collapse: collapse;
+		  position: relative;
+          div {
+            background: #FFFFFF;
+            border-top-right-radius: 4px;
+            border-top-left-radius: 4px;
+            height: 48px;
+            left: 1px;
+            right: 1px;
+            top: 0;
+            position: absolute;
+            display: flex;
+            align-items: center;
+            padding-left: 22px;
+            font-weight: normal;
+            font-size: 14px;
+            line-height: 16px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+
+            span {
+              background: #339DFA;
+              border-radius: 2px;
+              font-weight: bold;
+              font-size: 9px;
+              line-height: 10px;
+              color: #FFFFFF;
+              padding: 2px 5px;
+            }
+            p {
+              margin: 0 0 0 30px;
+              padding: 0;
+            }
+            button {
+              margin-left: 30px;
+              padding: 5px;
+              background: #C2CFE0;
+              border-radius: 4px;
+            }
+          }
 
 		  tbody {
             tr:hover {
@@ -78,7 +127,6 @@ export default {
               background: #FFFFFF;
 		    }
 		  }
-
 		  th, td {
 		    padding: 15px 5px;
             //border-bottom: 1px solid rgba(0,0,0,0.1);

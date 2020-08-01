@@ -65,5 +65,10 @@ export const schoolAdminSidebars = [
         name: 'Teachers',
         icon: 'teachers.svg',
         route: '/school-admin/teachers'
-    }
+    },
+    {
+        name: 'Предметы',
+        icon: 'courses.svg',
+        route: '/school-admin/courses'
+    },
 ]

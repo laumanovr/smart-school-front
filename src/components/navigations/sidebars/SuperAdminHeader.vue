@@ -5,7 +5,7 @@
     </div>
     <div class="super-admin-header__info">
       <div class="super-admin-header__title">
-	      <slot name="title"></slot>
+	      <slot name="title">No title</slot>
       </div>
       <div class="super-admin-header__user-info">
         <span>

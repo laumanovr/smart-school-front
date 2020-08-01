@@ -46,11 +46,12 @@
 		</div>
 		<div>
 			<v-select
+					:rules="required"
 					:items="courses"
 					item-text="name"
 					item-value="id"
 					label="Courses"
-					v-model="user.courseId"
+					v-model="courseId"
 			></v-select>
 		</div>
 		<div class="form-footer">
@@ -65,7 +66,11 @@ import { PersonService } from '@/_services/person.service'
 import moment from 'moment'
 import { RoleService } from '@/_services/role.service'
 import { LanguageService } from '@/_services/language.service'
+import { CourseService } from '@/_services/course.service'
+import { InstructorCourseService } from '@/_services/instructor-course.service'
 
+const instructorCourseService = new InstructorCourseService()
+const courseService = new CourseService()
 const languageService = new LanguageService()
 const roleService = new RoleService()
 const personService = new PersonService()
@@ -81,7 +86,8 @@ export default {
             v => !!v || 'Input is required',
         ],
 		menu2: false,
-		courses: []
+		courses: [],
+		courseId: ''
 	}),
 	computed: {
 	    userProfile () {
@@ -91,6 +97,7 @@ export default {
 	mounted () {
 	    this.fetchRoles()
 		this.fetchLanguages()
+		this.fetchCourses()
     },
     methods: {
         fetchRoles () {
@@ -103,17 +110,37 @@ export default {
                 this.languages = res;
             }).catch(err => console.log(err));
         },
+	    fetchCourses () {
+            courseService.listBySchool(this.userProfile.schools[0].id).then(res => {
+                this.courses = res;
+            }).catch(err => console.log(err));
+	    },
         submit () {
             if (this.$refs.form.validate()) {
                 this.user.roles = this.roles.filter(i => i.code === 'ROLE_INSTRUCTOR').map(i => i.id);
                 this.user.dob = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY');
                 this.user.schoolId = this.userProfile.schools[0].id;
                 personService.create(this.user).then(res => {
-                    this.$toast.success('Successfully created!')
-                    this.$emit('close');
+                    if (res.success) {
+                        this.courseCreate()
+                    } else {
+                        this.$toast.error(res.message);
+                    }
                 }).catch(err => console.log(err));
             }
-        }
+        },
+	    courseCreate (personId) {
+            const data = {
+                archived: true,
+	            courseId: this.courseId,
+	            personId: personId,
+	            schoolId: this.userProfile.schools[0].id
+            };
+			instructorCourseService.create(data).then(res => {
+                this.$toast.success('Successfully created!')
+                this.$emit('close');
+			}).catch(err => console.log(err));
+	    }
 	}
 }
 </script>
