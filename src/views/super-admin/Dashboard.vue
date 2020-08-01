@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import SuperAdminSidebar from '@/components/navigations/sidebars/SuperAdminSidebar';
+import SuperAdminSidebar from '@/components/navigations/sidebars/AdminSidebar';
 import SuperAdminHeader from '@/components/navigations/sidebars/SuperAdminHeader'
 export default {
 	name: 'Dashboard',

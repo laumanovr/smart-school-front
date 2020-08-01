@@ -16,7 +16,7 @@
         </span>
         <span class="divider"></span>
         <span><img src="../../../assets/images/icons/ring-bell.svg"></span>
-         <span><img src="../../../assets/images/icons/logout.svg"></span>
+         <span @click="$router.push('/login')"><img src="../../../assets/images/icons/logout.svg"></span>
       </div>
     </div>
   </div>
@@ -69,6 +69,7 @@ export default {
 
       > span {
         display: block;
+        cursor: pointer;
 
         &.divider {
           border: 1px solid #EFF4F7;

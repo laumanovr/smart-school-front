@@ -6,21 +6,23 @@ import Chronicle from '@/views/super-admin/Chronicle'
 import SchoolAdmin from '@/views/super-admin/SchoolAdmin'
 import Instructor from '@/views/super-admin/Instructor'
 import Courses from '@/views/super-admin/Courses'
+import Dashboard from '@/views/school-admin/Dashboard'
+import SchoolAdminManage from '@/views/school-admin/SchoolAdminManage'
 
 Vue.use(VueRouter)
 
 const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home
-  },
+    {
+        path: '/',
+        name: 'Home',
+        component: Home
+    },
     {
         path: '/login',
         name: 'login',
         component: Login
     },
-  {
+    {
       name: 'superAdmin',
       path: '/super-admin',
       component: () => import('@/views/super-admin/Dashboard'),
@@ -57,7 +59,19 @@ const routes = [
           }
 
       ]
-  },
+    },
+    {
+        name: 'schoolAdmin',
+        path: '/school-admin',
+        component: SchoolAdminManage,
+        children: [
+            {
+                name: 'schoolAdminDashboard',
+                path: '/',
+                component: Dashboard
+            }
+        ]
+    }
 ]
 
 const router = new VueRouter({

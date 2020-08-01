@@ -55,3 +55,10 @@ export const superAdminSidebars = [
         route: '/super-admin/chronicle'
     }
 ]
+export const schoolAdminSidebars = [
+    {
+        name: 'Аналитика',
+        icon: 'chart.svg',
+        route: '/school-admin'
+    }
+]

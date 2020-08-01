@@ -18,13 +18,23 @@
 </template>
 
 <script>
-import { superAdminSidebars } from '@/utils/sidebars'
+import { superAdminSidebars, schoolAdminSidebars } from '@/utils/sidebars'
 
 export default {
-  name: 'SuperAdminSidebar',
+  name: 'AdminSidebar',
+	props: {
+        type: {
+            type: String,
+	        default: 'superAdmin'
+        }
+	},
 	data: () => ({
-		sidebars: superAdminSidebars
-	})
+		sidebars: ''
+	}),
+	mounted () {
+      if (this.type === 'superAdmin') this.sidebars = superAdminSidebars;
+      else this.sidebars = schoolAdminSidebars;
+    }
 }
 </script>
 
