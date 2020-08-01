@@ -11,5 +11,13 @@ export const userService = {
 	},
 	logout () {
 		localStorage.removeItem('user');
+		localStorage.removeItem('profile');
+	},
+	getProfile () {
+		const options = {
+			method: 'GET',
+			headers: authHeader(),
+		};
+		return fetch(`${process.env.VUE_APP_BASE_URL}/v1/users/profile`, options).then(handleResponse);
 	}
 };

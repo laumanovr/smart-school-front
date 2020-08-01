@@ -1,6 +1,9 @@
 <template>
 	<div class="dashboard">
-		<SuperAdminHeader></SuperAdminHeader>
+		<SuperAdminHeader>
+			<template v-slot:title>Министерство Образования Кыргызской Республики</template>
+			<template v-slot:userName>Азамат Жеенбеков</template>
+		</SuperAdminHeader>
 		<div class="dashboard__container">
 			<super-admin-sidebar />
 			<router-view></router-view>

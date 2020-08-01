@@ -60,5 +60,10 @@ export const schoolAdminSidebars = [
         name: 'Аналитика',
         icon: 'chart.svg',
         route: '/school-admin'
+    },
+    {
+        name: 'Teachers',
+        icon: 'teachers.svg',
+        route: '/school-admin/teachers'
     }
 ]

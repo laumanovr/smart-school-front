@@ -8,6 +8,7 @@ import Instructor from '@/views/super-admin/Instructor'
 import Courses from '@/views/super-admin/Courses'
 import Dashboard from '@/views/school-admin/Dashboard'
 import SchoolAdminManage from '@/views/school-admin/SchoolAdminManage'
+import Teachers from '@/views/school-admin/Teachers'
 
 Vue.use(VueRouter)
 
@@ -69,6 +70,11 @@ const routes = [
                 name: 'schoolAdminDashboard',
                 path: '/',
                 component: Dashboard
+            },
+            {
+                name: 'schoolAdminTeachers',
+                path: 'teachers',
+                component: Teachers
             }
         ]
     }

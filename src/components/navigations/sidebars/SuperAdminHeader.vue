@@ -4,19 +4,23 @@
       <img :src="require('../../../assets/images/logo.svg')">
     </div>
     <div class="super-admin-header__info">
-      <div class="super-admin-header__title">Школа №45 по им. Хусейна Карасаева</div>
+      <div class="super-admin-header__title">
+	      <slot name="title"></slot>
+      </div>
       <div class="super-admin-header__user-info">
         <span>
-	        <div>Азамат Жеенбеков</div>
+	        <div>
+		        <slot name="userName"></slot>
+	        </div>
 	        <div>Администратор</div>
         </span>
         <span><img src="../../../assets/images/user.svg" alt=""></span>
-        <span>
+        <span style="cursor: pointer">
 	        <img src="../../../assets/images/icons/chevron-down.svg" alt="">
         </span>
         <span class="divider"></span>
-        <span><img src="../../../assets/images/icons/ring-bell.svg"></span>
-         <span @click="$router.push('/login')"><img src="../../../assets/images/icons/logout.svg"></span>
+        <span style="cursor: pointer"><img src="../../../assets/images/icons/ring-bell.svg"></span>
+         <span style="cursor: pointer" @click="$router.push('/login')"><img src="../../../assets/images/icons/logout.svg"></span>
       </div>
     </div>
   </div>
@@ -69,7 +73,6 @@ export default {
 
       > span {
         display: block;
-        cursor: pointer;
 
         &.divider {
           border: 1px solid #EFF4F7;
