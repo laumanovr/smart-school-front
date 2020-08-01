@@ -7,12 +7,12 @@
 				<img src="../../../assets/images/icons/edit.svg">
 			</button>
 		</div>
-		<div>
-			<v-text-field v-model="schoolAdmin.username" :rules="required" label="Username"></v-text-field>
-		</div>
-		<div>
-			<v-text-field type="password" v-model="schoolAdmin.password" :rules="required" label="Password"></v-text-field>
-		</div>
+<!--		<div>-->
+<!--			<v-text-field v-model="schoolAdmin.username" :rules="required" label="Username"></v-text-field>-->
+<!--		</div>-->
+<!--		<div>-->
+<!--			<v-text-field type="password" v-model="schoolAdmin.password" :rules="required" label="Password"></v-text-field>-->
+<!--		</div>-->
 		<div>
 			<v-text-field v-model="schoolAdmin.name" :rules="required" label="Name"></v-text-field>
 		</div>
@@ -96,6 +96,12 @@ const personService = new PersonService()
 
 export default {
 	name: "AddSchoolAdmin",
+	props: {
+	    role: {
+	        type: String,
+		    default: 'ROLE_ADMIN'
+	    }
+	},
 	data: () =>  ({
 		schoolAdmin: {
 		    enabled: true,
@@ -136,7 +142,7 @@ export default {
 		},
 	    submit () {
 			if (this.$refs.form.validate()) {
-			    this.schoolAdmin.roles = this.roles.filter(i => i.code === 'ROLE_ADMIN').map(i => i.id);
+			    this.schoolAdmin.roles = this.roles.filter(i => i.code === this.role).map(i => i.id);
 			    this.schoolAdmin.dob = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY');
 			    personService.create(this.schoolAdmin).then(res => {
 			        this.$toast.success('Successfully created!')

@@ -17,7 +17,7 @@ export const superAdminSidebars = [
     {
         name: 'Учителя',
         icon: 'teachers.svg',
-        route: '/super-admin'
+        route: '/super-admin/instructors'
     },
     {
         name: 'Ученики',
@@ -27,7 +27,7 @@ export const superAdminSidebars = [
     {
         name: 'Предметы',
         icon: 'courses.svg',
-        route: '/super-admin'
+        route: '/super-admin/courses'
     },
     {
         name: 'Районы',

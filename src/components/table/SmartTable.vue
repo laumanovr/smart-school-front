@@ -9,7 +9,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="(item, index) in schools" :key="item.id">
+					<tr v-for="(item, index) in schools" :key="index">
 						<slot name="body" v-bind:item="item">
 							{{ item.name }}
 						</slot>
@@ -38,6 +38,10 @@ export default {
 
 <style lang="scss" scoped>
 	.smart-table {
+	  &__body {
+	    height: 70vh;
+	    overflow-y: auto;
+	  }
 		&__table {
 		  width: 95%;
 		  margin: auto;
@@ -79,6 +83,9 @@ export default {
 		    padding: 15px 5px;
             //border-bottom: 1px solid rgba(0,0,0,0.1);
             //border-right: 1px solid rgba(0,0,0,0.1);
+		  }
+		  td:hover {
+            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
 		  }
 		  td:last-child {
 		    border-right: none;
