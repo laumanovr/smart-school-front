@@ -1,18 +1,8 @@
 <template>
 	<div class="smart-table__head">
-		<div class="smart-table__item">
-			<v-select
-					:items="[]"
-					label="Outlined style"
-					dense
-					outlined
-			></v-select>
-			<v-select
-					:items="[]"
-					label="Outlined style"
-					dense
-					outlined
-			></v-select>
+		<div class="smart-table__first-item">
+            <SmartSelect>Предмет <v-icon>$chevronDown</v-icon></SmartSelect>
+            <SmartSelect>Пол <v-icon>$chevronDown</v-icon></SmartSelect>
 		</div>
 		<div class="smart-table__item">
 			<span>Показано 1-20 из 36</span>
@@ -23,8 +13,10 @@
 </template>
 
 <script>
+import SmartSelect from '@/components/select/SmartSelect'
 export default {
-name: "TableHead"
+  name: 'TableHead',
+  components: { SmartSelect }
 }
 </script>
 
@@ -37,6 +29,13 @@ name: "TableHead"
         width: 95%;
         margin: auto;
       }
+        &__first-item {
+            display: flex;
+            margin-bottom: 20px;
+            div:first-child {
+                margin-right: 10px;
+            }
+        }
       &__item {
         display: flex;
         align-items: center;
