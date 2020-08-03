@@ -10,80 +10,106 @@ import Dashboard from '@/views/school-admin/Dashboard'
 import SchoolAdminManage from '@/views/school-admin/SchoolAdminManage'
 import Teachers from '@/views/school-admin/Teachers'
 import SchoolAdminCourses from '@/views/school-admin/SchoolAdminCourses'
+import SuperAdminEmpty from '@/views/super-admin/SuperAdminEmpty'
 
 Vue.use(VueRouter)
 
 const routes = [
-    {
+  {
+    path: '/',
+    name: 'Home',
+    component: Login
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: Login
+  },
+  {
+    name: 'superAdmin',
+    path: '/super-admin',
+    component: () => import('@/views/super-admin/Dashboard'),
+    children: [
+      {
         path: '/',
-        name: 'Home',
-        component: Login
-    },
-    {
-        path: '/login',
-        name: 'login',
-        component: Login
-    },
-    {
-      name: 'superAdmin',
-      path: '/super-admin',
-      component: () => import('@/views/super-admin/Dashboard'),
-      children: [
-        {
-          path: '/',
-          name: 'superAdminDashboard',
-          component: () => import(/* webpackChunkName: "admin" */ '@/views/super-admin/SuperAdminDashboard')
-        },
-        {
-          name: 'superAdminSchools',
-          path: 'schools',
-          component: () => import('@/views/super-admin/Schools')
-        },
-          {
-              name: 'superAdminChronicle',
-              path: 'chronicle',
-              component: Chronicle
-          },
-          {
-              name: 'superSchoolAdmin',
-              path: 'school-admin',
-              component: SchoolAdmin
-          },
-          {
-              name: 'superAdminInstructors',
-              path: 'instructors',
-              component: Instructor
-          },
-          {
-              name: 'superAdminCourses',
-              path: 'courses',
-              component: Courses
-          }
+        name: 'superAdminDashboard',
+        component: () => import(/* webpackChunkName: "admin" */ '@/views/super-admin/SuperAdminDashboard')
+      },
+      {
+        name: 'superAdminSchools',
+        path: 'schools',
+        component: () => import('@/views/super-admin/Schools')
+      },
+      {
+        name: 'superAdminChronicle',
+        path: 'chronicle',
+        component: Chronicle
+      },
+      {
+        name: 'superSchoolAdmin',
+        path: 'school-admin',
+        component: SchoolAdmin
+      },
+      {
+        name: 'superAdminInstructors',
+        path: 'instructors',
+        component: Instructor
+      },
+      {
+        name: 'superAdminCourses',
+        path: 'courses',
+        component: Courses
+      },
+      {
+        name: 'superAdminStudents',
+        path: 'students',
+        component: SuperAdminEmpty
+      },
+      {
+        name: 'superAdminRayon',
+        path: 'rayon',
+        component: SuperAdminEmpty
+      },
+      {
+        name: 'superAdminCalendar',
+        path: 'calendar',
+        component: SuperAdminEmpty
+      },
+      {
+        name: 'superAdminAnnouncement',
+        path: 'announcement',
+        component: SuperAdminEmpty
+      },
+      {
+        name: 'superAdminLibrary',
+        path: 'library',
+        component: SuperAdminEmpty
+      }
 
-      ]
-    },
-    {
-        name: 'schoolAdmin',
-        path: '/school-admin',
-        component: SchoolAdminManage,
-        children: [
-            {
-                name: 'schoolAdminDashboard',
-                path: '/',
-                component: Dashboard
-            },
-            {
-                name: 'schoolAdminTeachers',
-                path: 'teachers',
-                component: Teachers
-            },
-            {
-                name: 'schoolAdminCourses',
-                path: 'courses',
-                component: SchoolAdminCourses
-            }
-        ]
-    }
+    ]
+  },
+  {
+    name: 'schoolAdmin',
+    path: '/school-admin',
+    component: SchoolAdminManage,
+    children: [
+      {
+        name: 'schoolAdminDashboard',
+        path: '/',
+        component: Dashboard
+      },
+      {
+        name: 'schoolAdminTeachers',
+        path: 'teachers',
+        component: Teachers
+      },
+      {
+        name: 'schoolAdminCourses',
+        path: 'courses',
+        component: SchoolAdminCourses
+      }
+    ]
+  }
 ]
 
 const router = new VueRouter({
