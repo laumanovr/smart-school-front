@@ -14,22 +14,22 @@
 </template>
 
 <script>
-import SuperAdminSidebar from '@/components/navigations/sidebars/AdminSidebar';
+import SuperAdminSidebar from '@/components/navigations/sidebars/AdminSidebar'
 import SuperAdminHeader from '@/components/navigations/sidebars/SuperAdminHeader'
 export default {
-	name: 'Dashboard',
-	components: { SuperAdminHeader, SuperAdminSidebar },
-	data () {
-		return {
-			das: ''
-		};
-	}
-};
+  name: 'Dashboard',
+  components: { SuperAdminHeader, SuperAdminSidebar },
+  data () {
+    return {
+      das: ''
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
 	.dashboard {
-	  background: #E5E5E5;
+	  background: #f8f8fb;
 
 	  &__container {
 	    display: flex;

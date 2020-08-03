@@ -3,7 +3,7 @@
 		<SuperAdminSchoolHead>
 			<template v-slot:title>Академический год</template>
 			<template v-slot:right>
-				<v-btn color="primary" @click="onAdd">Добавить + </v-btn>
+                <SmartButton @clicked="onAdd">Добавить + </SmartButton>
 			</template>
 		</SuperAdminSchoolHead>
 		<SmartTable :schools="chronicles">
@@ -31,32 +31,33 @@ import SuperAdminSchoolHead from '@/components/super-admin/schools/SuperAdminSch
 import SmartTable from '@/components/table/SmartTable'
 import AddChronicle from '@/components/super-admin/chronicle/AddChronicle'
 import { ChronicleService } from '@/_services/chronicle.service'
+import SmartButton from '@/components/button/SmartButton'
 
-const chronicleService = new ChronicleService();
+const chronicleService = new ChronicleService()
 export default {
-name: "Chronicle",
-    components: { AddChronicle, SmartTable, SuperAdminSchoolHead },
-	data: () => ({
-		isAdd: false,
-		chronicles: [],
-	}),
-	mounted () {
-        this.fetchChronicles();
+  name: 'Chronicle',
+  components: { SmartButton, AddChronicle, SmartTable, SuperAdminSchoolHead },
+  data: () => ({
+    isAdd: false,
+    chronicles: []
+  }),
+  mounted () {
+    this.fetchChronicles()
+  },
+  methods: {
+    onAdd () {
+      this.isAdd = true
     },
-    methods: {
-        onAdd () {
-            this.isAdd = true;
-        },
-		fetchChronicles () {
-            chronicleService.list().then(res => {
-                this.chronicles = res;
-            }).catch(err => console.log(err));
-		},
-        onCLoseModal () {
-            this.isAdd = false;
-            this.fetchChronicles();
-        }
-	}
+    fetchChronicles () {
+      chronicleService.list().then(res => {
+        this.chronicles = res
+      }).catch(err => console.log(err))
+    },
+    onCLoseModal () {
+      this.isAdd = false
+      this.fetchChronicles()
+    }
+  }
 }
 </script>
 

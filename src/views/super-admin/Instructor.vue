@@ -3,13 +3,10 @@
 		<SuperAdminSchoolHead>
 			<template v-slot:title>Teachers</template>
 			<template v-slot:center>
-				<v-text-field
-						label="Искать"
-						required
-				></v-text-field>
+                <SmartSearchInput></SmartSearchInput>
 			</template>
 			<template v-slot:right>
-				<v-btn color="primary" depressed rounded @click="onAddAdmin">Add Teacher + </v-btn>
+                <SmartButton @clicked="onAddAdmin">Add Teacher + </SmartButton>
 			</template>
 		</SuperAdminSchoolHead>
 		<SmartTable :schools="users">
@@ -44,32 +41,34 @@ import SuperAdminSchoolHead from '@/components/super-admin/schools/SuperAdminSch
 import SmartTable from '@/components/table/SmartTable'
 import AddSchoolAdmin from '@/components/super-admin/school-admin/AddSchoolAdmin'
 import { PersonService } from '@/_services/person.service'
+import SmartButton from '@/components/button/SmartButton'
+import SmartSearchInput from '@/components/input/SmartSearchInput'
 
-const personService = new PersonService();
+const personService = new PersonService()
 export default {
-    name: 'Instructor',
-	components: { SuperAdminSchoolHead, SmartTable, AddSchoolAdmin },
-    data: () => ({
-        isAddAdmin: false,
-        users: []
-    }),
-    mounted () {
-        this.fetchUsers()
+  name: 'Instructor',
+  components: { SmartSearchInput, SmartButton, SuperAdminSchoolHead, SmartTable, AddSchoolAdmin },
+  data: () => ({
+    isAddAdmin: false,
+    users: []
+  }),
+  mounted () {
+    this.fetchUsers()
+  },
+  methods: {
+    onAddAdmin () {
+      this.isAddAdmin = true
     },
-    methods: {
-        onAddAdmin () {
-            this.isAddAdmin = true
-        },
-        onCloseModal () {
-            this.isAddAdmin = false
-            this.fetchUsers();
-        },
-        fetchUsers () {
-            personService.list().then(res => {
-                this.users = res;
-            }).catch(err => console.log(err));
-        }
+    onCloseModal () {
+      this.isAddAdmin = false
+      this.fetchUsers()
+    },
+    fetchUsers () {
+      personService.list().then(res => {
+        this.users = res
+      }).catch(err => console.log(err))
     }
+  }
 }
 </script>
 

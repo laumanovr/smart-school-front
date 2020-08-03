@@ -3,15 +3,12 @@
 		<SuperAdminSchoolHead @addSchool="onAddSchool">
 			<template v-slot:title>Школы</template>
 			<template v-slot:center>
-				<v-btn color="primary" depressed rounded @click="onAddSchool">Добавить Школу + </v-btn>
-				<v-text-field
-						label="Искать"
-						required
-				></v-text-field>
+				<SmartButton @clicked="onAddSchool">Добавить Школу +</SmartButton>
+				<SmartSearchInput></SmartSearchInput>
 			</template>
 			<template v-slot:right>
-				<v-btn depressed rounded>Распечатать</v-btn>
-				<v-btn depressed rounded>Экспорт</v-btn>
+                <SmartBtn2>Распечатать</SmartBtn2>
+                <SmartBtn2>Экспорт</SmartBtn2>
 			</template>
 		</SuperAdminSchoolHead>
 		<SmartTable :schools="schools">
@@ -53,37 +50,40 @@ import SuperAdminSchoolHead from '@/components/super-admin/schools/SuperAdminSch
 import SmartTable from '@/components/table/SmartTable'
 import AddSchool from '@/components/super-admin/schools/AddSchool'
 import { SchoolService } from '@/_services/school.service'
+import SmartSearchInput from '@/components/input/SmartSearchInput'
+import SmartButton from '@/components/button/SmartButton'
+import SmartBtn2 from '@/components/button/SmartBtn2'
 
 const schoolService = new SchoolService()
 
 export default {
-name: "Schools",
-    components: { AddSchool, SuperAdminSchoolHead, SmartTable },
-	data: () => ({
-        isAddSchool: false,
-		schools: [],
-	}),
-	mounted () {
-        this.fetchSchools();
+  name: 'Schools',
+  components: { SmartBtn2, SmartButton, SmartSearchInput, AddSchool, SuperAdminSchoolHead, SmartTable },
+  data: () => ({
+    isAddSchool: false,
+    schools: []
+  }),
+  mounted () {
+    this.fetchSchools()
+  },
+  methods: {
+    onAddSchool () {
+      this.isAddSchool = true
     },
-    methods: {
-        onAddSchool (){
-            this.isAddSchool = true;
-        },
-		fetchSchools () {
-			schoolService.listPageable(0).then(res => {
+    fetchSchools () {
+      schoolService.listPageable(0).then(res => {
 			    if (res._embedded) {
-                    this.schools = res._embedded.schoolResourceList;
-			    } else this.schools = [];
-			}).catch(err => {
-			    console.log(err);
-            });
-		},
-        onCLoseModal () {
-            this.isAddSchool = false;
-            this.fetchSchools();
-        }
-	}
+          this.schools = res._embedded.schoolResourceList
+			    } else this.schools = []
+      }).catch(err => {
+			    console.log(err)
+      })
+    },
+    onCLoseModal () {
+      this.isAddSchool = false
+      this.fetchSchools()
+    }
+  }
 }
 </script>
 

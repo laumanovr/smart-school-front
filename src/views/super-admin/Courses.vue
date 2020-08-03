@@ -3,7 +3,7 @@
 		<SuperAdminSchoolHead>
 			<template v-slot:title>Предметы</template>
 			<template v-slot:right>
-				<v-btn color="primary" @click="isAdd = true">Добавить + </v-btn>
+                <SmartButton @clicked="isAdd = true">Добавить + </SmartButton>
 			</template>
 		</SuperAdminSchoolHead>
 		<SmartTable :schools="courses">
@@ -35,30 +35,31 @@ import SuperAdminSchoolHead from '@/components/super-admin/schools/SuperAdminSch
 import SmartTable from '@/components/table/SmartTable'
 import AddCourse from '@/components/super-admin/courses/AddCourse'
 import { AdminCourseService } from '@/_services/admin-course.service'
+import SmartButton from '@/components/button/SmartButton'
 
 const adminCourseService = new AdminCourseService()
 
 export default {
-	name: "Courses",
-	components: { AddCourse, SuperAdminSchoolHead, SmartTable },
-	data: () => ({
-		isAdd: false,
-		courses: []
-	}),
-	mounted () {
+  name: 'Courses',
+  components: { SmartButton, AddCourse, SuperAdminSchoolHead, SmartTable },
+  data: () => ({
+    isAdd: false,
+    courses: []
+  }),
+  mounted () {
 	    this.fetchCourses()
-    },
-    methods: {
-        onCloseModal () {
-            this.isAdd = false
+  },
+  methods: {
+    onCloseModal () {
+      this.isAdd = false
 	        this.fetchCourses()
-        },
-		fetchCourses () {
-            adminCourseService.list().then(res => {
-                this.courses = res;
-            }).catch(err => console.log(err));
-		}
-	}
+    },
+    fetchCourses () {
+      adminCourseService.list().then(res => {
+        this.courses = res
+      }).catch(err => console.log(err))
+    }
+  }
 }
 </script>
 

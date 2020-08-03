@@ -10,13 +10,13 @@
 			</template>
 			<template v-slot:right>
 				<SmartBtn2>
-                    <button>Import <img style="padding-bottom: 5px" src="../../assets/images/icons/import.svg" alt=""></button>
+                    Import <img style="padding-bottom: 5px" src="../../assets/images/icons/import.svg" alt="">
                 </SmartBtn2>
 				<SmartBtn2>
-                    <button>Export <img src="../../assets/images/icons/export.svg" alt=""></button>
+                    Export <img src="../../assets/images/icons/export.svg" alt="">
                 </SmartBtn2>
 				<SmartBtn2>
-                    <button>Download Template <img src="../../assets/images/icons/download.svg" alt=""></button>
+                    Download Template <img src="../../assets/images/icons/download.svg" alt="">
                 </SmartBtn2>
 			</template>
 		</SuperAdminSchoolHead>

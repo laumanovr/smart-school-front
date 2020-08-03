@@ -1,6 +1,8 @@
 <template>
     <div class="smart-btn-container">
-        <slot>Button</slot>
+        <button>
+            <slot>Button</slot>
+        </button>
     </div>
 </template>
 
