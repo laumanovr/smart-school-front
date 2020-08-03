@@ -1,8 +1,7 @@
 <template>
 	<div class="smart-table__head">
 		<div class="smart-table__first-item">
-            <SmartSelect>Предмет <v-icon>$chevronDown</v-icon></SmartSelect>
-            <SmartSelect>Пол <v-icon>$chevronDown</v-icon></SmartSelect>
+            <slot name="firstItem"></slot>
 		</div>
 		<div class="smart-table__item">
 			<span>Показано 1-20 из 36</span>
@@ -32,13 +31,14 @@ export default {
         &__first-item {
             display: flex;
             margin-bottom: 20px;
-            div:first-child {
+            div {
                 margin-right: 10px;
             }
         }
       &__item {
         display: flex;
         align-items: center;
+          margin-bottom: 20px;
 
         .v-select {
           width: 150px;

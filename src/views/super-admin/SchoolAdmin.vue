@@ -10,6 +10,10 @@
 			</template>
 		</SuperAdminSchoolHead>
 		<SmartTable :schools="users">
+            <template v-slot:firstItem>
+                <SmartSelect>Область <v-icon>$chevronDown</v-icon></SmartSelect>
+                <SmartSelect>Район <v-icon>$chevronDown</v-icon></SmartSelect>
+            </template>
 			<template v-slot:head>
 				<th>Ф.И.О</th>
 				<th>Школа</th>
@@ -43,12 +47,13 @@ import AddSchoolAdmin from '@/components/super-admin/school-admin/AddSchoolAdmin
 import { PersonService } from '@/_services/person.service'
 import SmartButton from '@/components/button/SmartButton'
 import SmartSearchInput from '@/components/input/SmartSearchInput'
+import SmartSelect from '@/components/select/SmartSelect'
 
 const personService = new PersonService()
 
 export default {
   name: 'Instructors',
-  components: { SmartSearchInput, SmartButton, SuperAdminSchoolHead, SmartTable, AddSchoolAdmin },
+  components: { SmartSelect, SmartSearchInput, SmartButton, SuperAdminSchoolHead, SmartTable, AddSchoolAdmin },
   data: () => ({
     isAddAdmin: false,
     users: []

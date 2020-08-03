@@ -12,6 +12,10 @@
 			</template>
 		</SuperAdminSchoolHead>
 		<SmartTable :schools="schools">
+            <template v-slot:firstItem>
+                <SmartSelect>Область <v-icon>$chevronDown</v-icon></SmartSelect>
+                <SmartSelect>Район <v-icon>$chevronDown</v-icon></SmartSelect>
+            </template>
 			<template v-slot:head>
 				<th>Название</th>
 				<th>Электронная Почта</th>
@@ -53,12 +57,13 @@ import { SchoolService } from '@/_services/school.service'
 import SmartSearchInput from '@/components/input/SmartSearchInput'
 import SmartButton from '@/components/button/SmartButton'
 import SmartBtn2 from '@/components/button/SmartBtn2'
+import SmartSelect from '@/components/select/SmartSelect'
 
 const schoolService = new SchoolService()
 
 export default {
   name: 'Schools',
-  components: { SmartBtn2, SmartButton, SmartSearchInput, AddSchool, SuperAdminSchoolHead, SmartTable },
+  components: { SmartSelect, SmartBtn2, SmartButton, SmartSearchInput, AddSchool, SuperAdminSchoolHead, SmartTable },
   data: () => ({
     isAddSchool: false,
     schools: []

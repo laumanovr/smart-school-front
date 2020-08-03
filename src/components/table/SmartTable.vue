@@ -1,6 +1,10 @@
 <template>
 	<div class="smart-table">
-		<TableHead></TableHead>
+		<TableHead>
+            <template v-slot:firstItem>
+                <slot name="firstItem"></slot>
+            </template>
+        </TableHead>
 		<div class="smart-table__body">
 			<table class="smart-table__table">
 				<div v-if="itemsSelected">
@@ -29,21 +33,21 @@
 import TableHead from '@/components/table/TableHead'
 
 export default {
-	name: "SmartTable",
-	props: {
+  name: 'SmartTable',
+  props: {
 	    schools: {
 	        type: Array,
 		    default () {
-	            return [];
+	            return []
 		    }
 	    }
-	},
-    components: { TableHead },
-	computed: {
+  },
+  components: { TableHead },
+  computed: {
 	    itemsSelected () {
-	        return this.schools.filter(i => i.checked).length;
+	        return this.schools.filter(i => i.checked).length
 	    }
-	},
+  }
 }
 </script>
 

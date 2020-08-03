@@ -21,6 +21,11 @@
 			</template>
 		</SuperAdminSchoolHead>
 		<SmartTable :schools="users">
+            <template v-slot:firstItem>
+                <SmartSelect>Предмет <v-icon>$chevronDown</v-icon></SmartSelect>
+                <SmartSelect>Район <v-icon>$chevronDown</v-icon></SmartSelect>
+                <SmartSelect>Пол <v-icon>$chevronDown</v-icon></SmartSelect>
+            </template>
 			<template v-slot:head>
 				<th>Ф.И.О</th>
 				<th>Предмет</th>
@@ -51,11 +56,12 @@ import AddTeacher from '@/components/teacher/AddTeacher'
 import SmartButton from '@/components/button/SmartButton'
 import SmartSearchInput from '@/components/input/SmartSearchInput'
 import SmartBtn2 from '@/components/button/SmartBtn2'
+import SmartSelect from '@/components/select/SmartSelect'
 
 const instructorCourseService = new InstructorCourseService()
 export default {
   name: 'Teachers',
-  components: { SmartBtn2, SmartSearchInput, SmartButton, AddTeacher, SuperAdminSchoolHead, SmartTable },
+  components: { SmartSelect, SmartBtn2, SmartSearchInput, SmartButton, AddTeacher, SuperAdminSchoolHead, SmartTable },
   data: () => ({
     isAddAdmin: false,
     users: []

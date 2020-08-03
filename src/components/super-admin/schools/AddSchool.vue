@@ -92,67 +92,67 @@ import { SchoolService } from '@/_services/school.service'
 const schoolService = new SchoolService()
 const chronicleService = new ChronicleService()
 const rayonService = new RayonService()
-const regionService = new RegionService();
-const languageService = new LanguageService();
+const regionService = new RegionService()
+const languageService = new LanguageService()
 
 export default {
-    name: 'AddSchool',
-	data: () => ({
-		school: {},
-		schoolTypes: [
-			{
-			    val: 'PUBLIC',
-				title: 'Public'
-			},
-			{
-			    val: 'PRIVATE',
-				title: 'Private'
-			}
-		],
-		languages: [],
-		regions: [],
-		rayons: [],
-		chronicles: [],
-        ruleName: [
-            v => !!v || 'Name is required',
-        ],
-	}),
-	mounted () {
-        this.fetchLanguage()
-		this.fetchRegions();
-        this.fetchChronicles()
+  name: 'AddSchool',
+  data: () => ({
+    school: {},
+    schoolTypes: [
+      {
+        val: 'PUBLIC',
+        title: 'Государственный'
+      },
+      {
+        val: 'PRIVATE',
+        title: 'Частный'
+      }
+    ],
+    languages: [],
+    regions: [],
+    rayons: [],
+    chronicles: [],
+    ruleName: [
+      v => !!v || 'Name is required'
+    ]
+  }),
+  mounted () {
+    this.fetchLanguage()
+    this.fetchRegions()
+    this.fetchChronicles()
+  },
+  methods: {
+    fetchLanguage () {
+      languageService.list().then(res => {
+        this.languages = res
+      }).catch(err => console.log(err))
     },
-    methods: {
-        fetchLanguage () {
-            languageService.list().then(res => {
-                this.languages = res;
-            }).catch(err => console.log(err));
-        },
 	    fetchRegions () {
-            regionService.list(0).then(res => {
-                this.regions = res.content;
-            }).catch(err => console.log(err));
+      regionService.list(0).then(res => {
+        this.regions = res.content
+      }).catch(err => console.log(err))
 	    },
 	    fetchRayons (id) {
-            rayonService.listByRegion(id).then(res => {
-	            this.rayons = res;
-            }).catch(err => console.log(err));
+      rayonService.listByRegion(id).then(res => {
+	            this.rayons = res
+      }).catch(err => console.log(err))
 	    },
 	    fetchChronicles () {
-            chronicleService.list().then(res => {
-                this.chronicles = res;
-            }).catch(err => console.log(err));
+      chronicleService.list().then(res => {
+        this.chronicles = res
+      }).catch(err => console.log(err))
 	    },
 	    submit () {
-            if (this.$refs.form.validate()) {
-                schoolService.create(this.school).then(res => {
-                    this.$toast.success('Successfully created!');
-                    this.school = {}
-                    this.$emit('close');
-                }).catch(err => console.log(err));
-            }
+      if (this.$refs.form.validate()) {
+        schoolService.create(this.school).then(res => {
+          this.$toast.success('Successfully created!')
+          this.school = {}
+          this.$emit('close')
+        }).catch(err => console.log(err))
+      }
 	    }
-	}
+  }
 }
 </script>
 
@@ -161,7 +161,6 @@ export default {
 	  background: #FFFFFF;
 	  border-radius: 7px;
 	  padding: 20px 40px;
-
 
 	  > div {
 	    display: flex;
