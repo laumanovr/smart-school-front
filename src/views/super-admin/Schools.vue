@@ -89,6 +89,5 @@ name: "Schools",
 
 <style lang="scss" scoped>
 	.super-admin-schools {
-      width: calc(100% - 96px);
 	}
 </style>

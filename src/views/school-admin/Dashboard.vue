@@ -31,7 +31,6 @@ export default {
 <style lang="scss" scoped>
 .dashboard__body {
   margin: 20px 0;
-  width: calc(100% - 96px);
 
   > div {
     display: flex;

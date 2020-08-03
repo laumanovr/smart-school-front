@@ -6,7 +6,9 @@
 		</SuperAdminHeader>
 		<div class="dashboard__container">
 			<super-admin-sidebar />
-			<router-view></router-view>
+            <div class="dashboard__container__body">
+                <router-view></router-view>
+            </div>
 		</div>
 	</div>
 </template>
@@ -27,11 +29,15 @@ export default {
 
 <style lang="scss" scoped>
 	.dashboard {
-	  height: 100vh;
 	  background: #E5E5E5;
 
 	  &__container {
 	    display: flex;
+          height: calc(100vh - 76px);
+          &__body {
+              width: 100%;
+              overflow-y: auto;
+          }
 	  }
 	}
 </style>

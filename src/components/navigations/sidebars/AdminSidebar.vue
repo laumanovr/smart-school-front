@@ -42,8 +42,8 @@ export default {
 	.super-admin-sidebar {
       width: 96px;
       background: #1D194C;
-	  height: calc(100vh - 76px);
 	  display: flex;
+       height: 100%;
 	  flex-direction: column;
 	  justify-content: space-between;
 
@@ -57,6 +57,8 @@ export default {
 
 	  &__items {
 	    margin: 20px auto;
+          overflow-y: auto;
+          height: 100%;
 	  }
 	  &__item {
 	    display: flex;

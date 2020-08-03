@@ -99,7 +99,6 @@ export default {
 
 <style lang="scss" scoped>
 .school-admin-courses {
-  width: calc(100% - 96px);
 }
 .top-th {
   width: 60px;

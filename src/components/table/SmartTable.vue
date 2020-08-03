@@ -50,7 +50,6 @@ export default {
 <style lang="scss" scoped>
 	.smart-table {
 	  &__body {
-        height: 66vh;
         overflow-y: auto;
 	  }
 		&__table {

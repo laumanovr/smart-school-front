@@ -64,6 +64,5 @@ export default {
 
 <style lang="scss" scoped>
 	.super-admin-courses {
-	  width: calc(100% - 96px);
 	}
 </style>

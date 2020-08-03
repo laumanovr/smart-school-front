@@ -75,6 +75,5 @@ export default {
 
 <style lang="scss" scoped>
 	.super-admin-instructors {
-	  width: calc(100% - 96px);
 	}
 </style>

@@ -4,9 +4,11 @@
 			<template v-slot:title>{{ userProfile.schools[0].name }}</template>
 			<template v-slot:userName>{{ userProfile.user.firstName }} {{ userProfile.user.lastName }}</template>
 		</SuperAdminHeader>
-		<div class="school-admin-manage__body">
+		<div class="school-admin-manage__container">
 			<AdminSidebar type="schoolAdmin"></AdminSidebar>
-			<router-view></router-view>
+			<div class="school-admin-manage__body">
+                <router-view></router-view>
+            </div>
 		</div>
 	</div>
 </template>
@@ -27,11 +29,15 @@ name: "SchoolAdminManage",
 
 <style lang="scss" scoped>
 	.school-admin-manage {
-	  height: 100vh;
       background: #E5E5E5;
 
-	  &__body {
+	  &__container {
 	    display: flex;
+          height: calc(100vh - 76px);
 	  }
+        &__body {
+            width: calc(100% - 96px);
+            overflow-y: auto;
+        }
 	}
 </style>

@@ -30,8 +30,10 @@ export default {
 
 <style lang="scss" scoped>
 	.dashboard__body {
-	  margin: 20px 0;
-	  width: calc(100% - 96px);
+        height: 90%;
+	     margin: 20px 0;
+        overflow-y: auto;
+	    width: calc(100%);
 
 	  > div {
 	    display: flex;

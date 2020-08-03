@@ -62,6 +62,5 @@ name: "Chronicle",
 
 <style lang="scss" scoped>
 	.super-admin-chronicle {
-	  width: calc(100% - 96px);
 	}
 </style>

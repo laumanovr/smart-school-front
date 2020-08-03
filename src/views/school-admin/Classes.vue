@@ -59,6 +59,5 @@ export default {
 
 <style lang="scss" scoped>
 .school-admin-classes {
-  width: calc(100% - 96px);
 }
 </style>
