@@ -14,7 +14,7 @@
 
 <script>
 export default {
-	name: "SuperAdminSchoolHead"
+  name: 'SuperAdminSchoolHead'
 }
 </script>
 <style lang="scss" scoped>
@@ -30,7 +30,9 @@ export default {
 	  &__item {
 	    display: flex;
 	    align-items: center;
-
+          div {
+              margin: 0 10px;
+          }
 	    .v-btn{
 	      margin: 0 20px;
 	    }

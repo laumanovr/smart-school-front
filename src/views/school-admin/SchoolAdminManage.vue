@@ -17,19 +17,19 @@
 import SuperAdminHeader from '@/components/navigations/sidebars/SuperAdminHeader'
 import AdminSidebar from '@/components/navigations/sidebars/AdminSidebar'
 export default {
-name: "SchoolAdminManage",
-    components: { AdminSidebar, SuperAdminHeader },
-	computed: {
-        userProfile () {
-            return this.$store.state.account.profile
-        }
-	}
+  name: 'SchoolAdminManage',
+  components: { AdminSidebar, SuperAdminHeader },
+  computed: {
+    userProfile () {
+      return this.$store.state.account.profile
+    }
+  }
 }
 </script>
 
 <style lang="scss" scoped>
 	.school-admin-manage {
-      background: #E5E5E5;
+      background: #f8f8fb;
 
 	  &__container {
 	    display: flex;
