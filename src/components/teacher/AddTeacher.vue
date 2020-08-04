@@ -1,7 +1,8 @@
 <template>
     <v-form @submit.prevent="submit" ref="form">
         <div class="form-head">
-            <span>Add Teacher</span>
+            <span v-if="!isEdit">Add Teacher</span>
+            <span v-else>Edit Teacher</span>
             <img alt="" src="../../assets/images/profile-icon.svg">
             <button class="profile-edit">
                 <img src="../../assets/images/icons/edit.svg">
@@ -51,23 +52,23 @@
                 item-text="courseTitle"
                 item-value="id"
                 label="Courses"
-                v-model="courseId"
+                v-model="user.courseId"
             ></v-select>
         </div>
         <div class="form-footer">
             <v-btn color="primary" type="submit">Сохранить</v-btn>
-            <v-btn>Отменить</v-btn>
+            <v-btn @click="$emit('close')">Отменить</v-btn>
         </div>
     </v-form>
 </template>
 
 <script>
-import { PersonService } from '@/_services/person.service'
+import {PersonService} from '@/_services/person.service'
 import moment from 'moment'
-import { RoleService } from '@/_services/role.service'
-import { LanguageService } from '@/_services/language.service'
-import { CourseService } from '@/_services/course.service'
-import { InstructorCourseService } from '@/_services/instructor-course.service'
+import {RoleService} from '@/_services/role.service'
+import {LanguageService} from '@/_services/language.service'
+import {CourseService} from '@/_services/course.service'
+import {InstructorCourseService} from '@/_services/instructor-course.service'
 
 const instructorCourseService = new InstructorCourseService()
 const courseService = new CourseService()
@@ -76,72 +77,117 @@ const roleService = new RoleService()
 const personService = new PersonService()
 
 export default {
-  name: 'AddTeacher',
-  data: () => ({
-    roles: [],
-    languages: [],
-    user: {},
-    birthday: '1970-2-11',
-    required: [
-      v => !!v || 'Input is required'
-    ],
-    menu2: false,
-    courses: [],
-    courseId: ''
-  }),
-  computed: {
-    userProfile () {
-      return this.$store.state.account.profile
+    name: 'AddTeacher',
+    props: {
+        user: {
+            type: Object,
+            required: true
+        },
+        isEdit: {
+            type: Boolean,
+            default: false
+        }
+    },
+    data: () => ({
+        roles: [],
+        languages: [],
+        required: [
+            v => !!v || 'Input is required'
+        ],
+        menu2: false,
+        courses: [],
+    }),
+    computed: {
+        userProfile() {
+            return this.$store.state.account.profile
+        },
+        birthday() {
+            return moment(this.user.birthday).isValid() ? this.user.birthday : '1970-2-11';
+        },
+    },
+    mounted() {
+        this.fetchRoles()
+        this.fetchLanguages()
+        this.fetchCourses()
+    },
+    methods: {
+        fetchRoles() {
+            roleService.listPageable(0).then(res => {
+                this.roles = res
+            }).catch(err => console.log(err))
+        },
+        fetchLanguages() {
+            languageService.list().then(res => {
+                this.languages = res
+            }).catch(err => console.log(err))
+        },
+        fetchCourses() {
+            courseService.listBySchool(this.userProfile.schools[0].id).then(res => {
+                this.courses = res
+            }).catch(err => console.log(err))
+        },
+        submit() {
+            if (this.$refs.form.validate()) {
+                this.user.roles = this.roles.filter(i => i.code === 'ROLE_INSTRUCTOR').map(i => i.id)
+                this.user.dob = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY')
+                this.user.schoolId = this.userProfile.schools[0].id
+                if (this.isEdit) {
+                    this.personEdit(this.user)
+                } else {
+                    this.personCreate(this.user)
+                }
+            }
+        },
+        personCreate(data) {
+            personService.create(data).then(res => {
+                if (res.success) {
+                    const courseData = {
+                        archived: false,
+                        courseId: this.user.courseId,
+                        personId: res.message,
+                        schoolId: this.userProfile.schools[0].id
+                    }
+                    this.courseCreate(courseData)
+                } else {
+                    this.$toast.error(res.message)
+                }
+            }).catch(err => console.log(err))
+        },
+        personEdit(data) {
+            personService.edit(data).then(res => {
+                if (res.success) {
+                    const courseData = {
+                        archived: false,
+                        courseId: this.user.courseId,
+                        personId: data.id,
+                        schoolId: this.userProfile.schools[0].id
+                    }
+                    this.courseEdit(courseData)
+                } else {
+                    this.$toast.error(res.message)
+                }
+            }).catch(err => console.log(err))
+        },
+        courseCreate(data) {
+            instructorCourseService.create(data).then(res => {
+                this.$toast.success('Successfully created!')
+                this.$emit('close')
+            }).catch(err => console.log(err))
+        },
+        courseEdit(data) {
+            instructorCourseService.listByInstructor(data.personId).then(res => {
+                if (res._embedded) {
+                    data.id = res._embedded.instructorCourseResourceList[0].id;
+                    return instructorCourseService.edit(data);
+                } else {
+                    return instructorCourseService.create(data);
+                }
+            }).then(res => {
+                this.$toast.success('Successfully updated!')
+                this.$emit('close')
+            }).catch(err => console.log(err))
+        }
     }
-  },
-  mounted () {
-    this.fetchRoles()
-    this.fetchLanguages()
-    this.fetchCourses()
-  },
-  methods: {
-    fetchRoles () {
-      roleService.listPageable(0).then(res => {
-        this.roles = res
-      }).catch(err => console.log(err))
-    },
-    fetchLanguages () {
-      languageService.list().then(res => {
-        this.languages = res
-      }).catch(err => console.log(err))
-    },
-    fetchCourses () {
-      courseService.listBySchool(this.userProfile.schools[0].id).then(res => {
-        this.courses = res
-      }).catch(err => console.log(err))
-    },
-    submit () {
-      if (this.$refs.form.validate()) {
-        this.user.roles = this.roles.filter(i => i.code === 'ROLE_INSTRUCTOR').map(i => i.id)
-        this.user.dob = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY')
-        this.user.schoolId = this.userProfile.schools[0].id
-        personService.create(this.user).then(res => {
-          if (res.success) {
-            this.courseCreate(res.message)
-          } else {
-            this.$toast.error(res.message)
-          }
-        }).catch(err => console.log(err))
-      }
-    },
-    courseCreate (personId) {
-      const data = {
-        archived: true,
-        courseId: this.courseId,
-        personId: personId,
-        schoolId: this.userProfile.schools[0].id
-      }
-      instructorCourseService.create(data).then(res => {
-        this.$toast.success('Successfully created!')
-        this.$emit('close')
-      }).catch(err => console.log(err))
-    }
-  }
 }
 </script>
 

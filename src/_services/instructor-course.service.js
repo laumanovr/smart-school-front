@@ -25,12 +25,12 @@ export  class InstructorCourseService extends BaseApiService {
         return this.sendPostRequest(url, data);
     }
 
-    listByInstructor (id, page) {
+    listByInstructor (id, page = 0) {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/course/list/instructor/${id}?page=${page}`;
         return this.sendGetRequest(url);
     }
 
-    listBySchool (id, page) {
+    listBySchool (id, page = 0) {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/course/list/school/${id}?page=${page}`;
         return this.sendGetRequest(url);
     }
