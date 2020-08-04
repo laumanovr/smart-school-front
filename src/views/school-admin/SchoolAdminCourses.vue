@@ -16,7 +16,7 @@
             </template>
 
             <template v-slot:body="{ item }">
-                <td><input @change="onSelect(item)" type="checkbox" v-model="item.checked"></td>
+                <td><input :disabled="item.disable" @change="onSelect(item)" type="checkbox" v-model="item.checked"></td>
                 <td>{{ item.title }}</td>
                 <td>{{ item.description }}</td>
             </template>
@@ -50,19 +50,21 @@ export default {
     },
     mounted() {
         this.fetchCourses()
-        this.fetchAdminCourses()
     },
     methods: {
         onCloseModal() {
         },
-        fetchAdminCourses() {
-            adminCourseService.list().then(res => {
-                this.adminCourses = res
-            }).catch(err => console.log(err))
-        },
         fetchCourses() {
             courseService.listBySchool(this.userProfile.schools[0].id).then(res => {
-                this.items = res
+                this.items = res;
+                return adminCourseService.list();
+            }).then(res => {
+                this.adminCourses = res.map(i => {
+                   if (this.items.some(it => it.adminCourseId === i.id)) {
+                       i.disable = true;
+                   }
+                   return i;
+                });
             }).catch(err => console.log(err))
         },
         onSelect(item) {
@@ -88,6 +90,7 @@ export default {
                     }
                 }
                 this.$toast.success('Successfully added!')
+                this.fetchCourses();
             }
         }
     }
