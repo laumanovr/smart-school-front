@@ -48,7 +48,7 @@
 			<v-select
 					:rules="required"
 					:items="courses"
-					item-text="name"
+					item-text="courseTitle"
 					item-value="id"
 					label="Courses"
 					v-model="courseId"
@@ -122,7 +122,7 @@ export default {
                 this.user.schoolId = this.userProfile.schools[0].id;
                 personService.create(this.user).then(res => {
                     if (res.success) {
-                        this.courseCreate()
+                        this.courseCreate(parseInt(res.message))
                     } else {
                         this.$toast.error(res.message);
                     }
