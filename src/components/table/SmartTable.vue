@@ -73,7 +73,7 @@ export default {
             return Math.ceil(this.totalElements / this.pageSize);
         },
         pageRemainder () {
-            return this.currentPage === this.totalPage ? this.totalElements % this.pageSize : this.pageSize;
+            return this.currentPage === this.totalPage ? this.totalElements !== this.pageSize ? this.totalElements % this.pageSize : this.pageSize : this.pageSize;
         }
     }
 }

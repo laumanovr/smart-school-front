@@ -6,12 +6,14 @@
 <!--                <SmartButton @clicked="isAdd = true">Добавить + </SmartButton>-->
 <!--            </template>-->
         </SuperAdminSchoolHead>
-        <SmartTable :schools="rayon">
+        <SmartTable :schools="rayon" :total-elements="rayon.length" :page-size="rayon.length">
             <template v-slot:head>
+                <th>№</th>
                 <th>Название</th>
 <!--                <th><img src="../../../assets/images/icons/plus.svg" alt=""></th>-->
             </template>
             <template slot="body" slot-scope="{item}">
+                <td>{{ item.pos }}</td>
                 <td>{{ item.title }}</td>
 <!--                <td><img src="../../../assets/images/icons/pen.svg" alt=""></td>-->
             </template>
@@ -40,7 +42,10 @@ name: "Rayon",
     methods: {
         fetchRayon () {
             rayonService.list().then(res => {
-                this.rayon = res;
+                this.rayon = res.map((i, index) => {
+                    i.pos = index + 1;
+                    return i;
+                });
             }).catch(err => console.log(err));
         }
     }
