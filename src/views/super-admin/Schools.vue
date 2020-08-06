@@ -11,7 +11,14 @@
                 <SmartBtn2>Экспорт</SmartBtn2>
             </template>
         </SuperAdminSchoolHead>
-        <SmartTable :schools="schools">
+        <SmartTable
+            :schools="schools"
+            :total-elements="totalElements"
+            :page-size="pageSize"
+            :current-page="currentPage"
+            @leftClick="onLeftClick"
+            @rightClick="onRightClick"
+        >
             <template v-slot:firstItem>
                 <SmartSelect>Область
                     <v-icon>$chevronDown</v-icon>
@@ -36,7 +43,7 @@
                 <td>{{ item.email }}</td>
                 <td>{{ item.phone }}</td>
                 <td>{{ schoolTypes[item.schoolType] }}</td>
-                <td>{{ item.language }}</td>
+                <td>{{ lang[item.language] }}</td>
                 <td>{{ item.rayonTitle }}</td>
                 <td><img alt="" src="../../assets/images/icons/pen.svg"></td>
             </template>
@@ -71,20 +78,30 @@ export default {
     data: () => ({
         isAddSchool: false,
         schools: [],
+        totalElements: 0,
+        pageSize: 0,
+        currentPage: 1,
         schoolTypes: {
             PUBLIC: 'Государственный',
             PRIVATE: 'Частный'
         },
+        lang: {
+            KG: 'КГ',
+            RU: 'РУ',
+            EN: 'EN'
+        }
     }),
     mounted() {
-        this.fetchSchools()
+        this.fetchSchools(0)
     },
     methods: {
         onAddSchool() {
             this.isAddSchool = true
         },
-        fetchSchools() {
-            schoolService.listPageable(0).then(res => {
+        fetchSchools(page) {
+            schoolService.listPageable(page).then(res => {
+                this.totalElements = res.page.totalElements;
+                this.pageSize = res.page.pageSize;
                 if (res._embedded) {
                     this.schools = res._embedded.schoolResourceList
                 } else this.schools = []
@@ -95,7 +112,15 @@ export default {
         onCLoseModal() {
             this.isAddSchool = false
             this.fetchSchools()
-        }
+        },
+        onLeftClick () {
+            this.currentPage--;
+            this.fetchSchools(this.currentPage - 1);
+        },
+        onRightClick () {
+            this.currentPage++;
+            this.fetchSchools(this.currentPage - 1);
+        },
     }
 }
 </script>
