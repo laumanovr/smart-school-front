@@ -8,14 +8,12 @@
 		</SuperAdminSchoolHead>
 		<SmartTable :schools="courses">
 			<template v-slot:head>
-				<th>Title</th>
-				<th>Code</th>
-				<th>Description</th>
+				<th>Название</th>
+				<th>Описание</th>
 				<th><img src="../../assets/images/icons/plus.svg" alt=""></th>
 			</template>
 			<template slot="body" slot-scope="{item}">
 				<td>{{ item.title }}</td>
-				<td>{{ item.code }}</td>
 				<td>{{ item.description }}</td>
 				<td><img src="../../assets/images/icons/pen.svg" alt=""></td>
 			</template>
