@@ -1,12 +1,12 @@
 <template>
 	<div class="super-admin-instructors">
 		<SuperAdminSchoolHead>
-			<template v-slot:title>School Admin</template>
+			<template v-slot:title>Администратор</template>
 			<template v-slot:center>
 				<SmartSearchInput></SmartSearchInput>
 			</template>
 			<template v-slot:right>
-                <SmartButton @clicked="onAddAdmin">Add School Admin + </SmartButton>
+                <SmartButton @clicked="onAddAdmin">Добавить администратора + </SmartButton>
 			</template>
 		</SuperAdminSchoolHead>
 		<SmartTable :schools="users">

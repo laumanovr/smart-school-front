@@ -10,7 +10,7 @@ export const superAdminSidebars = [
     route: '/super-admin/schools'
   },
   {
-    name: 'School Admin',
+    name: 'Администратор',
     icon: 'teachers.svg',
     route: '/super-admin/school-admin'
   },

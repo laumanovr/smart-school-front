@@ -22,7 +22,7 @@
 					v-model="school.description"
 					outlined
 					name="input-7-4"
-					label="Outlined textarea"
+					label="Описание"
 					value="The Woodman set to work at once, and so sharp was his axe that the tree was soon chopped nearly through."
 			></v-textarea>
 		</div>
@@ -77,7 +77,7 @@
 		</div>
 		<div class="form-footer">
 			<v-btn type="submit" color="primary">Сохранить</v-btn>
-			<v-btn>Отменить</v-btn>
+			<v-btn @click="$emit('close')">Отменить</v-btn>
 		</div>
 	</v-form>
 </template>
@@ -114,7 +114,7 @@ export default {
     rayons: [],
     chronicles: [],
     ruleName: [
-      v => !!v || 'Name is required'
+      v => !!v || 'поле обязательно для заполнения'
     ]
   }),
   mounted () {
