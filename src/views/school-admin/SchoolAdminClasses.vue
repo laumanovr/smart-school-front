@@ -1,0 +1,250 @@
+<template>
+<div class="school-admin-classes">
+    <SuperAdminSchoolHead>
+        <template v-slot:title>Классы</template>
+        <template v-slot:center>
+            <SmartButton @clicked="isAddClassModal = true">
+                Добавить класс <img src="../../assets/images/icons/add-user.svg" alt="">
+            </SmartButton>
+            <SmartSearchInput></SmartSearchInput>
+        </template>
+    </SuperAdminSchoolHead>
+    <SmartTable :schools="classes">
+        <template v-slot:firstItem>
+            <SmartSelect>Класс <v-icon>$chevronDown</v-icon></SmartSelect>
+            <SmartSelect>Буква <v-icon>$chevronDown</v-icon></SmartSelect>
+            <SmartSelect>Классный руководитель <v-icon>$chevronDown</v-icon></SmartSelect>
+            <SmartSelect>Язык <v-icon>$chevronDown</v-icon></SmartSelect>
+        </template>
+        <template v-slot:head>
+            <th>Класс</th>
+            <th>Буква</th>
+            <th>Классный руководитель</th>
+            <th>Язык</th>
+            <th></th>
+        </template>
+
+        <template v-slot:body="{ item }">
+            <td>{{ item.classTitle }}</td>
+            <td>{{ item.classTitle }}</td>
+            <td>{{ item.personTitle }}</td>
+            <td></td>
+            <td><img src="../../assets/images/icons/pen.svg" alt=""></td>
+        </template>
+    </SmartTable>
+
+    <v-dialog
+        v-model="isAddClassModal"
+        width="546"
+        id="add-form"
+    >
+        <v-form @submit.prevent="submitClass" ref="form">
+            <div class="form-head">
+                <span>Добавить класс</span>
+            </div>
+
+            <div>
+                <v-select
+                    :rules="required"
+                    :items="classLevels"
+                    item-text="num"
+                    item-value="num"
+                    label="Класс"
+                    v-model="sendObj.classLevel"
+                ></v-select>
+            </div>
+
+            <div>
+                <v-select
+                    :rules="required"
+                    :items="classLabels"
+                    item-text="label"
+                    item-value="label"
+                    label="Буква"
+                    v-model="sendObj.classLabel"
+                ></v-select>
+            </div>
+            <div>
+                <v-select
+                    :rules="required"
+                    :items="languages"
+                    item-text="name"
+                    item-value="id"
+                    label="Язык"
+                    v-model="sendObj.languageId"
+                ></v-select>
+            </div>
+
+            <div>
+                <v-select
+                    :rules="required"
+                    :items="teachers"
+                    item-text="instructorTitle"
+                    item-value="instructorId"
+                    label="Классный руководитель"
+                    v-model="instrClassObj.personId"
+                ></v-select>
+            </div>
+
+            <div class="form-footer">
+                <v-btn type="submit" color="primary">Сохранить</v-btn>
+                <v-btn @click="isAddClassModal=false">Отменить</v-btn>
+            </div>
+        </v-form>
+    </v-dialog>
+</div>
+</template>
+
+<script>
+    import SuperAdminSchoolHead from '@/components/super-admin/schools/SuperAdminSchoolHead';
+    import SmartTable from '@/components/table/SmartTable';
+    import SmartButton from '@/components/button/SmartButton';
+    import SmartSearchInput from '@/components/input/SmartSearchInput';
+    import SmartBtn2 from '@/components/button/SmartBtn2';
+    import SmartSelect from '@/components/select/SmartSelect';
+    import { LanguageService } from '@/_services/language.service';
+    const languageService = new LanguageService();
+    import { InstructorCourseService } from '@/_services/instructor-course.service'
+    const instructorCourseService = new InstructorCourseService();
+    import {SchoolClassService} from '@/_services/school-class.service';
+    const schoolClassService = new SchoolClassService();
+    import {InstructorClassService} from '@/_services/instructor-class.service';
+    const instructorClassService = new InstructorClassService();
+
+    export default {
+        components: {
+            SmartSelect,
+            SmartBtn2,
+            SmartSearchInput,
+            SmartButton,
+            SuperAdminSchoolHead,
+            SmartTable
+        },
+        data() {
+            return {
+                required: [
+                    v => !!v || 'Input is required',
+                ],
+                sendObj: {
+                    classLabel: '',
+                    classLevel: 0,
+                    languageId: 0,
+                    schoolId: 0
+                },
+                instrClassObj: {
+                    archived: true,
+                    chronicleId: 1,
+                    classId: 0,
+                    personId: 0
+                },
+                isAddClassModal: false,
+                classes: [],
+                classLevels: [
+                    {num: 1}, {num: 2}, {num: 3}, {num: 4}, {num: 5}, {num: 6}, {num: 7}, {num: 8}, {num: 9}, {num: 10},
+                    {num: 11},
+                ],
+                classLabels: [
+                    {label: 'А'}, {label: 'Б'}, {label: 'В'}, {label: 'Г'}, {label: 'Д'}, {label: 'Е'}, {label: 'Ё'}, {label: 'Ж'},
+                ],
+                languages: [],
+                teachers: []
+            }
+        },
+
+        computed: {
+            userProfile () {
+                return this.$store.state.account.profile
+            }
+        },
+
+        created() {
+            this.sendObj.languageId = this.userProfile.schools[0].languageId;
+            this.instrClassObj.chronicleId = this.userProfile.schools[0].chronicleId;
+            this.fetchLanguages();
+            this.fetchTeachers();
+            this.fetchAllClasses();
+        },
+
+        methods: {
+            fetchAllClasses() {
+                instructorClassService.getAllClasses(this.userProfile.schools[0].id).then((res) => {
+                    this.classes = res
+                })
+            },
+
+            fetchLanguages() {
+                languageService.list().then(res => {
+                    this.languages = res;
+                }).catch(err => console.log(err))
+            },
+
+            getLanguageName(langId) {
+                return this.languages.find(lang => lang.id === langId).name;
+            },
+
+            fetchTeachers () {
+                instructorCourseService.listBySchool(this.userProfile.schools[0].id, 0).then(res => {
+                    if (res._embedded) {
+                        this.teachers = res._embedded.instructorCourseResourceList;
+                    }
+                }).catch(err => console.log(err))
+            },
+
+            submitClass() {
+                this.sendObj.schoolId = this.userProfile.schools[0].id;
+                schoolClassService.create(this.sendObj).then((res) => {
+                    schoolClassService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
+                        let klassId = res.find(klass => klass.classLabel === this.sendObj.classLabel && parseInt(klass.classLevel) === this.sendObj.classLevel).id
+                        this.instrClassObj.classId = klassId;
+                        instructorClassService.create(this.instrClassObj).then((res) => {
+                            this.isAddClassModal = false;
+                            this.fetchAllClasses();
+                            this.$toast.success('Success message');
+                        })
+                    })
+                }).catch((err) => {
+                    console.log(err);
+                })
+            }
+        }
+    }
+</script>
+
+<style lang="scss" scoped>
+    .v-form {
+        background: #FFFFFF;
+        border-radius: 7px;
+        padding: 20px 40px;
+
+        > div {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+
+            .v-input--radio-group {
+                margin-right: 20px;
+            }
+
+            .profile-edit {
+                background: #FFFFFF;
+                box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                position: absolute;
+                right: 0;
+                bottom: 0;
+
+                img {
+                    margin-top: 5px;
+                }
+            }
+            &.spacer {
+                .v-text-field:first-child {
+                    margin-right: 20px;
+                }
+            }
+        }
+    }
+</style>
