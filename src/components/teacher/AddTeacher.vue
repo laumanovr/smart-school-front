@@ -19,8 +19,8 @@
         </div>
         <div>
             <v-radio-group :mandatory="false" :rules="required" row v-model="user.gender">
-                <v-radio label="Male" value="MALE"></v-radio>
-                <v-radio label="Female" value="FEMALE"></v-radio>
+                <v-radio label="Мужчина" value="MALE"></v-radio>
+                <v-radio label="Женщина" value="FEMALE"></v-radio>
             </v-radio-group>
             <v-menu
                 :close-on-content-click="false"
