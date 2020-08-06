@@ -12,6 +12,8 @@ import Teachers from '@/views/school-admin/Teachers'
 import SchoolAdminCourses from '@/views/school-admin/SchoolAdminCourses'
 import SuperAdminEmpty from '@/views/super-admin/SuperAdminEmpty'
 
+const loadComponent = path => () => import(`@/views/${path}.vue`);
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -107,10 +109,20 @@ const routes = [
         name: 'schoolAdminCourses',
         path: 'courses',
         component: SchoolAdminCourses
-      }
+      },
+      {
+        name: 'schoolAdminClasses',
+        path: 'classes',
+        component: loadComponent('school-admin/SchoolAdminClasses')
+      },
+      {
+        name: 'schoolAdminStudents',
+        path: 'students',
+        component: loadComponent('school-admin/Students')
+      },
     ]
   }
-]
+];
 
 const router = new VueRouter({
   mode: 'history',
