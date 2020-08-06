@@ -89,6 +89,7 @@ export default {
         }
     },
     data: () => ({
+        birthday: '1970-2-11',
         roles: [],
         languages: [],
         required: [
@@ -101,7 +102,7 @@ export default {
         userProfile() {
             return this.$store.state.account.profile
         },
-        birthday() {
+        birthDay() {
             return moment(this.user.birthday).isValid() ? this.user.birthday : '1970-2-11';
         },
     },
