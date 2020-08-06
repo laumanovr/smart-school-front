@@ -40,12 +40,12 @@
 
             <template v-slot:body="{ item }">
                 <td>{{ item.schools[0].name }}</td>
-                <td>Физика</td>
+                <td>{{ showCourses(item.courses) }}</td>
                 <td>{{ item.firstName }} {{ item.lastName }}</td>
                 <td>{{ gender[item.gender] }}</td>
-                <td>19.03.1988</td>
+                <td>{{ item.birthDay }}</td>
                 <td>{{ item.schools[0].rayonTitle }}</td>
-                <td>0777114676</td>
+                <td>{{ item.phone }}</td>
             </template>
         </SmartTable>
         <v-dialog
@@ -111,6 +111,14 @@ export default {
         onRightClick () {
             this.currentPage++;
             this.fetchUsers(this.currentPage - 1);
+        },
+        showCourses (courses) {
+            let c = '';
+            courses.forEach((i, index) => {
+                if (index !== courses.length - 1) c += i + ', ';
+                else c += i;
+            })
+            return c;
         }
     }
 }
