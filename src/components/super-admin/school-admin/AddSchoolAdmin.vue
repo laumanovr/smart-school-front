@@ -1,25 +1,25 @@
 <template>
     <v-form @submit.prevent="submit" ref="form">
         <div class="form-head">
-            <span>Add School Admin</span>
+            <span>Добавить администратора</span>
             <img alt="" src="../../../assets/images/profile-icon.svg">
             <button class="profile-edit">
                 <img src="../../../assets/images/icons/edit.svg">
             </button>
         </div>
         <div>
-            <v-text-field :rules="required" label="Name" v-model="schoolAdmin.name"></v-text-field>
+            <v-text-field :rules="required" label="Имя" v-model="schoolAdmin.name"></v-text-field>
         </div>
         <div>
-            <v-text-field :rules="required" label="Surname" v-model="schoolAdmin.surname"></v-text-field>
+            <v-text-field :rules="required" label="Фамилия" v-model="schoolAdmin.surname"></v-text-field>
         </div>
         <div>
-            <v-text-field label="Middle Name" v-model="schoolAdmin.middleName"></v-text-field>
+            <v-text-field label="Отчество" v-model="schoolAdmin.middleName"></v-text-field>
         </div>
         <div>
             <v-radio-group :mandatory="false" :rules="required" row v-model="schoolAdmin.gender">
-                <v-radio label="Male" value="MALE"></v-radio>
-                <v-radio label="Female" value="FEMALE"></v-radio>
+                <v-radio label="Мужчина" value="MALE"></v-radio>
+                <v-radio label="Женщина" value="FEMALE"></v-radio>
             </v-radio-group>
             <v-menu
                 :close-on-content-click="false"
@@ -31,7 +31,7 @@
             >
                 <template v-slot:activator="{ on, attrs }">
                     <v-text-field
-                        label="Birthday"
+                        label="День рождения"
                         readonly
                         v-bind="attrs"
                         v-model="birthday"
@@ -54,7 +54,7 @@
                 :rules="required"
                 item-text="name"
                 item-value="id"
-                label="Schools"
+                label="Школа"
                 v-model="schoolAdmin.schoolId"
             ></v-select>
         </div>
@@ -71,7 +71,7 @@
         </div>
         <div class="form-footer">
             <v-btn color="primary" type="submit">Сохранить</v-btn>
-            <v-btn>Отменить</v-btn>
+            <v-btn @click="$emit('close')">Отменить</v-btn>
         </div>
     </v-form>
 </template>
@@ -103,7 +103,7 @@ export default {
     },
     birthday: '1970-2-11',
     required: [
-      v => !!v || 'Input is required'
+      v => !!v || 'поле обязательно для заполнения'
     ],
     menu2: false,
     schools: [],

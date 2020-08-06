@@ -2,14 +2,14 @@
 	<div class="add-chronicle">
 		<v-form @submit.prevent="submit" ref="form">
 			<div>
-				<v-text-field :rules="ruleStartYear" v-model="chronicle.startYear" label="Start year"></v-text-field>
+				<v-text-field :rules="ruleStartYear" v-model="chronicle.startYear" label="Начало года"></v-text-field>
 			</div>
 			<div>
-				<v-text-field :rules="ruleEndYear" v-model="chronicle.endYear" label="End year"></v-text-field>
+				<v-text-field :rules="ruleEndYear" v-model="chronicle.endYear" label="Конец года"></v-text-field>
 			</div>
 			<div class="form-footer">
 				<v-btn type="submit" color="primary">Сохранить</v-btn>
-				<v-btn>Отменить</v-btn>
+				<v-btn @click="$emit('close')">Отменить</v-btn>
 			</div>
 		</v-form>
 	</div>
@@ -25,10 +25,10 @@ export default {
 	data: () => ({
 		chronicle: { archived: true },
 		ruleStartYear: [
-            v => !!v || 'Name is required',
+            v => !!v || 'поле обязательно для заполнения',
 		],
         ruleEndYear: [
-            v => !!v || 'Name is required',
+            v => !!v || 'поле обязательно для заполнения',
         ],
 	}),
 	methods: {

@@ -1,13 +1,13 @@
 <template>
 	<div class="super-admin-instructors">
 		<SuperAdminSchoolHead>
-			<template v-slot:title>Teachers</template>
+			<template v-slot:title>Учителя</template>
 			<template v-slot:center>
                 <SmartSearchInput></SmartSearchInput>
 			</template>
-			<template v-slot:right>
-                <SmartButton @clicked="onAddAdmin">Add Teacher + </SmartButton>
-			</template>
+<!--			<template v-slot:right>-->
+<!--                <SmartButton @clicked="onAddAdmin">Добавить Учителя + </SmartButton>-->
+<!--			</template>-->
 		</SuperAdminSchoolHead>
 		<SmartTable :schools="users">
             <template v-slot:firstItem>
@@ -16,19 +16,23 @@
                 <SmartSelect>Пол <v-icon>$chevronDown</v-icon></SmartSelect>
             </template>
 			<template v-slot:head>
-				<th>Ф.И.О</th>
-				<th>Школа</th>
+                <th>Школа</th>
+                <th>Предмет</th>
+                <th>Ф.И.О</th>
+				<th>Пол</th>
+				<th>Дата рождения</th>
 				<th>Район</th>
-				<th>Username</th>
-				<th><img src="../../assets/images/icons/plus.svg" alt=""></th>
+				<th>Телефон</th>
 			</template>
 
 			<template v-slot:body="{ item }">
-				<td>{{ item.name }} {{ item.surname }} {{ item.middleName }}</td>
-				<td>{{ item.schoolTitle }}</td>
-				<td>{{ item.rayonTitle }}</td>
-				<td>{{ item.username }}</td>
-				<td><img src="../../assets/images/icons/pen.svg" alt=""></td>
+				<td>1-май орто мектеби</td>
+				<td>Физика</td>
+				<td>Кадижа Жанболотова</td>
+                <td>Ж</td>
+                <td>19.03.1988</td>
+				<td>Карасуу району</td>
+				<td>0777114676</td>
 			</template>
 		</SmartTable>
 		<v-dialog

@@ -8,7 +8,7 @@
 		</SuperAdminSchoolHead>
 		<SmartTable :schools="chronicles">
 			<template v-slot:head>
-				<th>Year</th>
+				<th>Год</th>
 				<th><img src="../../assets/images/icons/plus.svg" alt=""></th>
 			</template>
 			<template slot="body" slot-scope="{item}">
