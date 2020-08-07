@@ -18,7 +18,7 @@
 				<th>Ф.И.О</th>
 				<th>Школа</th>
 				<th>Район</th>
-				<th>Username</th>
+				<th>Юзернейм</th>
 				<th><img src="../../assets/images/icons/plus.svg" alt=""></th>
 			</template>
 
