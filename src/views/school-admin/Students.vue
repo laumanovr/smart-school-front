@@ -10,13 +10,13 @@
             </template>
             <template v-slot:right>
                 <SmartBtn2>
-                    Import <img style="padding-bottom: 5px" src="../../assets/images/icons/import.svg" alt="">
+                    Импорт <img style="padding-bottom: 5px" src="../../assets/images/icons/import.svg" alt="">
                 </SmartBtn2>
                 <SmartBtn2>
-                    Export <img src="../../assets/images/icons/export.svg" alt="">
+                    Экспорт <img src="../../assets/images/icons/export.svg" alt="">
                 </SmartBtn2>
                 <SmartBtn2>
-                    Download Template <img src="../../assets/images/icons/download.svg" alt="">
+                    Загрузить шаблон <img src="../../assets/images/icons/download.svg" alt="">
                 </SmartBtn2>
             </template>
         </SuperAdminSchoolHead>
@@ -64,8 +64,8 @@
 
                 <div>
                     <v-radio-group v-model="studentObj.gender" :rules="required" :mandatory="false" row>
-                        <v-radio label="Male" value="MALE"></v-radio>
-                        <v-radio label="Female" value="FEMALE"></v-radio>
+                        <v-radio label="М" value="MALE"></v-radio>
+                        <v-radio label="Ж" value="FEMALE"></v-radio>
                     </v-radio-group>
                     <v-menu
                         v-model="menu2"
@@ -78,7 +78,7 @@
                         <template v-slot:activator="{ on, attrs }">
                             <v-text-field
                                 v-model="birthday"
-                                label="Birthday"
+                                label="Дата рождения"
                                 readonly
                                 v-bind="attrs"
                                 v-on="on"

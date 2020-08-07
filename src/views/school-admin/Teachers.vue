@@ -1,7 +1,7 @@
 <template>
     <div class="school-admin-teachers">
         <SuperAdminSchoolHead>
-            <template v-slot:title>Teachers</template>
+            <template v-slot:title>Учителя</template>
             <template v-slot:center>
                 <SmartButton @clicked="onAddAdmin">
                     Добавить Учителя <img alt="" src="../../assets/images/icons/add-user.svg">
@@ -10,13 +10,13 @@
             </template>
             <template v-slot:right>
                 <SmartBtn2>
-                    Import <img alt="" src="../../assets/images/icons/import.svg" style="padding-bottom: 5px">
+                    Импорт <img alt="" src="../../assets/images/icons/import.svg" style="padding-bottom: 5px">
                 </SmartBtn2>
                 <SmartBtn2>
-                    Export <img alt="" src="../../assets/images/icons/export.svg">
+                    Экспорт <img alt="" src="../../assets/images/icons/export.svg">
                 </SmartBtn2>
                 <SmartBtn2>
-                    Download Template <img alt="" src="../../assets/images/icons/download.svg">
+                    Загрузить шаблон <img alt="" src="../../assets/images/icons/download.svg">
                 </SmartBtn2>
             </template>
         </SuperAdminSchoolHead>

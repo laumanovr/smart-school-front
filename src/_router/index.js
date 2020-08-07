@@ -81,13 +81,13 @@ const routes = [
       },
       {
         name: 'superAdminAnnouncement',
-        path: 'announcement',
-        component: SuperAdminEmpty
+        path: 'announcements',
+        component: loadComponent('super-admin/Announcements')
       },
       {
         name: 'superAdminLibrary',
         path: 'library',
-        component: SuperAdminEmpty
+        component: loadComponent('super-admin/Library')
       }
 
     ]
@@ -121,6 +121,21 @@ const routes = [
         name: 'schoolAdminStudents',
         path: 'students',
         component: loadComponent('school-admin/Students')
+      },
+      {
+        name: 'schoolAdminAnnouncements',
+        path: 'announcements',
+        component: loadComponent('school-admin/Announcements')
+      },
+      {
+        name: 'library',
+        path: 'library',
+        component: loadComponent('school-admin/Library')
+      },
+      {
+        name: 'schoolAdminSchedule',
+        path: 'school-admin-schedule',
+        component: loadComponent('school-admin/SchoolAdminSchedule')
       },
     ]
   }

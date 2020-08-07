@@ -1,7 +1,7 @@
 <template>
     <div class="school-admin-courses">
         <SuperAdminSchoolHead>
-            <template v-slot:title>Courses</template>
+            <template v-slot:title>Предметы</template>
             <template v-slot:right>
                 <SmartSearchInput></SmartSearchInput>
             </template>

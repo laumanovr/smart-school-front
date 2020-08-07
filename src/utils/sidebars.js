@@ -42,7 +42,7 @@ export const superAdminSidebars = [
   {
     name: 'Объявления',
     icon: 'announcement.svg',
-    route: '/super-admin/announcement'
+    route: '/super-admin/announcements'
   },
   {
     name: 'Библиотека',
@@ -78,7 +78,22 @@ export const schoolAdminSidebars = [
   },
   {
     name: 'Студенты',
-    icon: 'teachers.svg',
+    icon: 'students.svg',
     route: '/school-admin/students'
+  },
+  {
+    name: 'Объявления',
+    icon: 'announcement.svg',
+    route: '/school-admin/announcements'
+  },
+  {
+    name: 'Расписание',
+    icon: 'schedule.svg',
+    route: '/school-admin/school-admin-schedule'
+  },
+  {
+    name: 'Библиотека',
+    icon: 'library.svg',
+    route: '/school-admin/library'
   },
 ]
