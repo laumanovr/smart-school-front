@@ -1,26 +1,26 @@
 <template>
     <v-form @submit.prevent="submit" ref="form">
         <div class="form-head">
-            <span v-if="!isEdit">Добавить учителя</span>
-            <span v-else>Редактировать учителя</span>
+            <span v-if="!isEdit">Add Teacher</span>
+            <span v-else>Edit Teacher</span>
             <img alt="" src="../../assets/images/profile-icon.svg">
             <button class="profile-edit">
                 <img src="../../assets/images/icons/edit.svg">
             </button>
         </div>
         <div>
-            <v-text-field :rules="required" label="Имя" v-model="user.name"></v-text-field>
+            <v-text-field :rules="required" label="Name" v-model="user.name"></v-text-field>
         </div>
         <div>
-            <v-text-field :rules="required" label="Фамилия" v-model="user.surname"></v-text-field>
+            <v-text-field :rules="required" label="Surname" v-model="user.surname"></v-text-field>
         </div>
         <div>
-            <v-text-field label="Отчество" v-model="user.middleName"></v-text-field>
+            <v-text-field label="Middle Name" v-model="user.middleName"></v-text-field>
         </div>
         <div>
             <v-radio-group :mandatory="false" :rules="required" row v-model="user.gender">
-                <v-radio label="М" value="MALE"></v-radio>
-                <v-radio label="Ж" value="FEMALE"></v-radio>
+                <v-radio label="Мужчина" value="MALE"></v-radio>
+                <v-radio label="Женщина" value="FEMALE"></v-radio>
             </v-radio-group>
             <v-menu
                 :close-on-content-click="false"
@@ -32,7 +32,7 @@
             >
                 <template v-slot:activator="{ on, attrs }">
                     <v-text-field
-                        label="Дата рождения"
+                        label="Birthday"
                         readonly
                         v-bind="attrs"
                         v-model="birthday"
@@ -51,7 +51,7 @@
                 :rules="required"
                 item-text="courseTitle"
                 item-value="id"
-                label="Предметы"
+                label="Courses"
                 v-model="user.courseId"
             ></v-select>
         </div>

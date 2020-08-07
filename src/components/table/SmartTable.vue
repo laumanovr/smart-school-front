@@ -1,10 +1,19 @@
 <template>
     <div class="smart-table">
-        <TableHead>
-            <template v-slot:firstItem>
+        <div class="smart-table__head">
+            <div class="smart-table__first-item">
                 <slot name="firstItem"></slot>
-            </template>
-        </TableHead>
+            </div>
+            <div class="smart-table__item">
+                <span>{{ paginationText }}</span>
+                <button @click="$emit('leftClick')" :disabled="currentPage <= 1" class="next-prev">
+                    <v-icon>$chevronLeft</v-icon>
+                </button>
+                <button @click="$emit('rightClick')" :disabled="currentPage >= totalPage" class="next-prev">
+                    <v-icon>$chevronRight</v-icon>
+                </button>
+            </div>
+        </div>
         <div class="smart-table__body">
             <table class="smart-table__table">
                 <div v-if="itemsSelected">
@@ -30,7 +39,6 @@
 </template>
 
 <script>
-import TableHead from '@/components/table/TableHead'
 
 export default {
     name: 'SmartTable',
@@ -40,12 +48,32 @@ export default {
             default() {
                 return []
             }
+        },
+        totalElements: {
+            type: Number,
+            default: 0
+        },
+        pageSize: {
+            type: Number,
+            default: 20
+        },
+        currentPage: {
+            type: Number,
+            default: 1
         }
     },
-    components: {TableHead},
     computed: {
         itemsSelected() {
             return this.schools.filter(i => i.checked).length
+        },
+        paginationText () {
+            return `Показано ${ (this.currentPage - 1) * this.pageSize + 1 }-${ (this.currentPage - 1) * this.pageSize + this.pageRemainder } из ${ this.totalElements }`
+        },
+        totalPage () {
+            return Math.ceil(this.totalElements / this.pageSize);
+        },
+        pageRemainder () {
+            return this.currentPage === this.totalPage ? this.totalElements !== this.pageSize ? this.totalElements % this.pageSize : this.pageSize : this.pageSize;
         }
     }
 }
@@ -53,6 +81,48 @@ export default {
 
 <style lang="scss" scoped>
 .smart-table {
+    &__head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 95%;
+        margin: auto;
+    }
+
+    &__first-item {
+        display: flex;
+        margin-bottom: 20px;
+
+        div {
+            margin-right: 10px;
+        }
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+
+        .v-select {
+            width: 150px;
+            margin-right: 20px;
+        }
+
+        span:first-child {
+            margin-right: 10px;
+            font-size: 14px;
+            line-height: 24px;
+            color: #333333;
+        }
+
+        .next-prev {
+            border: 1px solid #C6CBD4;
+            box-sizing: border-box;
+            border-radius: 2px;
+            width: 32px;
+            height: 32px;
+        }
+    }
     &__body {
         overflow-y: auto;
     }
