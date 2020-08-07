@@ -114,10 +114,12 @@ export default {
         },
         showCourses (courses) {
             let c = '';
-            courses.forEach((i, index) => {
-                if (index !== courses.length - 1) c += i + ', ';
-                else c += i;
-            })
+            if (courses && courses.length) {
+                courses.forEach((i, index) => {
+                    if (index !== courses.length - 1) c += i + ', ';
+                    else c += i;
+                })
+            }
             return c;
         }
     }
