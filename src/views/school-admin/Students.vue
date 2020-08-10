@@ -105,11 +105,11 @@
                 </div>
 
                 <div>
-                    <v-text-field  label="Имя родителя"></v-text-field>
+                    <v-text-field  label="Имя родителя" v-model="parentPersonObj.name"></v-text-field>
                 </div>
 
                 <div>
-                    <v-text-field  label="Телефон родителя"></v-text-field>
+                    <v-text-field  label="Телефон родителя" v-model="parentPersonObj.phone"></v-text-field>
                 </div>
 
                 <div class="form-footer">
@@ -143,6 +143,10 @@
     const roleService = new RoleService();
     import {StudentClassService} from '@/_services/student-class.service';
     const studentClassService = new StudentClassService();
+    import {PersonService} from '@/_services/person.service';
+    const personService = new PersonService();
+    import {StudentParentService} from '@/_services/student-parent.service';
+    const studentParentService = new StudentParentService();
 
     export default {
         components: {
@@ -187,6 +191,25 @@
                     classId: 0,
                     studentId: 0
                 },
+                parentPersonObj: {
+                    address: '',
+                    avatar: '',
+                    dob: '05.05.1980',
+                    email: '',
+                    enabled: true,
+                    gender: 'MALE',
+                    job: '',
+                    jobPlace: '',
+                    languageId: 0,
+                    middleName: '',
+                    name: '',
+                    password: '',
+                    phone: '',
+                    roles: [],
+                    schoolId: 0,
+                    surname: '',
+                    username: ''
+                },
                 students: [],
                 classes: [],
                 required: [v => !!v || 'Input is required'],
@@ -206,6 +229,8 @@
 
         created() {
             this.studentObj.languageId = this.userProfile.schools[0].languageId;
+            this.parentPersonObj.languageId = this.userProfile.schools[0].languageId;
+            this.parentPersonObj.schoolId = this.userProfile.schools[0].id;
             this.studentObj.chronicleYearId = this.userProfile.schools[0].chronicleId;
             this.studentClassObj.chronicleId = this.userProfile.schools[0].chronicleId;
             this.fetchAllClasses();
@@ -245,6 +270,22 @@
                         this.fetchStudents();
                         this.isAddStudentModal = false;
                         this.$toast.success('Success message');
+                    });
+
+                    this.parentPersonObj.roles = this.roles.filter(i => i.code === 'ROLE_PARENT').map(i => i.id);
+                    personService.create(this.parentPersonObj).then((res) => {
+                        const studentParent = {
+                            personId: parseInt(res.message),
+                            parentalType: 'FATHER',
+                            studentId: this.studentClassObj.studentId
+                        };
+                        studentParentService.create(studentParent).then((res) => {
+                            console.log(res.message);
+                        }).catch(err => {
+                            console.log(err);
+                        })
+                    }).catch(err => {
+                        console.log(err);
                     })
                 })
             }
