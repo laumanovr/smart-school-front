@@ -137,6 +137,11 @@ const routes = [
         path: 'school-admin-schedule',
         component: loadComponent('school-admin/SchoolAdminSchedule')
       },
+      {
+        name: 'aboutSchool',
+        path: 'about-school',
+        component: loadComponent('school-admin/AboutSchool')
+      }
     ]
   }
 ];
