@@ -54,7 +54,8 @@ export const superAdminSidebars = [
     icon: 'library.svg',
     route: '/super-admin/chronicle'
   }
-]
+];
+
 export const schoolAdminSidebars = [
   {
     name: 'Аналитика',
@@ -94,11 +95,16 @@ export const schoolAdminSidebars = [
   {
     name: 'Расписание',
     icon: 'schedule.svg',
-    route: '/school-admin/school-admin-schedule'
+    route: '/school-admin/schedule-week'
   },
   {
     name: 'Библиотека',
     icon: 'library.svg',
     route: '/school-admin/library'
+  },
+  {
+    name: 'Четверть',
+    icon: 'schedule.svg',
+    route: '/school-admin/school-quarter'
   },
 ]
