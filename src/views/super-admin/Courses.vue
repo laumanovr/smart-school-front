@@ -6,7 +6,7 @@
                 <SmartButton @clicked="onAdd">Добавить +</SmartButton>
             </template>
         </SuperAdminSchoolHead>
-        <SmartTable :schools="courses" :total-elements="totalElements" :page-size="pageSize">
+        <SmartTable v-if="!isGrid" :schools="courses" :total-elements="totalElements" :page-size="pageSize">
             <template v-slot:head>
                 <th>№</th>
                 <th>Название</th>
@@ -26,6 +26,7 @@
                 </td>
             </template>
         </SmartTable>
+        <CourseGrid v-else :courses="courses" @onEdit="onEdit" @onDelete="onDelete"></CourseGrid>
         <v-dialog
             v-if="isAdd"
             id="add-form"
@@ -45,12 +46,13 @@ import AddCourse from '@/components/super-admin/courses/AddCourse'
 import {AdminCourseService} from '@/_services/admin-course.service'
 import SmartButton from '@/components/button/SmartButton'
 import DeletePopup from "@/components/delete-popup/DeletePopup";
+import CourseGrid from "@/components/super-admin/courses/CourseGrid";
 
 const adminCourseService = new AdminCourseService()
 
 export default {
     name: 'Courses',
-    components: {DeletePopup, SmartButton, AddCourse, SuperAdminSchoolHead, SmartTable},
+    components: {CourseGrid, DeletePopup, SmartButton, AddCourse, SuperAdminSchoolHead, SmartTable},
     data: () => ({
         isAdd: false,
         courses: [],
@@ -59,7 +61,8 @@ export default {
         isEdit: false,
         pageSize: 0,
         course: {},
-        isDeleting: false
+        isDeleting: false,
+        isGrid: true
     }),
     mounted() {
         this.fetchCourses()
