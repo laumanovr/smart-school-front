@@ -3,28 +3,38 @@
         <SuperAdminSchoolHead>
             <template v-slot:title>Предметы</template>
             <template v-slot:right>
-                <SmartButton @clicked="isAdd = true">Добавить +</SmartButton>
+                <SmartButton @clicked="onAdd">Добавить +</SmartButton>
             </template>
         </SuperAdminSchoolHead>
         <SmartTable :schools="courses" :total-elements="totalElements" :page-size="pageSize">
             <template v-slot:head>
                 <th>№</th>
                 <th>Название</th>
-                <th><img alt="" src="../../assets/images/icons/plus.svg"></th>
+                <th>Описание</th>
+                <th></th>
+                <th></th>
             </template>
             <template slot="body" slot-scope="{item}">
                 <td>{{ item.pos }}</td>
                 <td>{{ item.title }}</td>
-                <td><img alt="" src="../../assets/images/icons/pen.svg"></td>
+                <td>{{ item.description }}</td>
+                <td>
+                    <img @click="onEdit(item)" class="clickable-icons" alt="" src="../../assets/images/icons/edit-green.svg">
+                </td>
+                <td>
+                    <img @click="onDelete(item)" class="clickable-icons" alt="" src="../../assets/images/icons/trash.svg">
+                </td>
             </template>
         </SmartTable>
         <v-dialog
+            v-if="isAdd"
             id="add-form"
             v-model="isAdd"
             width="546"
         >
-            <AddCourse @close="onCloseModal"></AddCourse>
+            <AddCourse @close="onCloseModal" :is-edit="isEdit" :edit-course="course"></AddCourse>
         </v-dialog>
+        <DeletePopup :is-deleting="isDeleting" @cancel="isDeleting = false" @accept="deleteCourse"></DeletePopup>
     </div>
 </template>
 
@@ -34,18 +44,22 @@ import SmartTable from '@/components/table/SmartTable'
 import AddCourse from '@/components/super-admin/courses/AddCourse'
 import {AdminCourseService} from '@/_services/admin-course.service'
 import SmartButton from '@/components/button/SmartButton'
+import DeletePopup from "@/components/delete-popup/DeletePopup";
 
 const adminCourseService = new AdminCourseService()
 
 export default {
     name: 'Courses',
-    components: {SmartButton, AddCourse, SuperAdminSchoolHead, SmartTable},
+    components: {DeletePopup, SmartButton, AddCourse, SuperAdminSchoolHead, SmartTable},
     data: () => ({
         isAdd: false,
         courses: [],
         page: 0,
         totalElements: 0,
-        pageSize: 0
+        isEdit: false,
+        pageSize: 0,
+        course: {},
+        isDeleting: false
     }),
     mounted() {
         this.fetchCourses()
@@ -54,6 +68,10 @@ export default {
         onCloseModal() {
             this.isAdd = false
             this.fetchCourses()
+        },
+        onAdd () {
+            this.isAdd = true
+            this.isEdit = false;
         },
         fetchCourses() {
             adminCourseService.list().then(res => {
@@ -65,6 +83,27 @@ export default {
                 this.pageSize = this.totalElements;
                 this.currentPage = 1;
             }).catch(err => console.log(err))
+        },
+        onEdit(item) {
+            adminCourseService.getById(item.id).then(res => {
+                this.course = res;
+                this.isAdd = true;
+                this.isEdit = true;
+            }).catch(err => console.log(err));
+        },
+        onDelete (item) {
+            this.course = item;
+            this.isDeleting = true;
+        },
+        deleteCourse () {
+            adminCourseService._delete(this.course.id).then(res => {
+                this.$toast.success('Successfully deleted!');
+                this.fetchCourses();
+            }).catch(err => {
+                console.log(err);
+                this.isDeleting = false;
+                this.$toast.error(err);
+            });
         }
     }
 }

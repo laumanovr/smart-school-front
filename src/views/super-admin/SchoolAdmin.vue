@@ -31,7 +31,7 @@
                 <td>{{ item.schoolTitle }}</td>
                 <td>{{ item.rayonTitle }}</td>
                 <td>{{ item.username }}</td>
-                <td><img alt="" src="../../assets/images/icons/pen.svg"></td>
+                <td><img class="clickable-icons" @click="onEdit(item)" alt="" src="../../assets/images/icons/pen.svg"></td>
             </template>
         </SmartTable>
         <v-dialog
@@ -77,6 +77,9 @@ export default {
             personService.list().then(res => {
                 this.users = res
             }).catch(err => console.log(err))
+        },
+        onEdit(item) {
+            console.log(item);
         }
     }
 }

@@ -28,19 +28,44 @@ const adminCourseService = new AdminCourseService();
 
 export default {
 	name: "AddCourse",
+    props: {
+	    isEdit: {
+	        type: Boolean,
+            default: false
+        },
+        editCourse: {
+	        type: Object,
+            default: {}
+        }
+    },
 	data: () => ({
 		required: [
             v => !!v || 'поле обязательно для заполнения',
 		],
 		course: {}
 	}),
-	methods: {
+    mounted() {
+	    if (this.isEdit) this.course = {
+	        code: this.editCourse.code,
+            description: this.editCourse.description,
+            title: this.editCourse.title,
+            id: this.editCourse.id
+        };
+    },
+    methods: {
 	    submit () {
 	        if (this.$refs.form.validate()) {
-                adminCourseService.create(this.course).then(res => {
-                    this.$toast.success('Successfully created');
-                    this.$emit('close');
-                }).catch(err => console.log(err));
+	            if (this.isEdit) {
+                    adminCourseService.edit(this.course).then(res => {
+                        this.$toast.success('Successfully updated');
+                        this.$emit('close');
+                    }).catch(err => console.log(err));
+                } else {
+                    adminCourseService.create(this.course).then(res => {
+                        this.$toast.success('Successfully created');
+                        this.$emit('close');
+                    }).catch(err => console.log(err));
+                }
             }
 	    }
 	}
