@@ -1,0 +1,15 @@
+@import 'material-default';
+@import 'material-ui';
+@import 'toaster';
+
+.header-title {
+  text-align: left;
+  h3 {
+    font-size: 28px;
+    font-weight: bold;
+  }
+}
+
+.page-space {
+  margin: 30px;
+}
