@@ -1,4 +1,4 @@
-import { BaseApiService } from '@/_services/baseApi.service'
+import { BaseApiService } from '@/_services/baseApi.service';
 
 export class StudentService extends BaseApiService {
     constructor () {
