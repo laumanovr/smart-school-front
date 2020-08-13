@@ -19,10 +19,10 @@ import SuperAdminHeader from '@/components/navigations/sidebars/SuperAdminHeader
 export default {
   name: 'Dashboard',
   components: { SuperAdminHeader, SuperAdminSidebar },
-  data () {
-    return {
-      das: ''
-    }
+  computed: {
+      userProfile () {
+          return this.$store.state.account.profile;
+      }
   }
 }
 </script>

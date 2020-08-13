@@ -5,13 +5,15 @@
                 <slot name="firstItem"></slot>
             </div>
             <div class="smart-table__item">
-                <span>{{ paginationText }}</span>
-                <button @click="$emit('leftClick')" :disabled="currentPage <= 1" class="next-prev">
-                    <v-icon>$chevronLeft</v-icon>
-                </button>
-                <button @click="$emit('rightClick')" :disabled="currentPage >= totalPage" class="next-prev">
-                    <v-icon>$chevronRight</v-icon>
-                </button>
+                <slot name="table-head-right">
+                    <span>{{ paginationText }}</span>
+                    <button @click="$emit('leftClick')" :disabled="currentPage <= 1" class="next-prev">
+                        <v-icon>$chevronLeft</v-icon>
+                    </button>
+                    <button @click="$emit('rightClick')" :disabled="currentPage >= totalPage" class="next-prev">
+                        <v-icon>$chevronRight</v-icon>
+                    </button>
+                </slot>
             </div>
         </div>
         <div class="smart-table__body">

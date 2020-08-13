@@ -1,7 +1,7 @@
 <template>
     <div class="smart-input">
         <img src="../../assets/images/icons/search.svg" alt="">
-        <input type="text" class="smart-input__input" placeholder="Искать">
+        <input @input="$emit('onTyping', $event.target.value)" @keydown.enter="$emit('onEnter', $event.target.value)" type="text" class="smart-input__input" placeholder="Искать">
     </div>
 </template>
 
