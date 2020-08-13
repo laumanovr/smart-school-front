@@ -133,14 +133,19 @@ const routes = [
         component: loadComponent('school-admin/Library')
       },
       {
-        name: 'schoolAdminSchedule',
-        path: 'school-admin-schedule',
-        component: loadComponent('school-admin/SchoolAdminSchedule')
+        name: 'schoolAdminScheduleWeek',
+        path: 'schedule-week',
+        component: loadComponent('school-admin/SchoolAdminScheduleWeek')
       },
       {
         name: 'aboutSchool',
         path: 'about-school',
         component: loadComponent('school-admin/AboutSchool')
+      },
+      {
+        name: 'schoolAdminQuarter',
+        path: 'school-quarter',
+        component: loadComponent('school-admin/QuarterCalendar')
       }
     ]
   }
