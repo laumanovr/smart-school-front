@@ -20,7 +20,7 @@ export  class SchoolService extends BaseApiService {
         return this.sendPostRequest(url, data);
     }
 
-    edit (data) {
+    update(data) {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/school/edit/${data.id}`;
         return this.sendPostRequest(url, data);
     }
