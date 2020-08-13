@@ -16,18 +16,18 @@
                 <div>
                     <v-select
                         :rules="required"
-                        :items="[]"
-                        item-text=""
-                        item-value=""
+                        :items="schoolQuarters"
+                        item-text="semester"
+                        item-value="id"
                         label="Четверть"
-                        v-model="schoolObj.quarter"
+                        v-model="schoolObj.quarterId"
                     >
                     </v-select>
                 </div>
 
-            <div class="spacer">
-                <v-text-field v-model="schoolObj.phoneNumber" label="Номер телефона"></v-text-field>
-            </div>
+            <!--<div class="spacer">-->
+                <!--<v-text-field v-model="schoolObj.phone" label="Номер телефона"></v-text-field>-->
+            <!--</div>-->
 
             <div>
                 <v-text-field  label="Email" v-model="schoolObj.email"></v-text-field>
@@ -36,11 +36,11 @@
             <div>
                 <v-select
                     :rules="required"
-                    :items="['Частная', 'Государственная']"
-                    item-text=""
-                    item-value=""
+                    :items="[{value: 'PRIVATE', text: 'Частная'}, {value: 'PUBLIC', text: 'Государственная'}]"
+                    item-text="text"
+                    item-value="value"
                     label="Тип организации"
-                    v-model="schoolObj.type"
+                    v-model="schoolObj.schoolType"
                 >
                 </v-select>
             </div>
@@ -52,6 +52,7 @@
                     item-text="title"
                     item-value="id"
                     label="Область"
+                    v-model="schoolObj.regionId"
                     @change="fetchRayons"
                 >
                 </v-select>
@@ -64,14 +65,13 @@
                     item-text="title"
                     item-value="id"
                     label="Район"
-                    v-model="schoolObj.rayon"
+                    v-model="schoolObj.rayonId"
                 >
                 </v-select>
             </div>
 
             <div class="form-footer">
-                <v-btn color="primary">Сохранить</v-btn>
-                <v-btn>Отменить</v-btn>
+                <v-btn color="primary" @click="updateSchoolInfo">Сохранить</v-btn>
             </div>
 
         </div>
@@ -85,17 +85,15 @@
     import SmartSearchInput from '@/components/input/SmartSearchInput';
     import SmartBtn2 from '@/components/button/SmartBtn2';
     import SmartSelect from '@/components/select/SmartSelect';
-    import { LanguageService } from '@/_services/language.service';
-    const languageService = new LanguageService();
-    import {SchoolClassService} from '@/_services/school-class.service';
-    const schoolClassService = new SchoolClassService();
     import moment from 'moment';
-    import { RoleService } from '@/_services/role.service'
-    const roleService = new RoleService();
     import { RegionService } from '@/_services/region.service';
     const regionService = new RegionService();
     import { RayonService } from '@/_services/rayon.service';
     const rayonService = new RayonService();
+    import {QuarterService} from '@/_services/quarter.service';
+    const quarterService = new QuarterService();
+    import {SchoolService} from '@/_services/school.service';
+    const schoolService = new SchoolService();
 
     export default {
         name: 'AboutSchool',
@@ -112,50 +110,87 @@
             return {
                 required: [v => !!v || 'Input is required'],
                 schoolObj: {
-                    name: '',
-                    quarter: '',
-                    phoneNumber: '',
+                    address: '',
+                    avatar: '',
+                    chronicleYearId: 0,
+                    description: '',
                     email: '',
-                    type: '',
-                    rayon: '',
-                    region: '',
+                    languageId: 0,
+                    name: '',
+                    phone: '',
+                    rayonId: 0,
+                    schoolType: '',
+                    quarterId: ''
                 },
                 allRegions: [],
-                allRayons: []
+                allRayons: [],
+                schoolQuarters: []
 
             }
         },
 
         computed: {
-            userProfile() {
+            userProfile () {
                 return this.$store.state.account.profile
+            },
+            school() {
+                return this.userProfile.schools[0];
             }
         },
 
         created() {
-            this.schoolObj.name = this.userProfile.schools[0].name;
-            this.schoolObj.quarter = 0;
-            this.schoolObj.phoneNumber = 0;
-            this.schoolObj.email = '';
-            this.schoolObj.type = '';
-            this.schoolObj.rayon = '';
-            this.schoolObj.region = '';
-
             this.fetchRegions();
             this.fetchRayons();
+            this.getQuartersBySchool();
+            this.getRayonById();
+        },
+
+        mounted() {
+            this.schoolObj.languageId = this.school.languageId;
+            this.schoolObj.chronicleYearId = this.school.chronicleId;
+            this.schoolObj.name = this.school.name;
+            this.schoolObj.quarterId = this.school.quarterId;
+            this.schoolObj.phone = this.school.phone;
+            this.schoolObj.email = this.school.email;
+            this.schoolObj.schoolType = this.school.schoolType;
+            this.schoolObj.rayonId = this.school.rayonId;
+            this.schoolObj.id = this.school.id;
         },
 
         methods: {
+            getQuartersBySchool() {
+                quarterService.getBySchoolAndChronicle(this.school.id, this.school.chronicleId).then((res) => {
+                    this.schoolQuarters = res;
+                }).catch((err) => this.$toast.error(err.message));
+            },
+
             fetchRegions() {
                 regionService.list(0).then(res => {
-                    this.allRegions = res.content
+                    this.allRegions = res.content;
                 }).catch(err => console.log(err))
             },
+
             fetchRayons(id) {
-                rayonService.listByRegion(id).then(res => {
-                    this.allRayons = res
-                }).catch(err => console.log(err))
+                if (id) {
+                    rayonService.listByRegion(id).then(res => {
+                        this.allRayons = res
+                    }).catch(err => console.log(err))
+                }
             },
+
+            getRayonById() {
+                rayonService.getById(this.school.rayonId).then((res) => {
+                    this.fetchRayons(res.region.id);
+                    this.schoolObj.regionId = res.region.id;
+                })
+            },
+
+            updateSchoolInfo() {
+                schoolService.update(this.schoolObj).then(() => {
+                    this.$toast.success('Успешно');
+                    this.$store.dispatch('account/getProfile', {});
+                }).catch(err => console.log(err))
+            }
         }
     }
 </script>
