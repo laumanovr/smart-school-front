@@ -3,6 +3,7 @@
         <SuperAdminSchoolHead>
             <template v-slot:title>Предметы</template>
             <template v-slot:right>
+                <SmartSearchInput @onTyping="onSearch"></SmartSearchInput>
                 <SmartButton @clicked="onAdd">Добавить +</SmartButton>
             </template>
         </SuperAdminSchoolHead>
@@ -54,12 +55,15 @@ import SmartButton from '@/components/button/SmartButton'
 import DeletePopup from "@/components/delete-popup/DeletePopup";
 import CourseGrid from "@/components/super-admin/courses/CourseGrid";
 import CourseMenu from "@/components/super-admin/courses/CourseMenu";
+import SmartSearchInput from "@/components/input/SmartSearchInput";
 
 const adminCourseService = new AdminCourseService()
 
 export default {
     name: 'Courses',
-    components: {CourseMenu, CourseGrid, DeletePopup, SmartButton, AddCourse, SuperAdminSchoolHead, SmartTable},
+    components: {
+        SmartSearchInput,
+        CourseMenu, CourseGrid, DeletePopup, SmartButton, AddCourse, SuperAdminSchoolHead, SmartTable},
     data: () => ({
         isAdd: false,
         courses: [],
@@ -69,7 +73,8 @@ export default {
         pageSize: 0,
         course: {},
         isDeleting: false,
-        isGrid: true
+        isGrid: true,
+        allCourses: []
     }),
     mounted() {
         this.fetchCourses()
@@ -89,6 +94,7 @@ export default {
                     i.pos = index + 1;
                     return i;
                 })
+                this.allCourses = this.courses;
                 this.totalElements = this.courses.length;
                 this.pageSize = this.totalElements;
                 this.currentPage = 1;
@@ -117,6 +123,11 @@ export default {
         },
         onMenuChange (val) {
             this.isGrid = val;
+        },
+        onSearch (val) {
+            if (val) {
+                this.courses = this.allCourses.filter(i => i.title.toLowerCase().includes(val.toLowerCase()))
+            } else this.courses = this.allCourses;
         }
     }
 }
