@@ -7,6 +7,9 @@
             </template>
         </SuperAdminSchoolHead>
         <SmartTable v-if="!isGrid" :schools="courses" :total-elements="totalElements" :page-size="pageSize">
+            <template v-slot:table-head-right>
+                <CourseMenu :is-grid="isGrid" @onChange="onMenuChange"></CourseMenu>
+            </template>
             <template v-slot:head>
                 <th>№</th>
                 <th>Название</th>
@@ -26,7 +29,10 @@
                 </td>
             </template>
         </SmartTable>
-        <CourseGrid v-else :courses="courses" @onEdit="onEdit" @onDelete="onDelete"></CourseGrid>
+        <template v-else>
+            <CourseMenu class="course-menu-grid" :is-grid="isGrid" @onChange="onMenuChange"></CourseMenu>
+            <CourseGrid :courses="courses" @onEdit="onEdit" @onDelete="onDelete"></CourseGrid>
+        </template>
         <v-dialog
             v-if="isAdd"
             id="add-form"
@@ -47,12 +53,13 @@ import {AdminCourseService} from '@/_services/admin-course.service'
 import SmartButton from '@/components/button/SmartButton'
 import DeletePopup from "@/components/delete-popup/DeletePopup";
 import CourseGrid from "@/components/super-admin/courses/CourseGrid";
+import CourseMenu from "@/components/super-admin/courses/CourseMenu";
 
 const adminCourseService = new AdminCourseService()
 
 export default {
     name: 'Courses',
-    components: {CourseGrid, DeletePopup, SmartButton, AddCourse, SuperAdminSchoolHead, SmartTable},
+    components: {CourseMenu, CourseGrid, DeletePopup, SmartButton, AddCourse, SuperAdminSchoolHead, SmartTable},
     data: () => ({
         isAdd: false,
         courses: [],
@@ -107,12 +114,16 @@ export default {
                 this.isDeleting = false;
                 this.$toast.error(err);
             });
+        },
+        onMenuChange (val) {
+            this.isGrid = val;
         }
     }
 }
 </script>
 
 <style lang="scss" scoped>
-.super-admin-courses {
-}
+    .course-menu-grid {
+        margin: 20px 30px;
+    }
 </style>
