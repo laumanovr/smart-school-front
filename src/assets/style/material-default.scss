@@ -12,14 +12,14 @@
 }
 
 .md-theme-default a:not(.md-button) {
-  color: #448aff;
-  color: var(--md-theme-default-primary-on-background, #448aff)
+  color: #fff;
+  color: var(--md-theme-default-primary-on-background, #fff)
 }
 
-.md-theme-default a:not(.md-button):hover {
-  color: rgba(68, 138, 255, 0.8);
-  color: var(--md-theme-default-primary-on-background, rgba(68, 138, 255, 0.8))
-}
+//.md-theme-default a:not(.md-button):hover {
+//  color: rgba(68, 138, 255, 0.8);
+//  color: var(--md-theme-default-primary-on-background, rgba(68, 138, 255, 0.8))
+//}
 
 .md-theme-default a:not(.md-button).md-accent {
   color: #ff5252;
