@@ -18,6 +18,8 @@ import {
     MdList,
     MdMenu,
     MdSwitch,
+    MdContent,
+    MdRipple,
 } from '../node_modules/vue-material/dist/components';
 
 Vue.config.productionTip = false;
@@ -32,6 +34,8 @@ Vue.use(MdRadio);
 Vue.use(MdList);
 Vue.use(MdMenu);
 Vue.use(MdSwitch);
+Vue.use(MdContent);
+Vue.use(MdRipple);
 Vue.material.locale.dateFormat = 'dd.MM.yyyy';
 
 new Vue({
