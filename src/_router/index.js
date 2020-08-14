@@ -13,6 +13,7 @@ import SchoolAdminCourses from '@/views/school-admin/SchoolAdminCourses'
 import SuperAdminEmpty from '@/views/super-admin/SuperAdminEmpty'
 import Rayon from "@/views/super-admin/Rayon";
 import Students from "@/views/super-admin/Students";
+import Calendar from "@/views/super-admin/Calendar";
 
 const loadComponent = path => () => import(`@/views/${path}.vue`);
 
@@ -77,7 +78,7 @@ const routes = [
       {
         name: 'superAdminCalendar',
         path: 'calendar',
-        component: SuperAdminEmpty
+        component: Calendar
       },
       {
         name: 'superAdminAnnouncement',

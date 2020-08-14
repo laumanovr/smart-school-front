@@ -45,15 +45,16 @@
                 <td>{{ schoolTypes[item.schoolType] }}</td>
                 <td>{{ lang[item.language] }}</td>
                 <td>{{ item.rayonTitle }}</td>
-                <td><img alt="" src="../../assets/images/icons/pen.svg"></td>
+                <td><img class="clickable-icons" @click="onEdit(item)" alt="" src="../../assets/images/icons/pen.svg"></td>
             </template>
         </SmartTable>
         <v-dialog
+            v-if="isAddSchool"
             id="add-form"
             v-model="isAddSchool"
             width="546"
         >
-            <AddSchool @close="onCLoseModal">
+            <AddSchool @close="onCLoseModal" :edit-school="school" :is-edit="isEdit">
 
             </AddSchool>
         </v-dialog>
@@ -89,14 +90,18 @@ export default {
             KG: 'КГ',
             RU: 'РУ',
             EN: 'EN'
-        }
+        },
+        school: {},
+        isEdit: false
     }),
     mounted() {
         this.fetchSchools(0)
     },
     methods: {
         onAddSchool() {
+            this.school = {};
             this.isAddSchool = true
+            this.isEdit = false
         },
         fetchSchools(page) {
             schoolService.listPageable(page).then(res => {
@@ -121,6 +126,13 @@ export default {
             this.currentPage++;
             this.fetchSchools(this.currentPage - 1);
         },
+        onEdit (item) {
+            schoolService.getById(item.id).then(res => {
+                this.isEdit = true;
+                this.school = res;
+                this.isAddSchool = true;
+            }).catch(err => console.log(err));
+        }
     }
 }
 </script>
