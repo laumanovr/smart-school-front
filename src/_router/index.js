@@ -146,6 +146,11 @@ const routes = [
         name: 'schoolAdminQuarter',
         path: 'school-quarter',
         component: loadComponent('school-admin/QuarterCalendar')
+      },
+      {
+        name: 'shifts',
+        path: 'shifts',
+        component: loadComponent('school-admin/Shift')
       }
     ]
   }
