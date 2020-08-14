@@ -10,6 +10,53 @@
   }
 }
 
+h4  {
+  font-size: 24px;
+  text-align: center;
+  font-weight: normal;
+  margin-bottom: 20px;
+}
+
 .page-space {
   margin: 30px;
+}
+
+.modal-container {
+  padding: 20px 25px 25px;
+}
+
+.btn-actions {
+  text-align: center;
+  margin-top: 35px;
+}
+
+.blue {
+  background: #448aff;
+  color: #fff;
+  width: 150px;
+}
+.green {
+  background: #07980d;
+  color: #fff;
+  width: 150px;
+}
+.red {
+  background: #da1507;
+  color: #fff;
+  width: 120px;
+}
+
+.md-button-content {
+  color: #fff;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }
