@@ -1,5 +1,5 @@
 <template>
-        <SmartBtn2 @onClick="exportExcel">Экспорт</SmartBtn2>
+        <SmartBtn2 @onClick="exportExcel">Экспорт <img alt="" src="../../assets/images/icons/export.svg"></SmartBtn2>
 </template>
 
 <script>

@@ -12,9 +12,7 @@
                 <SmartBtn2>
                     Импорт <img alt="" src="../../assets/images/icons/import.svg" style="padding-bottom: 5px">
                 </SmartBtn2>
-                <SmartBtn2>
-                    Экспорт <img alt="" src="../../assets/images/icons/export.svg">
-                </SmartBtn2>
+                <ExcelJs :rows="exportRows" :file-name="exportName" :headers="exportHeaders"></ExcelJs>
                 <SmartBtn2>
                     Загрузить шаблон <img alt="" src="../../assets/images/icons/download.svg">
                 </SmartBtn2>
@@ -67,17 +65,23 @@ import SmartSelect from '@/components/select/SmartSelect'
 import {userService} from "@/_services/user.service";
 import { PersonService } from "@/_services/person.service";
 import moment from 'moment'
+import ExcelJs from "@/components/excel-export/ExcelJs";
 
 const personService = new PersonService()
 const instructorCourseService = new InstructorCourseService()
 export default {
     name: 'Teachers',
-    components: {SmartSelect, SmartBtn2, SmartSearchInput, SmartButton, AddTeacher, SuperAdminSchoolHead, SmartTable},
+    components: {
+        ExcelJs,
+        SmartSelect, SmartBtn2, SmartSearchInput, SmartButton, AddTeacher, SuperAdminSchoolHead, SmartTable},
     data: () => ({
         isAddUser: false,
         users: [],
         user: {},
-        isEdit: false
+        isEdit: false,
+        exportName: '',
+        exportRows: [],
+        exportHeaders: []
     }),
     computed: {
         userProfile() {
@@ -101,7 +105,12 @@ export default {
             instructorCourseService.listBySchool(this.userProfile.schools[0].id, 0).then(res => {
                 if (res._embedded) {
                     this.users = res._embedded.instructorCourseResourceList
-                } else this.users = []
+                } else this.users = [];
+                this.exportHeaders = ['Ф.И.О', 'Предмет'];
+                this.exportRows = this.users.map(i => {
+                    return [i.instructorTitle, i.courseName];
+                });
+                this.exportName = 'Умная школа: Учителя'
             }).catch(err => console.log(err))
         },
         editUser(item) {
