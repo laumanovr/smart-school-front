@@ -9,18 +9,23 @@
                 <SmartSearchInput></SmartSearchInput>
             </template>
             <template v-slot:right>
-                <SmartBtn2>
+                <SmartBtn2 @onClick="isAddFile = true">
                     Импорт <img alt="" src="../../assets/images/icons/import.svg" style="padding-bottom: 5px">
                 </SmartBtn2>
-                <SmartBtn2>
-                    Экспорт <img alt="" src="../../assets/images/icons/export.svg">
-                </SmartBtn2>
+                <ExcelJs :rows="exportRows" :file-name="exportName" :headers="exportHeaders"></ExcelJs>
                 <SmartBtn2>
                     Загрузить шаблон <img alt="" src="../../assets/images/icons/download.svg">
                 </SmartBtn2>
             </template>
         </SuperAdminSchoolHead>
-        <SmartTable :schools="users">
+        <SmartTable
+            :schools="users"
+            :total-elements="totalElements"
+            :page-size="pageSize"
+            :current-page="currentPage"
+            @leftClick="onLeftClick"
+            @rightClick="onRightClick"
+        >
             <template v-slot:firstItem>
                 <SmartSelect>Предмет
                     <v-icon>$chevronDown</v-icon>
@@ -52,6 +57,9 @@
         >
             <AddTeacher :is-edit="isEdit" :user="user" @close="onCloseModal"></AddTeacher>
         </v-dialog>
+        <v-dialog v-if="isAddFile" v-model="isAddFile" width="546" id="add-file">
+            <ImportFile @submit="onSubmit"></ImportFile>
+        </v-dialog>
     </div>
 </template>
 
@@ -64,20 +72,33 @@ import SmartButton from '@/components/button/SmartButton'
 import SmartSearchInput from '@/components/input/SmartSearchInput'
 import SmartBtn2 from '@/components/button/SmartBtn2'
 import SmartSelect from '@/components/select/SmartSelect'
-import {userService} from "@/_services/user.service";
 import { PersonService } from "@/_services/person.service";
 import moment from 'moment'
+import ExcelJs from "@/components/excel-export/ExcelJs";
+import ImportFile from "@/components/import-file/ImportFile";
+import { FileImportService } from "@/_services/file-import.service";
 
+const fileImportService = new FileImportService()
 const personService = new PersonService()
 const instructorCourseService = new InstructorCourseService()
 export default {
     name: 'Teachers',
-    components: {SmartSelect, SmartBtn2, SmartSearchInput, SmartButton, AddTeacher, SuperAdminSchoolHead, SmartTable},
+    components: {
+        ImportFile,
+        ExcelJs,
+        SmartSelect, SmartBtn2, SmartSearchInput, SmartButton, AddTeacher, SuperAdminSchoolHead, SmartTable},
     data: () => ({
         isAddUser: false,
         users: [],
         user: {},
-        isEdit: false
+        isEdit: false,
+        exportName: '',
+        exportRows: [],
+        exportHeaders: [],
+        isAddFile: false,
+        totalElements: 0,
+        pageSize: 0,
+        currentPage: 1,
     }),
     computed: {
         userProfile() {
@@ -97,11 +118,18 @@ export default {
             this.isAddUser = false
             this.fetchUsers()
         },
-        fetchUsers() {
-            instructorCourseService.listBySchool(this.userProfile.schools[0].id, 0).then(res => {
+        fetchUsers(page = 0) {
+            instructorCourseService.listBySchool(this.userProfile.schools[0].id, page).then(res => {
+                this.totalElements = res.page.totalElements
+                this.pageSize = res.page.size
                 if (res._embedded) {
                     this.users = res._embedded.instructorCourseResourceList
-                } else this.users = []
+                } else this.users = [];
+                this.exportHeaders = ['Ф.И.О', 'Предмет'];
+                this.exportRows = this.users.map(i => {
+                    return [i.instructorTitle, i.courseName];
+                });
+                this.exportName = 'Умная школа: Учителя'
             }).catch(err => console.log(err))
         },
         editUser(item) {
@@ -119,7 +147,28 @@ export default {
                 this.isAddUser = true;
                 this.isEdit = true;
             }).catch(err => console.log(err));
-        }
+        },
+        onSubmit (data) {
+            const d = {
+                languageId: data.languageId,
+                chronicleId: data.chronicleId,
+                file: data.file,
+                schoolId: this.userProfile.schools[0].id
+            };
+            fileImportService.importInstructor(d).then(res => {
+                this.$toast.success('Successfully imported!')
+                this.isAddFile = false;
+                this.fetchUsers();
+            }).catch(err => console.log(err));
+        },
+        onLeftClick () {
+            this.currentPage--;
+            this.fetchUsers(this.currentPage - 1);
+        },
+        onRightClick () {
+            this.currentPage++;
+            this.fetchUsers(this.currentPage - 1);
+        },
     }
 }
 </script>
