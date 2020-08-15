@@ -12,9 +12,7 @@
                 <SmartBtn2>
                     Импорт <img style="padding-bottom: 5px" src="../../assets/images/icons/import.svg" alt="">
                 </SmartBtn2>
-                <SmartBtn2>
-                    Экспорт <img src="../../assets/images/icons/export.svg" alt="">
-                </SmartBtn2>
+                <ExcelJs :rows="exportRows" :file-name="exportName" :headers="exportHeaders"></ExcelJs>
                 <SmartBtn2>
                     Загрузить шаблон <img src="../../assets/images/icons/download.svg" alt="">
                 </SmartBtn2>
@@ -41,7 +39,7 @@
             <template v-slot:body="{ item }">
                 <td>{{ item.name }}</td>
                 <td>{{ item.classTitle }}</td>
-                <td>{{ item.gender ? 'Ж' : 'M' }}</td>
+                <td>{{ item.gender === 1 ? 'М' : 'Ж' }}</td>
                 <td>{{ item.dateOfBirth }}</td>
                 <td></td>
                 <td></td>
@@ -146,10 +144,12 @@
     import {PersonService} from '@/_services/person.service';
     const personService = new PersonService();
     import {StudentParentService} from '@/_services/student-parent.service';
+    import ExcelJs from "@/components/excel-export/ExcelJs";
     const studentParentService = new StudentParentService();
 
     export default {
         components: {
+            ExcelJs,
             SmartSelect,
             SmartBtn2,
             SmartSearchInput,
@@ -218,6 +218,9 @@
                 languages: [],
                 birthday: '2000-2-11',
                 menu2: false,
+                exportHeaders: [],
+                exportRows: [],
+                exportName: ''
             }
         },
 
@@ -242,6 +245,11 @@
             fetchStudents() {
                 studentService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
                     this.students = res;
+                    this.exportHeaders = ['Ф.И.О', 'Класс', 'Пол', 'Дата рождения', 'Имя Родителя', 'Логин'];
+                    this.exportRows = this.students.map(i => {
+                        return [`${i.name} ${i.surname}`, i.classTitle, i.gender === 1 ? 'М' : 'Ж', i.dateOfBirth, '', ''];
+                    });
+                    this.exportName = 'Умная школа: Студенты'
                 })
             },
 

@@ -45,10 +45,10 @@ export default {
                 right: {style:'thin'}
             };
             const bodyFont = { size: 12 }
-            const bodyAlignment = { wrapText: true }
+            const bodyAlignment = { vertical: 'middle', horizontal: 'center', wrapText: true }
             worksheet.addRow(this.headers);
             worksheet.getRow(1).font = { size: 14, bold: true }
-            worksheet.getRow(1).alignment = { wrapText: true }
+            worksheet.getRow(1).alignment = bodyAlignment
             worksheet.getRow(1).eachCell({ includeEmpty: true }, cell => {
                 cell.border = bodyBorder
             })
