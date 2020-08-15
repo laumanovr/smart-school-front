@@ -18,7 +18,7 @@ export default {
     border-radius: 24px;
 
     button {
-        height: 32px;
+        min-height: 32px;
         margin: 1px;
         padding: 0 15px;
         background: #f8f8fb;
