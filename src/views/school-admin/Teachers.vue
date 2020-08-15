@@ -156,7 +156,7 @@ export default {
                 schoolId: this.userProfile.schools[0].id
             };
             fileImportService.importInstructor(d).then(res => {
-                this.$toast.success('Successfully created!')
+                this.$toast.success('Successfully imported!')
                 this.isAddFile = false;
                 this.fetchUsers();
             }).catch(err => console.log(err));

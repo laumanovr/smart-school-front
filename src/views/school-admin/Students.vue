@@ -9,7 +9,7 @@
                 <SmartSearchInput></SmartSearchInput>
             </template>
             <template v-slot:right>
-                <SmartBtn2>
+                <SmartBtn2 @onClick="isAddFile = true">
                     Импорт <img style="padding-bottom: 5px" src="../../assets/images/icons/import.svg" alt="">
                 </SmartBtn2>
                 <ExcelJs :rows="exportRows" :file-name="exportName" :headers="exportHeaders"></ExcelJs>
@@ -18,7 +18,14 @@
                 </SmartBtn2>
             </template>
         </SuperAdminSchoolHead>
-        <SmartTable :schools="students">
+        <SmartTable
+            :schools="students"
+            :total-elements="totalElements"
+            :page-size="pageSize"
+            :current-page="currentPage"
+            @leftClick="onLeftClick"
+            @rightClick="onRightClick"
+        >
             <template v-slot:firstItem>
                 <SmartSelect>Класс <v-icon>$chevronDown</v-icon></SmartSelect>
                 <SmartSelect>Буква <v-icon>$chevronDown</v-icon></SmartSelect>
@@ -37,7 +44,7 @@
             </template>
 
             <template v-slot:body="{ item }">
-                <td>{{ item.name }}</td>
+                <td>{{ item.name }} {{ item.surname }}</td>
                 <td>{{ item.classTitle }}</td>
                 <td>{{ item.gender === 1 ? 'М' : 'Ж' }}</td>
                 <td>{{ item.dateOfBirth }}</td>
@@ -116,6 +123,9 @@
                 </div>
             </v-form>
         </v-dialog>
+        <v-dialog v-if="isAddFile" v-model="isAddFile" width="546" id="add-file">
+            <ImportFile @submit="onSubmit"></ImportFile>
+        </v-dialog>
     </div>
 </template>
 
@@ -145,10 +155,14 @@
     const personService = new PersonService();
     import {StudentParentService} from '@/_services/student-parent.service';
     import ExcelJs from "@/components/excel-export/ExcelJs";
+    import ImportFile from "@/components/import-file/ImportFile";
     const studentParentService = new StudentParentService();
+    import { FileImportService } from "@/_services/file-import.service";
 
+    const fileImportService = new FileImportService()
     export default {
         components: {
+            ImportFile,
             ExcelJs,
             SmartSelect,
             SmartBtn2,
@@ -160,6 +174,7 @@
 
         data() {
             return {
+                isAddFile: false,
                 studentObj: {
                     address: '',
                     avatar: '',
@@ -220,7 +235,10 @@
                 menu2: false,
                 exportHeaders: [],
                 exportRows: [],
-                exportName: ''
+                exportName: '',
+                currentPage: 1,
+                totalElements: 0,
+                pageSize: 0
             }
         },
 
@@ -244,6 +262,8 @@
         methods: {
             fetchStudents() {
                 studentService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
+                    this.totalElements = res.length;
+                    this.pageSize = res.length
                     this.students = res;
                     this.exportHeaders = ['Ф.И.О', 'Класс', 'Пол', 'Дата рождения', 'Имя Родителя', 'Логин'];
                     this.exportRows = this.students.map(i => {
@@ -296,6 +316,28 @@
                         console.log(err);
                     })
                 })
+            },
+
+            onLeftClick () {
+                this.currentPage--;
+                this.fetchStudents(this.currentPage - 1);
+            },
+            onRightClick () {
+                this.currentPage++;
+                this.fetchStudents(this.currentPage - 1);
+            },
+            onSubmit (data) {
+                const d = {
+                    chronicleId: data.chronicleId,
+                    languageId: data.languageId,
+                    file: data.file,
+                    schoolId: this.userProfile.schools[0].id
+                };
+                fileImportService.importStudent(d).then(res => {
+                    this.$toast.success('Successfully imported!')
+                    this.isAddFile = false;
+                    this.fetchStudents();
+                }).catch(err => console.log(err));
             }
         }
     }
