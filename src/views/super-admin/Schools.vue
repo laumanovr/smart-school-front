@@ -7,8 +7,8 @@
                 <SmartSearchInput></SmartSearchInput>
             </template>
             <template v-slot:right>
+                <ExcelJs :rows="exportRows" :headers="exportHeaders" :file-name="exportName"></ExcelJs>
                 <SmartBtn2>Распечатать</SmartBtn2>
-                <SmartBtn2>Экспорт</SmartBtn2>
             </template>
         </SuperAdminSchoolHead>
         <SmartTable
@@ -70,18 +70,24 @@ import SmartSearchInput from '@/components/input/SmartSearchInput'
 import SmartButton from '@/components/button/SmartButton'
 import SmartBtn2 from '@/components/button/SmartBtn2'
 import SmartSelect from '@/components/select/SmartSelect'
+import ExcelJs from "@/components/excel-export/ExcelJs";
 
 const schoolService = new SchoolService()
 
 export default {
     name: 'Schools',
-    components: {SmartSelect, SmartBtn2, SmartButton, SmartSearchInput, AddSchool, SuperAdminSchoolHead, SmartTable},
+    components: {
+        ExcelJs,
+        SmartSelect, SmartBtn2, SmartButton, SmartSearchInput, AddSchool, SuperAdminSchoolHead, SmartTable},
     data: () => ({
         isAddSchool: false,
         schools: [],
         totalElements: 0,
         pageSize: 0,
         currentPage: 1,
+        exportRows: [],
+        exportHeaders: [],
+        exportName: '',
         schoolTypes: {
             PUBLIC: 'Государственный',
             PRIVATE: 'Частный'
@@ -110,6 +116,11 @@ export default {
                 if (res._embedded) {
                     this.schools = res._embedded.schoolResourceList
                 } else this.schools = []
+                this.exportHeaders = ['Название', 'Электронная Почта', 'Номер телефона', 'Тип Школы', 'Язык', 'Район']
+                this.exportRows = this.schools.map(i => {
+                    return [i.name, i.email, i.phone, this.schoolTypes[i.schoolType], this.lang[i.language], i.rayonTitle];
+                });
+                this.exportName = 'Умная школа: Школы'
             }).catch(err => {
                 console.log(err)
             })

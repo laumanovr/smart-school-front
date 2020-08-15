@@ -1,6 +1,6 @@
 <template>
     <div class="smart-btn-container">
-        <button>
+        <button @click="$emit('onClick')">
             <slot>Button</slot>
         </button>
     </div>
