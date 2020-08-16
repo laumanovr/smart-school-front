@@ -25,8 +25,8 @@
         </template>
 
         <template v-slot:body="{ item }">
-            <td>{{ item.classTitle }}</td>
-            <td>{{ item.classTitle }}</td>
+            <td>{{ item.classLevel }}</td>
+            <td>{{ item.classLabel }}</td>
             <td>{{ item.personTitle }}</td>
             <td></td>
             <td><img src="../../assets/images/icons/pen.svg" alt=""></td>
@@ -106,8 +106,7 @@
     const languageService = new LanguageService();
     import { InstructorCourseService } from '@/_services/instructor-course.service'
     const instructorCourseService = new InstructorCourseService();
-    import {SchoolClassService} from '@/_services/school-class.service';
-    const schoolClassService = new SchoolClassService();
+    import SchoolClassService from '@/_services/school-class.service';
     import {InstructorClassService} from '@/_services/instructor-class.service';
     const instructorClassService = new InstructorClassService();
 
@@ -192,8 +191,8 @@
 
             submitClass() {
                 this.sendObj.schoolId = this.userProfile.schools[0].id;
-                schoolClassService.create(this.sendObj).then((res) => {
-                    schoolClassService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
+                SchoolClassService.create(this.sendObj).then((res) => {
+                    SchoolClassService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
                         let klassId = res.find(klass => klass.classLabel === this.sendObj.classLabel && parseInt(klass.classLevel) === this.sendObj.classLevel).id
                         this.instrClassObj.classId = klassId;
                         instructorClassService.create(this.instrClassObj).then((res) => {
