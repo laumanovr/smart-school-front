@@ -42,7 +42,8 @@
     >
         <v-form @submit.prevent="submitClass" ref="form">
             <div class="form-head">
-                <span>Добавить класс</span>
+                <span v-if="!isEditClass">Добавить класс</span>
+                <span v-else>Редактировать класс</span>
             </div>
 
             <div>
