@@ -3,7 +3,7 @@
         <SuperAdminSchoolHead>
             <template v-slot:title>Студенты</template>
             <template v-slot:center>
-                <SmartButton @clicked="isAddStudentModal = true">
+                <SmartButton @clicked="onAddStudent">
                     Добавить ученика <img src="../../assets/images/icons/add-user.svg" alt="">
                 </SmartButton>
                 <SmartSearchInput></SmartSearchInput>
@@ -13,7 +13,7 @@
                     Импорт <img style="padding-bottom: 5px" src="../../assets/images/icons/import.svg" alt="">
                 </SmartBtn2>
                 <ExcelJs :rows="exportRows" :file-name="exportName" :headers="exportHeaders"></ExcelJs>
-                <SmartBtn2>
+                <SmartBtn2 @onClick="downloadTemplate">
                     Загрузить шаблон <img src="../../assets/images/icons/download.svg" alt="">
                 </SmartBtn2>
             </template>
@@ -41,6 +41,7 @@
                 <th>Логин</th>
                 <!--<th>Телефон Родителя</th>-->
                 <th></th>
+                <th></th>
             </template>
 
             <template v-slot:body="{ item }">
@@ -50,13 +51,15 @@
                 <td>{{ item.dateOfBirth }}</td>
                 <td></td>
                 <td></td>
-                <td><img src="../../assets/images/icons/pen.svg" alt=""></td>
+                <td><img class="clickable-icons" @click="onEditStudent(item)" src="../../assets/images/icons/pen.svg" alt=""></td>
+                <td><img class="clickable-icons" @click="onDeleteStudent(item)" src="../../assets/images/icons/trash.svg" alt=""></td>
             </template>
         </SmartTable>
-        <v-dialog v-model="isAddStudentModal" width="546" id="add-form">
+        <v-dialog v-if="isAddStudentModal" v-model="isAddStudentModal" width="546" id="add-form">
             <v-form @submit.prevent="submitStudent" ref="form">
                 <div class="form-head">
-                    <span>Добавить ученика</span>
+                    <span v-if="!isStudentEdit">Добавить ученика</span>
+                    <span v-else>Редактировать ученика</span>
                     <img src="../../assets/images/profile-icon.svg" alt="">
                     <button class="profile-edit">
                         <img src="../../assets/images/icons/edit.svg">
@@ -64,7 +67,9 @@
                 </div>
 
                 <div>
-                    <v-text-field v-model="studentObj.name" :rules="required" label="ФИО"></v-text-field>
+                    <v-text-field v-model="studentObj.name" :rules="required" label="Имя"></v-text-field>
+                    <v-text-field v-model="studentObj.surname" :rules="required" label="Фамилия"></v-text-field>
+                    <v-text-field v-model="studentObj.middleName" :rules="required" label="Отчество"></v-text-field>
                 </div>
 
                 <div>
@@ -98,7 +103,7 @@
                         :rules="required"
                         :items="classes"
                         item-text="classTitle"
-                        item-value="classId"
+                        item-value="id"
                         label="Класс"
                         v-model="studentObj.classId"
                     >
@@ -106,7 +111,7 @@
                 </div>
 
                 <div class="spacer">
-                    <v-text-field v-model="studentObj.phone" label="Номер телефона"></v-text-field>
+                    <v-text-field type="number" v-model="studentObj.phone" label="Номер телефона"></v-text-field>
                 </div>
 
                 <div>
@@ -114,7 +119,7 @@
                 </div>
 
                 <div>
-                    <v-text-field  label="Телефон родителя" v-model="parentPersonObj.phone"></v-text-field>
+                    <v-text-field type="number" label="Телефон родителя" v-model="parentPersonObj.phone"></v-text-field>
                 </div>
 
                 <div class="form-footer">
@@ -122,6 +127,12 @@
                     <v-btn @click="isAddStudentModal=false">Отменить</v-btn>
                 </div>
             </v-form>
+        </v-dialog>
+        <v-dialog
+            max-width="450"
+            v-model="isDeleting"
+        >
+            <DeletePopup @cancel="isDeleting = false" @accept="deleteStudent"></DeletePopup>
         </v-dialog>
         <v-dialog v-if="isAddFile" v-model="isAddFile" width="546" id="add-file">
             <ImportFile @submit="onSubmit"></ImportFile>
@@ -158,10 +169,12 @@
     import ImportFile from "@/components/import-file/ImportFile";
     const studentParentService = new StudentParentService();
     import { FileImportService } from "@/_services/file-import.service";
+    import DeletePopup from "@/components/delete-popup/DeletePopup";
 
     const fileImportService = new FileImportService()
     export default {
         components: {
+            DeletePopup,
             ImportFile,
             ExcelJs,
             SmartSelect,
@@ -229,6 +242,7 @@
                 classes: [],
                 required: [v => !!v || 'Input is required'],
                 isAddStudentModal: false,
+                isStudentEdit: false,
                 roles: [],
                 languages: [],
                 birthday: '2000-2-11',
@@ -238,7 +252,8 @@
                 exportName: '',
                 currentPage: 1,
                 totalElements: 0,
-                pageSize: 0
+                pageSize: 0,
+                isDeleting: false
             }
         },
 
@@ -273,6 +288,47 @@
                 })
             },
 
+            downloadTemplate () {
+                const a = document.createElement('a');
+                a.download = 'Шаблон импорта студентов.xlsx'
+                a.href = '/docs/Шаблон_Окуучу.xlsx'
+                a.click()
+            },
+
+            onDeleteStudent(item) {
+                this.studentObj = item;
+                this.isDeleting = true
+            },
+
+            deleteStudent () {
+                studentService._delete(this.studentObj.id).then(res => {
+                    this.isDeleting = false
+                    this.$toast.success('Success message')
+                    this.fetchStudents()
+                }).catch(err => {
+                    console.log(err);
+                    this.$toast.error(err);
+                    this.isDeleting = false
+                })
+            },
+
+            onAddStudent () {
+                this.isAddStudentModal = true
+                this.isStudentEdit = false
+                this.studentObj = {}
+                this.parentPersonObj = {}
+            },
+
+            onEditStudent(item) {
+                this.studentObj.classId = item.classId;
+                this.studentObj.name = item.name;
+                this.studentObj.surname = item.surname;
+                this.studentObj.id = item.id;
+                this.studentObj.gender = item.gender === 1 ? 'MALE' : 'FEMALE';
+                this.isAddStudentModal = true
+                this.isStudentEdit = true
+            },
+
             fetchRoles () {
                 roleService.listPageable(0).then(res => {
                     this.roles = res;
@@ -280,16 +336,27 @@
             },
 
             fetchAllClasses() {
-                instructorClassService.getAllClasses(this.userProfile.schools[0].id).then((res) => {
-                    this.classes = res
+                schoolClassService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
+                    this.classes = res.map(i => {
+                        i.classTitle = `${i.classLevel} ${i.classLabel}`;
+                        return i;
+                    });
                 })
             },
 
             submitStudent() {
                 this.studentObj.schoolId = this.userProfile.schools[0].id;
+                this.studentObj.chronicleYearId = this.userProfile.schools[0].chronicleId;
                 this.studentObj.dateOfBirth = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY');
                 this.studentObj.roles = this.roles.filter(i => i.code === 'ROLE_STUDENT').map(i => i.id);
-                studentService.create(this.studentObj).then((res) => {
+                if (this.isStudentEdit) {
+                    studentService.edit(this.studentObj).then(res => {
+                        this.$toast.success('Success message')
+                        this.isAddStudentModal = false
+                        this.fetchStudents()
+                    }).catch(err => console.log(err));
+                } else
+                    studentService.create(this.studentObj).then((res) => {
                     let studentId = parseInt(res.message);
                     this.studentClassObj.classId = this.studentObj.classId;
                     this.studentClassObj.studentId = studentId;

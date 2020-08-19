@@ -45,7 +45,7 @@ name: "Rayon",
                 this.rayon = res.map((i, index) => {
                     i.pos = index + 1;
                     return i;
-                });
+                }).sort((a, b) => a.title.localeCompare(b.title));
             }).catch(err => console.log(err));
         }
     }
