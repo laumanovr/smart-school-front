@@ -40,12 +40,14 @@
             <template v-slot:head>
                 <th>Ф.И.О</th>
                 <th>Предмет</th>
+                <th>Логин</th>
                 <th><img alt="" src="../../assets/images/icons/plus.svg"></th>
             </template>
 
             <template v-slot:body="{ item }">
                 <td>{{ item.instructorTitle }}</td>
                 <td>{{ item.courseName }}</td>
+                <td>{{ item.username }}</td>
                 <td @click="editUser(item)" class="actions"><img alt="" src="../../assets/images/icons/pen.svg"></td>
             </template>
         </SmartTable>

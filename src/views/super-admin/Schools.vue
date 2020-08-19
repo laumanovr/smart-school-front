@@ -36,6 +36,7 @@
                 <th>Язык</th>
                 <th>Район</th>
                 <th><img alt="" src="../../assets/images/icons/plus.svg"></th>
+                <th><img alt="" src="../../assets/images/icons/plus.svg"></th>
             </template>
 
             <template v-slot:body="{ item }">
@@ -46,6 +47,7 @@
                 <td>{{ lang[item.language] }}</td>
                 <td>{{ item.rayonTitle }}</td>
                 <td><img class="clickable-icons" @click="onEdit(item)" alt="" src="../../assets/images/icons/pen.svg"></td>
+                <td><img class="clickable-icons" @click="onDelete(item)" alt="" src="../../assets/images/icons/trash.svg"></td>
             </template>
         </SmartTable>
         <v-dialog
@@ -57,6 +59,12 @@
             <AddSchool @close="onCLoseModal" :edit-school="school" :is-edit="isEdit">
 
             </AddSchool>
+        </v-dialog>
+        <v-dialog
+            max-width="450"
+            v-model="isDeleting"
+        >
+            <DeletePopup @cancel="isDeleting = false" @accept="deleteSchool"></DeletePopup>
         </v-dialog>
     </div>
 </template>
@@ -71,12 +79,14 @@ import SmartButton from '@/components/button/SmartButton'
 import SmartBtn2 from '@/components/button/SmartBtn2'
 import SmartSelect from '@/components/select/SmartSelect'
 import ExcelJs from "@/components/excel-export/ExcelJs";
+import DeletePopup from "@/components/delete-popup/DeletePopup";
 
 const schoolService = new SchoolService()
 
 export default {
     name: 'Schools',
     components: {
+        DeletePopup,
         ExcelJs,
         SmartSelect, SmartBtn2, SmartButton, SmartSearchInput, AddSchool, SuperAdminSchoolHead, SmartTable},
     data: () => ({
@@ -98,7 +108,8 @@ export default {
             EN: 'EN'
         },
         school: {},
-        isEdit: false
+        isEdit: false,
+        isDeleting: false
     }),
     mounted() {
         this.fetchSchools(0)
@@ -143,6 +154,20 @@ export default {
                 this.school = res;
                 this.isAddSchool = true;
             }).catch(err => console.log(err));
+        },
+        onDelete (item) {
+            this.school = item;
+            this.isDeleting = true;
+        },
+        deleteSchool () {
+            schoolService._delete(this.school.id).then(res => {
+                this.$toast.success('Successfully deleted');
+                this.isDeleting = false;
+            }).catch(err => {
+                this.isDeleting = false;
+                console.log(err)
+                this.$toast.error(err);
+            });
         }
     }
 }

@@ -13,7 +13,7 @@
         </div>
         <div class="spacer">
             <v-text-field label="Email" v-model="school.email"></v-text-field>
-            <v-text-field label="Номер телефона" v-model="school.phone"></v-text-field>
+            <v-text-field type="number" label="Номер телефона" v-model="school.phone"></v-text-field>
         </div>
         <div>
             <v-text-field :rules="ruleName" label="Адрес" v-model="school.address"></v-text-field>

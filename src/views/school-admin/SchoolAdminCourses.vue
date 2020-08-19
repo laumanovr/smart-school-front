@@ -6,7 +6,7 @@
                 <SmartSearchInput></SmartSearchInput>
             </template>
         </SuperAdminSchoolHead>
-        <SmartTable :schools="adminCourses" @addCourses="addCourses">
+        <SmartTable :schools="adminCourses" @addCourses="addCourses" :total-elements="adminCourses.length" :page-size="adminCourses.length">
             <template v-slot:head>
                 <th class="top-th">
                     <input type="checkbox">
@@ -41,7 +41,7 @@ export default {
         items: [],
         adminCourses: [],
         isAddUser: false,
-        itemsSelected: 0
+        itemsSelected: 0,
     }),
     computed: {
         userProfile() {
@@ -64,7 +64,7 @@ export default {
                        i.disable = true;
                    }
                    return i;
-                });
+                }).sort((a, b) => a.title.localeCompare(b.title));
             }).catch(err => console.log(err))
         },
         onSelect(item) {
