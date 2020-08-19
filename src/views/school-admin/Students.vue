@@ -41,6 +41,7 @@
                 <th>Логин</th>
                 <!--<th>Телефон Родителя</th>-->
                 <th></th>
+                <th></th>
             </template>
 
             <template v-slot:body="{ item }">
@@ -51,6 +52,7 @@
                 <td></td>
                 <td></td>
                 <td><img class="clickable-icons" @click="onEditStudent(item)" src="../../assets/images/icons/pen.svg" alt=""></td>
+                <td><img class="clickable-icons" @click="onDeleteStudent(item)" src="../../assets/images/icons/trash.svg" alt=""></td>
             </template>
         </SmartTable>
         <v-dialog v-if="isAddStudentModal" v-model="isAddStudentModal" width="546" id="add-form">
@@ -126,6 +128,12 @@
                 </div>
             </v-form>
         </v-dialog>
+        <v-dialog
+            max-width="450"
+            v-model="isDeleting"
+        >
+            <DeletePopup @cancel="isDeleting = false" @accept="deleteStudent"></DeletePopup>
+        </v-dialog>
         <v-dialog v-if="isAddFile" v-model="isAddFile" width="546" id="add-file">
             <ImportFile @submit="onSubmit"></ImportFile>
         </v-dialog>
@@ -161,10 +169,12 @@
     import ImportFile from "@/components/import-file/ImportFile";
     const studentParentService = new StudentParentService();
     import { FileImportService } from "@/_services/file-import.service";
+    import DeletePopup from "@/components/delete-popup/DeletePopup";
 
     const fileImportService = new FileImportService()
     export default {
         components: {
+            DeletePopup,
             ImportFile,
             ExcelJs,
             SmartSelect,
@@ -242,7 +252,8 @@
                 exportName: '',
                 currentPage: 1,
                 totalElements: 0,
-                pageSize: 0
+                pageSize: 0,
+                isDeleting: false
             }
         },
 
@@ -282,6 +293,23 @@
                 a.download = 'Шаблон импорта студентов.xlsx'
                 a.href = '/docs/Шаблон_Окуучу.xlsx'
                 a.click()
+            },
+
+            onDeleteStudent(item) {
+                this.studentObj = item;
+                this.isDeleting = true
+            },
+
+            deleteStudent () {
+                studentService._delete(this.studentObj.id).then(res => {
+                    this.isDeleting = false
+                    this.$toast.success('Success message')
+                    this.fetchStudents()
+                }).catch(err => {
+                    console.log(err);
+                    this.$toast.error(err);
+                    this.isDeleting = false
+                })
             },
 
             onAddStudent () {
