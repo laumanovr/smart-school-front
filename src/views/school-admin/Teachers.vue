@@ -13,7 +13,7 @@
                     Импорт <img alt="" src="../../assets/images/icons/import.svg" style="padding-bottom: 5px">
                 </SmartBtn2>
                 <ExcelJs :rows="exportRows" :file-name="exportName" :headers="exportHeaders"></ExcelJs>
-                <SmartBtn2>
+                <SmartBtn2 @onClick="downloadTemplate">
                     Загрузить шаблон <img alt="" src="../../assets/images/icons/download.svg">
                 </SmartBtn2>
             </template>
@@ -119,6 +119,12 @@ export default {
         onCloseModal() {
             this.isAddUser = false
             this.fetchUsers()
+        },
+        downloadTemplate () {
+            const a = document.createElement('a');
+            a.download = 'Шаблон импорта учителя.xlsx'
+            a.href = '/docs/Шаблон_Мугалим.xlsx'
+            a.click()
         },
         fetchUsers(page = 0) {
             instructorCourseService.listBySchool(this.userProfile.schools[0].id, page).then(res => {

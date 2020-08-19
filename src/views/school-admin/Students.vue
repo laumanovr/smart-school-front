@@ -13,7 +13,7 @@
                     Импорт <img style="padding-bottom: 5px" src="../../assets/images/icons/import.svg" alt="">
                 </SmartBtn2>
                 <ExcelJs :rows="exportRows" :file-name="exportName" :headers="exportHeaders"></ExcelJs>
-                <SmartBtn2>
+                <SmartBtn2 @onClick="downloadTemplate">
                     Загрузить шаблон <img src="../../assets/images/icons/download.svg" alt="">
                 </SmartBtn2>
             </template>
@@ -275,6 +275,13 @@
                     });
                     this.exportName = 'Умная школа: Студенты'
                 })
+            },
+
+            downloadTemplate () {
+                const a = document.createElement('a');
+                a.download = 'Шаблон импорта студентов.xlsx'
+                a.href = '/docs/Шаблон_Окуучу.xlsx'
+                a.click()
             },
 
             onAddStudent () {
