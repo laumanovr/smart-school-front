@@ -42,7 +42,12 @@
         >
             <AddCourse @close="onCloseModal" :is-edit="isEdit" :edit-course="course"></AddCourse>
         </v-dialog>
-        <DeletePopup :is-deleting="isDeleting" @cancel="isDeleting = false" @accept="deleteCourse"></DeletePopup>
+        <v-dialog
+            max-width="450"
+            v-model="isDeleting"
+        >
+            <DeletePopup @cancel="isDeleting = false" @accept="deleteCourse"></DeletePopup>
+        </v-dialog>
     </div>
 </template>
 
