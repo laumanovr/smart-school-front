@@ -1,7 +1,7 @@
 <template>
 	<div class="school-admin-manage">
 		<SuperAdminHeader>
-			<template v-slot:title>{{ userProfile.schools[0].name }}</template>
+			<template v-slot:title v-if="userProfile.schools">{{ userProfile.schools[0].name }}</template>
 			<template v-slot:userName>{{ userProfile.user.firstName }} {{ userProfile.user.lastName }}</template>
 		</SuperAdminHeader>
 		<div class="school-admin-manage__container">
