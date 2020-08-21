@@ -20,3 +20,4 @@ export class ShiftService extends BaseApiService {
         return this.sendPostRequest(url, data);
     }
 }
+export default new ShiftService();
