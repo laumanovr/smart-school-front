@@ -1,7 +1,8 @@
 <template>
     <div class="shift-container">
         <SuperAdminSchoolHead>
-            <template v-slot:title>Все смены</template>
+            <template v-slot:title><button class="blue go-back" @click="$router.go(-1)">< Назад</button></template>
+            <template v-slot:center><h1>Все смены</h1></template>
             <template v-slot:right>
                 <md-button class="md-primary md-raised" @click="openModal('addShift', {})">
                     Добавить смену
@@ -223,6 +224,14 @@
 
 <style lang="scss">
     .shift-container {
+        .go-back {
+            font-size: 16px;
+            height: 30px;
+            line-height: 0;
+            padding: 0 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
         .shift-table {
             max-width: 1024px;
             margin: 0 auto;
