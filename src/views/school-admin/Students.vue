@@ -3,24 +3,29 @@
         <SuperAdminSchoolHead>
             <template v-slot:title>Студенты</template>
             <template v-slot:center>
-                <SmartButton @clicked="isAddStudentModal = true">
+                <SmartButton @clicked="onAddStudent">
                     Добавить ученика <img src="../../assets/images/icons/add-user.svg" alt="">
                 </SmartButton>
                 <SmartSearchInput></SmartSearchInput>
             </template>
             <template v-slot:right>
-                <SmartBtn2>
+                <SmartBtn2 @onClick="isAddFile = true">
                     Импорт <img style="padding-bottom: 5px" src="../../assets/images/icons/import.svg" alt="">
                 </SmartBtn2>
-                <SmartBtn2>
-                    Экспорт <img src="../../assets/images/icons/export.svg" alt="">
-                </SmartBtn2>
-                <SmartBtn2>
+                <ExcelJs :rows="exportRows" :file-name="exportName" :headers="exportHeaders"></ExcelJs>
+                <SmartBtn2 @onClick="downloadTemplate">
                     Загрузить шаблон <img src="../../assets/images/icons/download.svg" alt="">
                 </SmartBtn2>
             </template>
         </SuperAdminSchoolHead>
-        <SmartTable :schools="students">
+        <SmartTable
+            :schools="students"
+            :total-elements="totalElements"
+            :page-size="pageSize"
+            :current-page="currentPage"
+            @leftClick="onLeftClick"
+            @rightClick="onRightClick"
+        >
             <template v-slot:firstItem>
                 <SmartSelect>Класс <v-icon>$chevronDown</v-icon></SmartSelect>
                 <SmartSelect>Буква <v-icon>$chevronDown</v-icon></SmartSelect>
@@ -36,22 +41,25 @@
                 <th>Логин</th>
                 <!--<th>Телефон Родителя</th>-->
                 <th></th>
+                <th></th>
             </template>
 
             <template v-slot:body="{ item }">
-                <td>{{ item.name }}</td>
+                <td>{{ item.name }} {{ item.surname }}</td>
                 <td>{{ item.classTitle }}</td>
-                <td>{{ item.gender ? 'Ж' : 'M' }}</td>
+                <td>{{ item.gender === 1 ? 'М' : 'Ж' }}</td>
                 <td>{{ item.dateOfBirth }}</td>
                 <td></td>
                 <td></td>
-                <td><img src="../../assets/images/icons/pen.svg" alt=""></td>
+                <td><img class="clickable-icons" @click="onEditStudent(item)" src="../../assets/images/icons/pen.svg" alt=""></td>
+                <td><img class="clickable-icons" @click="onDeleteStudent(item)" src="../../assets/images/icons/trash.svg" alt=""></td>
             </template>
         </SmartTable>
-        <v-dialog v-model="isAddStudentModal" width="546" id="add-form">
+        <v-dialog v-if="isAddStudentModal" v-model="isAddStudentModal" width="546" id="add-form">
             <v-form @submit.prevent="submitStudent" ref="form">
                 <div class="form-head">
-                    <span>Добавить ученика</span>
+                    <span v-if="!isStudentEdit">Добавить ученика</span>
+                    <span v-else>Редактировать ученика</span>
                     <img src="../../assets/images/profile-icon.svg" alt="">
                     <button class="profile-edit">
                         <img src="../../assets/images/icons/edit.svg">
@@ -59,7 +67,9 @@
                 </div>
 
                 <div>
-                    <v-text-field v-model="studentObj.name" :rules="required" label="ФИО"></v-text-field>
+                    <v-text-field v-model="studentObj.name" :rules="required" label="Имя"></v-text-field>
+                    <v-text-field v-model="studentObj.surname" :rules="required" label="Фамилия"></v-text-field>
+                    <v-text-field v-model="studentObj.middleName" :rules="required" label="Отчество"></v-text-field>
                 </div>
 
                 <div>
@@ -93,7 +103,7 @@
                         :rules="required"
                         :items="classes"
                         item-text="classTitle"
-                        item-value="classId"
+                        item-value="id"
                         label="Класс"
                         v-model="studentObj.classId"
                     >
@@ -101,7 +111,7 @@
                 </div>
 
                 <div class="spacer">
-                    <v-text-field v-model="studentObj.phone" label="Номер телефона"></v-text-field>
+                    <v-text-field type="number" v-model="studentObj.phone" label="Номер телефона"></v-text-field>
                 </div>
 
                 <div>
@@ -109,7 +119,7 @@
                 </div>
 
                 <div>
-                    <v-text-field  label="Телефон родителя" v-model="parentPersonObj.phone"></v-text-field>
+                    <v-text-field type="number" label="Телефон родителя" v-model="parentPersonObj.phone"></v-text-field>
                 </div>
 
                 <div class="form-footer">
@@ -117,6 +127,15 @@
                     <v-btn @click="isAddStudentModal=false">Отменить</v-btn>
                 </div>
             </v-form>
+        </v-dialog>
+        <v-dialog
+            max-width="450"
+            v-model="isDeleting"
+        >
+            <DeletePopup @cancel="isDeleting = false" @accept="deleteStudent"></DeletePopup>
+        </v-dialog>
+        <v-dialog v-if="isAddFile" v-model="isAddFile" width="546" id="add-file">
+            <ImportFile @submit="onSubmit"></ImportFile>
         </v-dialog>
     </div>
 </template>
@@ -146,10 +165,18 @@
     import {PersonService} from '@/_services/person.service';
     const personService = new PersonService();
     import {StudentParentService} from '@/_services/student-parent.service';
+    import ExcelJs from "@/components/excel-export/ExcelJs";
+    import ImportFile from "@/components/import-file/ImportFile";
     const studentParentService = new StudentParentService();
+    import { FileImportService } from "@/_services/file-import.service";
+    import DeletePopup from "@/components/delete-popup/DeletePopup";
 
+    const fileImportService = new FileImportService()
     export default {
         components: {
+            DeletePopup,
+            ImportFile,
+            ExcelJs,
             SmartSelect,
             SmartBtn2,
             SmartSearchInput,
@@ -160,6 +187,7 @@
 
         data() {
             return {
+                isAddFile: false,
                 studentObj: {
                     address: '',
                     avatar: '',
@@ -214,10 +242,18 @@
                 classes: [],
                 required: [v => !!v || 'Input is required'],
                 isAddStudentModal: false,
+                isStudentEdit: false,
                 roles: [],
                 languages: [],
                 birthday: '2000-2-11',
                 menu2: false,
+                exportHeaders: [],
+                exportRows: [],
+                exportName: '',
+                currentPage: 1,
+                totalElements: 0,
+                pageSize: 0,
+                isDeleting: false
             }
         },
 
@@ -241,8 +277,56 @@
         methods: {
             fetchStudents() {
                 studentService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
+                    this.totalElements = res.length;
+                    this.pageSize = res.length
                     this.students = res;
+                    this.exportHeaders = ['Ф.И.О', 'Класс', 'Пол', 'Дата рождения', 'Имя Родителя', 'Логин'];
+                    this.exportRows = this.students.map(i => {
+                        return [`${i.name} ${i.surname}`, i.classTitle, i.gender === 1 ? 'М' : 'Ж', i.dateOfBirth, '', ''];
+                    });
+                    this.exportName = 'Умная школа: Студенты'
                 })
+            },
+
+            downloadTemplate () {
+                const a = document.createElement('a');
+                a.download = 'Шаблон импорта студентов.xlsx'
+                a.href = '/docs/Шаблон_Окуучу.xlsx'
+                a.click()
+            },
+
+            onDeleteStudent(item) {
+                this.studentObj = item;
+                this.isDeleting = true
+            },
+
+            deleteStudent () {
+                studentService._delete(this.studentObj.id).then(res => {
+                    this.isDeleting = false
+                    this.$toast.success('Success message')
+                    this.fetchStudents()
+                }).catch(err => {
+                    console.log(err);
+                    this.$toast.error(err);
+                    this.isDeleting = false
+                })
+            },
+
+            onAddStudent () {
+                this.isAddStudentModal = true
+                this.isStudentEdit = false
+                this.studentObj = {}
+                this.parentPersonObj = {}
+            },
+
+            onEditStudent(item) {
+                this.studentObj.classId = item.classId;
+                this.studentObj.name = item.name;
+                this.studentObj.surname = item.surname;
+                this.studentObj.id = item.id;
+                this.studentObj.gender = item.gender === 1 ? 'MALE' : 'FEMALE';
+                this.isAddStudentModal = true
+                this.isStudentEdit = true
             },
 
             fetchRoles () {
@@ -252,16 +336,27 @@
             },
 
             fetchAllClasses() {
-                instructorClassService.getAllClasses(this.userProfile.schools[0].id).then((res) => {
-                    this.classes = res
+                schoolClassService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
+                    this.classes = res.map(i => {
+                        i.classTitle = `${i.classLevel} ${i.classLabel}`;
+                        return i;
+                    });
                 })
             },
 
             submitStudent() {
                 this.studentObj.schoolId = this.userProfile.schools[0].id;
+                this.studentObj.chronicleYearId = this.userProfile.schools[0].chronicleId;
                 this.studentObj.dateOfBirth = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY');
                 this.studentObj.roles = this.roles.filter(i => i.code === 'ROLE_STUDENT').map(i => i.id);
-                studentService.create(this.studentObj).then((res) => {
+                if (this.isStudentEdit) {
+                    studentService.edit(this.studentObj).then(res => {
+                        this.$toast.success('Success message')
+                        this.isAddStudentModal = false
+                        this.fetchStudents()
+                    }).catch(err => console.log(err));
+                } else
+                    studentService.create(this.studentObj).then((res) => {
                     let studentId = parseInt(res.message);
                     this.studentClassObj.classId = this.studentObj.classId;
                     this.studentClassObj.studentId = studentId;
@@ -288,6 +383,28 @@
                         console.log(err);
                     })
                 })
+            },
+
+            onLeftClick () {
+                this.currentPage--;
+                this.fetchStudents(this.currentPage - 1);
+            },
+            onRightClick () {
+                this.currentPage++;
+                this.fetchStudents(this.currentPage - 1);
+            },
+            onSubmit (data) {
+                const d = {
+                    chronicleId: data.chronicleId,
+                    languageId: data.languageId,
+                    file: data.file,
+                    schoolId: this.userProfile.schools[0].id
+                };
+                fileImportService.importStudent(d).then(res => {
+                    this.$toast.success('Successfully imported!')
+                    this.isAddFile = false;
+                    this.fetchStudents();
+                }).catch(err => console.log(err));
             }
         }
     }
