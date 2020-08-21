@@ -128,12 +128,6 @@
     import SmartSearchInput from '@/components/input/SmartSearchInput';
     import SmartBtn2 from '@/components/button/SmartBtn2';
     import SmartSelect from '@/components/select/SmartSelect';
-    import { LanguageService } from '@/_services/language.service';
-    const languageService = new LanguageService();
-    import { InstructorCourseService } from '@/_services/instructor-course.service'
-    const instructorCourseService = new InstructorCourseService();
-    import {SchoolClassService} from '@/_services/school-class.service';
-    const schoolClassService = new SchoolClassService();
     import {InstructorClassService} from '@/_services/instructor-class.service';
     const instructorClassService = new InstructorClassService();
     import {StudentService} from '@/_services/student.service';
