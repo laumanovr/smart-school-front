@@ -29,7 +29,7 @@
             <td>{{ item.classLevel }}</td>
             <td>{{ item.classLabel }}</td>
             <td>{{ item.personTitle }}</td>
-            <td>{{ showLanguage(item.languageId) }}</td>
+            <td>{{ getLanguageName(item.languageId) }}</td>
             <td><img @click="editCLass(item)" class="clickable-icons" src="../../assets/images/icons/pen.svg" alt=""></td>
             <td><img @click="onDeleteClass(item)" class="clickable-icons" src="../../assets/images/icons/trash.svg" alt=""></td>
         </template>
@@ -190,10 +190,6 @@
                 this.sendObj = {};
             },
 
-            showLanguage (id) {
-                return this.languages.find(i => i.id === id)?.name;
-            },
-
             editCLass (item) {
                 this.sendObj.classLabel = item.classLabel;
                 this.sendObj.classLevel = item.classLevel;
@@ -231,7 +227,9 @@
             },
 
             getLanguageName(langId) {
-                return this.languages.find(lang => lang.id === langId).name;
+                if (langId) {
+                    return this.languages.find(lang => lang.id === langId).name;
+                }
             },
 
             fetchTeachers () {
