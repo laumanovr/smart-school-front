@@ -15,3 +15,4 @@ export class SchoolClassService extends BaseApiService {
         return this.sendPostRequest(url, data);
     }
 }
+export default new SchoolClassService();
