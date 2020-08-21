@@ -25,3 +25,4 @@ export class SchoolClassService extends BaseApiService {
         return this.sendDeleteRequest(url);
     }
 }
+export default new SchoolClassService();

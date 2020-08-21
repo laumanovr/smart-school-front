@@ -24,7 +24,7 @@ import {
 
 Vue.config.productionTip = false;
 Vue.use(VModal);
-Vue.use(VueToast, { position: 'top', duration: 3000 });
+Vue.use(VueToast, { position: 'top', duration: 2500 });
 Vue.use(MdDatepicker);
 Vue.use(MdButton);
 Vue.use(MdCheckbox);

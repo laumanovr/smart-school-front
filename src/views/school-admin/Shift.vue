@@ -77,10 +77,8 @@
 
 <script>
     import SuperAdminSchoolHead from '@/components/super-admin/schools/SuperAdminSchoolHead';
-    import {ShiftService} from '@/_services/shift.service';
-    import {ShiftTimeService} from '@/_services/shift-time.service';
-    const shiftService = new ShiftService();
-    const shiftTimeService = new ShiftTimeService();
+    import ShiftService from '@/_services/shift.service';
+    import ShiftTimeService from '@/_services/shift-time.service';
     import ShiftCreateEdit from '@/components/shift/ShiftCreateEdit';
     import ShiftTimeCreateEdit from '@/components/shift/ShiftTimeCreateEdit';
     import moment from 'moment';
@@ -118,7 +116,7 @@
 
         methods: {
             fetchSchoolShifts() {
-                shiftService.getAllBySchool(this.school.id).then((res) => {
+                ShiftService.getAllBySchool(this.school.id).then((res) => {
                     this.allSchoolShifts = res;
                 }).catch((err) => {
                     this.$toast.error(err);
@@ -143,7 +141,7 @@
             },
 
             submitCreateShift() {
-                shiftService.create(this.shiftObj).then((res) => {
+                ShiftService.create(this.shiftObj).then((res) => {
                     this.mode = 'addShiftTime';
                     this.shiftObj.id = parseInt(res.message);
                     this.fetchSchoolShifts();
@@ -163,7 +161,7 @@
                 if (this.mode === 'addShiftTime') {
                     this.shiftTimeList.push(shiftTimeObj);
                 } else {
-                    shiftTimeService.create(shiftTimeObj).then((res) => {
+                    ShiftTimeService.create(shiftTimeObj).then((res) => {
                         shiftTimeObj.id = parseInt(res.message);
                         this.shiftTimeList.push(shiftTimeObj);
                     })
@@ -182,7 +180,7 @@
                 if (this.mode === 'addShiftTime') {
                     requests = this.shiftTimeList.map((shiftTime) => {
                         return new Promise((resolve, reject) => {
-                            shiftTimeService.create(shiftTime).then((res) => {
+                            ShiftTimeService.create(shiftTime).then((res) => {
                                 resolve(res);
                             }).catch(err => reject(err))
                         })
@@ -190,7 +188,7 @@
                 } else {
                     requests = this.shiftTimeList.map((shiftTime) => {
                         return new Promise((resolve, reject) => {
-                            shiftTimeService.update(shiftTime).then((res) => {
+                            ShiftTimeService.update(shiftTime).then((res) => {
                                 resolve(res);
                             }).catch(err => reject(err))
                         })
@@ -198,13 +196,14 @@
                 }
                 const results = await Promise.all(requests);
                 if (results[0].success) {
+                    this.fetchSchoolShifts();
                     this.$toast.success('Успешно');
                     this.closeModal();
                 }
             },
 
             getShiftTimesByShift(shiftId) {
-                shiftTimeService.getAllByShiftId(shiftId).then((res) => {
+                ShiftTimeService.getAllByShiftId(shiftId).then((res) => {
                     this.shiftTimeList = res.map((item) => {
                         item.timeStart = new Date(moment(`1970-01-01 ${item.startTime.join(':')}`));
                         item.timeEnd = new Date(moment(`1970-01-01 ${item.endTime.join(':')}`));
@@ -214,7 +213,7 @@
             },
 
             submitUpdateAllShiftAndTimes() {
-                shiftService.update(this.shiftObj).then(() => {
+                ShiftService.update(this.shiftObj).then(() => {
                     this.submitShiftTimes();
                 }).catch(err => this.$toast.error(err));
             }

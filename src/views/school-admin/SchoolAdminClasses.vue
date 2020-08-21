@@ -115,8 +115,7 @@
     const languageService = new LanguageService();
     import { InstructorCourseService } from '@/_services/instructor-course.service'
     const instructorCourseService = new InstructorCourseService();
-    import {SchoolClassService} from '@/_services/school-class.service';
-    const schoolClassService = new SchoolClassService();
+    import SchoolClassService from '@/_services/school-class.service';
     import {InstructorClassService} from '@/_services/instructor-class.service';
     import DeletePopup from "@/components/delete-popup/DeletePopup";
     const instructorClassService = new InstructorClassService();
@@ -145,7 +144,7 @@
                 isDeleting: false,
                 instrClassObj: {
                     archived: true,
-                    chronicleId: 1,
+                    chronicleId: 0,
                     classId: 0,
                     personId: 0
                 },
@@ -187,9 +186,8 @@
 
             onAddClass () {
                 this.isAddClassModal = true;
-                this.isEditClass = false
+                this.isEditClass = false;
                 this.sendObj = {};
-                this.instrClassObj = {};
             },
 
             showLanguage (id) {
@@ -217,7 +215,7 @@
                     this.fetchAllClasses()
                     this.$toast.success('Success message');
                     this.isDeleting = false
-                    // return schoolClassService._delete(this.sendObj.classId);
+                    // return SchoolClassService._delete(this.sendObj.classId);
                 })
                 .catch(err => {
                     this.isDeleting = false
@@ -248,7 +246,7 @@
                 this.sendObj.schoolId = this.userProfile.schools[0].id;
                 if (this.isEditClass) {
                     //TODO: need to fix
-                    schoolClassService.update(this.sendObj).then(res => {
+                    SchoolClassService.update(this.sendObj).then(res => {
                         return instructorClassService.getByInstructorId(this.instrClassObj.personId);
                     }).then(res => {
                         let resource = []
@@ -271,8 +269,8 @@
                         }
                     }).catch(err => console.log(err));
                 } else
-                    schoolClassService.create(this.sendObj).then((res) => {
-                        schoolClassService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
+                    SchoolClassService.create(this.sendObj).then((res) => {
+                        SchoolClassService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
                             let klassId = res.find(klass => klass.classLabel === this.sendObj.classLabel && parseInt(klass.classLevel) === this.sendObj.classLevel).id
                             this.instrClassObj.classId = klassId;
                             instructorClassService.create(this.instrClassObj).then((res) => {

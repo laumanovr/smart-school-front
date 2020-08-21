@@ -34,12 +34,9 @@
             <template v-slot:head>
                 <th>Ф.И.О</th>
                 <th>Класс</th>
-                <!--<th>ID</th>-->
                 <th>Пол</th>
                 <th>Дата рождения</th>
-                <th>Имя Родителя</th>
-                <th>Логин</th>
-                <!--<th>Телефон Родителя</th>-->
+                <th></th>
                 <th></th>
                 <th></th>
             </template>
@@ -49,8 +46,7 @@
                 <td>{{ item.classTitle }}</td>
                 <td>{{ item.gender === 1 ? 'М' : 'Ж' }}</td>
                 <td>{{ item.dateOfBirth }}</td>
-                <td></td>
-                <td></td>
+                <td><i class="material-icons info-icon" @click="showDetailInfo(item.id)">info</i></td>
                 <td><img class="clickable-icons" @click="onEditStudent(item)" src="../../assets/images/icons/pen.svg" alt=""></td>
                 <td><img class="clickable-icons" @click="onDeleteStudent(item)" src="../../assets/images/icons/trash.svg" alt=""></td>
             </template>
@@ -137,6 +133,20 @@
         <v-dialog v-if="isAddFile" v-model="isAddFile" width="546" id="add-file">
             <ImportFile @submit="onSubmit"></ImportFile>
         </v-dialog>
+
+        <v-dialog v-model="showDetailModal" width="546">
+            <v-form>
+                <div class="form-head">
+                    <h2>Полная информация</h2>
+                </div>
+                <v-text-field type="text" label="Логин и Пароль" v-model="studentDetail.username" readonly/>
+                <v-text-field type="text" label="Имя" v-model="studentDetail.name" readonly/>
+                <v-text-field type="text" label="Фамилия" v-model="studentDetail.surname" readonly/>
+                <v-text-field type="text" label="Телефон" v-model="studentDetail.phone" readonly/>
+                <v-text-field type="text" label="Имя родителя" readonly/>
+                <v-btn @click="showDetailModal = false" color="primary">Закрыть</v-btn>
+            </v-form>
+        </v-dialog>
     </div>
 </template>
 
@@ -147,12 +157,6 @@
     import SmartSearchInput from '@/components/input/SmartSearchInput';
     import SmartBtn2 from '@/components/button/SmartBtn2';
     import SmartSelect from '@/components/select/SmartSelect';
-    import { LanguageService } from '@/_services/language.service';
-    const languageService = new LanguageService();
-    import { InstructorCourseService } from '@/_services/instructor-course.service'
-    const instructorCourseService = new InstructorCourseService();
-    import {SchoolClassService} from '@/_services/school-class.service';
-    const schoolClassService = new SchoolClassService();
     import {InstructorClassService} from '@/_services/instructor-class.service';
     const instructorClassService = new InstructorClassService();
     import {StudentService} from '@/_services/student.service';
@@ -170,8 +174,9 @@
     const studentParentService = new StudentParentService();
     import { FileImportService } from "@/_services/file-import.service";
     import DeletePopup from "@/components/delete-popup/DeletePopup";
+    const fileImportService = new FileImportService();
+    import SchoolClassService from '@/_services/school-class.service';
 
-    const fileImportService = new FileImportService()
     export default {
         components: {
             DeletePopup,
@@ -229,13 +234,13 @@
                     job: '',
                     jobPlace: '',
                     languageId: 0,
-                    middleName: '',
+                    middleName: 'middleName',
                     name: '',
                     password: '',
                     phone: '',
                     roles: [],
                     schoolId: 0,
-                    surname: '',
+                    surname: 'surname',
                     username: ''
                 },
                 students: [],
@@ -253,7 +258,9 @@
                 currentPage: 1,
                 totalElements: 0,
                 pageSize: 0,
-                isDeleting: false
+                isDeleting: false,
+                showDetailModal: false,
+                studentDetail: {}
             }
         },
 
@@ -288,6 +295,13 @@
                 })
             },
 
+            showDetailInfo(studentId) {
+                studentService.getDetails(studentId).then((res) => {
+                    this.studentDetail = res;
+                    this.showDetailModal = true;
+                }).catch(err => this.$toast.error(err));
+            },
+
             downloadTemplate () {
                 const a = document.createElement('a');
                 a.download = 'Шаблон импорта студентов.xlsx'
@@ -313,10 +327,9 @@
             },
 
             onAddStudent () {
-                this.isAddStudentModal = true
-                this.isStudentEdit = false
-                this.studentObj = {}
-                this.parentPersonObj = {}
+                this.isAddStudentModal = true;
+                this.isStudentEdit = false;
+                this.studentObj = {};
             },
 
             onEditStudent(item) {
@@ -336,7 +349,7 @@
             },
 
             fetchAllClasses() {
-                schoolClassService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
+                SchoolClassService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
                     this.classes = res.map(i => {
                         i.classTitle = `${i.classLevel} ${i.classLabel}`;
                         return i;
@@ -365,6 +378,9 @@
                         this.fetchStudents();
                         this.isAddStudentModal = false;
                         this.$toast.success('Success message');
+                    }).catch(err => {
+                        this.$toast.error(err);
+                        console.log(err);
                     });
 
                     this.parentPersonObj.roles = this.roles.filter(i => i.code === 'ROLE_PARENT').map(i => i.id);
@@ -377,9 +393,11 @@
                         studentParentService.create(studentParent).then((res) => {
                             console.log(res.message);
                         }).catch(err => {
+                            this.$toast.error(err);
                             console.log(err);
                         })
                     }).catch(err => {
+                        this.$toast.error(err);
                         console.log(err);
                     })
                 })
@@ -411,6 +429,10 @@
 </script>
 
 <style lang="scss">
+    .info-icon {
+        color: #2196F3;
+        cursor: pointer;
+    }
     .v-form {
         background: #FFFFFF;
         border-radius: 7px;

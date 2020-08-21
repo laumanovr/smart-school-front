@@ -20,3 +20,4 @@ export class ShiftTimeService extends BaseApiService {
         return this.sendPostRequest(url, data);
     }
 }
+export default new ShiftTimeService();

@@ -5,6 +5,8 @@
             <md-button class="md-primary blue" @click="addShiftTimeToArray">Добавить</md-button>
         </div>
 
+        <div class="empty-fields" v-show="isEmptyFields">Некоторые поля не заполнены!</div>
+
         <div class="shift-time-list">
             <div class="shift-time" v-for="shtime in shiftTimeList" :key="shtime.id">
                 <div class="lesson">
@@ -44,9 +46,14 @@
             shiftTimeList: Array,
             mode: String
         },
-
         components: {
             Timeselector
+        },
+
+        data() {
+            return {
+                isEmptyFields: false
+            }
         },
 
         methods: {
@@ -55,6 +62,10 @@
             },
 
             saveShiftTime() {
+                if (this.shiftTimeList.some(item => !item.name)) {
+                    this.isEmptyFields = true;
+                    return;
+                }
                 this.$emit('saveShiftTimes');
             },
 
@@ -68,6 +79,13 @@
 <style lang="scss">
     .add-shift-time {
         text-align: right;
+    }
+
+    .empty-fields {
+        text-align: center;
+        color: #ff1717;
+        font-weight: bold;
+        font-size: 16px;
     }
 
     .shift-time-list {
