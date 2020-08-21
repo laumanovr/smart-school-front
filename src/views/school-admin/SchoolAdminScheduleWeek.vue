@@ -15,9 +15,11 @@
                             @change="onSelectShift"
                         ></v-select>
                     </div>
-                    <md-button class="md-primary blue">
-                        <router-link :to="{name: 'shifts'}">Все смены</router-link>
-                    </md-button>
+                    <router-link :to="{name: 'shifts'}">
+                        <md-button class="md-primary blue">
+                            Все смены
+                        </md-button>
+                    </router-link>
                 </div>
             </template>
         </SuperAdminSchoolHead>
@@ -368,7 +370,6 @@
                 instructorCourseService.listBySchool(this.school.id).then((res) => {
                     if (res._embedded) {
                         this.allTeachers = res._embedded.instructorCourseResourceList;
-                        console.log(this.allTeachers);
                     }
                 })
             },
@@ -376,9 +377,7 @@
             fetchScheduleData() {
                 ScheduleWeekService.getAllBySchoolAndShift(this.school.id, this.currentShiftId).then((res) => {
                     this.allSchedules = res;
-                    console.log(res);
                     this.showContent = true;
-                    console.log(res);
                 }).catch(err => this.$toast.error(err));
             },
 
@@ -391,14 +390,12 @@
             getAllSchoolClasses() {
                 SchoolClassService.getAllBySchool(this.school.id).then((res) => {
                     this.classes = res;
-                    console.log(res);
                 }).catch(err => this.$toast.error(err));
             },
 
             getShiftTimesByShiftId() {
                 ShiftTimeService.getAllByShiftId(this.currentShiftId).then((res) => {
                     this.shiftTimes = res.sort((a, b) => a.name - b.name);
-                    console.log(res);
                 }).catch(err => this.$toast.error(err));
             },
 
