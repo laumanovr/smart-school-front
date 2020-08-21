@@ -46,7 +46,7 @@
 
             <template v-slot:body="{ item }">
                 <td>{{ item.instructorTitle }}</td>
-                <td>{{ item.courseName }}</td>
+                <td>{{ showCourseName(item.courseName) }}</td>
                 <td>{{ item.username }}</td>
                 <td @click="editUser(item)" class="actions"><img alt="" src="../../assets/images/icons/pen.svg"></td>
             </template>
@@ -79,10 +79,12 @@ import moment from 'moment'
 import ExcelJs from "@/components/excel-export/ExcelJs";
 import ImportFile from "@/components/import-file/ImportFile";
 import { FileImportService } from "@/_services/file-import.service";
+const fileImportService = new FileImportService();
+const personService = new PersonService();
+const instructorCourseService = new InstructorCourseService();
+import {AdminCourseService} from '@/_services/admin-course.service';
+const adminCourseService = new AdminCourseService();
 
-const fileImportService = new FileImportService()
-const personService = new PersonService()
-const instructorCourseService = new InstructorCourseService()
 export default {
     name: 'Teachers',
     components: {
@@ -101,16 +103,28 @@ export default {
         totalElements: 0,
         pageSize: 0,
         currentPage: 1,
+        allAdminCourses: []
     }),
     computed: {
         userProfile() {
             return this.$store.state.account.profile
         }
     },
-    mounted() {
-        this.fetchUsers()
+    async mounted() {
+        await this.fetchAllAdminCourses();
+        this.fetchUsers();
     },
     methods: {
+        fetchAllAdminCourses() {
+            adminCourseService.list().then((res) => {
+                this.allAdminCourses = res;
+            })
+        },
+        showCourseName(code) {
+            if (code) {
+                return this.allAdminCourses.find(course => course.code === code).title;
+            }
+        },
         onAddAdmin() {
             this.isAddUser = true
             this.isEdit = false
