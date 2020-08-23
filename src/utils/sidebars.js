@@ -115,4 +115,39 @@ export const instructorSidebars = [
 		icon: 'chart.svg',
 		route: '/instructor-page'
 	},
+	{
+		name: 'Журнал',
+		icon: 'journal.svg',
+		route: '/instructor-page/journal'
+	},
+	{
+		name: 'Ит.Оценки',
+		icon: 'quarter-grade.svg',
+		route: '/instructor-page/quarter-grade'
+	},
+	{
+		name: 'Мои классы',
+		icon: 'my-class.svg',
+		route: '/instructor-page/my-class'
+	},
+	{
+		name: 'Уроки',
+		icon: 'book-open.svg',
+		route: '/instructor-page/topic'
+	},
+	{
+		name: 'Календарь',
+		icon: 'calendar.svg',
+		route: '/instructor-page/topic'
+	},
+	{
+		name: 'Расписание',
+		icon: 'schedule.svg',
+		route: '/instructor-page/schedule'
+	},
+	{
+		name: 'Сообщения',
+		icon: 'message.svg',
+		route: '/instructor-page/message'
+	},
 ]

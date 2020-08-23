@@ -5,19 +5,27 @@
 		</div>
 		<div class="instructor-dashboard__stat stat">
 			<div class="stat__my-class">
-				<img src="../../assets/images/temporary/my-class-chart.svg" alt="">
+				<img alt="" src="../../assets/images/temporary/my-class-chart.svg">
 			</div>
-			<div class="stat__students"></div>
+			<div class="stat__students">
+				<img src="../../assets/images/temporary/student-stats.svg" alt="">
+			</div>
 		</div>
 	</div>
 </template>
 
 <script>
 export default {
-name: "InstructorDashboard"
+	name: "InstructorDashboard"
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+	.instructor-dashboard {
+		display: flex;
 
+		&__stat {
+
+		}
+	}
 </style>
