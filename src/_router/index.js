@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import $user from './protect-route'
 import Login from '@/views/login/Login'
 import Chronicle from '@/views/super-admin/Chronicle'
 import SchoolAdmin from '@/views/super-admin/SchoolAdmin'
@@ -23,7 +23,7 @@ const routes = [
 	{
 		path: '/',
 		name: 'Home',
-		component: Login
+		component: Login,
 	},
 	{
 		path: '/login',
@@ -91,7 +91,10 @@ const routes = [
 				component: loadComponent('super-admin/Library')
 			}
 		
-		]
+		],
+		beforeEnter: (to, from, next) => {
+			$user.checkSuperAdmin(next);
+		},
 	},
 	{
 		name: 'schoolAdmin',
@@ -153,7 +156,10 @@ const routes = [
 				path: 'shifts',
 				component: loadComponent('school-admin/Shift')
 			}
-		]
+		],
+		beforeEnter: (to, from, next) => {
+			$user.checkSchoolAdmin(next);
+		},
 	},
 	{
 	    name: 'instructorPage',
@@ -164,9 +170,18 @@ const routes = [
                 name: 'instructorDashboard',
                 path: '/',
                 component: loadComponent('instructor/InstructorDashboard'),
-            }
-        ]
-    }
+            },
+	        {
+		        name: 'instructorQuarterGrade',
+		        path: 'quarter-grade',
+		        component: loadComponent('instructor/InstructorQuarterGrade'),
+	        }
+        ],
+		beforeEnter: (to, from, next) => {
+			$user.checkInstructor(next);
+		},
+    },
+	{ path: '*', redirect: '/' }
 ];
 
 const router = new VueRouter({
@@ -174,5 +189,16 @@ const router = new VueRouter({
 	base: process.env.BASE_URL,
 	routes
 })
+router.beforeEach((to, from, next) => {
+	const publicPages = [ '/login', '/' ];
+	const authRequired = !publicPages.includes(to.path);
+	const loggedIn = localStorage.getItem('user');
+	
+	if (authRequired && !loggedIn) {
+		return next('/login');
+	}
+	
+	next();
+});
 
 export default router
