@@ -37,13 +37,17 @@ export default {
 	},
 	methods: {
 		fetchInsClass() {
-			//TODO: Need to filter if classes have duplicates
-			scheduleWeekService.getByInstructor(this.userProfile.user.id).then(res => {
-				this.classes = res
+			scheduleWeekService.getByInstructor(this.userProfile.personId).then(res => {
+				this.classes = []
+				res.forEach(i => {
+					if (!this.classes.some(el => el.classId === i.classId)) this.classes.push(i)
+				})
+				this.onClassClick(this.classes[0])
 			}).catch(err => console.log(err))
 		},
 		onClassClick(item) {
 			this.clas = item
+			this.$emit('classSelected', this.clas)
 		}
 	}
 }
@@ -83,8 +87,11 @@ export default {
 		color: #707683;
 		margin: 0 5px;
 		padding: 15px 8px;
-		transition: all 0.5s;
-
+		transition: all 0.2s;
+		&:hover {
+			background: rgba(#339DFA, 0.2);
+			border-radius: 5px;
+		}
 		&.active {
 			background: linear-gradient(180deg, #4A27F3 0%, #339DFA 100%);
 			border-radius: 5px;
@@ -92,10 +99,6 @@ export default {
 			line-height: 21px;
 			letter-spacing: 0.01em;
 			color: #FFFFFF;
-		}
-		&:hover {
-			background: rgba(#1F3F68, 0.2);
-			border-radius: 5px;
 		}
 	}
 }
