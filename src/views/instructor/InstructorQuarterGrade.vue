@@ -12,6 +12,8 @@ name: "InstructorQuarterGrade",
 }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+	.instructor-quarter-grade {
+		padding: 25px;
+	}
 </style>

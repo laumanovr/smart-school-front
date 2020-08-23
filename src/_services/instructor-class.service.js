@@ -20,8 +20,8 @@ export class InstructorClassService extends BaseApiService {
         return this.sendPostRequest(url, data);
     }
 
-    getByInstructorId(insId) {
-        const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/class/list/instructor/${insId}`;
+    getByInstructorId(insId, page = 0, size = 20) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/class/list/instructor/${insId}?page=${page}&size=${size}`;
         return this.sendGetRequest(url);
     }
 

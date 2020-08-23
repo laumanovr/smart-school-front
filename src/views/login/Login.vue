@@ -20,6 +20,7 @@
 					<label>Логин</label>
 					<input
 						v-model="username"
+						name="username"
 						placeholder="Ваш логин"
 					>
 				</div>

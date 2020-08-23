@@ -9,6 +9,11 @@ export class ScheduleWeekService extends BaseApiService {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/schedule/week/list/school/${schoolId}?shiftId=${shiftId}`;
         return this.sendGetRequest(url);
     }
+    
+    getByInstructor (id, weekDay = '') {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/schedule/week/list/instructor/${id}?weekDay=${weekDay}`;
+        return this.sendGetRequest(url);
+    }
 
     create(data) {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/schedule/week/create`;
