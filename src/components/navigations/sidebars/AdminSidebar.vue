@@ -1,15 +1,16 @@
 <template>
     <div class="super-admin-sidebar">
         <div class="super-admin-sidebar__items">
-            <button
+            <router-link
                 :class="{ 'active' : $route.path === sidebar.route }"
-                :key="index" @click="$router.push(sidebar.route)"
+                :key="index"
+                :to="sidebar.route"
                 class="super-admin-sidebar__item"
                 v-for="(sidebar, index) in sidebars"
             >
                 <img :src="require(`../../../assets/images/icons/${sidebar.icon}`)" alt="">
                 {{ sidebar.name }}
-            </button>
+            </router-link>
         </div>
         <div class="super-admin-sidebar__setting">
             <img alt="" src="../../../assets/images/icons/setting.svg">
@@ -18,7 +19,7 @@
 </template>
 
 <script>
-import {superAdminSidebars, schoolAdminSidebars} from '@/utils/sidebars'
+import {superAdminSidebars, schoolAdminSidebars, instructorSidebars} from '@/utils/sidebars'
 
 export default {
     name: 'AdminSidebar',
@@ -33,6 +34,7 @@ export default {
     }),
     mounted() {
         if (this.type === 'superAdmin') this.sidebars = superAdminSidebars;
+        else if (this.type === 'instructor') this.sidebars = instructorSidebars
         else this.sidebars = schoolAdminSidebars;
     }
 }
@@ -81,6 +83,9 @@ export default {
             box-shadow: 0px 3.68142px 9.20354px rgba(0, 0, 0, 0.05);
             border-radius: 5px;
         }
+	    &:hover {
+		    text-decoration: unset;
+	    }
     }
 }
 </style>
