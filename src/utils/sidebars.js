@@ -128,7 +128,7 @@ export const instructorSidebars = [
 	{
 		name: 'Мои классы',
 		icon: 'my-class.svg',
-		route: '/instructor-page/my-class'
+		route: '/instructor-page/classes'
 	},
 	{
 		name: 'Уроки',
