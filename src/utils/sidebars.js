@@ -136,11 +136,6 @@ export const instructorSidebars = [
 		route: '/instructor-page/topic'
 	},
 	{
-		name: 'Календарь',
-		icon: 'calendar.svg',
-		route: '/instructor-page/topic'
-	},
-	{
 		name: 'Расписание',
 		icon: 'schedule.svg',
 		route: '/instructor-page/schedule'
