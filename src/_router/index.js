@@ -30,10 +30,15 @@ const routes = [
 		name: 'login',
 		component: Login
 	},
+
+    // SUPER-ADMIN
 	{
 		name: 'superAdmin',
 		path: '/super-admin',
 		component: () => import('@/views/super-admin/Dashboard'),
+        beforeEnter: (to, from, next) => {
+            $user.checkSuperAdmin(next);
+        },
 		children: [
 			{
 				path: '/',
@@ -90,16 +95,17 @@ const routes = [
 				path: 'library',
 				component: loadComponent('super-admin/Library')
 			}
-		
 		],
-		beforeEnter: (to, from, next) => {
-			$user.checkSuperAdmin(next);
-		},
 	},
+
+    // SCHOOL-ADMIN
 	{
 		name: 'schoolAdmin',
 		path: '/school-admin',
 		component: SchoolAdminManage,
+        beforeEnter: (to, from, next) => {
+            $user.checkSchoolAdmin(next);
+        },
 		children: [
 			{
 				name: 'schoolAdminDashboard',
@@ -157,14 +163,16 @@ const routes = [
 				component: loadComponent('school-admin/Shift')
 			}
 		],
-		beforeEnter: (to, from, next) => {
-			$user.checkSchoolAdmin(next);
-		},
 	},
+
+    // INSTRUCTOR
 	{
 	    name: 'instructorPage',
         path: '/instructor-page',
         component: loadComponent('instructor/InstructorManage'),
+        beforeEnter: (to, from, next) => {
+            $user.checkInstructor(next);
+        },
         children: [
             {
                 name: 'instructorDashboard',
@@ -175,11 +183,13 @@ const routes = [
 		        name: 'instructorQuarterGrade',
 		        path: 'quarter-grade',
 		        component: loadComponent('instructor/InstructorQuarterGrade'),
-	        }
+	        },
+            {
+                name: 'instructorClasses',
+                path: 'classes',
+                component: loadComponent('instructor/InstructorClasses')
+            }
         ],
-		beforeEnter: (to, from, next) => {
-			$user.checkInstructor(next);
-		},
     },
 	{ path: '*', redirect: '/' }
 ];
@@ -193,11 +203,11 @@ router.beforeEach((to, from, next) => {
 	const publicPages = [ '/login', '/' ];
 	const authRequired = !publicPages.includes(to.path);
 	const loggedIn = localStorage.getItem('user');
-	
+
 	if (authRequired && !loggedIn) {
 		return next('/login');
 	}
-	
+
 	next();
 });
 
