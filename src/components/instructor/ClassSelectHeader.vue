@@ -1,6 +1,6 @@
 <template>
 	<div class="class-select-header">
-		<div class="class-select-header__title">Итоговые Оценки</div>
+		<div class="class-select-header__title">{{ headTitle }}</div>
 		<div class="class-select-header__classes">
 			<button
 				:class="{ 'active' : item.id === clas.id }"
@@ -16,11 +16,13 @@
 </template>
 
 <script>
-import { ScheduleWeekService } from "@/_services/schedule-week.service";
+import ScheduleWeekService from "@/_services/schedule-week.service";
 
-const scheduleWeekService = new ScheduleWeekService()
 export default {
 	name: "ClassSelectHeader",
+    props: {
+	    headTitle: String
+    },
 	data() {
 		return {
 			classes: [],
@@ -33,11 +35,13 @@ export default {
 		}
 	},
 	mounted() {
-		this.fetchInsClass()
+        if (this.$route.name !== 'instructorClasses') {
+            this.fetchInsClass()
+        }
 	},
 	methods: {
 		fetchInsClass() {
-			scheduleWeekService.getByInstructor(this.userProfile.personId).then(res => {
+            ScheduleWeekService.getByInstructor(this.userProfile.personId).then(res => {
 				this.classes = []
 				res.forEach(i => {
 					if (!this.classes.some(el => el.classId === i.classId)) this.classes.push(i)
@@ -59,7 +63,7 @@ export default {
 	font-style: normal;
 	background: #FFFFFF;
 	height: 67px;
-	box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.06);
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
 	border-radius: 4px;
 	display: flex;
 	align-items: center;
