@@ -67,6 +67,7 @@ h4  {
 table {
   border-spacing: 0;
   border-collapse: collapse;
+  background: #fff;
   &.table {
     width: 100%;
     th {
@@ -82,6 +83,14 @@ table {
       height: 64px;
       border-top: 1px solid #dcdcdc;
       padding: 0 35px;
+    }
+  }
+  &.bordered {
+    border: 1px solid #b5b5b5;
+    th, td {
+      border-right: 1px solid #b5b5b5;
+      padding: 0 20px;
+      height: 50px;
     }
   }
 }
