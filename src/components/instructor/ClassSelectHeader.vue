@@ -21,7 +21,8 @@ import ScheduleWeekService from "@/_services/schedule-week.service";
 export default {
 	name: "ClassSelectHeader",
     props: {
-	    headTitle: String
+	    headTitle: String,
+        showClass: Boolean
     },
 	data() {
 		return {
@@ -35,8 +36,8 @@ export default {
 		}
 	},
 	mounted() {
-        if (this.$route.name !== 'instructorClasses') {
-            this.fetchInsClass()
+        if (this.showClass) {
+            this.fetchInsClass();
         }
 	},
 	methods: {
