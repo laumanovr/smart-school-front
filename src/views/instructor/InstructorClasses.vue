@@ -1,6 +1,6 @@
 <template>
     <div class="instructor-class-container">
-        <ClassSelectHeader :headTitle="'Мои Классы'" />
+        <ClassSelectHeader :headTitle="'Мои Классы'" :showClass="false" />
 
         <div class="class-content" v-if="showData">
             <table class="table">
