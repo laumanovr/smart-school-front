@@ -188,6 +188,11 @@ const routes = [
                 name: 'instructorClasses',
                 path: 'classes',
                 component: loadComponent('instructor/InstructorClasses')
+            },
+            {
+                name: 'instructorSchedule',
+                path: 'schedule',
+                component: loadComponent('instructor/InstructorSchedule')
             }
         ],
     },
