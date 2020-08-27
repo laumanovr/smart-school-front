@@ -33,6 +33,7 @@
                 <SmartButton @clicked="openAddCourseModal">Добавить предмет</SmartButton>
             </template>
             <template v-slot:head>
+	            <th>ID</th>
                 <th>Ф.И.О</th>
                 <th>Класс</th>
                 <th>Пол</th>
@@ -43,9 +44,10 @@
             </template>
 
             <template v-slot:body="{ item }">
+	            <td>{{ item.index + 1 }}</td>
                 <td>{{ item.name }} {{ item.surname }}</td>
                 <td>{{ item.classTitle }}</td>
-                <td>{{ item.gender === 1 ? 'М' : 'Ж' }}</td>
+                <td>{{ item.gender === 0 ? 'М' : 'Ж' }}</td>
                 <td>{{ item.dateOfBirth }}</td>
                 <td><i class="material-icons info-icon" @click="showDetailInfo(item.id)">info</i></td>
                 <td><img class="clickable-icons" @click="onEditStudent(item)" src="../../assets/images/icons/pen.svg" alt=""></td>
@@ -329,7 +331,10 @@
                 studentService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
                     this.totalElements = res.length;
                     this.pageSize = res.length
-                    this.students = res;
+                    this.students = res.map((i, ind) => {
+                    	i.index = ind
+	                    return i
+                    });
                     this.exportHeaders = ['Ф.И.О', 'Класс', 'Пол', 'Дата рождения', 'Имя Родителя', 'Логин'];
                     this.exportRows = this.students.map(i => {
                         return [`${i.name} ${i.surname}`, i.classTitle, i.gender === 1 ? 'М' : 'Ж', i.dateOfBirth, '', ''];
@@ -416,7 +421,7 @@
                 this.studentObj.name = item.name;
                 this.studentObj.surname = item.surname;
                 this.studentObj.id = item.id;
-                this.studentObj.gender = item.gender === 1 ? 'MALE' : 'FEMALE';
+                this.studentObj.gender = item.gender === 0 ? 'MALE' : 'FEMALE';
                 this.isAddStudentModal = true
                 this.isStudentEdit = true
             },
@@ -441,8 +446,17 @@
                 this.studentObj.chronicleYearId = this.userProfile.schools[0].chronicleId;
                 this.studentObj.dateOfBirth = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY');
                 this.studentObj.roles = this.roles.filter(i => i.code === 'ROLE_STUDENT').map(i => i.id);
+                const d = {
+                	classId: this.studentObj.classId,
+	                dateOfBirth: this.studentObj.dateOfBirth,
+	                name: this.studentObj.name,
+	                surname: this.studentObj.surname,
+	                middleName: this.studentObj.middleName,
+	                gender: this.studentObj.gender,
+	                id: this.studentObj.id
+                }
                 if (this.isStudentEdit) {
-                    studentService.edit(this.studentObj).then(res => {
+                    studentService.edit(d).then(res => {
                         this.$toast.success('Success message')
                         this.isAddStudentModal = false
                         this.fetchStudents()
