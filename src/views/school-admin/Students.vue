@@ -30,6 +30,7 @@
                 <SmartSelect>Класс <v-icon>$chevronDown</v-icon></SmartSelect>
                 <SmartSelect>Буква <v-icon>$chevronDown</v-icon></SmartSelect>
                 <SmartSelect>Пол <v-icon>$chevronDown</v-icon></SmartSelect>
+                <SmartButton @clicked="openAddCourseModal">Добавить предмет</SmartButton>
             </template>
             <template v-slot:head>
                 <th>Ф.И.О</th>
@@ -143,10 +144,45 @@
                 <v-text-field type="text" label="Имя" v-model="studentDetail.name" readonly/>
                 <v-text-field type="text" label="Фамилия" v-model="studentDetail.surname" readonly/>
                 <v-text-field type="text" label="Телефон" v-model="studentDetail.phone" readonly/>
+                <template v-for="course in studentDetail.courses">
+                    <v-text-field type="text" label="Предмет" :value="course.courseName + '-' + course.instructorTitle" readonly/>
+                </template>
                 <v-text-field type="text" label="Имя родителя" readonly/>
                 <v-btn @click="showDetailModal = false" color="primary">Закрыть</v-btn>
             </v-form>
         </v-dialog>
+
+        <!--ADD COURSE MODAL-->
+        <modal name="course-modal">
+            <div class="modal-container">
+            <h4>Добавить предмет</h4>
+            <div>
+                <v-select
+                    :rules="required"
+                    :items="students"
+                    item-text="classTitle"
+                    item-value="classId"
+                    label="Класс"
+                    v-model="studentObj.classId"
+                >
+                </v-select>
+            </div>
+            <div>
+                <v-select
+                    :rules="required"
+                    :items="instrCourses"
+                    item-text="courseName"
+                    label="Предмет"
+                    v-model="instrCourseObj"
+                    return-object
+                >
+                </v-select>
+            </div>
+                <div class="btn-actions">
+                    <v-btn color="primary" @click="submitAddCourseToStudents">Сохранить</v-btn>
+                </div>
+            </div>
+        </modal>
     </div>
 </template>
 
@@ -176,6 +212,9 @@
     import DeletePopup from "@/components/delete-popup/DeletePopup";
     const fileImportService = new FileImportService();
     import SchoolClassService from '@/_services/school-class.service';
+    import {InstructorCourseService} from '@/_services/instructor-course.service';
+    const instructorCourseService = new InstructorCourseService();
+    import StudentCourseService from '@/_services/student-course.service';
 
     export default {
         components: {
@@ -260,7 +299,10 @@
                 pageSize: 0,
                 isDeleting: false,
                 showDetailModal: false,
-                studentDetail: {}
+                studentDetail: {},
+                instrCourses: [],
+                instrCourseObj: {},
+                sendStudentCourses: []
             }
         },
 
@@ -279,6 +321,7 @@
             this.fetchAllClasses();
             this.fetchRoles();
             this.fetchStudents();
+            this.fetchInstructorCourses();
         },
 
         methods: {
@@ -298,7 +341,43 @@
             showDetailInfo(studentId) {
                 studentService.getDetails(studentId).then((res) => {
                     this.studentDetail = res;
-                    this.showDetailModal = true;
+                    StudentCourseService.getByStudentId(studentId).then((res) => {
+                        this.studentDetail.courses = res;
+                        this.showDetailModal = true;
+                    }).catch(err => this.$toast.error(err));
+                }).catch(err => this.$toast.error(err));
+            },
+
+            openAddCourseModal() {
+                this.instrCourseObj = {};
+                this.studentObj.classId = '';
+                this.sendStudentCourses = [];
+                this.$modal.show('course-modal');
+            },
+
+            fetchInstructorCourses() {
+                instructorCourseService.listBySchool(this.userProfile.schools[0].id).then((res) => {
+                    if (res._embedded) {
+                        this.instrCourses = res._embedded.instructorCourseResourceList
+                    }
+                })
+            },
+
+            submitAddCourseToStudents() {
+                this.students.filter(student => student.classId === this.studentObj.classId).forEach((student) => {
+                    let studentCourse = {
+                        archived: false,
+                        chronicleId: this.studentObj.chronicleYearId,
+                        classId: this.studentObj.classId,
+                        courseId: this.instrCourseObj.courseId,
+                        instructorId: this.instrCourseObj.instructorId,
+                        studentId: student.id
+                    };
+                    this.sendStudentCourses.push(studentCourse)
+                });
+                StudentCourseService.createBatch(this.sendStudentCourses).then(() => {
+                    this.$modal.hide('course-modal');
+                    this.$toast.success('Успешно добавлены');
                 }).catch(err => this.$toast.error(err));
             },
 
