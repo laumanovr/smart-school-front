@@ -10,11 +10,13 @@
             <template v-slot:head>
                 <th>№</th>
                 <th>Название</th>
+                <th>Регион</th>
 <!--                <th><img src="../../../assets/images/icons/plus.svg" alt=""></th>-->
             </template>
             <template slot="body" slot-scope="{item}">
                 <td>{{ item.pos }}</td>
                 <td>{{ item.title }}</td>
+                <td>{{ item.regionTitle }}</td>
 <!--                <td><img src="../../../assets/images/icons/pen.svg" alt=""></td>-->
             </template>
         </SmartTable>
@@ -42,10 +44,10 @@ name: "Rayon",
     methods: {
         fetchRayon () {
             rayonService.list().then(res => {
-                this.rayon = res.map((i, index) => {
-                    i.pos = index + 1;
-                    return i;
-                }).sort((a, b) => a.title.localeCompare(b.title));
+                this.rayon = res.sort((a, b) => a.title.localeCompare(b.title)).map((i, index) => {
+	                i.pos = index + 1;
+	                return i;
+                });
             }).catch(err => console.log(err));
         }
     }
