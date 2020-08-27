@@ -83,7 +83,7 @@ export const schoolAdminSidebars = [
 		route: '/school-admin/classes'
 	},
 	{
-		name: 'Студенты',
+		name: 'Ученики',
 		icon: 'students.svg',
 		route: '/school-admin/students'
 	},
