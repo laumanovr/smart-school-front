@@ -24,6 +24,8 @@
             :total-elements="totalElements"
             :page-size="pageSize"
             :current-page="currentPage"
+            menu="Students"
+            @deleteStudents="onMassDelete"
             @leftClick="onLeftClick"
             @rightClick="onRightClick"
         >
@@ -33,6 +35,7 @@
                 <SmartSelect>Пол <v-icon>$chevronDown</v-icon></SmartSelect>
             </template>
             <template v-slot:head>
+	            <th class="top-th"><input type="checkbox"></th>
 	            <th>ID</th>
                 <th>Ф.И.О</th>
                 <th>Класс</th>
@@ -44,6 +47,7 @@
             </template>
 
             <template v-slot:body="{ item }">
+	            <td><input type="checkbox"  @change="onSelect(item)" v-model="item.checked"></td>
 	            <td>{{ item.index + 1 }}</td>
                 <td>{{ item.name }} {{ item.surname }}</td>
                 <td>{{ item.classTitle }}</td>
@@ -133,6 +137,12 @@
         >
             <DeletePopup @cancel="isDeleting = false" @accept="deleteStudent"></DeletePopup>
         </v-dialog>
+	    <v-dialog
+		    max-width="450"
+		    v-model="isMassDeleting"
+	    >
+		    <DeletePopup @cancel="isMassDeleting = false" @accept="massDelete"></DeletePopup>
+	    </v-dialog>
         <v-dialog v-if="isAddFile" v-model="isAddFile" width="546" id="add-file">
             <ImportFile @submit="onSubmit"></ImportFile>
         </v-dialog>
@@ -198,6 +208,7 @@
         data() {
             return {
                 isAddFile: false,
+	            isMassDeleting: false,
                 studentObj: {
                     address: '',
                     avatar: '',
@@ -288,6 +299,9 @@
         },
 
         methods: {
+	        onMassDelete () {
+	            this.isMassDeleting = true
+	        },
             fetchStudents() {
                 studentService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
                     this.totalElements = res.length;
@@ -303,6 +317,27 @@
                     this.exportName = 'Умная школа: Студенты'
                 })
             },
+
+	        massDelete () {
+	        	const ids = this.students.filter(i => i.checked).map(i => i.id)
+				this.isLoading = true
+		        studentService.massDelete(ids).then(res => {
+					this.$toast.success('Успешно!')
+			        this.fetchStudents()
+			        this.isMassDeleting = false
+		        	this.isLoading = false
+				}).catch(err => {
+			        console.log(err)
+			        this.isLoading = false
+		        })
+	        },
+
+	        onSelect (item) {
+            	//  this.students = this.students.map(i => {
+                // 	if (i.id === item.id) i.checked = item.checked
+	            //     return i
+                // })
+	        },
 
             showDetailInfo(studentId) {
                 studentService.getDetails(studentId).then((res) => {
@@ -503,5 +538,8 @@
                 }
             }
         }
+    }
+    .top-th {
+	    width: 60px;
     }
 </style>
