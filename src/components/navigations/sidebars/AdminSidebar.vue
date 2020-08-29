@@ -58,9 +58,17 @@ export default {
     }
 
     &__items {
-        margin: 20px auto;
+        margin: 5px 0;
         overflow-y: auto;
         height: 100%;
+        &::-webkit-scrollbar {
+            width: 3px;
+            height: 2px;
+            background: transparent;
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: #339DFA;
+        }
     }
 
     &__item {
@@ -72,7 +80,7 @@ export default {
         line-height: 13px;
         letter-spacing: 0.01em;
         color: #FFFFFF;
-        margin: 10px auto;
+        margin: 10px 4px;
         padding: 5px;
         min-height: 50px;
         min-width: 60px;

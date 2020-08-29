@@ -1,6 +1,6 @@
 <template>
 	<div class="instructor-quarter-grade">
-		<ClassSelectHeader :headTitle="'Итоговые Оценки'" />
+		<ClassSelectHeader :headTitle="'Итоговые Оценки'" :showClass="true" />
 
 		<div class="instructor-quarter-grade__body">
 			<table class="instructor-quarter-grade__table">
