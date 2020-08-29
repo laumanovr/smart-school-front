@@ -1,5 +1,6 @@
 <template>
     <div class="students-container">
+	    <pre-loader v-if="isLoading"></pre-loader>
         <SuperAdminSchoolHead>
             <template v-slot:title>Студенты</template>
             <template v-slot:center>
@@ -23,6 +24,8 @@
             :total-elements="totalElements"
             :page-size="pageSize"
             :current-page="currentPage"
+            menu="Students"
+            @deleteStudents="onMassDelete"
             @leftClick="onLeftClick"
             @rightClick="onRightClick"
         >
@@ -33,6 +36,7 @@
                 <SmartButton @clicked="openAddCourseModal">Добавить предмет</SmartButton>
             </template>
             <template v-slot:head>
+	            <th class="top-th"><input type="checkbox"></th>
 	            <th>ID</th>
                 <th>Ф.И.О</th>
                 <th>Класс</th>
@@ -44,6 +48,7 @@
             </template>
 
             <template v-slot:body="{ item }">
+	            <td><input type="checkbox"  @change="onSelect(item)" v-model="item.checked"></td>
 	            <td>{{ item.index + 1 }}</td>
                 <td>{{ item.name }} {{ item.surname }}</td>
                 <td>{{ item.classTitle }}</td>
@@ -133,6 +138,12 @@
         >
             <DeletePopup @cancel="isDeleting = false" @accept="deleteStudent"></DeletePopup>
         </v-dialog>
+	    <v-dialog
+		    max-width="450"
+		    v-model="isMassDeleting"
+	    >
+		    <DeletePopup @cancel="isMassDeleting = false" @accept="massDelete"></DeletePopup>
+	    </v-dialog>
         <v-dialog v-if="isAddFile" v-model="isAddFile" width="546" id="add-file">
             <ImportFile @submit="onSubmit"></ImportFile>
         </v-dialog>
@@ -214,12 +225,14 @@
     import DeletePopup from "@/components/delete-popup/DeletePopup";
     const fileImportService = new FileImportService();
     import SchoolClassService from '@/_services/school-class.service';
+    import PreLoader from "@/components/preloader/PreLoader";
     import {InstructorCourseService} from '@/_services/instructor-course.service';
     const instructorCourseService = new InstructorCourseService();
     import StudentCourseService from '@/_services/student-course.service';
 
     export default {
         components: {
+	        PreLoader,
             DeletePopup,
             ImportFile,
             ExcelJs,
@@ -234,6 +247,7 @@
         data() {
             return {
                 isAddFile: false,
+	            isMassDeleting: false,
                 studentObj: {
                     address: '',
                     avatar: '',
@@ -304,7 +318,8 @@
                 studentDetail: {},
                 instrCourses: [],
                 instrCourseObj: {},
-                sendStudentCourses: []
+                sendStudentCourses: [],
+	            isLoading: false
             }
         },
 
@@ -327,6 +342,9 @@
         },
 
         methods: {
+	        onMassDelete () {
+	            this.isMassDeleting = true
+	        },
             fetchStudents() {
                 studentService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
                     this.totalElements = res.length;
@@ -342,6 +360,27 @@
                     this.exportName = 'Умная школа: Студенты'
                 })
             },
+
+	        massDelete () {
+	        	const ids = this.students.filter(i => i.checked).map(i => i.id)
+				this.isLoading = true
+		        studentService.massDelete(ids).then(res => {
+					this.$toast.success('Успешно!')
+			        this.fetchStudents()
+			        this.isMassDeleting = false
+		        	this.isLoading = false
+				}).catch(err => {
+			        console.log(err)
+			        this.isLoading = false
+		        })
+	        },
+
+	        onSelect (item) {
+            	//  this.students = this.students.map(i => {
+                // 	if (i.id === item.id) i.checked = item.checked
+	            //     return i
+                // })
+	        },
 
             showDetailInfo(studentId) {
                 studentService.getDetails(studentId).then((res) => {
@@ -505,17 +544,34 @@
                 this.fetchStudents(this.currentPage - 1);
             },
             onSubmit (data) {
+            	this.isLoading = true
                 const d = {
                     chronicleId: data.chronicleId,
                     languageId: data.languageId,
                     file: data.file,
                     schoolId: this.userProfile.schools[0].id
                 };
-                fileImportService.importStudent(d).then(res => {
-                    this.$toast.success('Successfully imported!')
-                    this.isAddFile = false;
-                    this.fetchStudents();
-                }).catch(err => console.log(err));
+                if (data.isIsouMode) {
+	                fileImportService.importIsouStudent(d).then(res => {
+		                this.$toast.success('Успешно!')
+		                this.isAddFile = false;
+		                this.fetchStudents();
+		                this.isLoading = false
+	                }).catch(err => {
+		                this.isLoading = false
+	                	console.log(err)
+	                });
+                } else {
+	                fileImportService.importStudent(d).then(res => {
+		                this.$toast.success('Успешно!')
+		                this.isAddFile = false;
+		                this.fetchStudents();
+		                this.isLoading = false
+	                }).catch(err => {
+		                this.isLoading = false
+	                	console.log(err)
+	                });
+                }
             }
         }
     }
@@ -561,5 +617,8 @@
                 }
             }
         }
+    }
+    .top-th {
+	    width: 60px;
     }
 </style>
