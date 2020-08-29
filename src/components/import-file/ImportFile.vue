@@ -1,5 +1,9 @@
 <template>
         <v-form @submit.prevent="$emit('submit', importData)" ref="form">
+	        <v-switch
+		        v-model="importData.isIsouMode"
+		        label="ИСОУ формат"
+	        ></v-switch>
             <div>
                 <v-file-input :rules="required" v-model="importData.file" chips show-size accept=".xlsx, .xls, .csv" label="Выберите файл"></v-file-input>
             </div>
@@ -47,7 +51,7 @@ export default {
             ],
             years: [],
             languages: [],
-            importData: {}
+            importData: {},
         }
     },
     mounted() {

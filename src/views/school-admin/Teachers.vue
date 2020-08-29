@@ -1,5 +1,6 @@
 <template>
     <div class="school-admin-teachers">
+	    <pre-loader v-if="isLoading"></pre-loader>
         <SuperAdminSchoolHead>
             <template v-slot:title>Учителя</template>
             <template v-slot:center>
@@ -87,9 +88,11 @@ const instructorCourseService = new InstructorCourseService();
 import {AdminCourseService} from '@/_services/admin-course.service';
 const adminCourseService = new AdminCourseService();
 import InstructorService from "@/_services/instructor.service";
+import PreLoader from "@/components/preloader/PreLoader";
 export default {
     name: 'Teachers',
     components: {
+	    PreLoader,
         ImportFile,
         ExcelJs,
         SmartSelect, SmartBtn2, SmartSearchInput, SmartButton, AddTeacher, SuperAdminSchoolHead, SmartTable},
@@ -105,7 +108,8 @@ export default {
         totalElements: 0,
         pageSize: 0,
         currentPage: 1,
-        allAdminCourses: []
+        allAdminCourses: [],
+	    isLoading: false
     }),
     computed: {
         userProfile() {
@@ -176,17 +180,34 @@ export default {
             }).catch(err => console.log(err));
         },
         onSubmit (data) {
+        	this.isLoading = true
             const d = {
                 languageId: data.languageId,
                 chronicleId: data.chronicleId,
                 file: data.file,
                 schoolId: this.userProfile.schools[0].id
             };
-            fileImportService.importInstructor(d).then(res => {
-                this.$toast.success('Successfully imported!')
-                this.isAddFile = false;
-                this.fetchUsers();
-            }).catch(err => console.log(err));
+            if (data.isIsouMode) {
+	            fileImportService.importIsouInstructor(d).then(res => {
+		            this.$toast.success('Успешно!')
+		            this.isAddFile = false;
+		            this.fetchUsers();
+		            this.isLoading = false
+	            }).catch(err => {
+		            this.isLoading = false
+	            	console.log(err)
+	            });
+            } else {
+	            fileImportService.importInstructor(d).then(res => {
+		            this.$toast.success('Успешно!')
+		            this.isAddFile = false;
+		            this.fetchUsers();
+		            this.isLoading = false
+	            }).catch(err => {
+		            this.isLoading = false
+	            	console.log(err)
+	            });
+            }
         },
         onLeftClick () {
             this.currentPage--;

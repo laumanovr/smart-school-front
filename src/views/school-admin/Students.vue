@@ -1,5 +1,6 @@
 <template>
     <div class="students-container">
+	    <pre-loader v-if="isLoading"></pre-loader>
         <SuperAdminSchoolHead>
             <template v-slot:title>Студенты</template>
             <template v-slot:center>
@@ -178,9 +179,11 @@
     import DeletePopup from "@/components/delete-popup/DeletePopup";
     const fileImportService = new FileImportService();
     import SchoolClassService from '@/_services/school-class.service';
+    import PreLoader from "@/components/preloader/PreLoader";
 
     export default {
         components: {
+	        PreLoader,
             DeletePopup,
             ImportFile,
             ExcelJs,
@@ -262,7 +265,8 @@
                 pageSize: 0,
                 isDeleting: false,
                 showDetailModal: false,
-                studentDetail: {}
+                studentDetail: {},
+	            isLoading: false
             }
         },
 
@@ -426,17 +430,34 @@
                 this.fetchStudents(this.currentPage - 1);
             },
             onSubmit (data) {
+            	this.isLoading = true
                 const d = {
                     chronicleId: data.chronicleId,
                     languageId: data.languageId,
                     file: data.file,
                     schoolId: this.userProfile.schools[0].id
                 };
-                fileImportService.importStudent(d).then(res => {
-                    this.$toast.success('Successfully imported!')
-                    this.isAddFile = false;
-                    this.fetchStudents();
-                }).catch(err => console.log(err));
+                if (data.isIsouMode) {
+	                fileImportService.importIsouStudent(d).then(res => {
+		                this.$toast.success('Успешно!')
+		                this.isAddFile = false;
+		                this.fetchStudents();
+		                this.isLoading = false
+	                }).catch(err => {
+		                this.isLoading = false
+	                	console.log(err)
+	                });
+                } else {
+	                fileImportService.importStudent(d).then(res => {
+		                this.$toast.success('Успешно!')
+		                this.isAddFile = false;
+		                this.fetchStudents();
+		                this.isLoading = false
+	                }).catch(err => {
+		                this.isLoading = false
+	                	console.log(err)
+	                });
+                }
             }
         }
     }
