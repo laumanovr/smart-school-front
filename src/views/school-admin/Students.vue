@@ -389,6 +389,7 @@
 				this.isLoading = true
 		        studentService.massDelete(ids).then(res => {
 					this.$toast.success('Успешно!')
+			        this.isSelectAll = false
 			        this.fetchStudents()
 			        this.isMassDeleting = false
 		        	this.isLoading = false
