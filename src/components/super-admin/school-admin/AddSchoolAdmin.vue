@@ -154,7 +154,7 @@ export default {
     border-radius: 7px;
     padding: 20px 40px;
 
-    > div {
+    > div.form-head {
         display: flex;
         justify-content: space-between;
         align-items: center;
