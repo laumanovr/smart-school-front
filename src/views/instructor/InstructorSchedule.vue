@@ -1,5 +1,6 @@
 <template>
     <div class="instructor-schedule-container">
+        <PreLoader v-if="isLoading"/>
         <ClassSelectHeader :headTitle="'Мои Расписания'" :showClass="false" />
 
         <div class="schedule-content">
@@ -45,10 +46,12 @@
     import ShiftTimeService from '@/_services/shift-time.service';
     import {AdminCourseService} from '@/_services/admin-course.service';
     const adminCourseService = new AdminCourseService();
+    import PreLoader from "@/components/preloader/PreLoader";
 
     export default {
         components: {
-            ClassSelectHeader
+            ClassSelectHeader,
+            PreLoader
         },
 
         computed: {
@@ -71,6 +74,7 @@
                     {day: 6, name: 'Суббота'},
                 ],
                 showTable: false,
+                isLoading: false,
                 teacherSchedules: [],
                 shifts: [],
                 shiftTimes: [],
@@ -104,19 +108,24 @@
             },
 
             fetchShiftTimes(shiftId) {
+                this.isLoading = true;
                 ShiftTimeService.getAllByShiftId(shiftId).then((res) => {
                     this.shiftTimes = res.sort((a, b) => a.name - b.name);
                     this.fetchInstructorSchedule();
                 }).catch((err) => {
                     this.$toast.error(err);
+                    this.isLoading = false;
                 })
             },
 
             fetchInstructorSchedule() {
                 ScheduleWeekService.getByInstructor(this.userProfile.personId).then((res) => {
                     this.teacherSchedules = res;
-                    console.log(res);
                     this.showTable = true;
+                    this.isLoading = false;
+                }).catch((err) => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
                 })
             },
 
