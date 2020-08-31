@@ -19,7 +19,6 @@
         <div class="smart-table__body">
             <table class="smart-table__table">
                 <div class="top-head-action" id="actions" v-if="itemsSelected">
-                    <span>{{ itemsSelected }}</span>
                     <p>{{ itemsSelected }} Выбрано</p>
                     <button v-if="menu === 'Students'" @click="$emit('deleteStudents')">
 	                    <img src="../../assets/images/icons/delete.svg" alt="">
@@ -172,7 +171,7 @@ export default {
             border-top-right-radius: 4px;
             border-top-left-radius: 4px;
             height: 48px;
-            left: 1px;
+            left: 60px;
             right: 1px;
             top: 0;
             position: absolute;
@@ -202,7 +201,7 @@ export default {
             }
 
             p {
-                margin: 0 0 0 30px;
+                margin: 0 0 0 0px;
                 padding: 0;
             }
 

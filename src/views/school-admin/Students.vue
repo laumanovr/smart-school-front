@@ -36,7 +36,7 @@
                 <SmartButton @clicked="openAddCourseModal">Добавить предмет</SmartButton>
             </template>
             <template v-slot:head>
-	            <th class="top-th"><input type="checkbox"></th>
+	            <th class="top-th"><input type="checkbox" v-model="isSelectAll" @click="selectAll"></th>
 	            <th>ID</th>
                 <th>Ф.И.О</th>
                 <th>Класс</th>
@@ -248,6 +248,7 @@
             return {
                 isAddFile: false,
 	            isMassDeleting: false,
+	            isSelectAll: false,
                 studentObj: {
                     address: '',
                     avatar: '',
@@ -360,6 +361,13 @@
                     this.exportName = 'Умная школа: Студенты'
                 })
             },
+
+	        selectAll () {
+		        this.students = this.students.map(i => {
+			        i.checked = !this.isSelectAll
+			        return i
+		        })
+	        },
 
 	        massDelete () {
 	        	const ids = this.students.filter(i => i.checked).map(i => i.id)
@@ -559,6 +567,7 @@
 		                this.isLoading = false
 	                }).catch(err => {
 		                this.isLoading = false
+		                this.$toast.error(err)
 	                	console.log(err)
 	                });
                 } else {
@@ -568,6 +577,7 @@
 		                this.fetchStudents();
 		                this.isLoading = false
 	                }).catch(err => {
+		                this.$toast.error(err)
 		                this.isLoading = false
 	                	console.log(err)
 	                });
