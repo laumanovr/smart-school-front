@@ -193,6 +193,16 @@ const routes = [
                 name: 'instructorSchedule',
                 path: 'schedule',
                 component: loadComponent('instructor/InstructorSchedule')
+            },
+            {
+                name: 'instructorJournalGrade',
+                path: 'journal-grade',
+                component: loadComponent('instructor/InstructorJournalGrade')
+            },
+            {
+                name: 'instructorGradeReason',
+                path: 'grade-reason',
+                component: loadComponent('instructor/InstructorGradeReason')
             }
         ],
     },
