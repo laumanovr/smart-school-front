@@ -42,15 +42,15 @@
 	            <th>ID</th>
                 <th>Ф.И.О</th>
                 <th>Предмет</th>
-<!--                <th>Логин</th>-->
+                <!--<th>Логин</th>-->
                 <th><img alt="" src="../../assets/images/icons/plus.svg"></th>
             </template>
 
             <template v-slot:body="{ item }">
                 <td>{{ (currentPage - 1) * 10 + item.index + 1 }}</td>
 	            <td>{{ item.firstName+' '+item.lastName }}</td>
-                <td>{{ item.courses.join(', ') }}</td>
-<!--                <td>{{ item.username }}</td>-->
+                <td><span v-for="courseCode in item.courses">{{showCourseName(courseCode)}}</span>,</td>
+                <td>{{ item.username }}</td>
                 <td @click="editUser(item)" class="actions"><img alt="" src="../../assets/images/icons/pen.svg"></td>
             </template>
         </SmartTable>
