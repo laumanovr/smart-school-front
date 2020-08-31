@@ -1,9 +1,9 @@
 <template>
     <div class="instructor-grade-reason">
+        <PreLoader v-if="isLoading"/>
         <ClassSelectHeader
             :headTitle="'Типы оценок'"
             :showClass="true"
-            @sendData="getInstructorClasses"
             @classSelected="onChangeClass"
         />
         <div class="header-title">
@@ -47,13 +47,16 @@
 <script>
     import GradeReasonService from '@/_services/grade-reason.service';
     import ClassSelectHeader from '@/components/instructor/ClassSelectHeader';
+    import PreLoader from "@/components/preloader/PreLoader";
 
     export default {
         components: {
-            ClassSelectHeader
+            ClassSelectHeader,
+            PreLoader
         },
         data() {
             return {
+                isLoading: false,
                 required: [v => !!v || 'Обязательное поле'],
                 mode: '',
                 gradeReasonObj: {
@@ -62,7 +65,6 @@
                     personId: 0,
                     title: ''
                 },
-                instrClasses: [],
                 gradeReasons: [],
             }
         },
@@ -74,16 +76,6 @@
         },
 
         methods: {
-            getInstructorClasses(classes) {
-                if (classes.length) {
-                    this.instrClasses = classes;
-                    this.gradeReasonObj.classLevel = this.instrClasses[0].classLevel;
-                    this.gradeReasonObj.courseId = this.instrClasses[0].courseId;
-                    this.gradeReasonObj.personId = this.userProfile.personId;
-                    this.fetchInstructorGradeReasons();
-                }
-            },
-
             fetchInstructorGradeReasons() {
                 GradeReasonService.getByInstructor(
                     this.userProfile.personId,
@@ -91,6 +83,10 @@
                     this.gradeReasonObj.courseId
                 ).then((res) => {
                     this.gradeReasons = res;
+                    this.isLoading = false;
+                }).catch((err) => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
                 })
             },
 
@@ -99,6 +95,8 @@
                     this.$toast.info('У вас нет классов!');
                     return;
                 }
+                this.isLoading = true;
+                this.gradeReasonObj.personId = this.userProfile.personId;
                 this.gradeReasonObj.classLevel = klass.classLevel;
                 this.gradeReasonObj.courseId = klass.courseId;
                 this.fetchInstructorGradeReasons();
