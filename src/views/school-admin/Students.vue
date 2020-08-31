@@ -2,7 +2,7 @@
     <div class="students-container">
 	    <pre-loader v-if="isLoading"></pre-loader>
         <SuperAdminSchoolHead>
-            <template v-slot:title>Студенты</template>
+            <template v-slot:title>Ученики</template>
             <template v-slot:center>
                 <SmartButton @clicked="onAddStudent">
                     Добавить ученика <img src="../../assets/images/icons/add-user.svg" alt="">
@@ -184,7 +184,7 @@
                 <v-select
                     :rules="required"
                     :items="instrCourses"
-                    item-text="courseName"
+                    :item-text="showCourseName"
                     label="Предмет"
                     v-model="instrCourseObj"
                     return-object
@@ -229,6 +229,8 @@
     import {InstructorCourseService} from '@/_services/instructor-course.service';
     const instructorCourseService = new InstructorCourseService();
     import StudentCourseService from '@/_services/student-course.service';
+    import {AdminCourseService} from '@/_services/admin-course.service';
+    const adminCourseService = new AdminCourseService();
 
     export default {
         components: {
@@ -320,7 +322,8 @@
                 instrCourses: [],
                 instrCourseObj: {},
                 sendStudentCourses: [],
-	            isLoading: false
+	            isLoading: false,
+                allAdminCourses: []
             }
         },
 
@@ -336,6 +339,7 @@
             this.parentPersonObj.schoolId = this.userProfile.schools[0].id;
             this.studentObj.chronicleYearId = this.userProfile.schools[0].chronicleId;
             this.studentClassObj.chronicleId = this.userProfile.schools[0].chronicleId;
+            this.fetchAllAdminCourses();
             this.fetchAllClasses();
             this.fetchRoles();
             this.fetchStudents();
@@ -343,6 +347,17 @@
         },
 
         methods: {
+            fetchAllAdminCourses() {
+                adminCourseService.list().then((res) => {
+                    this.allAdminCourses = res;
+                })
+            },
+            showCourseName(obj) {
+                if (obj.courseName) {
+                    return this.allAdminCourses.find(course => course.code === obj.courseName).title;
+                }
+            },
+
 	        onMassDelete () {
 	            this.isMassDeleting = true
 	        },
@@ -358,7 +373,7 @@
                     this.exportRows = this.students.map(i => {
                         return [`${i.name} ${i.surname}`, i.classTitle, i.gender === 1 ? 'М' : 'Ж', i.dateOfBirth, '', ''];
                     });
-                    this.exportName = 'Умная школа: Студенты'
+                    this.exportName = 'Умная школа: Ученики'
                 })
             },
 
@@ -435,7 +450,7 @@
 
             downloadTemplate () {
                 const a = document.createElement('a');
-                a.download = 'Шаблон импорта студентов.xlsx'
+                a.download = 'Шаблон импорта Учеников.xlsx'
                 a.href = '/docs/Шаблон_Окуучу.xlsx'
                 a.click()
             },
