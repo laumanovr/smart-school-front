@@ -75,11 +75,13 @@
 
         methods: {
             getInstructorClasses(classes) {
-                this.instrClasses = classes;
-                this.gradeReasonObj.classLevel = this.instrClasses[0].classLevel;
-                this.gradeReasonObj.courseId = this.instrClasses[0].courseId;
-                this.gradeReasonObj.personId = this.userProfile.personId;
-                this.fetchInstructorGradeReasons();
+                if (classes.length) {
+                    this.instrClasses = classes;
+                    this.gradeReasonObj.classLevel = this.instrClasses[0].classLevel;
+                    this.gradeReasonObj.courseId = this.instrClasses[0].courseId;
+                    this.gradeReasonObj.personId = this.userProfile.personId;
+                    this.fetchInstructorGradeReasons();
+                }
             },
 
             fetchInstructorGradeReasons() {
@@ -93,6 +95,10 @@
             },
 
             onChangeClass(klass) {
+                if (!klass) {
+                    this.$toast.info('У вас нет классов!');
+                    return;
+                }
                 this.gradeReasonObj.classLevel = klass.classLevel;
                 this.gradeReasonObj.courseId = klass.courseId;
                 this.fetchInstructorGradeReasons();
