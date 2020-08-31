@@ -57,12 +57,12 @@ export default {
 	        if (this.$refs.form.validate()) {
 	            if (this.isEdit) {
                     adminCourseService.edit(this.course).then(res => {
-                        this.$toast.success('Successfully updated');
+                        this.$toast.success('Успешно обновлено');
                         this.$emit('close');
                     }).catch(err => console.log(err));
                 } else {
                     adminCourseService.create(this.course).then(res => {
-                        this.$toast.success('Successfully created');
+                        this.$toast.success('Успешно создано');
                         this.$emit('close');
                     }).catch(err => console.log(err));
                 }

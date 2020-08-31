@@ -171,7 +171,7 @@ export default {
         },
         courseCreate(data) {
             instructorCourseService.create(data).then(res => {
-                this.$toast.success('Successfully created!')
+                this.$toast.success('Успешно создано!')
                 this.$emit('close')
             }).catch(err => console.log(err))
         },
@@ -184,7 +184,7 @@ export default {
                     return instructorCourseService.create(data);
                 }
             }).then(res => {
-                this.$toast.success('Successfully updated!')
+                this.$toast.success('Успешно обновлено!')
                 this.$emit('close')
             }).catch(err => console.log(err))
         }

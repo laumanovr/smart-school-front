@@ -209,7 +209,7 @@
             deleteClass () {
                 instructorClassService._delete(this.sendObj.id).then(res => {
                     this.fetchAllClasses()
-                    this.$toast.success('Success message');
+                    this.$toast.success('Успешно');
                     this.isDeleting = false
                     // return SchoolClassService._delete(this.sendObj.classId);
                 })
@@ -255,13 +255,13 @@
                             instructorClassService.update(this.instrClassObj).then(res => {
                                 this.isAddClassModal = false;
                                 this.fetchAllClasses();
-                                this.$toast.success('Success message');
+                                this.$toast.success('Успешно');
                             }).catch(err => console.log(err));
                         } else {
                             instructorClassService.create(this.instrClassObj).then((res) => {
                                 this.isAddClassModal = false;
                                 this.fetchAllClasses();
-                                this.$toast.success('Success message');
+                                this.$toast.success('Успешно');
                             })
                         }
                     }).catch(err => console.log(err));
@@ -273,7 +273,7 @@
                             instructorClassService.create(this.instrClassObj).then((res) => {
                                 this.isAddClassModal = false;
                                 this.fetchAllClasses();
-                                this.$toast.success('Success message');
+                                this.$toast.success('Успешно');
                             })
                         })
                     }).catch((err) => {

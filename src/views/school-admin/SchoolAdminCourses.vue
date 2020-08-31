@@ -89,7 +89,7 @@ export default {
                         }).catch(err => console.log(err))
                     }
                 }
-                this.$toast.success('Successfully added!')
+                this.$toast.success('Успешно создано!')
                 this.fetchCourses();
             }
         }

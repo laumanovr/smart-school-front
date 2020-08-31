@@ -180,13 +180,13 @@ export default {
             if (this.$refs.form.validate()) {
                 if (this.isEdit) {
                     schoolService.update(this.school).then(res => {
-                        this.$toast.success('Successfully updated!')
+                        this.$toast.success('Успешно обновлено!')
                         this.school = {}
                         this.$emit('close')
                     }).catch(err => console.log(err))
                 } else {
                     schoolService.create(this.school).then(res => {
-                        this.$toast.success('Successfully created!')
+                        this.$toast.success('Успешно создано!')
                         this.school = {}
                         this.$emit('close')
                     }).catch(err => console.log(err))

@@ -463,7 +463,7 @@
             deleteStudent () {
                 studentService._delete(this.studentObj.id).then(res => {
                     this.isDeleting = false
-                    this.$toast.success('Success message')
+                    this.$toast.success('Успешно')
                     this.fetchStudents()
                 }).catch(err => {
                     console.log(err);
@@ -519,7 +519,7 @@
                 }
                 if (this.isStudentEdit) {
                     studentService.edit(d).then(res => {
-                        this.$toast.success('Success message')
+                        this.$toast.success('Успешно')
                         this.isAddStudentModal = false
                         this.fetchStudents()
                     }).catch(err => console.log(err));
@@ -532,7 +532,7 @@
                     studentClassService.create(this.studentClassObj).then((res) => {
                         this.fetchStudents();
                         this.isAddStudentModal = false;
-                        this.$toast.success('Success message');
+                        this.$toast.success('Успешно');
                     }).catch(err => {
                         this.$toast.error(err);
                         console.log(err);

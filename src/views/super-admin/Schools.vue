@@ -161,7 +161,7 @@ export default {
         },
         deleteSchool () {
             schoolService._delete(this.school.id).then(res => {
-                this.$toast.success('Successfully deleted');
+                this.$toast.success('Успешно удалено');
                 this.isDeleting = false;
             }).catch(err => {
                 this.isDeleting = false;

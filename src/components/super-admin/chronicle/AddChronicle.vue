@@ -35,7 +35,7 @@ export default {
 	    submit () {
 			if (this.$refs.form.validate()) {
 			    chronicleService.create(this.chronicle).then(res => {
-                    this.$toast.success('Success message')
+                    this.$toast.success('Успешно')
                     this.$emit('close');
 			    }).catch(err => {
 			        console.log(err)

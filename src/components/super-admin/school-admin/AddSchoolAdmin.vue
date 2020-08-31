@@ -139,7 +139,7 @@ export default {
         this.schoolAdmin.roles = this.roles.filter(i => i.code === this.role).map(i => i.id)
         this.schoolAdmin.dob = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY')
         personService.create(this.schoolAdmin).then(res => {
-          this.$toast.success('Successfully created!')
+          this.$toast.success('Успешно создано!')
           this.$emit('close')
         }).catch(err => console.log(err))
       }
