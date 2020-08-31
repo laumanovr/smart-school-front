@@ -118,21 +118,26 @@
             },
 
             submitSaveReason() {
+                this.isLoading = true;
                 if (this.mode === 'create') {
                     GradeReasonService.create(this.gradeReasonObj).then(() => {
                         this.closeReasonModal();
                         this.$toast.success('Успешно');
                         this.fetchInstructorGradeReasons();
+                        this.isLoading = false;
                     }).catch((err) => {
                         this.$toast.error(err);
+                        this.isLoading = false;
                     })
                 } else {
                     GradeReasonService.update(this.gradeReasonObj).then(() => {
                         this.closeReasonModal();
                         this.$toast.success('Успешно');
                         this.fetchInstructorGradeReasons();
+                        this.isLoading = false;
                     }).catch((err) => {
                         this.$toast.error(err);
+                        this.isLoading = false;
                     })
                 }
             }
