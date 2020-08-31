@@ -1,5 +1,6 @@
 <template>
     <div class="journal-grade-container">
+        <PreLoader v-if="isLoading"/>
         <ClassSelectHeader
             :headTitle="'Журнал'"
             :showClass="true"
@@ -28,7 +29,7 @@
                     <thead>
                     <tr>
                         <th>
-                            <span class="date">
+                            <span class="date" v-if="currentMonthDays.length">
                                 {{numMonths[currentMonthDays[0].day.slice(3, 5)]}}
                                 {{currentMonthDays[0].day.slice(0, 2)}} -
                                 {{currentMonthDays[currentMonthDays.length - 1].day.slice(0, 2)}}
@@ -90,10 +91,12 @@
     import GradeReasonService from '@/_services/grade-reason.service';
     import {AdminCourseService} from '@/_services/admin-course.service';
     const adminCourseService = new AdminCourseService();
+    import PreLoader from '@/components/preloader/PreLoader';
 
     export default {
         components: {
-            ClassSelectHeader
+            ClassSelectHeader,
+            PreLoader
         },
 
         computed: {
@@ -137,6 +140,7 @@
                     instructorId: 0,
                     shiftId: null
                 },
+                isLoading: false,
                 step: 0,
                 selectedReasonId: '',
                 instructorCourses: [],
@@ -177,6 +181,7 @@
                     this.$toast.info('У вас нет классов!');
                     return;
                 }
+                this.isLoading = true;
                 this.monthDataRequest.classId = klass.classId;
                 this.monthDataRequest.courseId = klass.courseId;
                 this.monthDataRequest.instructorId = this.userProfile.personId;
@@ -197,7 +202,9 @@
                     this.gradeRequest
                 ).then((res) => {
                     this.studentGrades = res.list;
+                    this.isLoading = false;
                 }).catch((err) => {
+                    this.isLoading = false;
                     this.$toast.error(err);
                 })
             },
@@ -210,6 +217,7 @@
                             return item;
                         });
                     }).catch((err) => {
+                    this.isLoading = false;
                     this.$toast.error(err);
                 })
             },
@@ -224,6 +232,9 @@
                         this.gradeReasons = res;
                         this.selectedReasonId = this.gradeReasons[0].id;
                     }
+                }).catch((err) => {
+                    this.isLoading = false;
+                    this.$toast.error(err);
                 })
             },
 
@@ -291,11 +302,13 @@
                             this.step -= 300;
                             gradeTable.scrollLeft = this.step;
                         } else {
+                            this.isLoading = true;
                             this.step = 0;
                             this.scrollPrevMonth();
                             gradeTable.scrollLeft = 0;
                         }
                     } else {
+                        this.isLoading = true;
                         this.scrollPrevMonth();
                     }
                 } else {
@@ -304,11 +317,13 @@
                             this.step += 300;
                             gradeTable.scrollLeft = this.step;
                         } else {
+                            this.isLoading = true;
                             this.step = 0;
                             this.scrollNextMonth();
                             gradeTable.scrollLeft = 0;
                         }
                     } else {
+                        this.isLoading = true;
                         this.scrollNextMonth();
                     }
                 }
@@ -349,11 +364,14 @@
                     this.$toast.info('Сначала поставьте оценку');
                     return;
                 }
+                this.isLoading = true;
                 GradeService.createWithArray(this.sendGradeDtoList).then(() => {
                     this.sendGradeDtoList = [];
                     this.$toast.success('Успешно');
+                    this.isLoading = false;
                 }).catch((err) => {
                     this.$toast.error(err);
+                    this.isLoading = false;
                 })
             },
 
@@ -412,14 +430,14 @@
                     display: inline-block;
                     scroll-behavior: smooth;
                     border-top: 0;
-                    /*&::-webkit-scrollbar {*/
-                    /*width: 0;*/
-                    /*height: 0;*/
-                    /*background: transparent;*/
-                    /*}*/
-                    /*&::-webkit-scrollbar-thumb {*/
-                    /*background-color: rgba(0, 0, 0, 0.3)*/
-                    /*}*/
+                    &::-webkit-scrollbar {
+                        width: 0;
+                        height: 0;
+                        background: transparent;
+                    }
+                    &::-webkit-scrollbar-thumb {
+                        background-color: rgba(0, 0, 0, 0.3)
+                    }
                     th, td {
                         width: 50px;
                         max-width: 50px;
