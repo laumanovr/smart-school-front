@@ -6,8 +6,8 @@ export class BaseApiService {
         return this.sendRequest('GET', url);
     }
 
-    sendDeleteRequest (url) {
-        return this.sendRequest('DELETE', url);
+    sendDeleteRequest (url, data) {
+        return this.sendRequest('DELETE', url, data);
     }
 
     sendPostRequest (url, data) {

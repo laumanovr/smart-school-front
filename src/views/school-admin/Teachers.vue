@@ -1,5 +1,6 @@
 <template>
     <div class="school-admin-teachers">
+	    <pre-loader v-if="isLoading"></pre-loader>
         <SuperAdminSchoolHead>
             <template v-slot:title>Учителя</template>
             <template v-slot:center>
@@ -38,16 +39,18 @@
                 </SmartSelect>
             </template>
             <template v-slot:head>
+	            <th>ID</th>
                 <th>Ф.И.О</th>
                 <th>Предмет</th>
-                <th>Логин</th>
+<!--                <th>Логин</th>-->
                 <th><img alt="" src="../../assets/images/icons/plus.svg"></th>
             </template>
 
             <template v-slot:body="{ item }">
-                <td>{{ item.instructorTitle }}</td>
-                <td>{{ showCourseName(item.courseName) }}</td>
-                <td>{{ item.username }}</td>
+                <td>{{ (currentPage - 1) * 10 + item.index + 1 }}</td>
+	            <td>{{ item.firstName+' '+item.lastName }}</td>
+                <td>{{ item.courses.join(', ') }}</td>
+<!--                <td>{{ item.username }}</td>-->
                 <td @click="editUser(item)" class="actions"><img alt="" src="../../assets/images/icons/pen.svg"></td>
             </template>
         </SmartTable>
@@ -84,10 +87,12 @@ const personService = new PersonService();
 const instructorCourseService = new InstructorCourseService();
 import {AdminCourseService} from '@/_services/admin-course.service';
 const adminCourseService = new AdminCourseService();
-
+import InstructorService from "@/_services/instructor.service";
+import PreLoader from "@/components/preloader/PreLoader";
 export default {
     name: 'Teachers',
     components: {
+	    PreLoader,
         ImportFile,
         ExcelJs,
         SmartSelect, SmartBtn2, SmartSearchInput, SmartButton, AddTeacher, SuperAdminSchoolHead, SmartTable},
@@ -103,7 +108,8 @@ export default {
         totalElements: 0,
         pageSize: 0,
         currentPage: 1,
-        allAdminCourses: []
+        allAdminCourses: [],
+	    isLoading: false
     }),
     computed: {
         userProfile() {
@@ -141,21 +147,24 @@ export default {
             a.click()
         },
         fetchUsers(page = 0) {
-            instructorCourseService.listBySchool(this.userProfile.schools[0].id, page).then(res => {
+            InstructorService.list(page, this.userProfile.schools[0].id).then(res => {
                 this.totalElements = res.page.totalElements
                 this.pageSize = res.page.size
                 if (res._embedded) {
-                    this.users = res._embedded.instructorCourseResourceList
+                    this.users = res._embedded.instructorResourceList.map((i, ind) => {
+                    	i.index = ind
+	                    return i
+                    })
                 } else this.users = [];
                 this.exportHeaders = ['Ф.И.О', 'Предмет'];
                 this.exportRows = this.users.map(i => {
-                    return [i.instructorTitle, i.courseName];
+                    return [i.firstName+' '+i.lastName, i.courses.join(', ')];
                 });
                 this.exportName = 'Умная школа: Учителя'
             }).catch(err => console.log(err))
         },
         editUser(item) {
-            personService.getById(item.instructorId).then(res => {
+            personService.getById(item.id).then(res => {
                 this.user = {
                     id: res.id,
                     name: res.firstName,
@@ -171,17 +180,34 @@ export default {
             }).catch(err => console.log(err));
         },
         onSubmit (data) {
+        	this.isLoading = true
             const d = {
                 languageId: data.languageId,
                 chronicleId: data.chronicleId,
                 file: data.file,
                 schoolId: this.userProfile.schools[0].id
             };
-            fileImportService.importInstructor(d).then(res => {
-                this.$toast.success('Successfully imported!')
-                this.isAddFile = false;
-                this.fetchUsers();
-            }).catch(err => console.log(err));
+            if (data.isIsouMode) {
+	            fileImportService.importIsouInstructor(d).then(res => {
+		            this.$toast.success('Успешно!')
+		            this.isAddFile = false;
+		            this.fetchUsers();
+		            this.isLoading = false
+	            }).catch(err => {
+		            this.isLoading = false
+	            	console.log(err)
+	            });
+            } else {
+	            fileImportService.importInstructor(d).then(res => {
+		            this.$toast.success('Успешно!')
+		            this.isAddFile = false;
+		            this.fetchUsers();
+		            this.isLoading = false
+	            }).catch(err => {
+		            this.isLoading = false
+	            	console.log(err)
+	            });
+            }
         },
         onLeftClick () {
             this.currentPage--;

@@ -24,6 +24,11 @@ export class InstructorClassService extends BaseApiService {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/class/list/instructor/${insId}?page=${page}&size=${size}`;
         return this.sendGetRequest(url);
     }
+    
+    getByClassId(classId, page = 0, size = 20) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/class/list/class/${classId}?page=${page}&size=${size}`;
+        return this.sendGetRequest(url);
+    }
 
     _delete (id) {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/class/${id}`;

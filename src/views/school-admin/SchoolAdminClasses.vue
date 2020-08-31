@@ -243,9 +243,8 @@
             submitClass() {
                 this.sendObj.schoolId = this.userProfile.schools[0].id;
                 if (this.isEditClass) {
-                    //TODO: need to fix
                     SchoolClassService.update(this.sendObj).then(res => {
-                        return instructorClassService.getByInstructorId(this.instrClassObj.personId);
+                        return instructorClassService.getByClassId(this.sendObj.id);
                     }).then(res => {
                         let resource = []
                         this.instrClassObj.classId = this.sendObj.id;

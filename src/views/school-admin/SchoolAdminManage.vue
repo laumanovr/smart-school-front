@@ -6,7 +6,7 @@
 		</SuperAdminHeader>
 		<div class="school-admin-manage__container">
 			<AdminSidebar type="schoolAdmin"></AdminSidebar>
-			<div class="school-admin-manage__body">
+			<div class="school-admin-manage__body" id="school-admin-manage__body">
                 <router-view></router-view>
             </div>
 		</div>

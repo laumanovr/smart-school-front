@@ -18,10 +18,12 @@
         </div>
         <div class="smart-table__body">
             <table class="smart-table__table">
-                <div v-if="itemsSelected">
-                    <span>{{ itemsSelected }}</span>
+                <div class="top-head-action" id="actions" v-if="itemsSelected">
                     <p>{{ itemsSelected }} Выбрано</p>
-                    <button @click="$emit('addCourses')"> Add +</button>
+                    <button v-if="menu === 'Students'" @click="$emit('deleteStudents')">
+	                    <img src="../../assets/images/icons/delete.svg" alt="">
+                    </button>
+                    <button class="add" v-else @click="$emit('addCourses')"> Add +</button>
                 </div>
                 <thead>
                 <tr>
@@ -62,7 +64,11 @@ export default {
         currentPage: {
             type: Number,
             default: 1
-        }
+        },
+	    menu: {
+        	type: String,
+		    default: ''
+	    }
     },
     computed: {
         itemsSelected() {
@@ -77,7 +83,28 @@ export default {
         pageRemainder () {
             return this.currentPage === this.totalPage ? this.totalElements !== this.pageSize ? this.totalElements % this.pageSize : this.pageSize : this.pageSize;
         }
-    }
+    },
+	// mounted() {
+    // 	const el = document.getElementById('actions')
+	// 	const body = el.closest('school-admin-manage__body')
+    // 	if (body) {
+    // 		body.addEventListener('scroll', function (e) {
+	// 		    console.log(el.scrollIntoView())
+	// 	    })
+	//     }
+	// },
+	// beforeDestroy() {
+	// 	window.removeEventListener('scroll', function (e) {
+	// 		const elmnt = document.getElementById("actions");
+	// 		console.log(elmnt.scrollIntoView())
+	// 	})
+	// },
+	methods: {
+		onScroll () {
+			const elmnt = document.getElementById("actions");
+			console.log(elmnt.scrollIntoView())
+		}
+	}
 }
 </script>
 
@@ -139,12 +166,12 @@ export default {
         border-collapse: collapse;
         position: relative;
 
-        div {
+        .top-head-action {
             background: #FFFFFF;
             border-top-right-radius: 4px;
             border-top-left-radius: 4px;
             height: 48px;
-            left: 1px;
+            left: 60px;
             right: 1px;
             top: 0;
             position: absolute;
@@ -155,6 +182,13 @@ export default {
             font-size: 14px;
             line-height: 16px;
             border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+	        .sticky-top {
+		        position: fixed;
+		        top: 76px;
+		        left: 100px;
+		        right: 0;
+	        }
 
             span {
                 background: #339DFA;
@@ -167,16 +201,18 @@ export default {
             }
 
             p {
-                margin: 0 0 0 30px;
+                margin: 0 0 0 0px;
                 padding: 0;
             }
 
             button {
-                margin-left: 30px;
-                padding: 5px;
-                background: #339DFA;
-                border-radius: 4px;
-                color: rgba(#FFFFFF, 1);
+	            margin-left: 30px;
+	            padding: 5px;
+                &.add {
+	                background: #339DFA;
+	                border-radius: 4px;
+	                color: rgba(#FFFFFF, 1);
+                }
             }
         }
 
