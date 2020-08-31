@@ -9,7 +9,12 @@ export class ScheduleWeekService extends BaseApiService {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/schedule/week/list/school/${schoolId}?shiftId=${shiftId}`;
         return this.sendGetRequest(url);
     }
-    
+
+    getCurrentMonth(monthNum, data) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/schedule/week/list/month?month=${monthNum}`;
+        return this.sendPostRequest(url, data);
+    }
+
     getByInstructor (id, weekDay = '') {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/schedule/week/list/instructor/${id}?weekDay=${weekDay}`;
         return this.sendGetRequest(url);
