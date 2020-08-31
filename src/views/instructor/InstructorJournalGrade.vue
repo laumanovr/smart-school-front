@@ -196,6 +196,7 @@
             },
 
             fetchStudentGrades() {
+                this.studentGrades = [];
                 GradeService.getByClassCourseInstructor(
                     this.monthDataRequest.classId,
                     this.monthDataRequest.courseId,
