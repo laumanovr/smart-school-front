@@ -35,7 +35,7 @@ export default {
 			return this.$store.state.account.profile
 		}
 	},
-	mounted() {
+	created() {
         if (this.showClass) {
             this.fetchInsClass();
         }
@@ -43,11 +43,12 @@ export default {
 	methods: {
 		fetchInsClass() {
             ScheduleWeekService.getByInstructor(this.userProfile.personId).then(res => {
-				this.classes = []
+                this.classes = []
 				res.forEach(i => {
 					if (!this.classes.some(el => el.classId === i.classId)) this.classes.push(i)
-				})
-				this.onClassClick(this.classes[0])
+				});
+				this.onClassClick(this.classes[0]);
+				this.$emit('sendData', this.classes);
 			}).catch(err => console.log(err))
 		},
 		onClassClick(item) {
