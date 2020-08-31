@@ -118,7 +118,7 @@ export const instructorSidebars = [
 	{
 		name: 'Журнал',
 		icon: 'journal.svg',
-		route: '/instructor-page/journal'
+		route: '/instructor-page/journal-grade'
 	},
 	{
 		name: 'Ит.Оценки',
@@ -130,6 +130,11 @@ export const instructorSidebars = [
 		icon: 'my-class.svg',
 		route: '/instructor-page/classes'
 	},
+    {
+        name: 'Типы оценок',
+        icon: 'courses.svg',
+        route: '/instructor-page/grade-reason'
+    },
 	{
 		name: 'Уроки',
 		icon: 'book-open.svg',
