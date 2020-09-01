@@ -40,7 +40,8 @@
 
             <template v-slot:body="{ item }">
                 <td>{{ item.schools[0].name }}</td>
-                <td>{{ showCourses(item.courses) }}</td>
+                <!--<td>{{ showCourses(item.courses) }}</td>-->
+                <td><span v-for="courseCode in item.courses">{{showCourseName(courseCode)}}</span></td>
                 <td>{{ item.firstName }} {{ item.lastName }}</td>
                 <td>{{ gender[item.gender] }}</td>
                 <td>{{ item.birthDay }}</td>
@@ -67,9 +68,11 @@ import SmartButton from '@/components/button/SmartButton'
 import SmartSearchInput from '@/components/input/SmartSearchInput'
 import SmartSelect from '@/components/select/SmartSelect'
 import {InstructorService} from "@/_services/instructor.service";
+const instructorService = new InstructorService();
+const personService = new PersonService();
+import {AdminCourseService} from '@/_services/admin-course.service';
+const adminCourseService = new AdminCourseService();
 
-const instructorService = new InstructorService()
-const personService = new PersonService()
 export default {
     name: 'Instructor',
     components: {SmartSelect, SmartSearchInput, SmartButton, SuperAdminSchoolHead, SmartTable, AddSchoolAdmin},
@@ -82,12 +85,24 @@ export default {
         },
         totalElements: 0,
         currentPage: 1,
-        pageSize: 20
+        pageSize: 20,
+        allAdminCourses: [],
     }),
     mounted() {
-        this.fetchUsers(0)
+        this.fetchUsers(0);
+        this.fetchAllAdminCourses();
     },
     methods: {
+        fetchAllAdminCourses() {
+            adminCourseService.list().then((res) => {
+                this.allAdminCourses = res;
+            })
+        },
+        showCourseName(code) {
+            if (code) {
+                return this.allAdminCourses.find(course => course.code === code).title;
+            }
+        },
         onAddAdmin() {
             this.isAddAdmin = true
         },
