@@ -19,5 +19,10 @@ export class ShiftService extends BaseApiService {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/shift/edit/${data.id}`;
         return this.sendPostRequest(url, data);
     }
+
+    removeShift(shiftId) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/shift?id=${shiftId}`;
+        return this.sendDeleteRequest(url);
+    }
 }
 export default new ShiftService();
