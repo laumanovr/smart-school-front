@@ -27,7 +27,7 @@
                         <timeselector v-model="shtime.timeEnd"/>
                     </div>
                 </div>
-                <span class="material-icons delete">close</span>
+                <span class="material-icons delete" @click="deleteShiftTime(shtime)">close</span>
             </div>
         </div>
 
@@ -67,6 +67,10 @@
                     return;
                 }
                 this.$emit('saveShiftTimes');
+            },
+
+            deleteShiftTime(shiftTime) {
+                this.$emit('removeShiftTime', shiftTime);
             },
 
             closeModal() {
