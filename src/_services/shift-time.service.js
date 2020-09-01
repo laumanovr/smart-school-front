@@ -19,5 +19,10 @@ export class ShiftTimeService extends BaseApiService {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/shift-time/edit/${data.id}`;
         return this.sendPostRequest(url, data);
     }
+
+    remove(shiftTimeId) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/shift-time?id=${shiftTimeId}`;
+        return this.sendDeleteRequest(url);
+    }
 }
 export default new ShiftTimeService();
