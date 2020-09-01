@@ -25,7 +25,7 @@
                     <md-table-cell></md-table-cell>
                     <md-table-cell>
                         <i class="material-icons edit" @click="openModal('editAll', shift)">edit</i>
-                        <i class="material-icons delete">close</i>
+                        <i class="material-icons delete" @click="deleteShift(shift.id, false)">close</i>
                     </md-table-cell>
                 </md-table-row>
             </md-table>
@@ -48,6 +48,7 @@
                         :shiftTimeList="shiftTimeList"
                         @addShiftTimeArray="prepareShiftTime"
                         @saveShiftTimes="submitShiftTimes"
+                        @removeShiftTime="deleteShiftTime"
                         @closeModal="closeModal"
                     />
                 </template>
@@ -64,6 +65,7 @@
                         :shiftTimeList="shiftTimeList"
                         @addShiftTimeArray="prepareShiftTime"
                         @saveShiftTimes="submitShiftTimes"
+                        @removeShiftTime="deleteShiftTime"
                         @closeModal="closeModal"
                     />
                     <div class="btn-actions">
@@ -71,6 +73,17 @@
                         <md-button class="md-primary red" @click="closeModal">Отмена</md-button>
                     </div>
                 </template>
+            </div>
+        </modal>
+
+        <!--MODAL FOR DELETE SHIFT-->
+        <modal name="delete-shift-modal" height="200px">
+            <div class="modal-container">
+                <h2>Вы действительно хотите удалить эту смену и все ее уроки?</h2>
+                <div class="btn-actions">
+                    <v-btn color="primary" @click="$modal.hide('delete-shift-modal')">Отмена</v-btn>
+                    <v-btn color="red" @click="deleteShift('', true)">Удалить</v-btn>
+                </div>
             </div>
         </modal>
     </div>
@@ -217,12 +230,40 @@
                 ShiftService.update(this.shiftObj).then(() => {
                     this.submitShiftTimes();
                 }).catch(err => this.$toast.error(err));
+            },
+
+            deleteShift(shiftId, bool) {
+                if (bool) {
+                    ShiftService.removeShift(this.shiftObj.id).then(() => {
+                        this.fetchSchoolShifts();
+                        this.$toast.success('Успешно удалено');
+                        this.$modal.hide('delete-shift-modal');
+                    }).catch(err => this.$toast.error(err));
+                } else {
+                    this.shiftObj.id = shiftId;
+                    this.$modal.show('delete-shift-modal');
+                }
+            },
+
+            deleteShiftTime(shiftTimeObj) {
+                const index = this.shiftTimeList.indexOf(shiftTimeObj);
+                if (this.mode === 'addShiftTime') {
+                    this.shiftTimeList.splice(index, 1);
+                } else if (this.mode === 'editAll') {
+                    ShiftTimeService.remove(shiftTimeObj.id).then(() => {
+                        this.shiftTimeList.splice(index, 1);
+                        this.$toast.success('Успешно удалено');
+                    }).catch(err => this.$toast.error(err));
+                }
             }
         }
     }
 </script>
 
 <style lang="scss">
+    .v-btn__content {
+        color: #fff;
+    }
     .shift-container {
         .go-back {
             font-size: 16px;
