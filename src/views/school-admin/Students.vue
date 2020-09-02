@@ -54,7 +54,7 @@
                 <td>{{ item.classTitle }}</td>
                 <td>{{ item.gender === 0 ? 'М' : 'Ж' }}</td>
                 <td>{{ item.dateOfBirth }}</td>
-                <td><i class="material-icons info-icon" @click="showDetailInfo(item.id)">info</i></td>
+                <td><InfoIcon @click="showDetailInfo(item.id)"/></td>
                 <td><img class="clickable-icons" @click="onEditStudent(item)" src="../../assets/images/icons/pen.svg" alt=""></td>
                 <td><img class="clickable-icons" @click="onDeleteStudent(item)" src="../../assets/images/icons/trash.svg" alt=""></td>
             </template>
@@ -231,6 +231,7 @@
     import StudentCourseService from '@/_services/student-course.service';
     import {AdminCourseService} from '@/_services/admin-course.service';
     const adminCourseService = new AdminCourseService();
+    import InfoIcon from '@/components/icons/InfoIcon';
 
     export default {
         components: {
@@ -243,7 +244,8 @@
             SmartSearchInput,
             SmartButton,
             SuperAdminSchoolHead,
-            SmartTable
+            SmartTable,
+            InfoIcon
         },
 
         data() {
@@ -603,10 +605,6 @@
 </script>
 
 <style lang="scss">
-    .info-icon {
-        color: #2196F3;
-        cursor: pointer;
-    }
     .v-form {
         background: #FFFFFF;
         border-radius: 7px;
