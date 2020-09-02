@@ -32,8 +32,8 @@
                     </md-switch>
                 </div>
                 <div class="scroll-arrows">
-                    <span class="material-icons left" @click="scrollTable('left')">forward</span>
-                    <span class="material-icons" @click="scrollTable('right')">forward</span>
+                    <QuadArrowIcon class="left" @click="scrollTable('left')" />
+                    <QuadArrowIcon @click="scrollTable('right')" />
                 </div>
             </div>
 
@@ -160,7 +160,7 @@
                     <template v-if="mode == 'create' || mode == 'edit'">
                         <h4>{{mode == 'create' ? 'Добавить расписание' : 'Редактировать расписание' }}</h4>
                         <div class="delete-schedule" v-if="mode == 'edit'">
-                            <span class="material-icons" @click="removeSchedule">delete</span>
+                            <DeleteIcon @click="removeSchedule" />
                         </div>
                         <div class="content">
                             <v-select
@@ -269,11 +269,15 @@
     const instructorCourseService = new InstructorCourseService();
     import {AdminCourseService} from '@/_services/admin-course.service';
     const adminCourseService = new AdminCourseService();
+    import QuadArrowIcon from '@/components/icons/QuadArrowIcon';
+    import DeleteIcon from '@/components/icons/DeleteIcon';
     import * as moment from 'moment';
 
     export default {
         components: {
-            SuperAdminSchoolHead
+            SuperAdminSchoolHead,
+            QuadArrowIcon,
+            DeleteIcon
         },
         data() {
             return {
@@ -715,14 +719,8 @@
                 align-items: center;
                 justify-content: center;
                 margin-left: 70px;
-                span {
-                    color: #03A9F4;
-                    font-size: 36px;
-                    cursor: pointer;
-                    &.left {
-                        transform: rotate(180deg);
-                        margin-right: 12px;
-                    }
+                .left {
+                    transform: rotate(180deg);
                 }
             }
         }
@@ -735,12 +733,6 @@
             .delete-schedule {
                 transform: translateY(-20px);
                 text-align: right;
-                span {
-                    border: 1px solid;
-                    border-radius: 5px;
-                    color: red;
-                    cursor: pointer;
-                }
             }
             .add-group-class {
                 border: 1px solid;
