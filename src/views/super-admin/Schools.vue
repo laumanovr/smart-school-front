@@ -28,6 +28,7 @@
                 </SmartSelect>
             </template>
             <template v-slot:head>
+                <th>№</th>
                 <th>Название</th>
                 <th>Электронная Почта</th>
                 <th>Номер телефона</th>
@@ -40,6 +41,7 @@
             </template>
 
             <template v-slot:body="{ item }">
+                <td>{{ (currentPage - 1) * 10 + item.index + 1 }}</td>
                 <td>{{ item.name }}</td>
                 <td>{{ item.email }}</td>
                 <td>{{ item.phone }}</td>
@@ -124,8 +126,12 @@ export default {
             schoolService.listPageable(page).then(res => {
                 this.totalElements = res.page.totalElements;
                 this.pageSize = res.page.pageSize;
+                this.currentPage = res.page.number + 1
                 if (res._embedded) {
-                    this.schools = res._embedded.schoolResourceList
+                    this.schools = res._embedded.schoolResourceList.map((i, index) => {
+                    	i.index = index
+	                    return i
+                    })
                 } else this.schools = []
                 this.exportHeaders = ['Название', 'Электронная Почта', 'Номер телефона', 'Тип Школы', 'Язык', 'Район']
                 this.exportRows = this.schools.map(i => {
@@ -162,6 +168,7 @@ export default {
         deleteSchool () {
             schoolService._delete(this.school.id).then(res => {
                 this.$toast.success('Успешно удалено');
+                this.fetchSchools(0)
                 this.isDeleting = false;
             }).catch(err => {
                 this.isDeleting = false;

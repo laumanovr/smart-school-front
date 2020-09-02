@@ -80,8 +80,8 @@ export default {
         isAddAdmin: false,
         users: [],
         gender: {
-            FEMALE: 'Женщина',
-            MALE: 'Мужчина'
+            FEMALE: 'Ж',
+            MALE: 'М'
         },
         totalElements: 0,
         currentPage: 1,

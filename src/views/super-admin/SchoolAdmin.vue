@@ -60,7 +60,9 @@ export default {
     components: {SmartSelect, SmartSearchInput, SmartButton, SuperAdminSchoolHead, SmartTable, AddSchoolAdmin},
     data: () => ({
         isAddAdmin: false,
-        users: []
+        users: [],
+	    isEdit: false,
+	    user: {}
     }),
     mounted() {
         this.fetchUsers()
@@ -79,7 +81,18 @@ export default {
             }).catch(err => console.log(err))
         },
         onEdit(item) {
-            console.log(item);
+            personService.getById(item.id).then(res => {
+	            this.isEdit = false
+	            this.user = {
+	            	name: res.firstName,
+		            surname: res.lastName,
+		            middleName: res.middleName,
+		            dob: res.dateOfBirth,
+		            gender: res.gender,
+		            email: res.email,
+		            phone: res.phone,
+	            }
+            }).catch(err => console.log(err))
         }
     }
 }
