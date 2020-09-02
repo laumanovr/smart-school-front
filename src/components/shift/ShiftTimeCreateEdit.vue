@@ -35,6 +35,9 @@
             <md-button class="md-primary green" @click="saveShiftTime">Сохранить</md-button>
             <md-button class="md-primary red" @click="closeModal">Отмена</md-button>
         </div>
+        <div class="btn-actions" v-if="mode == 'addShiftTime' && !shiftTimeList.length">
+            <md-button class="md-primary red" @click="closeModal">Отмена</md-button>
+        </div>
     </div>
 </template>
 
