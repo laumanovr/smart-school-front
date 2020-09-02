@@ -146,6 +146,7 @@
                 this.shiftObj.schoolId = this.school.id;
                 if (mode === 'addShift') {
                     this.shiftObj.name = '';
+                    this.shiftTimeList = [];
                 } else {
                     this.shiftObj.name = shift.name;
                     this.shiftObj.id = shift.id;
@@ -212,11 +213,13 @@
                         })
                     });
                 }
-                const results = await Promise.all(requests);
-                if (results[0].success) {
+                if (requests.length) {
+                    const results = await Promise.all(requests);
                     this.fetchSchoolShifts();
                     this.$toast.success('Успешно');
                     this.closeModal();
+                } else {
+                    this.$toast.info('Добавьте время уроков!');
                 }
             },
 
