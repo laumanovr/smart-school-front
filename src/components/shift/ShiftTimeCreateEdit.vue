@@ -27,7 +27,7 @@
                         <timeselector v-model="shtime.timeEnd"/>
                     </div>
                 </div>
-                <span class="material-icons delete" @click="deleteShiftTime(shtime)">close</span>
+                <DeleteIcon class="delete" @click="deleteShiftTime(shtime)" />
             </div>
         </div>
 
@@ -40,6 +40,7 @@
 
 <script>
     import Timeselector from 'vue-timeselector';
+    import DeleteIcon from '@/components/icons/DeleteIcon';
 
     export default {
         props: {
@@ -47,7 +48,8 @@
             mode: String
         },
         components: {
-            Timeselector
+            Timeselector,
+            DeleteIcon
         },
 
         data() {
@@ -132,11 +134,8 @@
                 }
             }
             .delete {
-                color: red;
-                cursor: pointer;
-                width: 10%;
-                text-align: right;
                 transform: translate(-10px, 10px);
+                margin-left: 5px;
             }
         }
     }
