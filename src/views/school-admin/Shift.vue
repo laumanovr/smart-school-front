@@ -24,8 +24,8 @@
                     <md-table-cell></md-table-cell>
                     <md-table-cell></md-table-cell>
                     <md-table-cell>
-                        <i class="material-icons edit" @click="openModal('editAll', shift)">edit</i>
-                        <i class="material-icons delete" @click="deleteShift(shift.id, false)">close</i>
+                        <EditIcon @click="openModal('editAll', shift)" />
+                        <DeleteIcon @click="deleteShift(shift.id, false)" />
                     </md-table-cell>
                 </md-table-row>
             </md-table>
@@ -95,13 +95,17 @@
     import ShiftTimeService from '@/_services/shift-time.service';
     import ShiftCreateEdit from '@/components/shift/ShiftCreateEdit';
     import ShiftTimeCreateEdit from '@/components/shift/ShiftTimeCreateEdit';
+    import EditIcon from '@/components/icons/EditIcon';
+    import DeleteIcon from '@/components/icons/DeleteIcon';
     import moment from 'moment';
 
     export default {
         components: {
             SuperAdminSchoolHead,
             ShiftCreateEdit,
-            ShiftTimeCreateEdit
+            ShiftTimeCreateEdit,
+            EditIcon,
+            DeleteIcon
         },
         data() {
             return {
@@ -282,15 +286,6 @@
             }
             .md-table-cell {
                 font-size: 17px;
-            }
-            .edit {
-                color: #2196f3;
-                cursor: pointer;
-                margin-right: 15px;
-            }
-            .delete {
-                color: red;
-                cursor: pointer;
             }
         }
     }
