@@ -158,7 +158,7 @@
                 <v-text-field type="text" label="Фамилия" v-model="studentDetail.surname" readonly/>
                 <v-text-field type="text" label="Телефон" v-model="studentDetail.phone" readonly/>
                 <template v-for="course in studentDetail.courses">
-                    <v-text-field type="text" label="Предмет" :value="course.courseName + '-' + course.instructorTitle" readonly/>
+                    <v-text-field type="text" label="Предмет" :value="showCourseName(course) + '-' + course.instructorTitle" readonly/>
                 </template>
                 <v-text-field type="text" label="Имя родителя" readonly/>
                 <v-btn @click="showDetailModal = false" color="primary">Закрыть</v-btn>
