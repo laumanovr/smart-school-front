@@ -21,8 +21,7 @@
                 <tr v-for="reason in gradeReasons" :key="reason.id">
                     <td>{{ reason.title }}</td>
                     <td>
-                        <span class="material-icons edit" @click="openGradeReasonModal('edit', reason)">edit</span>
-                        <span class="material-icons delete"></span>
+                        <EditIcon @click="openGradeReasonModal('edit', reason)"/>
                     </td>
                 </tr>
             </tbody>
@@ -47,12 +46,14 @@
 <script>
     import GradeReasonService from '@/_services/grade-reason.service';
     import ClassSelectHeader from '@/components/instructor/ClassSelectHeader';
-    import PreLoader from "@/components/preloader/PreLoader";
+    import PreLoader from '@/components/preloader/PreLoader';
+    import EditIcon from '@/components/icons/EditIcon';
 
     export default {
         components: {
             ClassSelectHeader,
-            PreLoader
+            PreLoader,
+            EditIcon
         },
         data() {
             return {
@@ -156,15 +157,6 @@
             margin: 0 auto;
             th,td {
                 padding: 0;
-            }
-            .edit {
-                color: #03A9F4;
-                margin-right: 15px;
-                cursor: pointer;
-            }
-            .delete {
-                color: red;
-                cursor: pointer;
             }
         }
     }
