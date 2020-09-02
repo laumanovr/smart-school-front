@@ -34,9 +34,8 @@
                                 {{currentMonthDays[0].day.slice(0, 2)}} -
                                 {{currentMonthDays[currentMonthDays.length - 1].day.slice(0, 2)}}
                             </span>
-                            <span class="material-icons date-arrow left"
-                                  @click="filterGradesByMonth('prev')">play_arrow</span>
-                            <span class="material-icons date-arrow right" @click="filterGradesByMonth('next')">play_arrow</span>
+                            <PlayArrowIcon class="date-arrow left" @click="filterGradesByMonth('prev')"/>
+                            <PlayArrowIcon class="date-arrow" @click="filterGradesByMonth('next')"/>
                         </th>
                     </tr>
                     </thead>
@@ -92,11 +91,13 @@
     import {AdminCourseService} from '@/_services/admin-course.service';
     const adminCourseService = new AdminCourseService();
     import PreLoader from '@/components/preloader/PreLoader';
+    import PlayArrowIcon from '@/components/icons/PlayArrowIcon';
 
     export default {
         components: {
             ClassSelectHeader,
-            PreLoader
+            PreLoader,
+            PlayArrowIcon
         },
 
         computed: {
@@ -408,16 +409,13 @@
                             white-space: nowrap;
                         }
                         .date-arrow {
-                            color: #a8a8a8;
-                            font-size: 18px;
                             border: 1px solid #d1d1d1;
-                            padding: 8px;
                             transform: translateX(10px);
-                            border-radius: 4px;
-                            cursor: pointer;
+                            width: 35px;
+                            height: 35px;
+                            line-height: 32px;
                             &.left {
                                 margin: 0 8px;
-                                transform: rotate(180deg) translateX(-10px);
                             }
                         }
                     }
