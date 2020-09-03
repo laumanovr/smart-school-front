@@ -99,6 +99,7 @@ export default {
 
 <style lang="scss" scoped>
 .school-admin-courses {
+    margin-bottom: 50px;
 }
 
 .top-th {

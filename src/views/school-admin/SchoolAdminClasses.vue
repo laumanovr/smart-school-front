@@ -285,6 +285,9 @@
 </script>
 
 <style lang="scss" scoped>
+    .school-admin-classes {
+        margin-bottom: 50px;
+    }
     .v-form {
         background: #FFFFFF;
         border-radius: 7px;
