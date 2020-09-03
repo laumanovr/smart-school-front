@@ -47,7 +47,10 @@
                     </thead>
                     <tbody>
                     <tr v-for="teacher in allTeachers" :key="teacher.id">
-                        <td class="teacher-name"><span>{{teacher.instructorTitle}}</span></td>
+                        <td class="teacher-name" :class="{'same': !teacher.teacherName}">
+                            <span v-if="teacher.teacherName" :class="{'space': teacher.several}">{{teacher.teacherName}}</span>
+                            <span class="empty" v-else>-</span>
+                        </td>
                         <td class="course-name">{{showCourseName(teacher.courseName)}}</td>
                     </tr>
                     </tbody>
@@ -373,7 +376,16 @@
             getAllSchoolInstructors() {
                 instructorCourseService.listBySchool(this.school.id).then((res) => {
                     if (res._embedded) {
-                        this.allTeachers = res._embedded.instructorCourseResourceList;
+                        Object.entries(res._embedded.instructorCourseResourceList.reduce((obj, el) => {
+                            obj[el.instructorId] = [...obj[el.instructorId] || [], el];
+                            return obj;
+                        }, {})).forEach((item) => {
+                            item[1][0].teacherName = item[1][0].instructorTitle;
+                            item[1][0].several = item[1].length > 1;
+                            item[1].forEach((instrCourse) => {
+                                this.allTeachers.push(instrCourse);
+                            })
+                        });
                     }
                 })
             },
@@ -600,6 +612,7 @@
                 justify-content: center;
                 table.teachers, table.class-name-table {
                     background: #fff;
+                    border-bottom: 1px solid rgba(#707070, 0.8);
                     tr {
                         th {
                             border: 1px solid rgba(#707070, 0.8);
@@ -608,7 +621,9 @@
                             color: #339DFA;
                         }
                         td {
-                            border: 1px solid rgba(#707070, 0.8);
+                            border-top: 1px solid rgba(#707070, 0.8);
+                            border-left: 1px solid rgba(#707070, 0.8);
+                            border-right: 1px solid rgba(#707070, 0.8);
                             &.teacher-name {
                                 text-align: center;
                                 span {
@@ -616,18 +631,11 @@
                                     padding: 5px 8px;
                                     white-space: nowrap;
                                     height: 30px;
-                                    &.blank {
-                                        color: transparent;
-                                        cursor: default;
-                                        pointer-events: none;
-                                    }
-                                }
-                                &.no-border {
-                                    &:not(.last) {
-                                        border-bottom-color: transparent;
-                                    }
-                                    span:not(.blank) {
+                                    &.space {
                                         transform: translateY(15px);
+                                    }
+                                    &.empty {
+                                        color: transparent;
                                     }
                                 }
                             }
@@ -635,6 +643,9 @@
                                 padding: 0 8px;
                                 white-space: nowrap;
                                 text-align: center;
+                            }
+                            &.same {
+                                border-top-color: transparent;
                             }
                         }
                     }
