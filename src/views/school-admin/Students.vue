@@ -606,6 +606,9 @@
 </script>
 
 <style lang="scss">
+    .students-container {
+        margin-bottom: 50px;
+    }
     .v-form {
         background: #FFFFFF;
         border-radius: 7px;
