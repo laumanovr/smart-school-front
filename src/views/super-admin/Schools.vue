@@ -16,6 +16,7 @@
             :total-elements="totalElements"
             :page-size="pageSize"
             :current-page="currentPage"
+            :totalPages="totalPages"
             @leftClick="onLeftClick"
             @rightClick="onRightClick"
         >
@@ -111,7 +112,8 @@ export default {
         },
         school: {},
         isEdit: false,
-        isDeleting: false
+        isDeleting: false,
+        totalPages: 0
     }),
     mounted() {
         this.fetchSchools(0)
@@ -126,6 +128,7 @@ export default {
             schoolService.listPageable(page).then(res => {
                 this.totalElements = res.page.totalElements;
                 this.pageSize = res.page.pageSize;
+                this.totalPages = res.page.totalPages;
                 this.currentPage = res.page.number + 1
                 if (res._embedded) {
                     this.schools = res._embedded.schoolResourceList.map((i, index) => {
