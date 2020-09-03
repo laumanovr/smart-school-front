@@ -29,7 +29,7 @@
                 </SmartSelect>
             </template>
             <template v-slot:head>
-<!--                <th>Школа</th>-->
+                <th>Школа</th>
                 <th>Ф.И.О</th>
                 <th>Пол</th>
                 <th>Класс</th>
@@ -37,7 +37,7 @@
             </template>
 
             <template v-slot:body="{ item }">
-<!--                <td>{{ item.schools[0] ? item.schools[0].name : '' }}</td>-->
+                <td>{{ item.schools[0] ? item.schools[0].name : '' }}</td>
                 <td>{{ item.firstName }} {{ item.lastName }}</td>
                 <td>{{ gender[item.gender] }}</td>
                 <td>{{ item.classTitle }}</td>
@@ -65,8 +65,8 @@ export default {
             pageSize: 20,
             currentPage: 1,
             gender: {
-                FEMALE: 'Женщина',
-                MALE: 'Мужчина'
+                FEMALE: 'Ж',
+                MALE: 'М'
             },
         }
     },
@@ -95,6 +95,8 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style lang="scss">
+.super-admin-students {
+    margin-bottom: 50px;
+}
 </style>
