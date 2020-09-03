@@ -148,6 +148,7 @@ export default {
 
 <style lang="scss" scoped>
 .super-admin-instructors {
+    margin-bottom: 50px;
     .instr-courses {
         span {
             margin-right: 5px;

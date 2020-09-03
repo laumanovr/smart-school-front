@@ -100,5 +100,6 @@ export default {
 
 <style lang="scss" scoped>
 .super-admin-instructors {
+    margin-bottom: 50px;
 }
 </style>

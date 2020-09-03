@@ -182,5 +182,6 @@ export default {
 
 <style lang="scss" scoped>
 .super-admin-schools {
+    margin-bottom: 50px;
 }
 </style>
