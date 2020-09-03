@@ -10,7 +10,7 @@
                     <button @click="$emit('leftClick')" :disabled="currentPage <= 1" class="next-prev">
                         <v-icon>$chevronLeft</v-icon>
                     </button>
-                    <button @click="$emit('rightClick')" :disabled="currentPage >= totalPage" class="next-prev">
+                    <button @click="$emit('rightClick')" :disabled="currentPage >= totalPages" class="next-prev">
                         <v-icon>$chevronRight</v-icon>
                     </button>
                 </slot>
@@ -68,7 +68,10 @@ export default {
 	    menu: {
         	type: String,
 		    default: ''
-	    }
+	    },
+        totalPages: {
+            type: Number
+        }
     },
     computed: {
         itemsSelected() {
