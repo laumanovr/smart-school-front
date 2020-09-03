@@ -146,8 +146,8 @@ export default {
             })
         },
         onCLoseModal() {
-            this.isAddSchool = false
-            this.fetchSchools()
+            this.isAddSchool = false;
+            this.fetchSchools(this.currentPage - 1);
         },
         onLeftClick () {
             this.currentPage--;
