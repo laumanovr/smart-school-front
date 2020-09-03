@@ -197,8 +197,8 @@
 
 <style lang="scss">
     .about-container {
-        width: 1000px;
-        margin: 0 auto;
+        width: 65%;
+        margin: 0 auto 50px;
 
         .school-info {
             background: #fff;
