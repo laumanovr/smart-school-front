@@ -41,7 +41,12 @@
             <template v-slot:body="{ item }">
                 <td>{{ item.schools[0].name }}</td>
                 <!--<td>{{ showCourses(item.courses) }}</td>-->
-                <td><span v-for="courseCode in item.courses">{{showCourseName(courseCode)}}</span></td>
+                <td class="instr-courses">
+                    <template v-if="item.courses.length">
+                        <span v-for="courseCode in item.courses">{{showCourseName(courseCode)}},</span>
+                    </template>
+                    <span v-else></span>
+                </td>
                 <td>{{ item.firstName }} {{ item.lastName }}</td>
                 <td>{{ gender[item.gender] }}</td>
                 <td>{{ item.birthDay }}</td>
@@ -143,5 +148,10 @@ export default {
 
 <style lang="scss" scoped>
 .super-admin-instructors {
+    .instr-courses {
+        span {
+            margin-right: 5px;
+        }
+    }
 }
 </style>
