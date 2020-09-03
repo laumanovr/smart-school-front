@@ -341,6 +341,7 @@ export default {
 
 <style lang="scss">
     .school-admin-teachers {
+        margin-bottom: 50px;
         .v-btn__content {
             color: #fff;
         }
