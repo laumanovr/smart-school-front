@@ -37,7 +37,7 @@
             </template>
             <template v-slot:head>
 	            <th class="top-th"><input type="checkbox" v-model="isSelectAll" @click="selectAll"></th>
-	            <th>ID</th>
+	            <th>№</th>
                 <th>Ф.И.О</th>
                 <th>Класс</th>
                 <th>Пол</th>

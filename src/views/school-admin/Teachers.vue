@@ -39,7 +39,7 @@
                 </SmartSelect>
             </template>
             <template v-slot:head>
-	            <th>ID</th>
+	            <th>№</th>
                 <th>Ф.И.О</th>
                 <th>Предмет</th>
                 <th>Логин</th>
