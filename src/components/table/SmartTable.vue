@@ -81,7 +81,7 @@ export default {
             return `Показано ${ (this.currentPage - 1) * this.pageSize + 1 }-${ (this.currentPage - 1) * this.pageSize + this.pageRemainder } из ${ this.totalElements }`
         },
         paginationPageText() {
-            return `Страница ${this.currentPage} из ${this.totalPages}`;
+            return `Общее кол-во: ${this.totalElements} / Страница ${this.currentPage} из ${this.totalPages}`;
         },
         totalPage () {
             return Math.ceil(this.totalElements / this.pageSize);
