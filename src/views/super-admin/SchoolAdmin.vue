@@ -1,5 +1,6 @@
 <template>
     <div class="super-admin-instructors">
+        <PreLoader v-if="isLoading"/>
         <SuperAdminSchoolHead>
             <template v-slot:title>Администратор</template>
             <template v-slot:center>
@@ -52,18 +53,19 @@ import {PersonService} from '@/_services/person.service'
 import SmartButton from '@/components/button/SmartButton'
 import SmartSearchInput from '@/components/input/SmartSearchInput'
 import SmartSelect from '@/components/select/SmartSelect'
-
-const personService = new PersonService()
+const personService = new PersonService();
+import PreLoader from "@/components/preloader/PreLoader";
 
 export default {
     name: 'Instructors',
-    components: {SmartSelect, SmartSearchInput, SmartButton, SuperAdminSchoolHead, SmartTable, AddSchoolAdmin},
+    components: {SmartSelect, SmartSearchInput, SmartButton, SuperAdminSchoolHead, SmartTable, AddSchoolAdmin, PreLoader},
     data: () => ({
         isAddAdmin: false,
         users: [],
 	    isEdit: false,
 	    user: {},
-        totalPages: 1
+        totalPages: 1,
+        isLoading: false
     }),
     mounted() {
         this.fetchUsers()
@@ -77,8 +79,10 @@ export default {
             this.fetchUsers()
         },
         fetchUsers() {
+            this.isLoading = true;
             personService.list().then(res => {
-                this.users = res
+                this.users = res;
+                this.isLoading = false;
             }).catch(err => console.log(err))
         },
         onEdit(item) {
