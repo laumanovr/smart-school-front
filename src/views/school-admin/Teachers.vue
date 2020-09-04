@@ -217,11 +217,12 @@ export default {
             a.click()
         },
         fetchUsers(page = 0) {
+            this.isLoading = true;
             InstructorService.list(page, this.userProfile.schools[0].id).then(res => {
                 this.totalPages = res.page.totalPages;
-                this.totalElements = res.page.totalElements
-                this.pageSize = res.page.size
-	            this.currentPage = res.page.number + 1
+                this.totalElements = res.page.totalElements;
+                this.pageSize = res.page.size;
+	            this.currentPage = res.page.number + 1;
                 if (res._embedded) {
                     this.users = res._embedded.instructorResourceList.map((i, ind) => {
                     	i.index = ind
@@ -232,7 +233,8 @@ export default {
                 this.exportRows = this.users.map(i => {
                     return [i.firstName+' '+i.lastName, i.courses.join(', ')];
                 });
-                this.exportName = 'Умная школа: Учителя'
+                this.exportName = 'Умная школа: Учителя';
+                this.isLoading = false;
             }).catch(err => console.log(err))
         },
         editUser(item) {
