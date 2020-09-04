@@ -6,7 +6,7 @@
             </div>
             <div class="smart-table__item">
                 <slot name="table-head-right">
-                    <span>{{ paginationText }}</span>
+                    <span>{{ paginationPageText }}</span>
                     <button @click="$emit('leftClick')" :disabled="currentPage <= 1" class="next-prev">
                         <v-icon>$chevronLeft</v-icon>
                     </button>
@@ -79,6 +79,9 @@ export default {
         },
         paginationText () {
             return `Показано ${ (this.currentPage - 1) * this.pageSize + 1 }-${ (this.currentPage - 1) * this.pageSize + this.pageRemainder } из ${ this.totalElements }`
+        },
+        paginationPageText() {
+            return `Страница ${this.currentPage} из ${this.totalPages}`;
         },
         totalPage () {
             return Math.ceil(this.totalElements / this.pageSize);
