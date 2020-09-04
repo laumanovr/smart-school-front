@@ -1,5 +1,6 @@
 <template>
     <div class="super-admin-instructors">
+        <PreLoader v-if="isLoading"/>
         <SuperAdminSchoolHead>
             <template v-slot:title>Учителя</template>
             <template v-slot:center>
@@ -78,10 +79,11 @@ const instructorService = new InstructorService();
 const personService = new PersonService();
 import {AdminCourseService} from '@/_services/admin-course.service';
 const adminCourseService = new AdminCourseService();
+import PreLoader from "@/components/preloader/PreLoader";
 
 export default {
     name: 'Instructor',
-    components: {SmartSelect, SmartSearchInput, SmartButton, SuperAdminSchoolHead, SmartTable, AddSchoolAdmin},
+    components: {SmartSelect, SmartSearchInput, SmartButton, SuperAdminSchoolHead, SmartTable, AddSchoolAdmin, PreLoader},
     data: () => ({
         isAddAdmin: false,
         users: [],
@@ -94,6 +96,7 @@ export default {
         pageSize: 20,
         totalPages: 1,
         allAdminCourses: [],
+        isLoading: false,
     }),
     mounted() {
         this.fetchUsers(0);
@@ -118,6 +121,7 @@ export default {
             this.fetchUsers()
         },
         fetchUsers(page) {
+            this.isLoading = true;
             instructorService.list(page).then(res => {
                 this.pageSize = res.page.size;
                 this.totalElements = res.page.totalElements;
@@ -125,6 +129,7 @@ export default {
                 if (res._embedded) {
                     this.users = res._embedded.instructorResourceList;
                 } else this.users = [];
+                this.isLoading = false;
             }).catch(err => console.log(err))
         },
         onLeftClick () {
