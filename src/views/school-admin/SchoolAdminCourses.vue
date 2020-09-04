@@ -6,7 +6,13 @@
                 <SmartSearchInput></SmartSearchInput>
             </template>
         </SuperAdminSchoolHead>
-        <SmartTable :schools="adminCourses" @addCourses="addCourses" :total-elements="adminCourses.length" :page-size="adminCourses.length">
+        <SmartTable
+            :schools="adminCourses"
+            @addCourses="addCourses"
+            :total-elements="adminCourses.length"
+            :page-size="adminCourses.length"
+            :totalPages="totalPages"
+        >
             <template v-slot:head>
                 <th class="top-th">
                     <input type="checkbox">
@@ -42,6 +48,7 @@ export default {
         adminCourses: [],
         isAddUser: false,
         itemsSelected: 0,
+        totalPages: 1
     }),
     computed: {
         userProfile() {

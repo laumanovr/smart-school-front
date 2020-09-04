@@ -9,7 +9,7 @@
             <SmartSearchInput></SmartSearchInput>
         </template>
     </SuperAdminSchoolHead>
-    <SmartTable :schools="classes" :total-elements="classes.length" :page-size="classes.length">
+    <SmartTable :schools="classes" :total-elements="classes.length" :page-size="classes.length" :totalPages="totalPages">
         <template v-slot:firstItem>
             <SmartSelect>Класс <v-icon>$chevronDown</v-icon></SmartSelect>
             <SmartSelect>Буква <v-icon>$chevronDown</v-icon></SmartSelect>
@@ -159,7 +159,8 @@
                     {label: 'А'}, {label: 'Б'}, {label: 'В'}, {label: 'Г'}, {label: 'Д'}, {label: 'Е'}, {label: 'Ё'}, {label: 'Ж'},
                 ],
                 languages: [],
-                teachers: []
+                teachers: [],
+                totalPages: 1
             }
         },
 
@@ -180,7 +181,7 @@
         methods: {
             fetchAllClasses() {
                 instructorClassService.getAllClasses(this.userProfile.schools[0].id).then((res) => {
-                    this.classes = res
+                    this.classes = res;
                 })
             },
 
