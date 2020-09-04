@@ -22,6 +22,7 @@
         <SmartTable
             :schools="users"
             :total-elements="totalElements"
+            :totalPages="totalPages"
             :page-size="pageSize"
             :current-page="currentPage"
             @leftClick="onLeftClick"
@@ -164,6 +165,7 @@ export default {
         schoolCourses: [],
         allSchoolCourses: [],
         teacherCourses: [],
+        totalPages: 1,
         addTeacherCourse: {
             archived: false,
             courseId: 0,
@@ -216,6 +218,7 @@ export default {
         },
         fetchUsers(page = 0) {
             InstructorService.list(page, this.userProfile.schools[0].id).then(res => {
+                this.totalPages = res.page.totalPages;
                 this.totalElements = res.page.totalElements
                 this.pageSize = res.page.size
 	            this.currentPage = res.page.number + 1
