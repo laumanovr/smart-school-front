@@ -31,7 +31,7 @@ export  class InstructorCourseService extends BaseApiService {
     }
 
     listBySchool (id, page = 0) {
-        const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/course/list/school/${id}?page=${page}`;
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/course/list/school/${id}?size=500`;
         return this.sendGetRequest(url);
     }
 }
