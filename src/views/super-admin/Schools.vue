@@ -1,5 +1,6 @@
 <template>
     <div class="super-admin-schools">
+        <PreLoader v-if="isLoading"/>
         <SuperAdminSchoolHead @addSchool="onAddSchool">
             <template v-slot:title>Школы</template>
             <template v-slot:center>
@@ -83,14 +84,15 @@ import SmartBtn2 from '@/components/button/SmartBtn2'
 import SmartSelect from '@/components/select/SmartSelect'
 import ExcelJs from "@/components/excel-export/ExcelJs";
 import DeletePopup from "@/components/delete-popup/DeletePopup";
-
-const schoolService = new SchoolService()
+const schoolService = new SchoolService();
+import PreLoader from "@/components/preloader/PreLoader";
 
 export default {
     name: 'Schools',
     components: {
         DeletePopup,
         ExcelJs,
+        PreLoader,
         SmartSelect, SmartBtn2, SmartButton, SmartSearchInput, AddSchool, SuperAdminSchoolHead, SmartTable},
     data: () => ({
         isAddSchool: false,
@@ -113,7 +115,8 @@ export default {
         school: {},
         isEdit: false,
         isDeleting: false,
-        totalPages: 0
+        totalPages: 0,
+        isLoading: false,
     }),
     mounted() {
         this.fetchSchools(0)
@@ -125,6 +128,7 @@ export default {
             this.isEdit = false
         },
         fetchSchools(page) {
+            this.isLoading = true;
             schoolService.listPageable(page).then(res => {
                 this.totalElements = res.page.totalElements;
                 this.pageSize = res.page.pageSize;
@@ -140,9 +144,11 @@ export default {
                 this.exportRows = this.schools.map(i => {
                     return [i.name, i.email, i.phone, this.schoolTypes[i.schoolType], this.lang[i.language], i.rayonTitle];
                 });
-                this.exportName = 'Умная школа: Школы'
+                this.exportName = 'Умная школа: Школы';
+                this.isLoading = false;
             }).catch(err => {
-                console.log(err)
+                console.log(err);
+                this.isLoading = false;
             })
         },
         onCLoseModal() {
