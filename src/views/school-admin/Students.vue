@@ -368,6 +368,7 @@
 	        },
 
             fetchStudents() {
+                this.isLoading = true;
                 studentService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
                     this.totalElements = res.length;
                     this.pageSize = res.length
@@ -379,7 +380,8 @@
                     this.exportRows = this.students.map(i => {
                         return [`${i.name} ${i.surname}`, i.classTitle, i.gender === 1 ? 'М' : 'Ж', i.dateOfBirth, '', ''];
                     });
-                    this.exportName = 'Умная школа: Ученики'
+                    this.exportName = 'Умная школа: Ученики';
+                    this.isLoading = false;
                 })
             },
 
