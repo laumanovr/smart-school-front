@@ -56,6 +56,8 @@
                 item-value="id"
                 label="Школа"
                 v-model="schoolAdmin.schoolId"
+                @click="addScrollListenerSchoolSelect"
+                @change="removeSchoolSelectScrollListener"
             ></v-select>
         </div>
 
@@ -108,32 +110,61 @@ export default {
     menu2: false,
     schools: [],
     languages: [],
-    roles: []
+    roles: [],
+    page: 0
   }),
   mounted () {
-    this.fetchSchools()
-    this.fetchLanguages()
-    this.fetchRoles()
+    this.fetchSchools();
+    this.fetchLanguages();
+    this.fetchRoles();
   },
   methods: {
-    fetchSchools () {
-      // TODO: need to get schools with region
-      schoolService.listPageable(0).then(res => {
-        if (res._embedded) {
-          this.schools = res._embedded.schoolResourceList
-        } else this.schools = []
-      }).catch(err => console.log(err))
+    addScrollListenerSchoolSelect() {
+        this.$nextTick(() => {
+            const schoolSelect = document.querySelector('.v-menu__content');
+            schoolSelect.addEventListener('scroll', this.innerSelectScrollListener);
+        })
     },
+
+    innerSelectScrollListener() {
+        const schoolSelect = document.querySelector('.v-menu__content');
+        let almostEndOfScroll = (schoolSelect.scrollHeight - schoolSelect.clientHeight) - 100;
+        if (schoolSelect.scrollTop >= almostEndOfScroll) {
+            this.page++;
+            this.fetchSchools();
+        }
+    },
+
+    removeSchoolSelectScrollListener() {
+        const schoolSelect = document.querySelector('.v-menu__content');
+        schoolSelect.removeEventListener('scroll', this.innerSelectScrollListener);
+    },
+
+    fetchSchools() {
+        // TODO: need to get schools with region
+        schoolService.listPageable(this.page).then((res) => {
+            if (res._embedded) {
+                res._embedded.schoolResourceList.forEach((school) => {
+                    this.schools.push(school)
+                });
+            } else {
+                this.removeSchoolSelectScrollListener();
+            }
+        }).catch(err => console.log(err))
+    },
+
     fetchRoles () {
       roleService.listPageable(0).then(res => {
         this.roles = res
       }).catch(err => console.log(err))
     },
+
     fetchLanguages () {
       languageService.list().then(res => {
         this.languages = res
       }).catch(err => console.log(err))
     },
+
     submit () {
       if (this.$refs.form.validate()) {
         this.schoolAdmin.roles = this.roles.filter(i => i.code === this.role).map(i => i.id)
