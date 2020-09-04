@@ -203,6 +203,16 @@ const routes = [
                 name: 'instructorGradeReason',
                 path: 'grade-reason',
                 component: loadComponent('instructor/InstructorGradeReason')
+            },
+            {
+                name: 'instructorTopics',
+                path: 'topics',
+                component: SuperAdminEmpty // Временно
+            },
+            {
+                name: 'instructorMessage',
+                path: 'message',
+                component: SuperAdminEmpty // Временно
             }
         ],
     },

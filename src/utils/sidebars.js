@@ -138,7 +138,7 @@ export const instructorSidebars = [
 	{
 		name: 'Уроки',
 		icon: 'book-open.svg',
-		route: '/instructor-page/topic'
+		route: '/instructor-page/topics'
 	},
 	{
 		name: 'Расписание',
