@@ -1,5 +1,6 @@
 <template>
     <div class="super-admin-students">
+        <PreLoader v-if="isLoading"/>
         <SuperAdminSchoolHead>
             <template v-slot:title>Ученики</template>
             <template v-slot:center>
@@ -54,11 +55,12 @@ import SmartSearchInput from "@/components/input/SmartSearchInput";
 import SmartTable from "@/components/table/SmartTable";
 import SmartSelect from "@/components/select/SmartSelect";
 import {StudentService} from "@/_services/student.service";
+const studentService = new StudentService();
+import PreLoader from "@/components/preloader/PreLoader";
 
-const studentService = new StudentService()
 export default {
     name: "Students",
-    components: {SmartSelect, SmartTable, SmartSearchInput, SuperAdminSchoolHead},
+    components: {SmartSelect, SmartTable, SmartSearchInput, SuperAdminSchoolHead, PreLoader},
     data() {
         return {
             totalPages: 1,
@@ -70,6 +72,7 @@ export default {
                 FEMALE: 'Ж',
                 MALE: 'М'
             },
+            isLoading: false
         }
     },
     mounted() {
@@ -77,6 +80,7 @@ export default {
     },
     methods: {
         fetchUsers(page) {
+            this.isLoading = true;
             studentService.list(page).then(res => {
                 this.pageSize = res.page.size;
                 this.totalElements = res.page.totalElements;
@@ -84,6 +88,7 @@ export default {
                 if (res._embedded) {
                     this.users = res._embedded.studentResourceList;
                 } else this.users = [];
+                this.isLoading = false;
             }).catch(err => console.log(err));
         },
         onLeftClick() {
