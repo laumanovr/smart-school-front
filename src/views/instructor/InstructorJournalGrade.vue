@@ -4,15 +4,21 @@
         <ClassSelectHeader
             :headTitle="'Журнал'"
             :showClass="true"
-            @sendData="getInstructorCourses"
             @classSelected="onChangeClass"
         />
 
         <div class="grade-content">
             <div class="selects">
-                <h3 class="course-name" v-if="instructorCourses.length">
-                    {{ showCourseName(instructorCourses[0].courseCode) }}
-                </h3>
+                <div class="select-course">
+                    <v-select
+                        :items="instructorCourses"
+                        :item-text="showCourseName"
+                        item-value="courseId"
+                        label="Предмет"
+                        v-model="monthDataRequest.courseId"
+                        @change="onChangeCourse"
+                    ></v-select>
+                </div>
                 <div class="select-reason">
                     <v-select
                         :items="gradeReasons"
@@ -152,11 +158,13 @@
                 gradeMonthFrom: new Date().getMonth(),
                 gradeMonthTo: new Date().getMonth() + 1,
                 scheduleMonthNumber: new Date().getMonth() + 2,
-                allAdminCourses: []
+                allAdminCourses: [],
+                allCourses: []
             }
         },
 
         created() {
+            this.getInstructorCourses();
             this.fetchAllAdminCourses(); // temp
         },
 
@@ -167,14 +175,29 @@
                 })
             },
 
-            showCourseName(code) {
+            showCourseName(courseObj) {
                 if (this.allAdminCourses.length) {
-                    return this.allAdminCourses.find(course => course.code === code).title;
+                    return this.allAdminCourses.find(course => course.code === courseObj.courseCode).title;
                 }
             },
 
-            getInstructorCourses(schedules) {
-                this.instructorCourses = schedules;
+            getInstructorCourses() {
+                ScheduleWeekService.getByInstructor(this.userProfile.personId).then((res) => {
+                    if (res.length) {
+                        this.instructorCourses = res;
+                        this.allCourses = res;
+                    }
+                })
+            },
+
+            filterCourses(selectedClass) {
+                this.instructorCourses = this.allCourses.filter((course) =>
+                    course.classId === selectedClass.classId
+                ).filter((obj, index, selfArr) =>
+                    index === selfArr.findIndex((el) =>
+                        (el['courseId'] === obj['courseId'])
+                ));
+                this.monthDataRequest.courseId = this.instructorCourses[0].courseId;
             },
 
             async onChangeClass(klass) {
@@ -184,14 +207,20 @@
                 }
                 this.isLoading = true;
                 this.monthDataRequest.classId = klass.classId;
-                this.monthDataRequest.courseId = klass.courseId;
                 this.monthDataRequest.instructorId = this.userProfile.personId;
                 this.monthDataRequest.chronicleId = this.school.chronicleId;
                 this.gradeRequest.searchRequest.instructorId = this.userProfile.personId;
                 this.gradeRequest.searchRequest.chronicleId = this.school.chronicleId;
                 this.gradeRequest.searchRequest.from = this.getFirstDateOfMonth();
                 this.gradeRequest.searchRequest.to = this.getLastDateOfMonth();
-                this.fetchInstructorGradeReasons(klass.classLevel);
+                this.filterCourses(klass);
+                await this.fetchInstructorGradeReasons(klass.classLevel);
+                await this.fetchCurrentMonthSchedule();
+                await this.fetchStudentGrades();
+            },
+
+            async onChangeCourse() {
+                this.isLoading = true;
                 await this.fetchCurrentMonthSchedule();
                 await this.fetchStudentGrades();
             },
@@ -225,6 +254,7 @@
             },
 
             fetchInstructorGradeReasons(classLevel) {
+                this.gradeReasons = [];
                 GradeReasonService.getByInstructor(
                     this.userProfile.personId,
                     classLevel,
@@ -389,10 +419,11 @@
                 display: flex;
                 align-items: center;
                 margin: 20px 0;
-                .course-name {
-
+                .select-course {
+                    width: 250px;
                 }
                 .select-reason {
+                    width: 250px;
                     margin-left: 20px;
                 }
             }
