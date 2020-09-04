@@ -22,6 +22,7 @@
         <SmartTable
             :schools="students"
             :total-elements="totalElements"
+            :totalPages="totalPages"
             :page-size="pageSize"
             :current-page="currentPage"
             menu="Students"
@@ -325,7 +326,8 @@
                 instrCourseObj: {},
                 sendStudentCourses: [],
 	            isLoading: false,
-                allAdminCourses: []
+                allAdminCourses: [],
+                totalPages: 1
             }
         },
 
@@ -356,13 +358,15 @@
             },
             showCourseName(obj) {
                 if (obj.courseName) {
-                    return this.allAdminCourses.find(course => course.code === obj.courseName).title;
+                    const courseTitle = this.allAdminCourses.find(course => course.code === obj.courseName).title;
+                    return `${courseTitle} - ${obj.instructorTitle}`;
                 }
             },
 
 	        onMassDelete () {
 	            this.isMassDeleting = true
 	        },
+
             fetchStudents() {
                 studentService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
                     this.totalElements = res.length;
