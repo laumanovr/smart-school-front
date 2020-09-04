@@ -14,6 +14,7 @@
             @leftClick="onLeftClick"
             @rightClick="onRightClick"
             :total-elements="totalElements"
+            :totalPages="totalPages"
             :page-size="pageSize"
             :current-page="currentPage"
         >
@@ -91,6 +92,7 @@ export default {
         totalElements: 0,
         currentPage: 1,
         pageSize: 20,
+        totalPages: 1,
         allAdminCourses: [],
     }),
     mounted() {
@@ -104,7 +106,7 @@ export default {
             })
         },
         showCourseName(code) {
-            if (code) {
+            if (code && this.allAdminCourses.length) {
                 return this.allAdminCourses.find(course => course.code === code).title;
             }
         },
@@ -119,6 +121,7 @@ export default {
             instructorService.list(page).then(res => {
                 this.pageSize = res.page.size;
                 this.totalElements = res.page.totalElements;
+                this.totalPages = res.page.totalPages;
                 if (res._embedded) {
                     this.users = res._embedded.instructorResourceList;
                 } else this.users = [];

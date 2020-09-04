@@ -9,7 +9,7 @@
                 <SmartButton @clicked="onAddAdmin">Добавить администратора +</SmartButton>
             </template>
         </SuperAdminSchoolHead>
-        <SmartTable :schools="users" :total-elements="users.length" :page-size="users.length">
+        <SmartTable :schools="users" :total-elements="users.length" :totalPages="totalPages" :page-size="users.length">
             <template v-slot:firstItem>
                 <SmartSelect>Область
                     <v-icon>$chevronDown</v-icon>
@@ -62,7 +62,8 @@ export default {
         isAddAdmin: false,
         users: [],
 	    isEdit: false,
-	    user: {}
+	    user: {},
+        totalPages: 1
     }),
     mounted() {
         this.fetchUsers()

@@ -14,6 +14,7 @@
             :page-size="pageSize"
             :schools="users"
             :total-elements="totalElements"
+            :totalPages="totalPages"
             @leftClick="onLeftClick"
             @rightClick="onRightClick"
         >
@@ -60,6 +61,7 @@ export default {
     components: {SmartSelect, SmartTable, SmartSearchInput, SuperAdminSchoolHead},
     data() {
         return {
+            totalPages: 1,
             users: [],
             totalElements: 0,
             pageSize: 20,
@@ -78,6 +80,7 @@ export default {
             studentService.list(page).then(res => {
                 this.pageSize = res.page.size;
                 this.totalElements = res.page.totalElements;
+                this.totalPages = res.page.totalPages;
                 if (res._embedded) {
                     this.users = res._embedded.studentResourceList;
                 } else this.users = [];
