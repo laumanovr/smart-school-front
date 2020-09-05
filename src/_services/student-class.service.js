@@ -5,10 +5,10 @@ export class StudentClassService extends BaseApiService {
         super();
     }
 
-    // getAll(schoolId) {
-    //     const url = `${process.env.VUE_APP_BASE_URL}/v1/`;
-    //     return this.sendGetRequest(url);
-    // }
+    getByStudent(studentId) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/student-class/list/${studentId}`;
+        return this.sendGetRequest(url);
+    }
 
     create (data) {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/student-class/create`;

@@ -184,6 +184,11 @@ const routes = [
 		        path: 'quarter-grade',
 		        component: loadComponent('instructor/InstructorQuarterGrade'),
 	        },
+	        {
+		        name: 'instructorTopics',
+		        path: 'topics',
+		        component: loadComponent('instructor/InstructorTopic'),
+	        },
             {
                 name: 'instructorClasses',
                 path: 'classes',

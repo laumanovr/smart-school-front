@@ -119,6 +119,7 @@ export default {
         deleteCourse () {
             adminCourseService._delete(this.course.id).then(res => {
                 this.$toast.success('Успешно удалено!');
+                this.isDeleting = false
                 this.fetchCourses();
             }).catch(err => {
                 console.log(err);

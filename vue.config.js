@@ -1,8 +1,9 @@
 module.exports = {
-	transpileDependencies: [
+    transpileDependencies: [
 		'vuetify'
 	],
-	devServer: {
+
+    devServer: {
 		proxy: {
 		  '^/api' : {
 		    target: 'http://localhost:5000',
@@ -10,5 +11,15 @@ module.exports = {
 		  }
 		}
 	},
-	lintOnSave: false
+
+    lintOnSave: false,
+
+    pluginOptions: {
+      i18n: {
+        locale: 'ru',
+        fallbackLocale: 'ru',
+        localeDir: 'locales',
+        enableInSFC: false
+      }
+    }
 };
