@@ -138,7 +138,7 @@
 				</div>
 
 				<div class="form-footer">
-					<v-btn color="primary" type="submit">Сохранить</v-btn>
+					<v-btn color="primary" style="margin-right: 20px" type="submit">Сохранить</v-btn>
 					<v-btn @click="isAddStudentModal=false">Отменить</v-btn>
 				</div>
 			</v-form>

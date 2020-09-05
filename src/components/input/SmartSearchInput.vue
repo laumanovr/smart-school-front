@@ -16,6 +16,7 @@ export default {
     background: linear-gradient(180deg, #4A27F3 0%, #339DFA 100%);
     border-radius: 24px;
     position: relative;
+	height: 34px;
     &__input {
         border-radius: 24px;
         height: 32px;

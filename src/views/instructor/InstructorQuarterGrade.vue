@@ -1,6 +1,6 @@
 <template>
 	<div class="instructor-quarter-grade">
-		<ClassSelectHeader :show-class="true" :headTitle="$t('quarter_grade')" :showClass="true"/>
+		<ClassSelectHeader :headTitle="$t('quarter_grade')" :showClass="true"/>
 
 		<div class="instructor-quarter-grade__body">
 			<table class="instructor-quarter-grade__table">
