@@ -25,7 +25,7 @@ export  class TopicService extends BaseApiService {
 		return this.sendPostRequest(url, data);
 	}
 	
-	getByInstructor (insId, courseId, page, quarterId) {
+	getByInstructor (insId, courseId, page, quarterId='') {
 		const url = `${process.env.VUE_APP_BASE_URL}/v1/topic/list/instructor/${insId}?courseId=${courseId}&page=${page}&quarterId=${quarterId}`;
 		return this.sendGetRequest(url);
 	}
