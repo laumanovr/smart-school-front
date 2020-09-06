@@ -3,15 +3,26 @@
 		<ClassSelectHeader :headTitle="$t('lessons')" :showClass="true"/>
 
 		<div class="instructor-topic__body">
-			<SmartTable :page-size="topics.length" :schools="topics" :total-elements="topics.length"
-			            :totalPages="totalPages">
+<!--			<div class="instructor-topic__hint">-->
+<!--				First of all choose a lesson-->
+<!--			</div>-->
+			<SmartTable
+				:page-size="topics.length"
+				:schools="topics"
+				:total-elements="totalElements"
+				:totalPages="totalPages"
+				@leftClick="onPageChange('left')"
+				@rightClick="onPageChange('right')"
+			>
 				<template v-slot:firstItem>
 					<v-select
 						:items="courses"
+						v-model="courseId"
+						item-text="courseName"
+						item-value="courseId"
 						:label="$t('courses')"
+						@change="onCourse"
 					></v-select>
-				</template>
-				<template v-slot:table-head-right>
 					<SmartButton @clicked="onAddTopic">{{ $t('add_topic') }}</SmartButton>
 					<SmartSearchInput></SmartSearchInput>
 				</template>
@@ -25,20 +36,27 @@
 				</template>
 
 				<template v-slot:body="{ item }">
-					<td>1</td>
-					<td>{{ item.classLevel }}</td>
-					<td>{{ item.classLabel }}</td>
-					<td>{{ item.personTitle }}</td>
-					<td><img alt="" class="clickable-icons" src="../../assets/images/icons/pen.svg"></td>
-					<td><img alt="" class="clickable-icons" src="../../assets/images/icons/trash.svg"></td>
+					<td>{{ item.index }}</td>
+					<td>{{ item.startDate }} - {{ item.endDate }}</td>
+					<td>{{ item.title }}</td>
+					<td></td>
+					<td><img @click="onTopicEdit(item)" alt="" class="clickable-icons" src="../../assets/images/icons/pen.svg"></td>
+					<td><img @click="onTopicDelete(item)" alt="" class="clickable-icons" src="../../assets/images/icons/trash.svg"></td>
 				</template>
 			</SmartTable>
 		</div>
 		<v-dialog
 			max-width="550"
 			v-model="isAdd"
+			v-if="isAdd"
 		>
-			<AddTopic></AddTopic>
+			<AddTopic :is-edit="isEdit" :edit-topic="topic" @close="isAdd = false" @fetch="fetchTopics(0)"></AddTopic>
+		</v-dialog>
+		<v-dialog
+			max-width="450"
+			v-model="isDeleting"
+		>
+			<DeletePopup @cancel="isDeleting = false" @accept="deleteTopic"></DeletePopup>
 		</v-dialog>
 	</div>
 </template>
@@ -51,32 +69,78 @@ import SmartButton from "@/components/button/SmartButton";
 import {TopicService} from "@/_services/topic.service";
 import SmartSelect from "@/components/select/SmartSelect";
 import AddTopic from "@/components/instructor/topic/AddTopic";
-
+import DeletePopup from "@/components/delete-popup/DeletePopup";
 const topicService = new TopicService()
 export default {
 	name: "InstructorTopic",
-	components: {AddTopic, SmartSelect, SmartButton, SmartSearchInput, SmartTable, ClassSelectHeader},
+	components: {DeletePopup, AddTopic, SmartSelect, SmartButton, SmartSearchInput, SmartTable, ClassSelectHeader},
 	data() {
 		return {
 			totalPages: 1,
+			totalElements: 0,
+			currentPage: 1,
+			isDeleting: false,
+			isEdit: false,
 			topics: [],
-			courses: [],
-			isAdd: false
+			topic: {},
+			isAdd: false,
+			courseId: ''
 		}
 	},
 	computed: {
 		userProfile() {
 			return this.$store.state.account.profile
+		},
+		courses () {
+			return this.$store.getters["scheduleWeek/getCourses"].map(i => {
+				i.courseName = this.$t(`adminCourses.${i.courseCode}`)
+				return i
+			})
 		}
 	},
 	methods: {
-		fetchTopics() {
-			topicService.getByInstructor(this.userProfile.user.id).then(res => {
-				this.topics = res
+		fetchTopics(page) {
+			topicService.getByInstructor(this.userProfile.personId, this.courseId, page).then(res => {
+				this.totalPages = res.page.totalPages
+				this.totalElements = res.page.totalElements
+				this.currentPage = res.page.number + 1
+				if (res._embedded) {
+					this.topics = res._embedded.topicResourceList.map((i, index) => {
+						i.index = index + 1
+						return i
+					})
+				} else this.topics  =[]
 			}).catch(err => console.log(err))
 		},
+		onCourse (id) {
+			this.fetchTopics(0)
+		},
+		onTopicEdit (item) {
+			topicService.getById(item.id).then(res => {
+				this.topic = res
+				this.isAdd = true
+				this.isEdit = true
+			}).catch(err => console.log(err))
+		},
+		onTopicDelete (item) {
+			this.topic = item
+			this.isDeleting = true
+		},
 		onAddTopic () {
+			this.isEdit = false
 			this.isAdd = true
+		},
+		deleteTopic () {
+			topicService._delete(this.topic.id).then(res => {
+				this.$toast.success(this.$t('successMessage'))
+				this.isDeleting = false
+				this.fetchTopics(0)
+			}).catch(err => console.log(err))
+		},
+		onPageChange(val) {
+			if (val === 'left') this.currentPage -= 1
+			else this.currentPage += 1
+			this.fetchTopics(this.currentPage - 1)
 		}
 	}
 }
@@ -92,6 +156,19 @@ export default {
 	}
 	&__body {
 		margin: 20px 0;
+
+		.smart-btn {
+			margin: 0 10px;
+		}
+	}
+
+	&__hint {
+		margin: 10px 25px;
+		font-weight: 300;
+		font-size: 14px;
+		line-height: 16px;
+		letter-spacing: 0.01em;
+		color: #333333;
 	}
 }
 </style>
