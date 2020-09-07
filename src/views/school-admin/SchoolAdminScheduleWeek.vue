@@ -51,7 +51,7 @@
                             <span v-if="teacher.teacherName" :class="{'space': teacher.several}">{{teacher.teacherName}}</span>
                             <span class="empty" v-else>-</span>
                         </td>
-                        <td class="course-name">{{showCourseName(teacher.courseName)}}</td>
+                        <td class="course-name">{{ $t(`adminCourses.${teacher.courseName}`) }}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -137,8 +137,7 @@
                                             getSpecificCourseSchedule(day.day, time.id, klass)
                                             )"
                                     >
-                                     {{ showCourseName(getSpecificCourseSchedule(day.day, time.id, klass).courseCode).slice(0, 4)
-                                        }}
+                                    {{ $t(`adminCourses.${getSpecificCourseSchedule(day.day, time.id, klass).courseCode}`).slice(0,4) }}
                                     </span>
                                     <span
                                         class="noClass"
@@ -270,8 +269,6 @@
     import SchoolClassService from '@/_services/school-class.service';
     import {InstructorCourseService} from '@/_services/instructor-course.service';
     const instructorCourseService = new InstructorCourseService();
-    import {AdminCourseService} from '@/_services/admin-course.service';
-    const adminCourseService = new AdminCourseService();
     import QuadArrowIcon from '@/components/icons/QuadArrowIcon';
     import DeleteIcon from '@/components/icons/DeleteIcon';
     import * as moment from 'moment';
@@ -325,13 +322,12 @@
                 shiftTimes: [],
                 allTeachers: [],
                 groupedSchedules: [],
-                allAdminCourses: []
             }
         },
 
         computed: {
             userProfile() {
-                return this.$store.state.account.profile
+                return this.$store.state.account.profile;
             },
             school() {
                 return this.userProfile.schools[0];
@@ -341,7 +337,6 @@
         created() {
             this.getAllSchoolShifts();
             this.getAllSchoolInstructors();
-            this.fetchAllAdminCourses();
         },
 
         methods: {
@@ -353,20 +348,8 @@
                 await this.fetchScheduleData();
             },
 
-            fetchAllAdminCourses() {
-                adminCourseService.list().then((res) => {
-                    this.allAdminCourses = res;
-                })
-            },
-
-            showCourseName(code) {
-                if (this.allAdminCourses.length) {
-                    return this.allAdminCourses.find(course => course.code === code).title;
-                }
-            },
-
             getTeacherAndCourseName(teacher) {
-                return this.showCourseName(teacher.courseName) + ' - ' + teacher.instructorTitle;
+                return this.$t(`adminCourses.${teacher.courseName}`) + ' - ' + teacher.instructorTitle;
             },
 
             getFullClassTitle(klass) {
