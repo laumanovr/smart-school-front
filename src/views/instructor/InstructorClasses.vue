@@ -16,7 +16,7 @@
                     <tr v-for="klass in instrClasses" :key="klass.id">
                         <td class="light-purple">{{ klass.classLevel + '-' + klass.classLabel }}</td>
                         <td>{{ getInstructorName(klass.classId) }}</td>
-                        <td class="light-purple">{{ getCourseName(klass.courseCode) }}</td>
+                        <td class="light-purple">{{ $t(`adminCourses.${klass.courseCode}`) }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -29,8 +29,6 @@
     import ClassSelectHeader from '@/components/instructor/ClassSelectHeader';
     import {InstructorClassService} from '@/_services/instructor-class.service';
     const instructorClassService = new InstructorClassService();
-    import {AdminCourseService} from '@/_services/admin-course.service';
-    const adminCourseService = new AdminCourseService();
     import PreLoader from "@/components/preloader/PreLoader";
 
     export default {
@@ -44,7 +42,6 @@
                 showData: false,
                 instrClasses: [],
                 allSchoolClasses: [],
-                allAdminCourses: []
             }
         },
 
@@ -57,7 +54,6 @@
         async created() {
             this.isLoading = true;
             await this.fetchAllSchoolClasses();
-            await this.fetchAllAdminCourses();
             await this.fetchInstructorClasses();
         },
 
@@ -85,17 +81,6 @@
             getInstructorName(klassId) {
                 const teacher = this.allSchoolClasses.find(klass => klass.classId === klassId);
                 return teacher ? teacher.personTitle : '';
-            },
-
-            fetchAllAdminCourses() {
-                adminCourseService.list().then((res) => {
-                    this.allAdminCourses = res;
-                })
-            },
-
-            getCourseName(code) {
-                const course = this.allAdminCourses.find(course => course.code === code);
-                return course ? course.title : '';
             },
         }
     }
