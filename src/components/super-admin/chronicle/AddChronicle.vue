@@ -8,8 +8,10 @@
 				<v-text-field :rules="ruleEndYear" v-model="chronicle.endYear" label="Конец года"></v-text-field>
 			</div>
 			<div class="form-footer">
-				<v-btn type="submit" color="primary">Сохранить</v-btn>
-				<v-btn @click="$emit('close')">Отменить</v-btn>
+                <div class="btn-actions">
+				    <v-btn type="submit" color="primary">Сохранить</v-btn>
+				    <v-btn color="red" @click="$emit('close')">Отменить</v-btn>
+                </div>
 			</div>
 		</v-form>
 	</div>
