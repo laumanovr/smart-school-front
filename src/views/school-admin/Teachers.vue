@@ -53,7 +53,7 @@
 	            <td>{{ item.firstName+' '+item.lastName }}</td>
                 <td class="instr-courses">
                     <template v-if="item.courses.length">
-                        <span v-for="courseCode in item.courses">{{showCourseName(courseCode)}},</span>
+                        <span v-for="courseCode in item.courses">{{$t(`adminCourses.${courseCode}`)}},</span>
                     </template>
                     <span v-else></span>
                 </td>
@@ -82,7 +82,7 @@
                         <h4>Добавленные:</h4>
                         <div class="teacher-courses">
                             <div class="course" v-for="(instrCourse, i) in teacherCourses" :key="i">
-                                <span>{{ showCourseName(instrCourse.courseName) }}</span>
+                                <span>{{ $t(`adminCourses.${instrCourse.courseName}`) }}</span>
                                 <DeleteIcon @click="deleteTeacherCourse(instrCourse.id, i)"/>
                             </div>
                         </div>
@@ -160,7 +160,6 @@ export default {
         totalElements: 0,
         pageSize: 0,
         currentPage: 1,
-        allAdminCourses: [],
 	    isLoading: false,
         schoolCourses: [],
         allSchoolCourses: [],
@@ -180,21 +179,10 @@ export default {
     },
     async mounted() {
         this.addTeacherCourse.schoolId = this.userProfile.schools[0].id;
-        await this.fetchAllAdminCourses();
         this.fetchUsers();
         this.fetchSchoolCourses();
     },
     methods: {
-        fetchAllAdminCourses() {
-            adminCourseService.list().then((res) => {
-                this.allAdminCourses = res;
-            })
-        },
-        showCourseName(code) {
-            if (code) {
-                return this.allAdminCourses.find(course => course.code === code).title;
-            }
-        },
         fetchSchoolCourses() {
             courseService.listBySchool(this.userProfile.schools[0].id).then((res) => {
                 this.schoolCourses = res;
