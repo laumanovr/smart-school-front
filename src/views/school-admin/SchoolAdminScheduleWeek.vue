@@ -1,5 +1,6 @@
 <template>
     <div class="school-admin-schedule">
+        <PreLoader v-if="isLoading" />
         <SuperAdminSchoolHead>
             <template v-slot:title>
                 Расписание
@@ -272,15 +273,18 @@
     import QuadArrowIcon from '@/components/icons/QuadArrowIcon';
     import DeleteIcon from '@/components/icons/DeleteIcon';
     import * as moment from 'moment';
+    import PreLoader from '@/components/preloader/PreLoader';
 
     export default {
         components: {
             SuperAdminSchoolHead,
             QuadArrowIcon,
-            DeleteIcon
+            DeleteIcon,
+            PreLoader
         },
         data() {
             return {
+                isLoading: false,
                 required: [v => !!v || 'Обязательное поле'],
                 sendScheduleObj: {
                     chronicleId: 0,
@@ -341,6 +345,7 @@
 
         methods: {
             async onSelectShift(shiftId) {
+                this.isLoading = true;
                 this.currentShiftId = shiftId;
                 this.showContent = false;
                 await this.getAllSchoolClasses();
@@ -377,7 +382,11 @@
                 ScheduleWeekService.getAllBySchoolAndShift(this.school.id, this.currentShiftId).then((res) => {
                     this.allSchedules = res;
                     this.showContent = true;
-                }).catch(err => this.$toast.error(err));
+                    this.isLoading = false;
+                }).catch(err => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                })
             },
 
             getAllSchoolShifts() {
@@ -477,6 +486,7 @@
             },
 
             submitCreateSchedule() {
+                this.isLoading = true;
                 ScheduleWeekService.create(this.sendScheduleObj).then((res) => {
                     let scheduleObj = JSON.parse(JSON.stringify(this.sendScheduleObj));
                     scheduleObj.classTitle = res.classTitle;
@@ -486,12 +496,17 @@
                     this.closeModal();
                     this.closeClassViewModal();
                     this.$toast.success('Успешно добавлено!');
-                }).catch(err => this.$toast.error(err));
+                    this.isLoading = false;
+                }).catch(err => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                })
             },
 
             submitUpdateSchedule() {
+                this.isLoading = true;
                 const newClass = this.classes.find((klass) => klass.id === this.sendScheduleObj.classId);
-                ScheduleWeekService.update(this.sendScheduleObj).then((res) => {
+                ScheduleWeekService.update(this.sendScheduleObj).then(() => {
                     this.allSchedules = this.allSchedules.map((schedule) => {
                         if (schedule.id === this.sendScheduleObj.id) {
                             schedule.classId = newClass.id;
@@ -509,10 +524,15 @@
                     this.closeModal();
                     this.closeClassViewModal();
                     this.$toast.success('Успешно обновлено!');
-                }).catch(err => this.$toast.error(err));
+                    this.isLoading = false;
+                }).catch(err => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                })
             },
 
             removeSchedule() {
+                this.isLoading = true;
                 ScheduleWeekService.deleteSchedule(this.sendScheduleObj.id).then(() => {
                     this.allSchedules.forEach((schedule, i, selfArr) => {
                         if (schedule.id === this.sendScheduleObj.id) {
@@ -521,7 +541,11 @@
                     });
                     this.closeModal();
                     this.$toast.success('Успешно удалено!');
-                }).catch(err => this.$toast.error(err));
+                    this.isLoading = false;
+                }).catch(err => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                })
             },
 
             //Filter by class functions
