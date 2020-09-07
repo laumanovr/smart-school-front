@@ -94,8 +94,6 @@
     import ScheduleWeekService from '@/_services/schedule-week.service';
     import moment from 'moment';
     import GradeReasonService from '@/_services/grade-reason.service';
-    import {AdminCourseService} from '@/_services/admin-course.service';
-    const adminCourseService = new AdminCourseService();
     import PreLoader from '@/components/preloader/PreLoader';
     import PlayArrowIcon from '@/components/icons/PlayArrowIcon';
 
@@ -158,27 +156,17 @@
                 gradeMonthFrom: new Date().getMonth(),
                 gradeMonthTo: new Date().getMonth() + 1,
                 scheduleMonthNumber: new Date().getMonth() + 2,
-                allAdminCourses: [],
                 allCourses: []
             }
         },
 
         created() {
             this.getInstructorCourses();
-            this.fetchAllAdminCourses(); // temp
         },
 
         methods: {
-            fetchAllAdminCourses() {
-                adminCourseService.list().then((res) => {
-                    this.allAdminCourses = res;
-                })
-            },
-
             showCourseName(courseObj) {
-                if (this.allAdminCourses.length) {
-                    return this.allAdminCourses.find(course => course.code === courseObj.courseCode).title;
-                }
+                return this.$t(`adminCourses.${courseObj.courseCode}`);
             },
 
             getInstructorCourses() {
@@ -197,7 +185,7 @@
                     index === selfArr.findIndex((el) =>
                         (el['courseId'] === obj['courseId'])
                 ));
-                this.monthDataRequest.courseId = this.instructorCourses[0].courseId;
+                this.monthDataRequest.courseId = this.instructorCourses.length ? this.instructorCourses[0].courseId : 0;
             },
 
             async onChangeClass(klass) {
