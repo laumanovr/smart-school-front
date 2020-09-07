@@ -27,7 +27,7 @@
                         <td v-for="day in days" :key="day.day">
                             <div class="lesson" v-if="getSpecificClassSchedule(day.day, time.id).length">
                                 <div v-for="klass in getSpecificClassSchedule(day.day, time.id)">
-                                    {{ klass.classLevel + klass.classLabel + ' - ' + showCourseName(klass.courseCode) }}
+                                    {{ klass.classLevel + klass.classLabel + ' - ' + $t(`adminCourses.${klass.courseCode}`) }}
                                 </div>
                             </div>
                             <div class="lesson" v-else></div>
@@ -44,8 +44,6 @@
     import ScheduleWeekService from '@/_services/schedule-week.service';
     import ShiftService from '@/_services/shift.service';
     import ShiftTimeService from '@/_services/shift-time.service';
-    import {AdminCourseService} from '@/_services/admin-course.service';
-    const adminCourseService = new AdminCourseService();
     import PreLoader from "@/components/preloader/PreLoader";
 
     export default {
@@ -78,27 +76,14 @@
                 teacherSchedules: [],
                 shifts: [],
                 shiftTimes: [],
-                allAdminCourses: []
             }
         },
 
         created() {
             this.fetchAllSchoolShifts();
-            this.fetchAllAdminCourses();
         },
 
         methods: {
-            fetchAllAdminCourses() {
-                adminCourseService.list().then((res) => {
-                    this.allAdminCourses = res;
-                })
-            },
-
-            showCourseName(code) {
-                const course = this.allAdminCourses.find(course => course.code === code);
-                return course ? course.title : '';
-            },
-
             fetchAllSchoolShifts() {
                 ShiftService.getAllBySchool(this.school.id).then((res) => {
                     this.shifts = res;
