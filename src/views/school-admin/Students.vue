@@ -169,12 +169,15 @@
 				<v-text-field v-model="studentDetail.surname" label="Фамилия" readonly type="text"/>
 				<v-text-field v-model="studentDetail.phone" label="Телефон" readonly type="text"/>
 				<template v-for="course in studentDetail.courses">
-					<v-text-field :value="showCourseName(course) + '-' + course.instructorTitle" label="Предмет"
-					              readonly type="text"/>
+					<v-text-field
+                        :value="$t(`adminCourses.${course.courseName}`) + '-' + course.instructorTitle"
+                        label="Предмет"
+					    readonly type="text"/>
 				</template>
-				<v-text-field :value="studentDetail.parents && studentDetail.parents.length ? studentDetail.parents[0].parentTitle : ''"
-				              label="Имя родителя"
-				              readonly type="text"/>
+				<v-text-field
+                    :value="studentDetail.parents && studentDetail.parents.length ? studentDetail.parents[0].parentTitle : ''"
+				    label="Имя родителя"
+				    readonly type="text"/>
 				<v-btn color="primary" @click="showDetailModal = false">Закрыть</v-btn>
 			</v-form>
 		</v-dialog>
@@ -221,39 +224,28 @@ import SmartSearchInput from '@/components/input/SmartSearchInput';
 import SmartBtn2 from '@/components/button/SmartBtn2';
 import SmartSelect from '@/components/select/SmartSelect';
 import {InstructorClassService} from '@/_services/instructor-class.service';
-
 const instructorClassService = new InstructorClassService();
 import {StudentService} from '@/_services/student.service';
-
 const studentService = new StudentService();
 import moment from 'moment';
 import {RoleService} from '@/_services/role.service'
-
 const roleService = new RoleService();
 import {StudentClassService} from '@/_services/student-class.service';
-
 const studentClassService = new StudentClassService();
 import {PersonService} from '@/_services/person.service';
-
 const personService = new PersonService();
 import {StudentParentService} from '@/_services/student-parent.service';
 import ExcelJs from "@/components/excel-export/ExcelJs";
 import ImportFile from "@/components/import-file/ImportFile";
-
 const studentParentService = new StudentParentService();
 import {FileImportService} from "@/_services/file-import.service";
 import DeletePopup from "@/components/delete-popup/DeletePopup";
-
 const fileImportService = new FileImportService();
 import SchoolClassService from '@/_services/school-class.service';
 import PreLoader from "@/components/preloader/PreLoader";
 import {InstructorCourseService} from '@/_services/instructor-course.service';
-
 const instructorCourseService = new InstructorCourseService();
 import StudentCourseService from '@/_services/student-course.service';
-import {AdminCourseService} from '@/_services/admin-course.service';
-
-const adminCourseService = new AdminCourseService();
 import InfoIcon from '@/components/icons/InfoIcon';
 
 export default {
@@ -348,7 +340,6 @@ export default {
 			instrCourseObj: {},
 			sendStudentCourses: [],
 			isLoading: false,
-			allAdminCourses: [],
 			totalPages: 1
 		}
 	},
@@ -365,7 +356,6 @@ export default {
 		this.parentPersonObj.schoolId = this.userProfile.schools[0].id;
 		this.studentObj.chronicleYearId = this.userProfile.schools[0].chronicleId;
 		this.studentClassObj.chronicleId = this.userProfile.schools[0].chronicleId;
-		this.fetchAllAdminCourses();
 		this.fetchAllClasses();
 		this.fetchRoles();
 		this.fetchStudents();
@@ -373,16 +363,8 @@ export default {
 	},
 
 	methods: {
-		fetchAllAdminCourses() {
-			adminCourseService.list().then((res) => {
-				this.allAdminCourses = res;
-			})
-		},
 		showCourseName(obj) {
-			if (obj.courseName) {
-				const courseTitle = this.allAdminCourses.find(course => course.code === obj.courseName).title;
-				return `${courseTitle} - ${obj.instructorTitle}`;
-			}
+            return this.$t(`adminCourses.${obj.courseName}`) + ' - ' + obj.instructorTitle;
 		},
 
 		onMassDelete() {
