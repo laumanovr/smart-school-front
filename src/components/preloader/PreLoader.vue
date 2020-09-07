@@ -23,7 +23,7 @@ export default {
 	right: 0;
 	left: 0;
 	background: #ffffffad;
-	z-index: 1000;
+	z-index: 9999;
 }
 .container {
 	position: absolute;
