@@ -45,7 +45,7 @@
                 <!--<td>{{ showCourses(item.courses) }}</td>-->
                 <td class="instr-courses">
                     <template v-if="item.courses.length">
-                        <span v-for="courseCode in item.courses">{{showCourseName(courseCode)}},</span>
+                        <span v-for="courseCode in item.courses">{{$t(`adminCourses.${courseCode}`)}},</span>
                     </template>
                     <span v-else></span>
                 </td>
@@ -77,8 +77,6 @@ import SmartSelect from '@/components/select/SmartSelect'
 import {InstructorService} from "@/_services/instructor.service";
 const instructorService = new InstructorService();
 const personService = new PersonService();
-import {AdminCourseService} from '@/_services/admin-course.service';
-const adminCourseService = new AdminCourseService();
 import PreLoader from "@/components/preloader/PreLoader";
 
 export default {
@@ -95,24 +93,12 @@ export default {
         currentPage: 1,
         pageSize: 20,
         totalPages: 1,
-        allAdminCourses: [],
         isLoading: false,
     }),
     mounted() {
         this.fetchUsers(0);
-        this.fetchAllAdminCourses();
     },
     methods: {
-        fetchAllAdminCourses() {
-            adminCourseService.list().then((res) => {
-                this.allAdminCourses = res;
-            })
-        },
-        showCourseName(code) {
-            if (code && this.allAdminCourses.length) {
-                return this.allAdminCourses.find(course => course.code === code).title;
-            }
-        },
         onAddAdmin() {
             this.isAddAdmin = true
         },
