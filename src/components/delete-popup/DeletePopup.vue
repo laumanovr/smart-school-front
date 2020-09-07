@@ -1,6 +1,6 @@
 <template>
         <v-card>
-            <v-card-title class="headline">Вы уверены, что хотите удалить?</v-card-title>
+            <v-card-title class="headline">{{ message }}</v-card-title>
 
             <v-card-actions>
                 <v-spacer></v-spacer>
@@ -27,6 +27,7 @@
 <script>
 export default {
     name: "DeletePopup",
+	props: { message: { type: String, default: 'Вы уверены, что хотите удалить?' } }
 }
 </script>
 

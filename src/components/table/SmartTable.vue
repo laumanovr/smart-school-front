@@ -89,28 +89,7 @@ export default {
         pageRemainder () {
             return this.currentPage === this.totalPage ? this.totalElements !== this.pageSize ? this.totalElements % this.pageSize : this.pageSize : this.pageSize;
         }
-    },
-	// mounted() {
-    // 	const el = document.getElementById('actions')
-	// 	const body = el.closest('school-admin-manage__body')
-    // 	if (body) {
-    // 		body.addEventListener('scroll', function (e) {
-	// 		    console.log(el.scrollIntoView())
-	// 	    })
-	//     }
-	// },
-	// beforeDestroy() {
-	// 	window.removeEventListener('scroll', function (e) {
-	// 		const elmnt = document.getElementById("actions");
-	// 		console.log(elmnt.scrollIntoView())
-	// 	})
-	// },
-	methods: {
-		onScroll () {
-			const elmnt = document.getElementById("actions");
-			console.log(elmnt.scrollIntoView())
-		}
-	}
+    }
 }
 </script>
 
@@ -127,6 +106,7 @@ export default {
     &__first-item {
         display: flex;
         margin-bottom: 20px;
+	    align-items: center;
 
         div {
             margin-right: 10px;
@@ -138,7 +118,7 @@ export default {
         align-items: center;
         margin-bottom: 20px;
 
-        .v-select {
+        .v-select, .smart-btn {
             width: 150px;
             margin-right: 20px;
         }

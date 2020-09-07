@@ -22,6 +22,8 @@ import {
     MdRipple,
 } from '../node_modules/vue-material/dist/components';
 
+import i18n from './i18n'
+
 Vue.config.productionTip = false;
 Vue.use(VModal);
 Vue.use(VueToast, { position: 'top', duration: 2500 });
@@ -42,5 +44,6 @@ new Vue({
   router,
   store,
   vuetify,
+  i18n,
   render: h => h(App)
 }).$mount('#app')
