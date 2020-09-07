@@ -40,10 +40,9 @@
         width="546"
         id="add-form"
     >
-        <v-form @submit.prevent="submitClass" ref="form">
+        <v-form @submit.prevent="submitClass" ref="classForm">
             <div class="form-head">
-                <span v-if="!isEditClass">Добавить класс</span>
-                <span v-else>Редактировать класс</span>
+                <span><h2>{{isEditClass ? 'Редактировать класс' : 'Добавить класс'}}</h2></span>
             </div>
 
             <div>
@@ -90,8 +89,10 @@
             </div>
 
             <div class="form-footer">
-                <v-btn type="submit" color="primary">Сохранить</v-btn>
-                <v-btn @click="isAddClassModal=false">Отменить</v-btn>
+                <div class="btn-actions">
+                    <v-btn type="submit" color="primary">Сохранить</v-btn>
+                    <v-btn color="red" @click="isAddClassModal=false">Отменить</v-btn>
+                </div>
             </div>
         </v-form>
     </v-dialog>
@@ -188,7 +189,13 @@
             onAddClass () {
                 this.isAddClassModal = true;
                 this.isEditClass = false;
-                this.sendObj = {};
+                this.sendObj.classLabel = '';
+                this.sendObj.classLevel = '';
+                this.sendObj.languageId = '';
+                this.instrClassObj.personId = '';
+                if (this.$refs.classForm) {
+                    this.$refs.classForm.reset();
+                }
             },
 
             editCLass (item) {
@@ -242,6 +249,9 @@
             },
 
             submitClass() {
+                if (!this.$refs.classForm.validate()) {
+                    return;
+                }
                 this.sendObj.schoolId = this.userProfile.schools[0].id;
                 if (this.isEditClass) {
                     SchoolClassService.update(this.sendObj).then(res => {
