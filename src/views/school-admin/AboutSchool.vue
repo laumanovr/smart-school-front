@@ -1,7 +1,7 @@
 <template>
     <div class="about-container">
         <SuperAdminSchoolHead>
-            <template v-slot:title>О школе</template>
+            <template v-slot:center><h1>О школе</h1></template>
         </SuperAdminSchoolHead>
 
         <div class="school-info">
@@ -203,6 +203,7 @@
         .school-info {
             background: #fff;
             padding: 15px;
+            border: 2px solid #03A9F4;
 
             .form-footer {
                 text-align: center;
