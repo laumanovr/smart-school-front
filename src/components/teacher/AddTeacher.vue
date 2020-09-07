@@ -1,7 +1,7 @@
 <template>
     <v-form @submit.prevent="submit" ref="form">
         <div class="form-head">
-            <span v-if="!isEdit">Добавить учителя</span>
+            <span v-if="!isEdit"><h3>Добавить учителя</h3></span>
             <span v-else>Редактировать учителя</span>
             <img alt="" src="../../assets/images/profile-icon.svg">
             <button class="profile-edit">
@@ -56,8 +56,10 @@
             ></v-select>
         </div>
         <div class="form-footer">
-            <v-btn color="primary" type="submit">Сохранить</v-btn>
-            <v-btn @click="$emit('close')">Отменить</v-btn>
+            <div class="btn-actions">
+                <v-btn color="primary" type="submit">Сохранить</v-btn>
+                <v-btn color="red" @click="$emit('close')">Отменить</v-btn>
+            </div>
         </div>
     </v-form>
 </template>
