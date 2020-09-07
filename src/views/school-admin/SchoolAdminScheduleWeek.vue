@@ -80,7 +80,7 @@
                                             'edit', day.day, time.id, teacher,
                                             getSpecificSchedule(day.day, time.id, teacher))"
                                     >
-                                     {{ getSpecificSchedule(day.day, time.id, teacher)[0].classTitle }}
+                                     {{ getSpecificSchedule(day.day, time.id, teacher)[0].classTitle.replace(' ', '') }}
                                     </span>
 
                                     <span
@@ -682,7 +682,7 @@
                                 span {
                                     display: inline-block;
                                     text-align: center;
-                                    width: 30px;
+                                    width: 32px;
                                     color: #5e5e5e;
                                     &:not(:last-child) {
                                         border-right: 1px solid rgba(#707070, 0.8);
@@ -701,7 +701,7 @@
                                         display: flex;
                                         align-items: center;
                                         justify-content: center;
-                                        width: 30px;
+                                        width: 32px;
                                         height: 30px;
                                         font-size: 15px;
                                         cursor: pointer;
