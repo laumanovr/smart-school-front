@@ -30,14 +30,16 @@
         <!--GRADE REASON MODAL-->
         <modal name="grade-reason-modal">
             <div class="modal-container">
-                <h4>{{mode == 'create' ? 'Добавить тип' : 'Редактировать'}}</h4>
-                <div>
-                    <v-text-field v-model="gradeReasonObj.title" :rules="required" label="Название"/>
-                </div>
-                <div class="btn-actions">
-                    <v-btn color="red" @click="closeReasonModal">Отмена</v-btn>
-                    <v-btn color="green" @click="submitSaveReason">Сохранить</v-btn>
-                </div>
+                <v-form ref="reasonForm">
+                    <h4>{{mode == 'create' ? 'Добавить тип' : 'Редактировать'}}</h4>
+                    <div>
+                        <v-text-field v-model="gradeReasonObj.title" :rules="required" label="Название"/>
+                    </div>
+                    <div class="btn-actions">
+                        <v-btn color="red" @click="closeReasonModal">Отмена</v-btn>
+                        <v-btn color="green" @click="submitSaveReason">Сохранить</v-btn>
+                    </div>
+                </v-form>
             </div>
         </modal>
     </div>
@@ -119,27 +121,29 @@
             },
 
             submitSaveReason() {
-                this.isLoading = true;
-                if (this.mode === 'create') {
-                    GradeReasonService.create(this.gradeReasonObj).then(() => {
-                        this.closeReasonModal();
-                        this.$toast.success('Успешно');
-                        this.fetchInstructorGradeReasons();
-                        this.isLoading = false;
-                    }).catch((err) => {
-                        this.$toast.error(err);
-                        this.isLoading = false;
-                    })
-                } else {
-                    GradeReasonService.update(this.gradeReasonObj).then(() => {
-                        this.closeReasonModal();
-                        this.$toast.success('Успешно');
-                        this.fetchInstructorGradeReasons();
-                        this.isLoading = false;
-                    }).catch((err) => {
-                        this.$toast.error(err);
-                        this.isLoading = false;
-                    })
+                if (this.$refs.reasonForm.validate()) {
+                    this.isLoading = true;
+                    if (this.mode === 'create') {
+                        GradeReasonService.create(this.gradeReasonObj).then(() => {
+                            this.closeReasonModal();
+                            this.$toast.success('Успешно');
+                            this.fetchInstructorGradeReasons();
+                            this.isLoading = false;
+                        }).catch((err) => {
+                            this.$toast.error(err);
+                            this.isLoading = false;
+                        })
+                    } else {
+                        GradeReasonService.update(this.gradeReasonObj).then(() => {
+                            this.closeReasonModal();
+                            this.$toast.success('Успешно');
+                            this.fetchInstructorGradeReasons();
+                            this.isLoading = false;
+                        }).catch((err) => {
+                            this.$toast.error(err);
+                            this.isLoading = false;
+                        })
+                    }
                 }
             }
         }
