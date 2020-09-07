@@ -33,7 +33,6 @@ const routes = [
 
     // SUPER-ADMIN
 	{
-		name: 'superAdmin',
 		path: '/super-admin',
 		component: () => import('@/views/super-admin/Dashboard'),
         beforeEnter: (to, from, next) => {
@@ -100,7 +99,6 @@ const routes = [
 
     // SCHOOL-ADMIN
 	{
-		name: 'schoolAdmin',
 		path: '/school-admin',
 		component: SchoolAdminManage,
         beforeEnter: (to, from, next) => {
@@ -167,7 +165,6 @@ const routes = [
 
     // INSTRUCTOR
 	{
-	    name: 'instructorPage',
         path: '/instructor-page',
         component: loadComponent('instructor/InstructorManage'),
         beforeEnter: (to, from, next) => {
@@ -208,11 +205,6 @@ const routes = [
                 name: 'instructorGradeReason',
                 path: 'grade-reason',
                 component: loadComponent('instructor/InstructorGradeReason')
-            },
-            {
-                name: 'instructorTopics',
-                path: 'topics',
-                component: SuperAdminEmpty // Временно
             },
             {
                 name: 'instructorMessage',
