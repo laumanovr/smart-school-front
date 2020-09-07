@@ -78,8 +78,10 @@
             ></v-select>
         </div>
         <div class="form-footer">
-            <v-btn color="primary" type="submit">Сохранить</v-btn>
-            <v-btn @click="$emit('close')">Отменить</v-btn>
+            <div class="btn-actions">
+                <v-btn color="primary" type="submit">Сохранить</v-btn>
+                <v-btn color="red" @click="$emit('close')">Отменить</v-btn>
+            </div>
         </div>
     </v-form>
 </template>
@@ -249,6 +251,5 @@ export default {
             }
         }
     }
-
 }
 </style>
