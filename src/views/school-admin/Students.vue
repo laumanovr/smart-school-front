@@ -71,10 +71,9 @@
 			</template>
 		</SmartTable>
 		<v-dialog v-if="isAddStudentModal" id="add-form" v-model="isAddStudentModal" width="546">
-			<v-form ref="form" @submit.prevent="submitStudent">
+			<v-form ref="studentForm" @submit.prevent="submitStudent">
 				<div class="form-head">
-					<span v-if="!isStudentEdit">Добавить ученика</span>
-					<span v-else>Редактировать ученика</span>
+					<span><h2>{{isStudentEdit ? 'Редактировать ученика' : 'Добавить ученика'}}</h2></span>
 					<img alt="" src="../../assets/images/profile-icon.svg">
 					<button class="profile-edit">
 						<img src="../../assets/images/icons/edit.svg">
@@ -138,8 +137,10 @@
 				</div>
 
 				<div class="form-footer">
-					<v-btn color="primary" style="margin-right: 20px" type="submit">Сохранить</v-btn>
-					<v-btn @click="isAddStudentModal=false">Отменить</v-btn>
+                    <div class="btn-actions">
+					    <v-btn color="primary" type="submit">Сохранить</v-btn>
+					    <v-btn color="red" @click="isAddStudentModal=false">Отменить</v-btn>
+                    </div>
 				</div>
 			</v-form>
 		</v-dialog>
@@ -183,8 +184,9 @@
 		</v-dialog>
 
 		<!--ADD COURSE MODAL-->
-		<modal name="course-modal">
+		<modal name="course-modal" height="auto">
 			<div class="modal-container">
+                <v-form ref="addCourseForm">
 				<h4>Добавить предмет</h4>
 				<div>
 					<v-select
@@ -199,6 +201,7 @@
 				</div>
 				<div>
 					<v-select
+                        :error="emptyInstrCourse"
 						v-model="instrCourseObj"
 						:item-text="showCourseName"
 						:items="instrCourses"
@@ -210,7 +213,9 @@
 				</div>
 				<div class="btn-actions">
 					<v-btn color="primary" @click="submitAddCourseToStudents">Сохранить</v-btn>
+                    <v-btn color="red" @click="$modal.hide('course-modal')">Отмена</v-btn>
 				</div>
+                </v-form>
 			</div>
 		</modal>
 	</div>
@@ -340,7 +345,8 @@ export default {
 			instrCourseObj: {},
 			sendStudentCourses: [],
 			isLoading: false,
-			totalPages: 1
+			totalPages: 1,
+            emptyInstrCourse: false
 		}
 	},
 
@@ -432,7 +438,8 @@ export default {
 			this.instrCourseObj = {};
 			this.studentObj.classId = '';
 			this.sendStudentCourses = [];
-			this.$modal.show('course-modal');
+            this.emptyInstrCourse = false;
+            this.$modal.show('course-modal');
 		},
 
 		fetchInstructorCourses() {
@@ -443,23 +450,29 @@ export default {
 			})
 		},
 
-		submitAddCourseToStudents() {
-			this.students.filter(student => student.classId === this.studentObj.classId).forEach((student) => {
-				let studentCourse = {
-					archived: false,
-					chronicleId: this.studentObj.chronicleYearId,
-					classId: this.studentObj.classId,
-					courseId: this.instrCourseObj.courseId,
-					instructorId: this.instrCourseObj.instructorId,
-					studentId: student.id
-				};
-				this.sendStudentCourses.push(studentCourse)
-			});
-			StudentCourseService.createBatch(this.sendStudentCourses).then(() => {
-				this.$modal.hide('course-modal');
-				this.$toast.success('Успешно добавлены');
-			}).catch(err => this.$toast.error(err));
-		},
+        submitAddCourseToStudents() {
+            if (this.$refs.addCourseForm.validate()) {
+                if (!this.instrCourseObj.courseId) {
+                    this.emptyInstrCourse = true;
+                    return;
+                }
+                this.students.filter(student => student.classId === this.studentObj.classId).forEach((student) => {
+                    let studentCourse = {
+                        archived: false,
+                        chronicleId: this.studentClassObj.chronicleId,
+                        classId: this.studentObj.classId,
+                        courseId: this.instrCourseObj.courseId,
+                        instructorId: this.instrCourseObj.instructorId,
+                        studentId: student.id
+                    };
+                    this.sendStudentCourses.push(studentCourse)
+                });
+                StudentCourseService.createBatch(this.sendStudentCourses).then(() => {
+                    this.$modal.hide('course-modal');
+                    this.$toast.success('Успешно добавлены');
+                }).catch(err => this.$toast.error(err));
+            }
+        },
 
 		downloadTemplate() {
 			const a = document.createElement('a');
@@ -521,6 +534,9 @@ export default {
 		},
 
 		submitStudent() {
+		    if (!this.$refs.studentForm.validate()) {
+		        return;
+            }
 			this.studentObj.schoolId = this.userProfile.schools[0].id;
 			this.studentObj.chronicleYearId = this.userProfile.schools[0].chronicleId;
 			this.studentObj.dateOfBirth = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY');
