@@ -1,5 +1,6 @@
 <template>
     <div class="shift-container">
+        <PreLoader v-if="isLoading"/>
         <SuperAdminSchoolHead>
             <template v-slot:title><button class="blue go-back" @click="$router.go(-1)">< Назад</button></template>
             <template v-slot:center><h1>Все смены</h1></template>
@@ -98,6 +99,7 @@
     import EditIcon from '@/components/icons/EditIcon';
     import DeleteIcon from '@/components/icons/DeleteIcon';
     import moment from 'moment';
+    import PreLoader from '@/components/preloader/PreLoader';
 
     export default {
         components: {
@@ -105,10 +107,12 @@
             ShiftCreateEdit,
             ShiftTimeCreateEdit,
             EditIcon,
-            DeleteIcon
+            DeleteIcon,
+            PreLoader
         },
         data() {
             return {
+                isLoading: false,
                 shiftObj: {
                     name: '',
                     schoolId: ''
@@ -134,10 +138,13 @@
 
         methods: {
             fetchSchoolShifts() {
+                this.isLoading = true;
                 ShiftService.getAllBySchool(this.school.id).then((res) => {
                     this.allSchoolShifts = res;
+                    this.isLoading = false;
                 }).catch((err) => {
                     this.$toast.error(err);
+                    this.isLoading = false;
                 })
             },
 
