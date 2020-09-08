@@ -23,9 +23,6 @@
                 <SmartSelect>Школа
                     <v-icon>$chevronDown</v-icon>
                 </SmartSelect>
-                <SmartSelect>Район
-                    <v-icon>$chevronDown</v-icon>
-                </SmartSelect>
                 <SmartSelect>Пол
                     <v-icon>$chevronDown</v-icon>
                 </SmartSelect>
