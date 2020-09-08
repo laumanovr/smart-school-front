@@ -730,7 +730,8 @@
             }
 
             .group-color {
-                color: #009688;
+                background: #009688;
+                color: #fff;
             }
             .scroll-arrows {
                 display: flex;
