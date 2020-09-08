@@ -11,10 +11,14 @@
     </SuperAdminSchoolHead>
     <SmartTable :schools="classes" :total-elements="classes.length" :page-size="classes.length" :totalPages="totalPages">
         <template v-slot:firstItem>
-            <SmartSelect>Класс <v-icon>$chevronDown</v-icon></SmartSelect>
-            <SmartSelect>Буква <v-icon>$chevronDown</v-icon></SmartSelect>
-            <SmartSelect>Классный руководитель <v-icon>$chevronDown</v-icon></SmartSelect>
-            <SmartSelect>Язык <v-icon>$chevronDown</v-icon></SmartSelect>
+            <v-select
+                :items="classInstructors"
+                item-text="personTitle"
+                item-value="personId"
+                label="Фильтр по учителю"
+                class="select-teacher"
+                @change="filterByInstructor"
+            ></v-select>
         </template>
         <template v-slot:head>
             <th>Класс</th>
@@ -161,6 +165,8 @@
                 ],
                 languages: [],
                 teachers: [],
+                classInstructors: [],
+                allClasses: [],
                 totalPages: 1
             }
         },
@@ -183,7 +189,18 @@
             fetchAllClasses() {
                 instructorClassService.getAllClasses(this.userProfile.schools[0].id).then((res) => {
                     this.classes = res;
+                    this.allClasses = res;
+                    this.classInstructors = JSON.parse(JSON.stringify(res));
+                    this.classInstructors.unshift({personId: 0, personTitle: 'Показать все'});
                 })
+            },
+
+            filterByInstructor(instructorId) {
+                if (instructorId) {
+                    this.classes = this.allClasses.filter((klass) => klass.personId === instructorId);
+                } else {
+                    this.classes = this.allClasses;
+                }
             },
 
             onAddClass () {
@@ -235,7 +252,7 @@
             },
 
             getLanguageName(langId) {
-                if (langId) {
+                if (langId && this.languages.length) {
                     return this.languages.find(lang => lang.id === langId).name;
                 }
             },
@@ -298,6 +315,9 @@
 <style lang="scss" scoped>
     .school-admin-classes {
         margin-bottom: 50px;
+        .select-teacher {
+            max-width: 250px;
+        }
     }
     .v-form {
         background: #FFFFFF;
