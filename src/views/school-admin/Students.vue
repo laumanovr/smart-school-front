@@ -33,12 +33,12 @@
 			<template v-slot:firstItem>
                 <div class="filter-class">
                     <v-select
-                        :items="classes"
+                        :items="filterClasses"
                         item-text="classTitle"
                         item-value="id"
                         label="Фильтр по классам"
                         class="select-class"
-                        :class="{'no-border': filteredClass}"
+                        :class="{'no-border': selectedFilterClass}"
                         @change="filterByClass"
                     ></v-select>
 				    <SmartButton @clicked="openAddCourseModal">Добавить предмет</SmartButton>
@@ -349,7 +349,8 @@ export default {
 			isLoading: false,
 			totalPages: 1,
             emptyInstrCourse: false,
-            filteredClass: false
+            filterClasses: [],
+            selectedFilterClass: false
 		}
 	},
 
@@ -454,15 +455,19 @@ export default {
 		},
 
         filterByClass(classId) {
-		    this.isLoading = true;
-		    this.filteredClass = true;
-            studentService.getByClass(classId).then((res) => {
-                this.students = res.map((student, i) => ({...student, index: i}));
-                this.isLoading = false;
-            }).catch((err) => {
-                this.$toast.error(err);
-                this.isLoading = false;
-            })
+            this.isLoading = true;
+            this.selectedFilterClass = true;
+            if (classId) {
+                studentService.getByClass(classId).then((res) => {
+                    this.students = res.map((student, i) => ({...student, index: i}));
+                    this.isLoading = false;
+                }).catch((err) => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                })
+            } else {
+                this.fetchStudents();
+            }
         },
 
         submitAddCourseToStudents() {
@@ -545,6 +550,8 @@ export default {
 					i.classTitle = `${i.classLevel} ${i.classLabel}`;
 					return i;
 				});
+                this.filterClasses = JSON.parse(JSON.stringify(this.classes));
+                this.filterClasses.unshift({id: 0, classTitle: 'Показать все'});
 			})
 		},
 
