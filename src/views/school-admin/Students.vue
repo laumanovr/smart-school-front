@@ -31,16 +31,18 @@
 			@rightClick="onRightClick"
 		>
 			<template v-slot:firstItem>
-				<SmartSelect>Класс
-					<v-icon>$chevronDown</v-icon>
-				</SmartSelect>
-				<SmartSelect>Буква
-					<v-icon>$chevronDown</v-icon>
-				</SmartSelect>
-				<SmartSelect>Пол
-					<v-icon>$chevronDown</v-icon>
-				</SmartSelect>
-				<SmartButton @clicked="openAddCourseModal">Добавить предмет</SmartButton>
+                <div class="filter-class">
+                    <v-select
+                        :items="classes"
+                        item-text="classTitle"
+                        item-value="id"
+                        label="Фильтр по классам"
+                        class="select-class"
+                        :class="{'no-border': filteredClass}"
+                        @change="filterByClass"
+                    ></v-select>
+				    <SmartButton @clicked="openAddCourseModal">Добавить предмет</SmartButton>
+                </div>
 			</template>
 			<template v-slot:head>
 				<th class="top-th"><input v-model="isSelectAll" type="checkbox" @click="selectAll"></th>
@@ -346,7 +348,8 @@ export default {
 			sendStudentCourses: [],
 			isLoading: false,
 			totalPages: 1,
-            emptyInstrCourse: false
+            emptyInstrCourse: false,
+            filteredClass: false
 		}
 	},
 
@@ -381,9 +384,9 @@ export default {
 			this.isLoading = true;
 			studentService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
 				this.totalElements = res.length;
-				this.pageSize = res.length
+				this.pageSize = res.length;
 				this.students = res.map((i, ind) => {
-					i.index = ind
+					i.index = ind;
 					return i
 				});
 				this.exportHeaders = ['Ф.И.О', 'Класс', 'Пол', 'Дата рождения', 'Имя Родителя', 'Логин'];
@@ -449,6 +452,18 @@ export default {
 				}
 			})
 		},
+
+        filterByClass(classId) {
+		    this.isLoading = true;
+		    this.filteredClass = true;
+            studentService.getByClass(classId).then((res) => {
+                this.students = res.map((student, i) => ({...student, index: i}));
+                this.isLoading = false;
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.isLoading = false;
+            })
+        },
 
         submitAddCourseToStudents() {
             if (this.$refs.addCourseForm.validate()) {
@@ -667,6 +682,27 @@ export default {
 <style lang="scss">
 .students-container {
 	margin-bottom: 50px;
+    .filter-class {
+        display: flex;
+        align-items: center;
+        width: 450px;
+        justify-content: space-between;
+        .select-class {
+            max-width: 185px;
+            .v-select__slot {
+                border: 1px solid #9E9E9E;
+                border-bottom: 0;
+                .v-label {
+                    padding: 0 8px;
+                }
+            }
+            &.no-border {
+                .v-select__slot {
+                    border: 0;
+                }
+            }
+        }
+    }
 }
 
 .v-form {
