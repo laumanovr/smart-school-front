@@ -10,6 +10,11 @@ export class StudentService extends BaseApiService {
         return this.sendGetRequest(url);
     }
 
+    getByClass(classId) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/student/list/class/${classId}`;
+        return this.sendGetRequest(url);
+    }
+
     getDetails(studentId) {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/student/detail/${studentId}`;
         return this.sendGetRequest(url);
@@ -34,7 +39,7 @@ export class StudentService extends BaseApiService {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/student/${id}`;
         return this.sendDeleteRequest(url);
     }
-    
+
     massDelete (ids) {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/student/mass-delete`;
         return this.sendDeleteRequest(url, ids);
