@@ -225,12 +225,5 @@ export default {
 <style lang="scss" scoped>
 .super-admin-schools {
     margin-bottom: 50px;
-    .filter-block {
-        display: flex;
-        align-items: center;
-        .v-select {
-            max-width: 230px;
-        }
-    }
 }
 </style>
