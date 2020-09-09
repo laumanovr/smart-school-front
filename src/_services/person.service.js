@@ -25,8 +25,9 @@ export  class PersonService extends BaseApiService {
         return this.sendPostRequest(url, data);
     }
 
-    list (rayon_id = '') {
-        const url = `${process.env.VUE_APP_BASE_URL}/v1/person/list-school-admin?rayon_id=${rayon_id}`;
+    list (regionId='', rayonId='', schoolId='') {
+        const baseUrl = `${process.env.VUE_APP_BASE_URL}/v1/person/list-school-admin`;
+        const url = baseUrl + `?regionId=${regionId}&rayonId=${rayonId}&schoolId=${schoolId}`;
         return this.sendGetRequest(url);
     }
 }
