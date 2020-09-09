@@ -29,12 +29,14 @@
             @rightClick="onRightClick"
         >
             <template v-slot:firstItem>
-                <SmartSelect>Предмет
-                    <v-icon>$chevronDown</v-icon>
-                </SmartSelect>
-                <SmartSelect>Пол
-                    <v-icon>$chevronDown</v-icon>
-                </SmartSelect>
+                <v-select
+                    :items="allSchoolCourses"
+                    item-text="courseTitle"
+                    item-value="courseCode"
+                    label="Фильтр по предмету"
+                    class="select-course"
+                    @change="filterByCourse"
+                ></v-select>
             </template>
             <template v-slot:head>
 	            <th>№</th>
@@ -126,8 +128,6 @@ import { FileImportService } from "@/_services/file-import.service";
 const fileImportService = new FileImportService();
 const personService = new PersonService();
 const instructorCourseService = new InstructorCourseService();
-import {AdminCourseService} from '@/_services/admin-course.service';
-const adminCourseService = new AdminCourseService();
 import InstructorService from "@/_services/instructor.service";
 import PreLoader from "@/components/preloader/PreLoader";
 import CourseIcon from '@/components/icons/CourseIcon';
@@ -167,11 +167,15 @@ export default {
             courseId: 0,
             personId: 0,
             schoolId: 0
-        }
+        },
+        selectedCourseCode: ''
     }),
     computed: {
         userProfile() {
             return this.$store.state.account.profile
+        },
+        school() {
+            return this.userProfile.schools[0];
         }
     },
     async mounted() {
@@ -186,6 +190,12 @@ export default {
                 this.allSchoolCourses = res;
             });
         },
+
+        filterByCourse(courseCode) {
+            this.selectedCourseCode = courseCode;
+            this.fetchUsers(0);
+        },
+
         onAddAdmin() {
             this.isAddUser = true
             this.isEdit = false
@@ -203,7 +213,7 @@ export default {
         },
         fetchUsers(page = 0) {
             this.isLoading = true;
-            InstructorService.list(page, this.userProfile.schools[0].id).then(res => {
+            InstructorService.list(page, this.school.id, this.selectedCourseCode).then(res => {
                 this.totalPages = res.page.totalPages;
                 this.totalElements = res.page.totalElements;
                 this.pageSize = res.page.size;
@@ -332,6 +342,9 @@ export default {
 <style lang="scss">
     .school-admin-teachers {
         margin-bottom: 50px;
+        .select-course {
+            max-width: 185px;
+        }
         .v-btn__content {
             color: #fff;
         }
