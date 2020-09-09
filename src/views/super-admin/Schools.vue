@@ -22,19 +22,32 @@
             @rightClick="onRightClick"
         >
             <template v-slot:firstItem>
-                <SmartSelect>Область
-                    <v-icon>$chevronDown</v-icon>
-                </SmartSelect>
-                <SmartSelect>Район
-                    <v-icon>$chevronDown</v-icon>
-                </SmartSelect>
+                <div class="filter-block">
+                    <v-select
+                        :items="currentRegions"
+                        item-text="title"
+                        item-value="id"
+                        label="Регион"
+                        v-model="filterObj.regionId"
+                        @change="fetchRayonsByRegion"
+                    >
+                    </v-select>
+                    <v-select
+                        :items="filteredRayons"
+                        item-text="title"
+                        item-value="id"
+                        v-model="filterObj.rayonId"
+                        label="Район"
+                    >
+                    </v-select>
+                    <v-btn color="primary" @click="fetchSchools(0)">Фильтр</v-btn>
+                </div>
             </template>
             <template v-slot:head>
                 <th>№</th>
                 <th>Название</th>
                 <th>Электронная Почта</th>
                 <th>Номер телефона</th>
-                <!--				<th>Адрес</th>-->
                 <th>Тип Школы</th>
                 <th>Язык</th>
                 <th>Район</th>
@@ -86,6 +99,8 @@ import ExcelJs from "@/components/excel-export/ExcelJs";
 import DeletePopup from "@/components/delete-popup/DeletePopup";
 const schoolService = new SchoolService();
 import PreLoader from "@/components/preloader/PreLoader";
+import { RayonService } from "@/_services/rayon.service";
+const rayonService = new RayonService();
 
 export default {
     name: 'Schools',
@@ -117,29 +132,39 @@ export default {
         isDeleting: false,
         totalPages: 0,
         isLoading: false,
+        filteredRayons: [],
+        filterObj: {
+            regionId: '',
+            rayonId: ''
+        }
     }),
+    computed: {
+      currentRegions() {
+        return this.$store.state.location.regions;
+      }
+    },
     mounted() {
-        this.fetchSchools(0)
+        this.fetchSchools(0);
     },
     methods: {
         onAddSchool() {
             this.school = {};
-            this.isAddSchool = true
-            this.isEdit = false
+            this.isAddSchool = true;
+            this.isEdit = false;
         },
         fetchSchools(page) {
             this.isLoading = true;
-            schoolService.listPageable(page).then(res => {
+            schoolService.listPageable(page, this.filterObj).then(res => {
                 this.totalElements = res.page.totalElements;
                 this.pageSize = res.page.pageSize;
                 this.totalPages = res.page.totalPages;
-                this.currentPage = res.page.number + 1
+                this.currentPage = res.page.number + 1;
                 if (res._embedded) {
                     this.schools = res._embedded.schoolResourceList.map((i, index) => {
-                    	i.index = index
+                    	i.index = index;
 	                    return i
                     })
-                } else this.schools = []
+                } else this.schools = [];
                 this.exportHeaders = ['Название', 'Электронная Почта', 'Номер телефона', 'Тип Школы', 'Язык', 'Район']
                 this.exportRows = this.schools.map(i => {
                     return [i.name, i.email, i.phone, this.schoolTypes[i.schoolType], this.lang[i.language], i.rayonTitle];
@@ -148,9 +173,17 @@ export default {
                 this.isLoading = false;
             }).catch(err => {
                 console.log(err);
+                this.$toast.error(err);
                 this.isLoading = false;
             })
         },
+
+        fetchRayonsByRegion(regionId) {
+            rayonService.listByRegion(regionId).then((res) => {
+                this.filteredRayons = res;
+            });
+        },
+
         onCLoseModal() {
             this.isAddSchool = false;
             this.fetchSchools(this.currentPage - 1);
@@ -192,5 +225,12 @@ export default {
 <style lang="scss" scoped>
 .super-admin-schools {
     margin-bottom: 50px;
+    .filter-block {
+        display: flex;
+        align-items: center;
+        .v-select {
+            max-width: 230px;
+        }
+    }
 }
 </style>
