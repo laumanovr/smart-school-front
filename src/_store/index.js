@@ -1,13 +1,15 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import { account } from '@/_store/account.module'
-import { scheduleWeek } from "@/_store/schedule-week.module";
+import Vue from 'vue';
+import Vuex from 'vuex';
+import { account } from './account.module';
+import { scheduleWeek } from './schedule-week.module';
+import { location } from './location.module';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
     account,
-    scheduleWeek
+    scheduleWeek,
+    location
   }
 })
