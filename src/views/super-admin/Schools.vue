@@ -154,7 +154,7 @@ export default {
         },
         fetchSchools(page) {
             this.isLoading = true;
-            schoolService.listPageable(page, this.filterObj).then(res => {
+            schoolService.listPageable(page, this.filterObj.regionId, this.filterObj.rayonId).then(res => {
                 this.totalElements = res.page.totalElements;
                 this.pageSize = res.page.pageSize;
                 this.totalPages = res.page.totalPages;
