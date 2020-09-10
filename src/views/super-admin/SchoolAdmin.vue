@@ -12,12 +12,41 @@
         </SuperAdminSchoolHead>
         <SmartTable :schools="users" :total-elements="users.length" :totalPages="totalPages" :page-size="users.length">
             <template v-slot:firstItem>
-                <SmartSelect>Область
-                    <v-icon>$chevronDown</v-icon>
-                </SmartSelect>
-                <SmartSelect>Район
-                    <v-icon>$chevronDown</v-icon>
-                </SmartSelect>
+                <div>
+                    <div class="select-filter-block">
+                        <v-select
+                            :items="currentRegions"
+                            item-text="title"
+                            item-value="id"
+                            label="Регион"
+                            v-model="filterObj.regionId"
+                            @change="fetchRayonsByRegion"
+                        />
+                        <v-select
+                            :items="filteredRayons"
+                            item-text="title"
+                            item-value="id"
+                            label="Район"
+                            v-model="filterObj.rayonId"
+                            @change="onSelectRayon"
+                        />
+                        <v-select
+                            :items="filteredSchools"
+                            item-text="name"
+                            item-value="id"
+                            label="Школа"
+                            v-model="filterObj.schoolId"
+                            :menu-props="{contentClass: 'schoolSelect'}"
+                            @click="addScrollListenerSchoolSelect"
+                            @change="removeSchoolSelectScrollListener"
+                            @blur="removeSchoolSelectScrollListener"
+                        />
+                        <v-btn color="primary" @click="filterSchoolAdmins">Фильтр</v-btn>
+                    </div>
+                    <div class="showAll" v-if="showAllBtn">
+                        <button @click="fetchAllSchoolAdminsWithoutFilter">Показать все</button>
+                    </div>
+                </div>
             </template>
             <template v-slot:head>
                 <th>Ф.И.О</th>
@@ -46,15 +75,19 @@
 </template>
 
 <script>
-import SuperAdminSchoolHead from '@/components/super-admin/schools/SuperAdminSchoolHead'
-import SmartTable from '@/components/table/SmartTable'
-import AddSchoolAdmin from '@/components/super-admin/school-admin/AddSchoolAdmin'
-import {PersonService} from '@/_services/person.service'
-import SmartButton from '@/components/button/SmartButton'
-import SmartSearchInput from '@/components/input/SmartSearchInput'
-import SmartSelect from '@/components/select/SmartSelect'
+import SuperAdminSchoolHead from '@/components/super-admin/schools/SuperAdminSchoolHead';
+import SmartTable from '@/components/table/SmartTable';
+import AddSchoolAdmin from '@/components/super-admin/school-admin/AddSchoolAdmin';
+import {PersonService} from '@/_services/person.service';
+import SmartButton from '@/components/button/SmartButton';
+import SmartSearchInput from '@/components/input/SmartSearchInput';
+import SmartSelect from '@/components/select/SmartSelect';
 const personService = new PersonService();
 import PreLoader from "@/components/preloader/PreLoader";
+import { RayonService } from "@/_services/rayon.service";
+const rayonService = new RayonService();
+import {SchoolService} from '@/_services/school.service';
+const schoolService = new SchoolService();
 
 export default {
     name: 'Instructors',
@@ -65,26 +98,105 @@ export default {
 	    isEdit: false,
 	    user: {},
         totalPages: 1,
-        isLoading: false
+        isLoading: false,
+        schoolPage: 0,
+        filterObj: {
+            regionId: '',
+            rayonId: '',
+            schoolId: ''
+        },
+        filteredRayons: [],
+        filteredSchools: [],
+        showAllBtn: false
     }),
+    computed: {
+        currentRegions() {
+            return this.$store.state.location.regions;
+        }
+    },
     mounted() {
-        this.fetchUsers()
+        this.fetchSchoolAdmins()
     },
     methods: {
         onAddAdmin() {
-            this.isAddAdmin = true
+            this.isAddAdmin = true;
         },
+
         onCloseModal() {
-            this.isAddAdmin = false
-            this.fetchUsers()
+            this.isAddAdmin = false;
+            this.fetchSchoolAdmins()
         },
-        fetchUsers() {
+
+        fetchSchoolAdmins() {
             this.isLoading = true;
-            personService.list().then(res => {
+            personService.list(this.filterObj.regionId, this.filterObj.rayonId, this.filterObj.schoolId).then(res => {
                 this.users = res;
                 this.isLoading = false;
             }).catch(err => console.log(err))
         },
+
+        fetchRayonsByRegion(regionId) {
+            this.filteredSchools = [];
+            this.filterObj.schoolId = '';
+            this.filterObj.rayonId = '';
+            rayonService.listByRegion(regionId).then((res) => {
+                this.filteredRayons = res;
+            });
+        },
+
+        onSelectRayon() {
+            this.filteredSchools = [];
+            this.schoolPage = 0;
+            this.filterObj.schoolId = '';
+            this.fetchSchoolsByRayon();
+        },
+
+        fetchSchoolsByRayon() {
+            schoolService.listPageable(this.schoolPage, this.filterObj.regionId, this.filterObj.rayonId).then((res) => {
+                if (res._embedded) {
+                    res._embedded.schoolResourceList.forEach((school) => {
+                        this.filteredSchools.push(school);
+                    });
+                } else {
+                    this.removeSchoolSelectScrollListener();
+                }
+            })
+        },
+
+        addScrollListenerSchoolSelect() {
+            this.$nextTick(() => {
+                const schoolSelect = document.querySelector('.schoolSelect');
+                schoolSelect.addEventListener('scroll', this.innerSelectScrollListener);
+            })
+        },
+
+        innerSelectScrollListener() {
+            const schoolSelect = document.querySelector('.schoolSelect');
+            let almostEndOfScroll = (schoolSelect.scrollHeight - schoolSelect.clientHeight) - 100;
+            if (schoolSelect.scrollTop >= almostEndOfScroll) {
+                this.schoolPage++;
+                this.fetchSchoolsByRayon();
+            }
+        },
+
+        removeSchoolSelectScrollListener() {
+            const schoolSelect = document.querySelector('.schoolSelect');
+            schoolSelect.removeEventListener('scroll', this.innerSelectScrollListener);
+        },
+
+        filterSchoolAdmins() {
+            this.showAllBtn = true;
+            this.fetchSchoolAdmins();
+        },
+
+        fetchAllSchoolAdminsWithoutFilter() {
+            this.filterObj.regionId = '';
+            this.filterObj.rayonId = '';
+            this.filterObj.schoolId = '';
+            this.showAllBtn = false;
+            this.fetchSchoolAdmins();
+        },
+
         onEdit(item) {
             personService.getById(item.id).then(res => {
 	            this.isEdit = false
@@ -106,5 +218,18 @@ export default {
 <style lang="scss" scoped>
 .super-admin-instructors {
     margin-bottom: 50px;
+    .v-select {
+        max-width: 220px;
+    }
+    .showAll {
+        text-align: center;
+        button {
+            border: 1px solid #9E9E9E;
+            padding: 2px 5px;
+            background: #fafafa;
+            border-radius: 4px;
+            color: #353434;
+        }
+    }
 }
 </style>
