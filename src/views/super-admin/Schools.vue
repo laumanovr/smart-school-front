@@ -22,7 +22,7 @@
             @rightClick="onRightClick"
         >
             <template v-slot:firstItem>
-                <div class="filter-block">
+                <div class="select-filter-block">
                     <v-select
                         :items="currentRegions"
                         item-text="title"
