@@ -134,7 +134,7 @@ export default {
                 this.totalElements = res.page.totalElements;
                 this.totalPages = res.page.totalPages;
                 if (res._embedded) {
-                    this.students = res._embedded.studentResourceList;
+                    this.students = res._embedded.studentResourceList.sort((a, b) => a.schools[0].id - b.schools[0].id);
                 }
                 this.isLoading = false;
             }).catch(err => console.log(err));
