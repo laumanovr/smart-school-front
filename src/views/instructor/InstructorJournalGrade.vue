@@ -81,7 +81,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="btn-actions" v-if="studentGrades.length">
+            <div class="btn-actions saveGrade" v-if="studentGrades.length">
                 <v-btn color="primary" @click="submitSaveGrades">Сохранить</v-btn>
             </div>
         </div>
@@ -401,7 +401,7 @@
 
 <style lang="scss" scoped>
     .journal-grade-container {
-        margin: 30px;
+        margin: 30px 30px 60px;
         .grade-content {
             .selects {
                 display: flex;
@@ -481,6 +481,12 @@
                         }
                     }
                 }
+            }
+
+            .saveGrade {
+                position: fixed;
+                bottom: 15px;
+                width: 100%;
             }
             .disabled {
                 background: #eaeaea;
