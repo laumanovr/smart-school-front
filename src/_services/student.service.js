@@ -30,8 +30,8 @@ export class StudentService extends BaseApiService {
         return this.sendPostRequest(url, data);
     }
 
-    list (page = 0, schoolId='', classId='') {
-        const url = `${process.env.VUE_APP_BASE_URL}/v1/student/list?page=${page}&schoolId=${schoolId}&classId=${classId}`;
+    list (page = 0, schoolId='', classLevel='') {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/student/list?page=${page}&schoolId=${schoolId}&classLevel=${classLevel}`;
         return this.sendGetRequest(url);
     }
 
