@@ -76,6 +76,11 @@ h4  {
   .v-select {
     max-width: 230px;
   }
+  .select-clear-block {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+  }
 }
 
 table {
