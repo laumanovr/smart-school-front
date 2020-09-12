@@ -48,19 +48,19 @@
                                 v-model="filterObj.schoolId"
                                 :menu-props="{contentClass: 'schoolSelect'}"
                                 @click="addScrollListenerSchoolSelect"
-                                @change="fetchSchoolClasses"
                                 @blur="removeSchoolSelectScrollListener"
                             />
+                            <TrashIcon @click="filterObj.schoolId=''" v-show="filterObj.schoolId"/>
                         </div>
                         <div class="select-clear-block">
                             <v-select
                                 :items="classes"
-                                item-text="classTitle"
-                                item-value="id"
+                                item-text="classLevel"
+                                item-value="classLevel"
                                 label="Класс"
-                                v-model="filterObj.classId"
+                                v-model="filterObj.classLevel"
                             />
-                            <TrashIcon @click="filterObj.classId=''" v-show="filterObj.classId"/>
+                            <TrashIcon @click="filterObj.classLevel=''" v-show="filterObj.classLevel"/>
                         </div>
                     </div>
                     <div class="btn-filter">
@@ -99,7 +99,6 @@ import { RayonService } from "@/_services/rayon.service";
 const rayonService = new RayonService();
 import {SchoolService} from '@/_services/school.service';
 const schoolService = new SchoolService();
-import SchoolClassService from '@/_services/school-class.service';
 import TrashIcon from '@/components/icons/TrashIcon';
 
 export default {
@@ -119,7 +118,7 @@ export default {
             isLoading: false,
             filterObj: {
                 schoolId: '',
-                classId: '',
+                classLevel: '',
                 regionId: '',
                 rayonId: ''
             },
@@ -134,12 +133,16 @@ export default {
         }
     },
     mounted() {
-        this.fetchStudents(0)
+        this.fetchStudents(0);
+        this.classes = [
+            {classLevel: 1}, {classLevel: 2}, {classLevel: 3}, {classLevel: 4}, {classLevel: 5}, {classLevel: 6},
+            {classLevel: 7}, {classLevel: 8}, {classLevel: 9}, {classLevel: 10}, {classLevel: 11},
+        ];
     },
     methods: {
         fetchStudents(page) {
             this.isLoading = true;
-            studentService.list(page, this.filterObj.schoolId, this.filterObj.classId).then(res => {
+            studentService.list(page, this.filterObj.schoolId, this.filterObj.classLevel).then(res => {
                 this.pageSize = res.page.size;
                 this.totalElements = res.page.totalElements;
                 this.totalPages = res.page.totalPages;
@@ -161,30 +164,13 @@ export default {
         },
 
         filterStudents() {
-            if (!this.filterObj.schoolId) {
-                this.$toast.info('Выберите школу');
-                return;
-            }
             this.currentPage = 1;
             this.fetchStudents(0);
-        },
-
-        fetchSchoolClasses(schoolId) {
-            this.filterObj.classId = '';
-            this.classes = [];
-            SchoolClassService.getAllBySchool(schoolId).then((res) => {
-                this.classes = res.map((klass) => {
-                    klass.classTitle = `${klass.classLevel} ${klass.classLabel}`;
-                    return klass;
-                });
-            })
         },
 
         fetchRayonsByRegion(regionId) {
             this.filterObj.schoolId = '';
             this.filterObj.rayonId = '';
-            this.filterObj.classId = '';
-            this.classes = [];
             this.filteredSchools = [];
             rayonService.listByRegion(regionId).then((res) => {
                 this.filteredRayons = res;
@@ -193,9 +179,7 @@ export default {
 
         onSelectRayon() {
             this.filteredSchools = [];
-            this.classes = [];
             this.filterObj.schoolId = '';
-            this.filterObj.classId = '';
             this.schoolPage = 0;
             this.fetchSchoolsByRayon();
         },
@@ -247,7 +231,7 @@ export default {
         .selects {
             display: flex;
             flex-wrap: wrap;
-            max-width: 530px;
+            max-width: 540px;
         }
     }
 }
