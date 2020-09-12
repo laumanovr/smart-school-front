@@ -49,7 +49,7 @@
 
             <template v-slot:body="{ item }">
                 <td>{{ (currentPage - 1) * 10 + item.index + 1 }}</td>
-	            <td>{{ item.firstName+' '+item.lastName }}</td>
+	            <td>{{ item.lastName+' '+item.firstName }}</td>
                 <td class="instr-courses">
                     <template v-if="item.courses.length">
                         <span v-for="courseCode in item.courses">{{$t(`adminCourses.${courseCode}`)}},</span>

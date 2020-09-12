@@ -59,7 +59,7 @@
 			<template v-slot:body="{ item }">
 				<td><input v-model="item.checked" type="checkbox" @change="onSelect(item)"></td>
 				<td>{{ item.index + 1 }}</td>
-				<td>{{ item.name }} {{ item.surname }}</td>
+				<td>{{ item.surname }} {{ item.name }}</td>
 				<td>{{ item.classTitle }}</td>
 				<td>{{ item.gender === 0 ? 'М' : 'Ж' }}</td>
 				<td>{{ item.dateOfBirth }}</td>

@@ -69,7 +69,7 @@
 
             <template v-slot:body="{ item }">
                 <td>{{ item.schools[0] ? item.schools[0].name : '' }}</td>
-                <td>{{ item.firstName }} {{ item.lastName }}</td>
+                <td>{{ item.lastName }} {{ item.firstName }}</td>
                 <td>{{ gender[item.gender] }}</td>
                 <td>{{ item.classTitle }}</td>
 <!--                <td>{{ item.schools[0] ? item.schools[0].rayonTitle : '' }}</td>-->
