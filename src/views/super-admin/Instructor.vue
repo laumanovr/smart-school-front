@@ -22,40 +22,55 @@
             <template v-slot:firstItem>
                 <div class="select-filter-block">
                     <div class="selects">
-                    <v-select
-                        :items="currentRegions"
-                        item-text="title"
-                        item-value="id"
-                        label="Регион"
-                        v-model="filterObj.searchRequest.regionId"
-                        @change="fetchRayonsByRegion"
-                    />
-                    <v-select
-                        :items="filteredRayons"
-                        item-text="title"
-                        item-value="id"
-                        label="Район"
-                        v-model="filterObj.searchRequest.rayonId"
-                        @change="onSelectRayon"
-                    />
-                    <v-select
-                        :items="filteredSchools"
-                        item-text="name"
-                        item-value="id"
-                        label="Школа"
-                        v-model="filterObj.searchRequest.schoolId"
-                        :menu-props="{contentClass: 'schoolSelect'}"
-                        @click="addScrollListenerSchoolSelect"
-                        @change="removeSchoolSelectScrollListener"
-                        @blur="removeSchoolSelectScrollListener"
-                    />
-                    <v-select
-                        :items="allAdminCourses"
-                        item-text="title"
-                        item-value="code"
-                        label="Предмет"
-                        v-model="filterObj.searchRequest.courseCode"
-                    />
+                        <div class="select-clear-block region">
+                            <v-select
+                                :items="currentRegions"
+                                item-text="title"
+                                item-value="id"
+                                label="Регион"
+                                v-model="filterObj.searchRequest.regionId"
+                                @change="fetchRayonsByRegion"
+                            />
+                            <TrashIcon @click="clearSelect('region')" v-show="filterObj.searchRequest.regionId"/>
+                        </div>
+
+                        <div class="select-clear-block">
+                            <v-select
+                                :items="filteredRayons"
+                                item-text="title"
+                                item-value="id"
+                                label="Район"
+                                v-model="filterObj.searchRequest.rayonId"
+                                @change="onSelectRayon"
+                            />
+                            <TrashIcon @click="clearSelect('rayon')" v-show="filterObj.searchRequest.rayonId"/>
+                        </div>
+
+                        <div class="select-clear-block school">
+                            <v-select
+                                :items="filteredSchools"
+                                item-text="name"
+                                item-value="id"
+                                label="Школа"
+                                v-model="filterObj.searchRequest.schoolId"
+                                :menu-props="{contentClass: 'schoolSelect'}"
+                                @click="addScrollListenerSchoolSelect"
+                                @change="removeSchoolSelectScrollListener"
+                                @blur="removeSchoolSelectScrollListener"
+                            />
+                            <TrashIcon @click="filterObj.searchRequest.schoolId=''" v-show="filterObj.searchRequest.schoolId"/>
+                        </div>
+
+                        <div class="select-clear-block">
+                            <v-select
+                                :items="allAdminCourses"
+                                item-text="title"
+                                item-value="code"
+                                label="Предмет"
+                                v-model="filterObj.searchRequest.courseCode"
+                            />
+                            <TrashIcon @click="filterObj.searchRequest.courseCode=''" v-show="filterObj.searchRequest.courseCode"/>
+                        </div>
                     </div>
                     <v-btn color="primary" @click="filterTeachers">Фильтр</v-btn>
                 </div>
@@ -113,10 +128,20 @@ import {SchoolService} from '@/_services/school.service';
 const schoolService = new SchoolService();
 import {AdminCourseService} from '@/_services/admin-course.service';
 const adminCourseService = new AdminCourseService();
+import TrashIcon from '@/components/icons/TrashIcon';
 
 export default {
     name: 'Instructor',
-    components: {SmartSelect, SmartSearchInput, SmartButton, SuperAdminSchoolHead, SmartTable, AddSchoolAdmin, PreLoader},
+    components: {
+        SmartSelect,
+        SmartSearchInput,
+        SmartButton,
+        SuperAdminSchoolHead,
+        SmartTable,
+        AddSchoolAdmin,
+        PreLoader,
+        TrashIcon
+    },
     data: () => ({
         isAddAdmin: false,
         instructors: [],
@@ -139,12 +164,17 @@ export default {
                 offset: 0
             },
             searchRequest: {
+                regionId: '',
+                rayonId: '',
+                schoolId: '',
+                courseCode: '',
                 sortByLastname: false,
                 sortByRayon: false,
                 sortBySchool: true
             }
         }
     }),
+
     computed: {
         currentRegions() {
             return this.$store.state.location.regions;
@@ -250,6 +280,18 @@ export default {
             this.fetchTeachers();
         },
 
+        clearSelect(selectName) {
+            if (selectName === 'region') {
+                this.filterObj.searchRequest.regionId = '';
+                this.filterObj.searchRequest.rayonId = '';
+                this.filterObj.searchRequest.schoolId = '';
+                this.filterObj.searchRequest.courseCode = '';
+            } else {
+               this.filterObj.searchRequest.rayonId = '';
+               this.filterObj.searchRequest.schoolId = '';
+            }
+        },
+
         onAddAdmin() {
             this.isAddAdmin = true
         },
@@ -289,7 +331,10 @@ export default {
     .selects {
         display: flex;
         flex-wrap: wrap;
-        max-width: 500px;
+        max-width: 530px;
+        .region,.school {
+            margin-right: 20px;
+        }
     }
     .v-select {
         max-width: 220px;
