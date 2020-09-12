@@ -331,7 +331,7 @@ export default {
     .selects {
         display: flex;
         flex-wrap: wrap;
-        max-width: 530px;
+        max-width: 540px;
         .region,.school {
             margin-right: 20px;
         }
