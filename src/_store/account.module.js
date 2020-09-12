@@ -38,7 +38,9 @@ const actions = {
 		userService.getProfile().then(res => {
 			commit('SET_PROFILE', res);
 			localStorage.setItem('profile', JSON.stringify(res));
-			dispatch('location/fetchRegions', {}, {root: true});
+            if (res.role[0].code.includes('ROLE_SUPER_ADMIN')) {
+                dispatch('location/fetchRegions', {}, {root: true});
+            }
 		}).catch(err => console.log(err));
 	},
 	logout({commit}) {
