@@ -32,14 +32,16 @@
                         @change="fetchRayonsByRegion"
                     >
                     </v-select>
-                    <v-select
-                        :items="filteredRayons"
-                        item-text="title"
-                        item-value="id"
-                        v-model="filterObj.rayonId"
-                        label="Район"
-                    >
-                    </v-select>
+                    <div class="select-clear-block">
+                        <v-select
+                            :items="filteredRayons"
+                            item-text="title"
+                            item-value="id"
+                            v-model="filterObj.rayonId"
+                            label="Район"
+                        />
+                        <TrashIcon v-show="filterObj.rayonId" @click="filterObj.rayonId=''" />
+                    </div>
                     <v-btn color="primary" @click="fetchSchools(0)">Фильтр</v-btn>
                 </div>
             </template>
@@ -101,6 +103,7 @@ const schoolService = new SchoolService();
 import PreLoader from "@/components/preloader/PreLoader";
 import { RayonService } from "@/_services/rayon.service";
 const rayonService = new RayonService();
+import TrashIcon from '@/components/icons/TrashIcon';
 
 export default {
     name: 'Schools',
@@ -108,6 +111,7 @@ export default {
         DeletePopup,
         ExcelJs,
         PreLoader,
+        TrashIcon,
         SmartSelect, SmartBtn2, SmartButton, SmartSearchInput, AddSchool, SuperAdminSchoolHead, SmartTable},
     data: () => ({
         isAddSchool: false,
