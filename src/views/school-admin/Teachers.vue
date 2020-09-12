@@ -20,7 +20,7 @@
             </template>
         </SuperAdminSchoolHead>
         <SmartTable
-            :schools="users"
+            :schools="instructors"
             :total-elements="totalElements"
             :totalPages="totalPages"
             :page-size="pageSize"
@@ -30,7 +30,7 @@
         >
             <template v-slot:firstItem>
                 <v-select
-                    :items="allSchoolCourses"
+                    :items="filterSchoolCourses"
                     item-text="courseTitle"
                     item-value="courseCode"
                     label="Фильтр по предмету"
@@ -147,7 +147,7 @@ export default {
     data: () => ({
         required: [v => !!v || 'Обязательное поле'],
         isAddUser: false,
-        users: [],
+        instructors: [],
         user: {},
         isEdit: false,
         exportName: '',
@@ -160,6 +160,7 @@ export default {
 	    isLoading: false,
         schoolCourses: [],
         allSchoolCourses: [],
+        filterSchoolCourses: [],
         teacherCourses: [],
         totalPages: 1,
         addTeacherCourse: {
@@ -180,7 +181,7 @@ export default {
     },
     async mounted() {
         this.addTeacherCourse.schoolId = this.userProfile.schools[0].id;
-        this.fetchUsers();
+        this.fetchInstructors();
         this.fetchSchoolCourses();
     },
     methods: {
@@ -188,12 +189,20 @@ export default {
             courseService.listBySchool(this.userProfile.schools[0].id).then((res) => {
                 this.schoolCourses = res;
                 this.allSchoolCourses = res;
+                this.filterSchoolCourses = JSON.parse(JSON.stringify(res));
+                this.filterSchoolCourses.unshift({courseTitle: 'Показать все', courseCode: ''})
             });
         },
 
         filterByCourse(courseCode) {
-            this.selectedCourseCode = courseCode;
-            this.fetchUsers(0);
+            if (courseCode) {
+                this.selectedCourseCode = courseCode;
+                this.fetchInstructors(0);
+            } else {
+                this.currentPage = 1;
+                this.selectedCourseCode = '';
+                this.fetchInstructors(0);
+            }
         },
 
         onAddAdmin() {
@@ -203,7 +212,7 @@ export default {
         },
         onCloseModal() {
             this.isAddUser = false
-            this.fetchUsers()
+            this.fetchInstructors()
         },
         downloadTemplate () {
             const a = document.createElement('a');
@@ -211,7 +220,7 @@ export default {
             a.href = '/docs/Шаблон_Мугалим.xlsx'
             a.click()
         },
-        fetchUsers(page = 0) {
+        fetchInstructors(page = 0) {
             this.isLoading = true;
             InstructorService.list(page, this.school.id, this.selectedCourseCode).then(res => {
                 this.totalPages = res.page.totalPages;
@@ -219,14 +228,14 @@ export default {
                 this.pageSize = res.page.size;
 	            this.currentPage = res.page.number + 1;
                 if (res._embedded) {
-                    this.users = res._embedded.instructorResourceList.map((i, ind) => {
+                    this.instructors = res._embedded.instructorResourceList.map((i, ind) => {
                     	i.index = ind
 	                    return i
                     })
-                } else this.users = [];
+                } else this.instructors = [];
                 this.exportHeaders = ['Ф.И.О', 'Предмет'];
-                this.exportRows = this.users.map(i => {
-                    return [i.firstName+' '+i.lastName, i.courses.join(', ')];
+                this.exportRows = this.instructors.map(i => {
+                    return [i.lastName+' '+i.firstName, i.courses.join(', ')];
                 });
                 this.exportName = 'Умная школа: Учителя';
                 this.isLoading = false;
@@ -260,7 +269,7 @@ export default {
 	            fileImportService.importIsouInstructor(d).then(res => {
 		            this.$toast.success('Успешно!')
 		            this.isAddFile = false;
-		            this.fetchUsers();
+		            this.fetchInstructors();
 		            this.isLoading = false
 	            }).catch(err => {
 		            this.isLoading = false
@@ -270,7 +279,7 @@ export default {
 	            fileImportService.importInstructor(d).then(res => {
 		            this.$toast.success('Успешно!')
 		            this.isAddFile = false;
-		            this.fetchUsers();
+		            this.fetchInstructors();
 		            this.isLoading = false
 	            }).catch(err => {
 		            this.isLoading = false
@@ -280,11 +289,11 @@ export default {
         },
         onLeftClick () {
             this.currentPage--;
-            this.fetchUsers(this.currentPage - 1);
+            this.fetchInstructors(this.currentPage - 1);
         },
         onRightClick () {
             this.currentPage++;
-            this.fetchUsers(this.currentPage - 1);
+            this.fetchInstructors(this.currentPage - 1);
         },
 
         addCourseModal(instructor) {
@@ -312,7 +321,7 @@ export default {
             if (this.$refs.addCourseForm.validate()) {
                 this.isLoading = true;
                 instructorCourseService.create(this.addTeacherCourse).then(() => {
-                    this.fetchUsers();
+                    this.fetchInstructors();
                     this.isLoading = false;
                     this.$toast.success('Успешно добавлено!');
                     this.$modal.hide('add-course-modal');
@@ -329,7 +338,7 @@ export default {
                 this.isLoading = false;
                 this.teacherCourses.splice(index, 1);
                 this.$toast.success('Успешно удалено!');
-                this.fetchUsers();
+                this.fetchInstructors();
             }).catch((err) => {
                 this.$toast.error(err);
                 this.isLoading = false;
