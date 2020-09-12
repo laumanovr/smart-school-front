@@ -23,15 +23,17 @@
         >
             <template v-slot:firstItem>
                 <div class="select-filter-block">
-                    <v-select
-                        :items="currentRegions"
-                        item-text="title"
-                        item-value="id"
-                        label="Регион"
-                        v-model="filterObj.regionId"
-                        @change="fetchRayonsByRegion"
-                    >
-                    </v-select>
+                    <div class="select-clear-block">
+                        <v-select
+                            :items="currentRegions"
+                            item-text="title"
+                            item-value="id"
+                            label="Регион"
+                            v-model="filterObj.regionId"
+                            @change="fetchRayonsByRegion"
+                        />
+                        <TrashIcon @click="filterObj.regionId=''" v-show="filterObj.regionId"/>
+                    </div>
                     <div class="select-clear-block">
                         <v-select
                             :items="filteredRayons"
@@ -40,7 +42,7 @@
                             v-model="filterObj.rayonId"
                             label="Район"
                         />
-                        <TrashIcon v-show="filterObj.rayonId" @click="filterObj.rayonId=''" />
+                        <TrashIcon v-show="filterObj.rayonId" @click="filterObj.rayonId=''"/>
                     </div>
                     <v-btn color="primary" @click="fetchSchools(0)">Фильтр</v-btn>
                 </div>
