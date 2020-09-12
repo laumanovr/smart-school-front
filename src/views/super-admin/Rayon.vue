@@ -6,18 +6,22 @@
 <!--                <SmartButton @clicked="isAdd = true">Добавить + </SmartButton>-->
 <!--            </template>-->
         </SuperAdminSchoolHead>
-        <SmartTable :schools="rayon" :total-elements="rayon.length" :page-size="rayon.length">
+        <SmartTable
+            :schools="rayon"
+            :total-elements="rayon.length"
+            :page-size="rayon.length"
+            :totalPages="totalPages"
+        >
             <template v-slot:head>
                 <th>№</th>
-                <th>Название</th>
                 <th>Регион</th>
+                <th>Район</th>
 <!--                <th><img src="../../../assets/images/icons/plus.svg" alt=""></th>-->
             </template>
             <template slot="body" slot-scope="{item}">
                 <td>{{ item.pos }}</td>
-                <td>{{ item.title }}</td>
                 <td>{{ item.regionTitle }}</td>
-<!--                <td><img src="../../../assets/images/icons/pen.svg" alt=""></td>-->
+                <td>{{ item.title }}</td>
             </template>
         </SmartTable>
     </div>
@@ -36,6 +40,7 @@ name: "Rayon",
     data () {
         return {
             rayon: [],
+            totalPages: 1
         }
     },
     mounted() {
@@ -44,7 +49,8 @@ name: "Rayon",
     methods: {
         fetchRayon () {
             rayonService.list().then(res => {
-                this.rayon = res.sort((a, b) => a.title.localeCompare(b.title)).map((i, index) => {
+//            .sort((a, b) => a.title.localeCompare(b.title))
+                this.rayon = res.map((i, index) => {
 	                i.pos = index + 1;
 	                return i;
                 });
