@@ -47,7 +47,7 @@
                     </thead>
                     <tbody>
                     <tr v-for="student in studentGrades" :key="student.student.id">
-                        <td>{{ student.student.name }}</td>
+                        <td>{{student.student.surname}} {{ student.student.name }}</td>
                     </tr>
                     </tbody>
                 </table>
