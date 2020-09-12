@@ -19,40 +19,49 @@
             <template v-slot:firstItem>
                 <div class="select-filter-block">
                     <div class="selects">
-                        <v-select
-                            :items="currentRegions"
-                            item-text="title"
-                            item-value="id"
-                            label="Регион"
-                            v-model="filterObj.regionId"
-                            @change="fetchRayonsByRegion"
-                        />
-                        <v-select
-                            :items="filteredRayons"
-                            item-text="title"
-                            item-value="id"
-                            label="Район"
-                            v-model="filterObj.rayonId"
-                            @change="onSelectRayon"
-                        />
-                        <v-select
-                            :items="filteredSchools"
-                            item-text="name"
-                            item-value="id"
-                            label="Школа"
-                            v-model="filterObj.schoolId"
-                            :menu-props="{contentClass: 'schoolSelect'}"
-                            @click="addScrollListenerSchoolSelect"
-                            @change="fetchSchoolClasses"
-                            @blur="removeSchoolSelectScrollListener"
-                        />
-                        <v-select
-                            :items="classes"
-                            item-text="classTitle"
-                            item-value="id"
-                            label="Класс"
-                            v-model="filterObj.classId"
-                        />
+                        <div class="select-clear-block">
+                            <v-select
+                                :items="currentRegions"
+                                item-text="title"
+                                item-value="id"
+                                label="Регион"
+                                v-model="filterObj.regionId"
+                                @change="fetchRayonsByRegion"
+                            />
+                        </div>
+                        <div class="select-clear-block">
+                            <v-select
+                                :items="filteredRayons"
+                                item-text="title"
+                                item-value="id"
+                                label="Район"
+                                v-model="filterObj.rayonId"
+                                @change="onSelectRayon"
+                            />
+                        </div>
+                        <div class="select-clear-block">
+                            <v-select
+                                :items="filteredSchools"
+                                item-text="name"
+                                item-value="id"
+                                label="Школа"
+                                v-model="filterObj.schoolId"
+                                :menu-props="{contentClass: 'schoolSelect'}"
+                                @click="addScrollListenerSchoolSelect"
+                                @change="fetchSchoolClasses"
+                                @blur="removeSchoolSelectScrollListener"
+                            />
+                        </div>
+                        <div class="select-clear-block">
+                            <v-select
+                                :items="classes"
+                                item-text="classTitle"
+                                item-value="id"
+                                label="Класс"
+                                v-model="filterObj.classId"
+                            />
+                            <TrashIcon @click="filterObj.classId=''" v-show="filterObj.classId"/>
+                        </div>
                     </div>
                     <div class="btn-filter">
                         <v-btn color="primary" @click="filterStudents">Фильтр</v-btn>
@@ -91,10 +100,11 @@ const rayonService = new RayonService();
 import {SchoolService} from '@/_services/school.service';
 const schoolService = new SchoolService();
 import SchoolClassService from '@/_services/school-class.service';
+import TrashIcon from '@/components/icons/TrashIcon';
 
 export default {
     name: "Students",
-    components: {SmartSelect, SmartTable, SmartSearchInput, SuperAdminSchoolHead, PreLoader},
+    components: {SmartSelect, SmartTable, SmartSearchInput, SuperAdminSchoolHead, PreLoader, TrashIcon},
     data() {
         return {
             totalPages: 1,
@@ -237,7 +247,7 @@ export default {
         .selects {
             display: flex;
             flex-wrap: wrap;
-            max-width: 500px;
+            max-width: 530px;
         }
     }
 }
