@@ -28,6 +28,7 @@
                                 v-model="filterObj.regionId"
                                 @change="fetchRayonsByRegion"
                             />
+                            <TrashIcon @click="filterObj.regionId=''" v-show="filterObj.regionId"/>
                         </div>
                         <div class="select-clear-block">
                             <v-select
@@ -38,6 +39,7 @@
                                 v-model="filterObj.rayonId"
                                 @change="onSelectRayon"
                             />
+                            <TrashIcon @click="filterObj.rayonId=''" v-show="filterObj.rayonId"/>
                         </div>
                         <div class="select-clear-block">
                             <v-select
@@ -142,7 +144,14 @@ export default {
     methods: {
         fetchStudents(page) {
             this.isLoading = true;
-            studentService.list(page, this.filterObj.schoolId, this.filterObj.classLevel).then(res => {
+            this.students = [];
+            studentService.list(
+                page,
+                this.filterObj.schoolId,
+                this.filterObj.classLevel,
+                this.filterObj.regionId,
+                this.filterObj.rayonId
+            ).then(res => {
                 this.pageSize = res.page.size;
                 this.totalElements = res.page.totalElements;
                 this.totalPages = res.page.totalPages;
