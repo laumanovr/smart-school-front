@@ -186,7 +186,8 @@ export default {
 
         onCLoseModal() {
             this.isAddSchool = false;
-            this.fetchSchools(this.currentPage - 1);
+            this.currentPage = 1;
+            this.fetchSchools(0);
         },
         onLeftClick () {
             this.currentPage--;
