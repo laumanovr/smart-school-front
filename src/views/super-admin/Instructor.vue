@@ -11,7 +11,7 @@
             <!--			</template>-->
         </SuperAdminSchoolHead>
         <SmartTable
-            :schools="users"
+            :schools="instructors"
             @leftClick="onLeftClick"
             @rightClick="onRightClick"
             :total-elements="totalElements"
@@ -20,36 +20,66 @@
             :current-page="currentPage"
         >
             <template v-slot:firstItem>
-                <SmartSelect>Предмет
-                    <v-icon>$chevronDown</v-icon>
-                </SmartSelect>
-                <SmartSelect>Район
-                    <v-icon>$chevronDown</v-icon>
-                </SmartSelect>
-                <SmartSelect>Пол
-                    <v-icon>$chevronDown</v-icon>
-                </SmartSelect>
+                <div class="select-filter-block">
+                    <div class="selects">
+                    <v-select
+                        :items="currentRegions"
+                        item-text="title"
+                        item-value="id"
+                        label="Регион"
+                        v-model="filterObj.searchRequest.regionId"
+                        @change="fetchRayonsByRegion"
+                    />
+                    <v-select
+                        :items="filteredRayons"
+                        item-text="title"
+                        item-value="id"
+                        label="Район"
+                        v-model="filterObj.searchRequest.rayonId"
+                        @change="onSelectRayon"
+                    />
+                    <v-select
+                        :items="filteredSchools"
+                        item-text="name"
+                        item-value="id"
+                        label="Школа"
+                        v-model="filterObj.searchRequest.schoolId"
+                        :menu-props="{contentClass: 'schoolSelect'}"
+                        @click="addScrollListenerSchoolSelect"
+                        @change="removeSchoolSelectScrollListener"
+                        @blur="removeSchoolSelectScrollListener"
+                    />
+                    <v-select
+                        :items="allAdminCourses"
+                        item-text="title"
+                        item-value="code"
+                        label="Предмет"
+                        v-model="filterObj.searchRequest.courseCode"
+                    />
+                    </div>
+                    <v-btn color="primary" @click="filterTeachers">Фильтр</v-btn>
+                </div>
             </template>
             <template v-slot:head>
-                <th>Школа</th>
+                <th class="sort" @click="sortBy('school')">Школа</th>
+                <th class="sort" @click="sortBy('name')">Ф.И.О</th>
                 <th>Предмет</th>
-                <th>Ф.И.О</th>
                 <th>Пол</th>
                 <th>Дата рождения</th>
-                <th>Район</th>
+                <th class="sort" @click="sortBy('rayon')">Район</th>
                 <th>Телефон</th>
             </template>
 
             <template v-slot:body="{ item }">
                 <td>{{ item.schools[0].name }}</td>
                 <!--<td>{{ showCourses(item.courses) }}</td>-->
+                <td>{{ item.lastName }} {{ item.firstName }}</td>
                 <td class="instr-courses">
                     <template v-if="item.courses.length">
                         <span v-for="courseCode in item.courses">{{$t(`adminCourses.${courseCode}`)}},</span>
                     </template>
                     <span v-else></span>
                 </td>
-                <td>{{ item.firstName }} {{ item.lastName }}</td>
                 <td>{{ gender[item.gender] }}</td>
                 <td>{{ item.birthDay }}</td>
                 <td>{{ item.schools[0].rayonTitle }}</td>
@@ -76,15 +106,20 @@ import SmartSearchInput from '@/components/input/SmartSearchInput'
 import SmartSelect from '@/components/select/SmartSelect'
 import {InstructorService} from "@/_services/instructor.service";
 const instructorService = new InstructorService();
-const personService = new PersonService();
 import PreLoader from "@/components/preloader/PreLoader";
+import { RayonService } from "@/_services/rayon.service";
+const rayonService = new RayonService();
+import {SchoolService} from '@/_services/school.service';
+const schoolService = new SchoolService();
+import {AdminCourseService} from '@/_services/admin-course.service';
+const adminCourseService = new AdminCourseService();
 
 export default {
     name: 'Instructor',
     components: {SmartSelect, SmartSearchInput, SmartButton, SuperAdminSchoolHead, SmartTable, AddSchoolAdmin, PreLoader},
     data: () => ({
         isAddAdmin: false,
-        users: [],
+        instructors: [],
         gender: {
             FEMALE: 'Ж',
             MALE: 'М'
@@ -94,37 +129,145 @@ export default {
         pageSize: 20,
         totalPages: 1,
         isLoading: false,
+        schoolPage: 0,
+        filteredRayons: [],
+        filteredSchools: [],
+        allAdminCourses: [],
+        filterObj: {
+            pageRequest: {
+                limit: 10,
+                offset: 0
+            },
+            searchRequest: {
+                sortByLastname: false,
+                sortByRayon: false,
+                sortBySchool: true
+            }
+        }
     }),
+    computed: {
+        currentRegions() {
+            return this.$store.state.location.regions;
+        }
+    },
     mounted() {
-        this.fetchUsers(0);
+        this.fetchTeachers();
+        this.fetchAllAdminCourses();
     },
     methods: {
+        fetchTeachers() {
+            this.instructors = [];
+            this.isLoading = true;
+            instructorService.responseList(this.filterObj).then(res => {
+                this.totalElements = res.totalCount;
+                this.totalPages = Math.ceil(this.totalElements / 10);
+                if (res.list.length) {
+                    this.instructors = res.list;
+                }
+                this.isLoading = false;
+            }).catch(err => console.log(err))
+        },
+
+        fetchRayonsByRegion(regionId) {
+            this.filteredSchools = [];
+            this.filterObj.searchRequest.schoolId = '';
+            this.filterObj.searchRequest.rayonId = '';
+            rayonService.listByRegion(regionId).then((res) => {
+                this.filteredRayons = res;
+            });
+        },
+
+        onSelectRayon() {
+            this.schoolPage = 0;
+            this.filteredSchools = [];
+            this.filterObj.searchRequest.schoolId = '';
+            this.fetchSchoolsByRayon();
+        },
+
+        fetchSchoolsByRayon() {
+            schoolService.listPageable(
+                this.schoolPage,
+                this.filterObj.searchRequest.regionId,
+                this.filterObj.searchRequest.rayonId
+            ).then((res) => {
+                if (res._embedded) {
+                    res._embedded.schoolResourceList.forEach((school) => {
+                        this.filteredSchools.push(school);
+                    });
+                } else {
+                    this.removeSchoolSelectScrollListener();
+                }
+            })
+        },
+
+        addScrollListenerSchoolSelect() {
+            this.$nextTick(() => {
+                const schoolSelect = document.querySelector('.schoolSelect');
+                schoolSelect.addEventListener('scroll', this.innerSelectScrollListener);
+            })
+        },
+
+        innerSelectScrollListener() {
+            const schoolSelect = document.querySelector('.schoolSelect');
+            let almostEndOfScroll = (schoolSelect.scrollHeight - schoolSelect.clientHeight) - 100;
+            if (schoolSelect.scrollTop >= almostEndOfScroll) {
+                this.schoolPage++;
+                this.fetchSchoolsByRayon();
+            }
+        },
+
+        removeSchoolSelectScrollListener() {
+            const schoolSelect = document.querySelector('.schoolSelect');
+            schoolSelect.removeEventListener('scroll', this.innerSelectScrollListener);
+        },
+
+        filterTeachers() {
+            this.currentPage = 1;
+            this.filterObj.pageRequest.offset = 0;
+            this.fetchTeachers();
+        },
+
+        fetchAllAdminCourses() {
+            adminCourseService.list().then((res) => {
+                this.allAdminCourses = res;
+            })
+        },
+
+        sortBy(column) {
+            if (column === 'school') {
+                this.filterObj.searchRequest.sortBySchool = true;
+                this.filterObj.searchRequest.sortByLastname = false;
+                this.filterObj.searchRequest.sortByRayon = false;
+            } else if (column === 'name') {
+                this.filterObj.searchRequest.sortBySchool = false;
+                this.filterObj.searchRequest.sortByLastname = true;
+                this.filterObj.searchRequest.sortByRayon = false;
+            } else {
+                this.filterObj.searchRequest.sortBySchool = false;
+                this.filterObj.searchRequest.sortByLastname = false;
+                this.filterObj.searchRequest.sortByRayon = true;
+            }
+            this.fetchTeachers();
+        },
+
         onAddAdmin() {
             this.isAddAdmin = true
         },
         onCloseModal() {
-            this.isAddAdmin = false
-            this.fetchUsers()
+            this.isAddAdmin = false;
+            this.filterObj.pageRequest.offset = 0;
+            this.fetchTeachers()
         },
-        fetchUsers(page) {
-            this.isLoading = true;
-            instructorService.list(page).then(res => {
-                this.pageSize = res.page.size;
-                this.totalElements = res.page.totalElements;
-                this.totalPages = res.page.totalPages;
-                if (res._embedded) {
-                    this.users = res._embedded.instructorResourceList;
-                } else this.users = [];
-                this.isLoading = false;
-            }).catch(err => console.log(err))
-        },
+
         onLeftClick () {
             this.currentPage--;
-            this.fetchUsers(this.currentPage - 1);
+            this.filterObj.pageRequest.offset -= 10;
+            this.fetchTeachers();
         },
         onRightClick () {
             this.currentPage++;
-            this.fetchUsers(this.currentPage - 1);
+            this.filterObj.pageRequest.offset += 10;
+            this.fetchTeachers();
         },
         showCourses (courses) {
             let c = '';
@@ -143,10 +286,21 @@ export default {
 <style lang="scss" scoped>
 .super-admin-instructors {
     margin-bottom: 50px;
+    .selects {
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 500px;
+    }
+    .v-select {
+        max-width: 220px;
+    }
     .instr-courses {
         span {
             margin-right: 5px;
         }
+    }
+    th.sort {
+        cursor: pointer;
     }
 }
 </style>
