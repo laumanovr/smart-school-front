@@ -57,7 +57,7 @@
             </template>
 
             <template v-slot:body="{ item }">
-                <td>{{ item.name }} {{ item.surname }} {{ item.middleName }}</td>
+                <td>{{ item.surname }} {{ item.name }} {{ item.middleName }}</td>
                 <td>{{ item.schoolTitle }}</td>
                 <td>{{ item.rayonTitle }}</td>
                 <td>{{ item.username }}</td>
