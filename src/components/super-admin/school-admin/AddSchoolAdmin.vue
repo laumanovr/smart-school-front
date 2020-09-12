@@ -139,7 +139,9 @@ export default {
 
     removeSchoolSelectScrollListener() {
         const schoolSelect = document.querySelector('.v-menu__content');
-        schoolSelect.removeEventListener('scroll', this.innerSelectScrollListener);
+        if (schoolSelect) {
+            schoolSelect.removeEventListener('scroll', this.innerSelectScrollListener);
+        }
     },
 
     fetchSchools() {

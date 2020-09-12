@@ -248,7 +248,9 @@ export default {
 
         removeSchoolSelectScrollListener() {
             const schoolSelect = document.querySelector('.schoolSelect');
-            schoolSelect.removeEventListener('scroll', this.innerSelectScrollListener);
+            if (schoolSelect) {
+                schoolSelect.removeEventListener('scroll', this.innerSelectScrollListener);
+            }
         },
 
         filterTeachers() {
