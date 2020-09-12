@@ -14,7 +14,7 @@
             <template v-slot:firstItem>
                 <div>
                     <div class="select-filter-block">
-                        <div>
+                        <div class="select-actions">
                             <div class="select-clear-block">
                                 <v-select
                                     :items="currentRegions"
@@ -237,8 +237,12 @@ export default {
 <style lang="scss" scoped>
 .super-admin-instructors {
     margin-bottom: 50px;
+    .select-actions {
+        display: flex;
+        align-items: center;
+    }
     .v-select {
-        max-width: 220px;
+        max-width: 210px;
     }
     .showAll {
         text-align: center;
