@@ -207,7 +207,6 @@ export default {
         },
 
         addScrollListenerSchoolSelect() {
-            console.log('add-scroll');
             this.$nextTick(() => {
                 const schoolSelect = document.querySelector('.schoolSelect');
                 schoolSelect.addEventListener('scroll', this.innerSelectScrollListener);
@@ -215,7 +214,6 @@ export default {
         },
 
         innerSelectScrollListener() {
-            console.log('scrolling');
             const schoolSelect = document.querySelector('.schoolSelect');
             let almostEndOfScroll = (schoolSelect.scrollHeight - schoolSelect.clientHeight) - 100;
             if (schoolSelect.scrollTop >= almostEndOfScroll) {
