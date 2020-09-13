@@ -386,28 +386,12 @@ export default {
             this.isLoading = true;
             studentService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
                 this.allStudents = JSON.parse(JSON.stringify(res));
-                const requests = this.allStudents.map((student) => {
-                    return new Promise((resolve, reject) => {
-                        studentService.getDetails(student.id).then((res) => {
-                            resolve(res);
-                        }).catch((err) => reject(err));
-                    })
-                });
-                Promise.all(requests).then((res) => {
-                    this.allStudents = this.allStudents.map((student, i) => {
-                        student.username = res[i].username;
-                        student.parentTitle = res[i].parents.length ? res[i].parents[0].parentTitle : '';
-                        return student;
-                    });
-                    this.students = this.allStudents;
-                    this.students = this.students.map((student, i) => ({...student, index: i}));
-                    this.totalElements = this.students.length;
-                    this.pageSize = this.students.length;
-                    this.isLoading = false;
-                    this.prepareExport();
-                }).catch((err) => {
-                    this.$toast.error(err);
-                });
+                this.students = this.allStudents;
+                this.students = this.students.map((student, i) => ({...student, index: i}));
+                this.totalElements = this.students.length;
+                this.pageSize = this.students.length;
+                this.isLoading = false;
+                this.prepareExport();
             }).catch((err) => {
                 this.$toast.error(err);
                 this.isLoading = false;
@@ -430,9 +414,9 @@ export default {
         },
 
         prepareExport() {
-            this.exportHeaders = ['Ф.И.О', 'Класс', 'Пол', 'Дата рождения', 'Логин/Пароль', 'Имя Родителя'];
+            this.exportHeaders = ['Ф.И.О', 'Класс', 'Пол', 'Дата рождения', 'Логин/Пароль'];
             this.exportRows = this.students.map(i => {
-                return [`${i.name} ${i.surname}`, i.classTitle, i.gender === 1 ? 'М' : 'Ж', i.dateOfBirth, i.username, i.parentTitle];
+                return [`${i.name} ${i.surname}`, i.classTitle, i.gender === 1 ? 'М' : 'Ж', i.dateOfBirth, i.username];
             });
             this.exportName = 'Умная школа: Ученики';
         },
