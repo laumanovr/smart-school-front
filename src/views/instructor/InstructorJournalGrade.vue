@@ -28,6 +28,15 @@
                         v-model="selectedReasonId"
                     ></v-select>
                 </div>
+                <div class="select-topic">
+                    <v-select
+                        :items="topics"
+                        item-text="title"
+                        item-value="id"
+                        label="Тема"
+                        v-model="selectedTopicId"
+                    />
+                </div>
             </div>
 
             <div class="grade-tables" v-if="studentGrades.length">
@@ -96,6 +105,8 @@
     import GradeReasonService from '@/_services/grade-reason.service';
     import PreLoader from '@/components/preloader/PreLoader';
     import PlayArrowIcon from '@/components/icons/PlayArrowIcon';
+    import {TopicService} from "@/_services/topic.service";
+    const topicService = new TopicService();
 
     export default {
         components: {
@@ -148,6 +159,7 @@
                 isLoading: false,
                 step: 0,
                 selectedReasonId: '',
+                selectedTopicId: '',
                 instructorCourses: [],
                 currentMonthDays: [],
                 studentGrades: [],
@@ -156,7 +168,9 @@
                 gradeMonthFrom: new Date().getMonth(),
                 gradeMonthTo: new Date().getMonth() + 1,
                 scheduleMonthNumber: new Date().getMonth() + 2,
-                allCourses: []
+                allCourses: [],
+                topics: [],
+                topicPage: 0
             }
         },
 
@@ -186,6 +200,7 @@
                         (el['courseId'] === obj['courseId'])
                 ));
                 this.monthDataRequest.courseId = this.instructorCourses.length ? this.instructorCourses[0].courseId : 0;
+                this.fetchInstructorTopics();
             },
 
             async onChangeClass(klass) {
@@ -211,6 +226,7 @@
                 this.isLoading = true;
                 await this.fetchCurrentMonthSchedule();
                 await this.fetchStudentGrades();
+                await this.fetchInstructorTopics();
             },
 
             fetchStudentGrades() {
@@ -225,6 +241,19 @@
                 }).catch((err) => {
                     this.isLoading = false;
                     this.$toast.error(err);
+                })
+            },
+
+            fetchInstructorTopics() {
+                this.topics = [];
+                topicService.getByInstructor(
+                    this.topicPage,
+                    this.userProfile.personId,
+                    this.monthDataRequest.courseId
+                ).then((res) => {
+                    if (res._embedded) {
+                        this.topics = res._embedded.topicResourceList;
+                    }
                 })
             },
 
@@ -284,10 +313,11 @@
                     gradeDate: day.day,
                     mark: inputValue,
                     gradeType: !isNaN(inputValue) ? 'GRADE' : 'ATTENDANCE',
-                    reasonId: currentGrade ? currentGrade.reasonId : this.selectedReasonId,
+//                    reasonId: currentGrade ? currentGrade.reasonId : this.selectedReasonId,
+                    reasonId: '',
+                    topicId: this.selectedTopicId,
                     comment: '',
-                    extraMark: '',
-                    topicId: ''
+                    extraMark: ''
                 };
 
                 this.sendGradeDtoList.forEach((existGrade, index, selfArr) => {
@@ -407,12 +437,12 @@
                 display: flex;
                 align-items: center;
                 margin: 20px 0;
-                .select-course {
-                    width: 250px;
+                .select-course, .select-topic {
+                    max-width: 220px;
                 }
                 .select-reason {
-                    width: 250px;
-                    margin-left: 20px;
+                    max-width: 220px;
+                    margin: 0 20px;
                 }
             }
             .grade-tables {
