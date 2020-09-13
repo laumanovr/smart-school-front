@@ -229,18 +229,27 @@ export default {
 	            this.currentPage = res.page.number + 1;
                 if (res._embedded) {
                     this.instructors = res._embedded.instructorResourceList.map((i, ind) => {
-                    	i.index = ind
+                    	i.index = ind;
 	                    return i
                     })
                 } else this.instructors = [];
-                this.exportHeaders = ['Ф.И.О', 'Предмет'];
+                this.exportHeaders = ['Ф.И.О', 'Предмет', 'Логин/Пароль'];
                 this.exportRows = this.instructors.map(i => {
-                    return [i.lastName+' '+i.firstName, i.courses.join(', ')];
+                    return [i.lastName+' '+i.firstName, this.translateCourses(i.courses), i.username];
                 });
                 this.exportName = 'Умная школа: Учителя';
                 this.isLoading = false;
             }).catch(err => console.log(err))
         },
+
+        translateCourses(courses) {
+            const translatedArr = [];
+            courses.forEach((course) => {
+                translatedArr.push(this.$t(`adminCourses.${course}`))
+            });
+            return translatedArr.join(', ');
+        },
+
         editUser(item) {
             personService.getById(item.id).then(res => {
                 this.user = {
