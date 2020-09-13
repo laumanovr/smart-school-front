@@ -326,6 +326,7 @@ export default {
 				username: ''
 			},
 			students: [],
+            allStudents: [],
 			classes: [],
 			required: [v => !!v || 'Input is required'],
 			isAddStudentModal: false,
@@ -381,23 +382,60 @@ export default {
 			this.isMassDeleting = true
 		},
 
-		fetchStudents() {
-			this.isLoading = true;
-			studentService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
-				this.totalElements = res.length;
-				this.pageSize = res.length;
-				this.students = res.map((i, ind) => {
-					i.index = ind;
-					return i
-				});
-				this.exportHeaders = ['Ф.И.О', 'Класс', 'Пол', 'Дата рождения', 'Имя Родителя', 'Логин'];
-				this.exportRows = this.students.map(i => {
-					return [`${i.name} ${i.surname}`, i.classTitle, i.gender === 1 ? 'М' : 'Ж', i.dateOfBirth, '', ''];
-				});
-				this.exportName = 'Умная школа: Ученики';
-				this.isLoading = false;
-			})
-		},
+        async fetchStudents() {
+            this.isLoading = true;
+            studentService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
+                this.allStudents = JSON.parse(JSON.stringify(res));
+                const requests = this.allStudents.map((student) => {
+                    return new Promise((resolve, reject) => {
+                        studentService.getDetails(student.id).then((res) => {
+                            resolve(res);
+                        }).catch((err) => reject(err));
+                    })
+                });
+                Promise.all(requests).then((res) => {
+                    this.allStudents = this.allStudents.map((student, i) => {
+                        student.username = res[i].username;
+                        student.parentTitle = res[i].parents.length ? res[i].parents[0].parentTitle : '';
+                        return student;
+                    });
+                    this.students = this.allStudents;
+                    this.students = this.students.map((student, i) => ({...student, index: i}));
+                    this.totalElements = this.students.length;
+                    this.pageSize = this.students.length;
+                    this.isLoading = false;
+                    this.prepareExport();
+                }).catch((err) => {
+                    this.$toast.error(err);
+                });
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.isLoading = false;
+            })
+        },
+
+        filterByClass(klassId) {
+            this.selectedFilterClass = true;
+            if (klassId) {
+                this.students = this.allStudents.filter((student) => student.classId === klassId);
+                this.students = this.students.map((student, i) => ({...student, index: i}));
+                this.totalElements = this.students.length;
+                this.prepareExport();
+            } else {
+                this.students = this.allStudents;
+                this.students = this.students.map((student, i) => ({...student, index: i}));
+                this.totalElements = this.students.length;
+                this.prepareExport();
+            }
+        },
+
+        prepareExport() {
+            this.exportHeaders = ['Ф.И.О', 'Класс', 'Пол', 'Дата рождения', 'Логин/Пароль', 'Имя Родителя'];
+            this.exportRows = this.students.map(i => {
+                return [`${i.name} ${i.surname}`, i.classTitle, i.gender === 1 ? 'М' : 'Ж', i.dateOfBirth, i.username, i.parentTitle];
+            });
+            this.exportName = 'Умная школа: Ученики';
+        },
 
 		selectAll() {
 			this.students = this.students.map(i => {
@@ -453,22 +491,6 @@ export default {
 				}
 			})
 		},
-
-        filterByClass(classId) {
-            this.isLoading = true;
-            this.selectedFilterClass = true;
-            if (classId) {
-                studentService.getByClass(classId).then((res) => {
-                    this.students = res.map((student, i) => ({...student, index: i}));
-                    this.isLoading = false;
-                }).catch((err) => {
-                    this.$toast.error(err);
-                    this.isLoading = false;
-                })
-            } else {
-                this.fetchStudents();
-            }
-        },
 
         submitAddCourseToStudents() {
             if (this.$refs.addCourseForm.validate()) {
