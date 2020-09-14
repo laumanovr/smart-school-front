@@ -148,32 +148,34 @@ export default {
 		userProfile() {
 			return this.$store.state.account.profile
 		},
-		courses () {
+		courses() {
 			return this.$store.getters["scheduleWeek/getCourses"].map(i => {
-				i.courseName = this.$t(`adminCourses.${i.courseCode}`)
+				i.courseName = this.$t(`adminCourses.${i.courseCode}`);
 				return i
 			})
 		}
 	},
 	methods: {
 		fetchTopics(page) {
-			topicService.getByInstructor(this.userProfile.personId, this.courseId, page).then(res => {
-				this.totalPages = res.page.totalPages
-				this.totalElements = res.page.totalElements
-				let topics = []
-				this.currentPage = res.page.number + 1
+			topicService.getByInstructor(page, this.userProfile.personId, this.courseId).then(res => {
+				this.totalPages = res.page.totalPages;
+				this.totalElements = res.page.totalElements;
+				let topics = [];
+				this.currentPage = res.page.number + 1;
 				if (res._embedded) {
 					topics = res._embedded.topicResourceList.map((i, index) => {
-						i.index = index + 1
+						i.index = index + 1;
 						return i
 					})
-				} else topics  =[]
+				} else topics  =[];
 				this.fetchAssignments(topics)
 			}).catch(err => console.log(err))
 		},
 		onClassSelect (_class) {
-			this.currentClass = _class
-		},
+			this.currentClass = _class;
+            this.courseId = this.courses.length ? this.courses[0].courseId : '';
+            this.fetchTopics(0);
+        },
 		async fetchAssignments (topics) {
 			for (const topic of topics) {
 				await assignmentService.getByTopic(topic.id).then(res => {
