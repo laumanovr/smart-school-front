@@ -1,5 +1,6 @@
 <template>
 	<div class="instructor-topic">
+        <PreLoader v-if="isLoading"/>
 		<ClassSelectHeader @classSelected="onClassSelect" :headTitle="$t('lessons')" :showClass="true"/>
 
 		<div class="instructor-topic__body">
@@ -11,6 +12,7 @@
 				:schools="topics"
 				:total-elements="totalElements"
 				:totalPages="totalPages"
+                :current-page="currentPage"
 				@leftClick="onPageChange('left')"
 				@rightClick="onPageChange('right')"
 			>
@@ -118,12 +120,15 @@ import AddTopic from "@/components/instructor/topic/AddTopic";
 import DeletePopup from "@/components/delete-popup/DeletePopup";
 import AddAssignment from '@/components/instructor/assignment/AddAssignment'
 import { AssignmentService } from '@/_services/assignment.service'
-const assignmentService = new AssignmentService()
-const topicService = new TopicService()
+const assignmentService = new AssignmentService();
+const topicService = new TopicService();
+import PreLoader from "@/components/preloader/PreLoader";
+
 export default {
 	name: "InstructorTopic",
 	components: {
 		AddAssignment,
+        PreLoader,
 		DeletePopup, AddTopic, SmartSelect, SmartButton, SmartSearchInput, SmartTable, ClassSelectHeader},
 	data() {
 		return {
@@ -141,7 +146,8 @@ export default {
 			isEditAssignment: false,
 			assignment: {},
 			currentClass: {},
-			assignmentData: {}
+			assignmentData: {},
+            isLoading: false
 		}
 	},
 	computed: {
@@ -157,6 +163,7 @@ export default {
 	},
 	methods: {
 		fetchTopics(page) {
+		    this.isLoading = true;
 			topicService.getByInstructor(page, this.userProfile.personId, this.courseId).then(res => {
 				this.totalPages = res.page.totalPages;
 				this.totalElements = res.page.totalElements;
@@ -185,9 +192,10 @@ export default {
 					topic.totalElements = res.page.totalElements
 					topic.totalPages = res.page.totalPages
 					topic.currentPage = res.page.number + 1
-				}).catch(err => console.log(err))
+				}).catch(err => console.log(err));
 			}
-			this.topics = topics
+			this.topics = topics;
+            this.isLoading = false;
 		},
 		onCourse (id) {
 			this.fetchTopics(0)
@@ -235,8 +243,8 @@ export default {
 			})
 		},
 		onPageChange(val) {
-			if (val === 'left') this.currentPage -= 1
-			else this.currentPage += 1
+			if (val === 'left') this.currentPage -= 1;
+			else this.currentPage += 1;
 			this.fetchTopics(this.currentPage - 1)
 		},
 		onAddAssignment(item) {
