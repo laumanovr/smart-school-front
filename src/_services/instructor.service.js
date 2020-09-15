@@ -5,9 +5,9 @@ export class InstructorService extends BaseApiService {
         super();
     }
 
-    list (page=0, schoolId='', courseCode='', regionId='', rayonId='') {
+    list(page=0, schoolId='', courseCode='', size=10) {
         const baseUrl = `${process.env.VUE_APP_BASE_URL}/v1/instructor/list`;
-        const url = baseUrl + `?page=${page}&schoolId=${schoolId}&courseCode=${courseCode}&regionId=${regionId}&rayonId=${rayonId}`;
+        const url = baseUrl + `?page=${page}&schoolId=${schoolId}&courseCode=${courseCode}&size=${size}`;
         return this.sendGetRequest(url);
     }
 
