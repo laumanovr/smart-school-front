@@ -53,7 +53,12 @@ export const superAdminSidebars = [
 		name: 'Академический год',
 		icon: 'library.svg',
 		route: '/super-admin/chronicle'
-	}
+	},
+    {
+        name: 'Типы оценок',
+        icon: 'journal.svg',
+        route: '/super-admin/grade-reason'
+    }
 ];
 
 export const schoolAdminSidebars = [
@@ -130,13 +135,8 @@ export const instructorSidebars = [
 		icon: 'my-class.svg',
 		route: '/instructor-page/classes'
 	},
-    {
-        name: 'Типы оценок',
-        icon: 'courses.svg',
-        route: '/instructor-page/grade-reason'
-    },
 	{
-		name: 'Уроки',
+		name: 'Темы',
 		icon: 'book-open.svg',
 		route: '/instructor-page/topics'
 	},
