@@ -49,13 +49,8 @@
 
             <template v-slot:body="{ item }">
                 <td>{{ (currentPage - 1) * 10 + item.index + 1 }}</td>
-	            <td>{{ item.lastName+' '+item.firstName }}</td>
-                <td class="instr-courses">
-                    <template v-if="item.courses.length">
-                        <span v-for="courseCode in item.courses">{{$t(`adminCourses.${courseCode}`)}},</span>
-                    </template>
-                    <span v-else></span>
-                </td>
+	            <td>{{ item.lastName+' '+item.firstName+' '+checkMiddleName(item.middleName)}}</td>
+                <td class="instr-courses">{{ translateCourses(item.courses) }}</td>
                 <td>{{ item.username }}</td>
                 <td @click="editUser(item)" class="actions"><img alt="" src="../../assets/images/icons/pen.svg"></td>
                 <td><CourseIcon @click="addCourseModal(item)"/></td>
@@ -185,13 +180,36 @@ export default {
         this.fetchSchoolCourses();
     },
     methods: {
-        fetchSchoolCourses() {
-            courseService.listBySchool(this.userProfile.schools[0].id).then((res) => {
-                this.schoolCourses = res;
-                this.allSchoolCourses = res;
-                this.filterSchoolCourses = JSON.parse(JSON.stringify(res));
-                this.filterSchoolCourses.unshift({courseTitle: 'Показать все', courseCode: ''})
-            });
+        fetchInstructors(page = 0, size = 10) {
+            this.isLoading = true;
+            this.instructors = [];
+            InstructorService.list(page, this.school.id, this.selectedCourseCode, size).then((res) => {
+                this.totalPages = res.page.totalPages;
+                this.totalElements = res.page.totalElements;
+                this.pageSize = res.page.size;
+                this.currentPage = res.page.number + 1;
+                if (res._embedded) {
+                    this.instructors = res._embedded.instructorResourceList.map((teacher, i) => ({...teacher, index: i}));
+                }
+                this.exportHeaders = [
+                    'Ф.И.О',
+                    'Предмет',
+                    'Логин/Пароль'
+                ];
+                this.exportRows = this.instructors.map((i) => {
+                    return [
+                        i.lastName+' '+i.firstName+' '+this.checkMiddleName(i.middleName),
+                        this.translateCourses(i.courses),
+                        i.username
+                    ];
+                });
+                this.exportName = 'Умная школа: Учителя';
+                this.isLoading = false;
+                console.log(this.currentPage);
+            }).catch(err => {
+                this.$toast.error(err);
+                this.isLoading = false;
+            })
         },
 
         filterByCourse(courseCode) {
@@ -201,45 +219,8 @@ export default {
             } else {
                 this.currentPage = 1;
                 this.selectedCourseCode = '';
-                this.fetchInstructors(0);
+                this.fetchInstructors(0, 1000);
             }
-        },
-
-        onAddAdmin() {
-            this.isAddUser = true
-            this.isEdit = false
-            this.user = {};
-        },
-        onCloseModal() {
-            this.isAddUser = false
-            this.fetchInstructors()
-        },
-        downloadTemplate () {
-            const a = document.createElement('a');
-            a.download = 'Шаблон импорта учителя.xlsx'
-            a.href = '/docs/Шаблон_Мугалим.xlsx'
-            a.click()
-        },
-        fetchInstructors(page = 0) {
-            this.isLoading = true;
-            InstructorService.list(page, this.school.id, this.selectedCourseCode).then(res => {
-                this.totalPages = res.page.totalPages;
-                this.totalElements = res.page.totalElements;
-                this.pageSize = res.page.size;
-	            this.currentPage = res.page.number + 1;
-                if (res._embedded) {
-                    this.instructors = res._embedded.instructorResourceList.map((i, ind) => {
-                    	i.index = ind;
-	                    return i
-                    })
-                } else this.instructors = [];
-                this.exportHeaders = ['Ф.И.О', 'Предмет', 'Логин/Пароль'];
-                this.exportRows = this.instructors.map(i => {
-                    return [i.lastName+' '+i.firstName, this.translateCourses(i.courses), i.username];
-                });
-                this.exportName = 'Умная школа: Учителя';
-                this.isLoading = false;
-            }).catch(err => console.log(err))
         },
 
         translateCourses(courses) {
@@ -248,6 +229,35 @@ export default {
                 translatedArr.push(this.$t(`adminCourses.${course}`))
             });
             return translatedArr.join(', ');
+        },
+
+        checkMiddleName(middleName) {
+            return middleName ? middleName : '';
+        },
+
+        fetchSchoolCourses() {
+            courseService.listBySchool(this.userProfile.schools[0].id).then((res) => {
+                this.schoolCourses = res;
+                this.allSchoolCourses = res;
+                this.filterSchoolCourses = JSON.parse(JSON.stringify(res.sort((a, b) => a.courseTitle.localeCompare(b.courseTitle))));
+                this.filterSchoolCourses.unshift({courseTitle: 'Показать все', courseCode: ''})
+            });
+        },
+
+        onAddAdmin() {
+            this.isAddUser = true;
+            this.isEdit = false;
+            this.user = {};
+        },
+        onCloseModal() {
+            this.isAddUser = false;
+            this.fetchInstructors()
+        },
+        downloadTemplate () {
+            const a = document.createElement('a');
+            a.download = 'Шаблон импорта учителя.xlsx';
+            a.href = '/docs/Шаблон_Мугалим.xlsx';
+            a.click()
         },
 
         editUser(item) {
