@@ -119,8 +119,7 @@ import {PersonService} from '@/_services/person.service'
 import SmartButton from '@/components/button/SmartButton'
 import SmartSearchInput from '@/components/input/SmartSearchInput'
 import SmartSelect from '@/components/select/SmartSelect'
-import {InstructorService} from "@/_services/instructor.service";
-const instructorService = new InstructorService();
+import InstructorService from "@/_services/instructor.service";
 import PreLoader from "@/components/preloader/PreLoader";
 import { RayonService } from "@/_services/rayon.service";
 const rayonService = new RayonService();
@@ -188,7 +187,7 @@ export default {
         fetchTeachers() {
             this.instructors = [];
             this.isLoading = true;
-            instructorService.responseList(this.filterObj).then(res => {
+            InstructorService.responseList(this.filterObj).then(res => {
                 this.totalElements = res.totalCount;
                 this.totalPages = Math.ceil(this.totalElements / 10);
                 if (res.list.length) {
