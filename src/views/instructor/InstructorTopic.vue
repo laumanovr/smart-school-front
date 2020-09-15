@@ -1,7 +1,7 @@
 <template>
 	<div class="instructor-topic">
         <PreLoader v-if="isLoading"/>
-		<ClassSelectHeader @classSelected="onClassSelect" :headTitle="$t('lessons')" :showClass="true"/>
+		<ClassSelectHeader @classSelected="onClassSelect" :headTitle="$t('topics.title')" :showClass="true"/>
 
 		<div class="instructor-topic__body">
 <!--			<div class="instructor-topic__hint">-->
