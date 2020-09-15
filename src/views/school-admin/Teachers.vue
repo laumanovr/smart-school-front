@@ -205,7 +205,6 @@ export default {
                 });
                 this.exportName = 'Умная школа: Учителя';
                 this.isLoading = false;
-                console.log(this.currentPage);
             }).catch(err => {
                 this.$toast.error(err);
                 this.isLoading = false;
