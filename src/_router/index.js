@@ -42,17 +42,12 @@ const routes = [
 			{
 				path: '/',
 				name: 'superAdminDashboard',
-				component: () => import(/* webpackChunkName: "admin" */ '@/views/super-admin/SuperAdminDashboard')
+				component: () => import('@/views/super-admin/SuperAdminDashboard')
 			},
 			{
 				name: 'superAdminSchools',
 				path: 'schools',
 				component: () => import('@/views/super-admin/Schools')
-			},
-			{
-				name: 'superAdminChronicle',
-				path: 'chronicle',
-				component: Chronicle
 			},
 			{
 				name: 'superSchoolAdmin',
@@ -64,15 +59,15 @@ const routes = [
 				path: 'instructors',
 				component: Instructor
 			},
+            {
+                name: 'superAdminStudents',
+                path: 'students',
+                component: Students
+            },
 			{
 				name: 'superAdminCourses',
 				path: 'courses',
 				component: Courses
-			},
-			{
-				name: 'superAdminStudents',
-				path: 'students',
-				component: Students
 			},
 			{
 				name: 'superAdminRayon',
@@ -93,7 +88,17 @@ const routes = [
 				name: 'superAdminLibrary',
 				path: 'library',
 				component: loadComponent('super-admin/Library')
-			}
+			},
+            {
+                name: 'superAdminChronicle',
+                path: 'chronicle',
+                component: Chronicle
+            },
+            {
+                name: 'superAdminGradeReason',
+                path: 'grade-reason',
+                component: loadComponent('super-admin/AdminGradeReason')
+            }
 		],
 	},
 
@@ -200,11 +205,6 @@ const routes = [
                 name: 'instructorJournalGrade',
                 path: 'journal-grade',
                 component: loadComponent('instructor/InstructorJournalGrade')
-            },
-            {
-                name: 'instructorGradeReason',
-                path: 'grade-reason',
-                component: loadComponent('instructor/InstructorGradeReason')
             },
             {
                 name: 'instructorMessage',
