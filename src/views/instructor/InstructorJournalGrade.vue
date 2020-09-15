@@ -102,7 +102,7 @@
     import GradeService from '@/_services/grade.service';
     import ScheduleWeekService from '@/_services/schedule-week.service';
     import moment from 'moment';
-    import GradeReasonService from '@/_services/grade-reason.service';
+    import AdminGradeReasonService from '@/_services/admin-grade-reason.service';
     import PreLoader from '@/components/preloader/PreLoader';
     import PlayArrowIcon from '@/components/icons/PlayArrowIcon';
     import {TopicService} from "@/_services/topic.service";
@@ -200,7 +200,10 @@
                         (el['courseId'] === obj['courseId'])
                 ));
                 this.monthDataRequest.courseId = this.instructorCourses.length ? this.instructorCourses[0].courseId : 0;
-                this.fetchInstructorTopics();
+                if (this.monthDataRequest.courseId) {
+                    this.fetchInstructorTopics();
+                    this.fetchGradeReasons(this.instructorCourses[0].adminCourseId);
+                }
             },
 
             async onChangeClass(klass) {
@@ -217,16 +220,17 @@
                 this.gradeRequest.searchRequest.from = this.getFirstDateOfMonth();
                 this.gradeRequest.searchRequest.to = this.getLastDateOfMonth();
                 this.filterCourses(klass);
-                await this.fetchInstructorGradeReasons(klass.classLevel);
                 await this.fetchCurrentMonthSchedule();
                 await this.fetchStudentGrades();
             },
 
             async onChangeCourse() {
                 this.isLoading = true;
+                const adminCourseId = this.instructorCourses.find(course => course.courseId === this.monthDataRequest.courseId).adminCourseId;
                 await this.fetchCurrentMonthSchedule();
                 await this.fetchStudentGrades();
                 await this.fetchInstructorTopics();
+                await this.fetchGradeReasons(adminCourseId);
             },
 
             fetchStudentGrades() {
@@ -270,20 +274,9 @@
                 })
             },
 
-            fetchInstructorGradeReasons(classLevel) {
-                this.gradeReasons = [];
-                GradeReasonService.getByInstructor(
-                    this.userProfile.personId,
-                    classLevel,
-                    this.monthDataRequest.courseId
-                ).then((res) => {
-                    if (res.length) {
-                        this.gradeReasons = res;
-                        this.selectedReasonId = this.gradeReasons[0].id;
-                    }
-                }).catch((err) => {
-                    this.isLoading = false;
-                    this.$toast.error(err);
+            fetchGradeReasons(adminCourseId) {
+                AdminGradeReasonService.getByAdminCourse(adminCourseId).then((res) => {
+                    this.gradeReasons = res;
                 })
             },
 
@@ -313,8 +306,7 @@
                     gradeDate: day.day,
                     mark: inputValue,
                     gradeType: !isNaN(inputValue) ? 'GRADE' : 'ATTENDANCE',
-//                    reasonId: currentGrade ? currentGrade.reasonId : this.selectedReasonId,
-                    reasonId: '',
+                    reasonId: this.selectedReasonId,
                     topicId: this.selectedTopicId,
                     comment: '',
                     extraMark: ''
