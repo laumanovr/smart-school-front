@@ -38,7 +38,7 @@
 				</template>
 
 				<template v-slot:body="{ item }">
-					<td>{{ item.index }}</td>
+					<td>{{ (currentPage - 1) * 10 + item.index }}</td>
 					<td>{{ item.startDate }} - {{ item.endDate }}</td>
 					<td>{{ item.title }}</td>
 					<td>
