@@ -26,7 +26,6 @@
 						@change="onCourse"
 					></v-select>
 					<SmartButton @clicked="onAddTopic">{{ $t('add_topic') }}</SmartButton>
-					<SmartSearchInput></SmartSearchInput>
 				</template>
 				<template v-slot:head>
 					<th></th>
