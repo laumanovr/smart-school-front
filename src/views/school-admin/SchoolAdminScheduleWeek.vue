@@ -17,9 +17,9 @@
                         ></v-select>
                     </div>
                     <router-link :to="{name: 'shifts'}">
-                        <md-button class="md-primary blue">
+                        <v-btn color="primary">
                             Все смены
-                        </md-button>
+                        </v-btn>
                     </router-link>
                 </div>
             </template>
@@ -222,16 +222,16 @@
                                 </div>
                             </div>
                             <div class="btn-actions">
-                                <md-button class="md-primary blue" @click="addGroupScheduleMode">
+                                <v-btn color="primary" @click="addGroupScheduleMode">
                                     Добавить еще класс к этой группе
-                                </md-button>
+                                </v-btn>
                             </div>
                         </div>
                     </template>
 
                     <div class="btn-actions" v-if="mode != 'groupedClasses'">
-                        <md-button class="md-primary red" @click="closeModal">Отмена</md-button>
-                        <md-button class="md-primary green" @click="submit">Сохранить</md-button>
+                        <v-btn color="red" @click="closeModal">Отмена</v-btn>
+                        <v-btn color="green" @click="submit">Сохранить</v-btn>
                     </div>
                 </v-form>
             </div>
@@ -253,8 +253,8 @@
                         @change="onSelectScheduleCourse"
                     ></v-select>
                     <div class="btn-actions">
-                        <md-button class="md-primary red" @click="closeClassViewModal">Отмена</md-button>
-                        <md-button class="md-primary green" @click="submit">Сохранить</md-button>
+                        <v-btn color="red" @click="closeClassViewModal">Отмена</v-btn>
+                        <v-btn color="green" @click="submit">Сохранить</v-btn>
                     </div>
                 </v-form>
             </div>
@@ -601,8 +601,6 @@
             align-items: center;
             .select-shift {
                 margin-right: 30px;
-            }
-            .md-button {
             }
         }
         .schedule-content {
