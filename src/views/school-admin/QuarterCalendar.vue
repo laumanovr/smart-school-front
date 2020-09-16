@@ -16,10 +16,10 @@
                 <div class="quarter" v-for="quarter in schoolQuarters" :key="quarter.id">
                     <span>{{quarterTitle[quarter.semester]}}</span>
                     <span>
-                        <md-datepicker v-model="quarter.startDate" md-immediately />
+                        <v-text-field v-model="quarter.startDate" label="От" readonly/>
                     </span>
                     <span>
-                        <md-datepicker v-model="quarter.endDate" md-immediately />
+                        <v-text-field v-model="quarter.endDate" label="До" readonly/>
                     </span>
                 </div>
             </div>
@@ -69,8 +69,8 @@
             getQuartersBySchool() {
                 quarterService.getBySchoolAndChronicle(this.school.id, this.school.chronicleId).then((res) => {
                     this.schoolQuarters = res.map((quarter) => {
-                        quarter.startDate = new Date(quarter.startDate);
-                        quarter.endDate = new Date(quarter.endDate);
+                        quarter.startDate = moment(quarter.startDate, 'YYYY-MM-DD').format('DD.MM.YYYY');
+                        quarter.endDate = moment(quarter.endDate, 'YYYY-MM-DD').format('DD.MM.YYYY');
                         return quarter;
                     });
                 }).catch((err) => this.$toast.error(err.message));
