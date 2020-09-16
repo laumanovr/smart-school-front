@@ -86,6 +86,7 @@ export default {
         min-width: 60px;
         transition: 1s;
         text-align: center;
+        text-decoration: none;
 
         &.active {
             background: linear-gradient(180deg, #4A27F3 -33.33%, #339DFA 66.67%);
