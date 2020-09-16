@@ -243,6 +243,10 @@
     "GEOMETRY": "Геометрия",
     "INFORMATICS": "Информатика",
     "GEOGRAPHY": "География",
-    "NATURAL_SCIENCE": "Природоведение"
+    "NATURAL_SCIENCE": "Природоведение",
+    "ELEMENTARYSCHOOL": "Начальная школа",
+    "RUSSIAN_LANGUAGE_AND_LITERATURE": "Русский язык и Литература",
+    "KYRGYZLANGUAGEANDLITERATURE": "Кыргыз тили жана адабияты",
+    "ART": "ИЗО"
   }
 }
