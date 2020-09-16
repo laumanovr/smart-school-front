@@ -12,24 +12,23 @@
         </SuperAdminSchoolHead>
 
         <div class="shift-content">
-            <md-table class="shift-table">
-                <md-table-row>
-                    <md-table-head>Название смены</md-table-head>
-                    <md-table-head></md-table-head>
-                    <md-table-head></md-table-head>
-                    <md-table-head></md-table-head>
-                </md-table-row>
-
-                <md-table-row v-for="shift in allSchoolShifts" :key="shift.id">
-                    <md-table-cell>{{shift.name}}</md-table-cell>
-                    <md-table-cell></md-table-cell>
-                    <md-table-cell></md-table-cell>
-                    <md-table-cell>
-                        <EditIcon @click="openModal('editAll', shift)" />
-                        <DeleteIcon @click="deleteShift(shift.id, false)" />
-                    </md-table-cell>
-                </md-table-row>
-            </md-table>
+            <table class="table shift-table">
+                <thead>
+                    <tr>
+                        <th>Название смены</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="shift in allSchoolShifts" :key="shift.id">
+                        <td class="shift-name">{{shift.name}}</td>
+                        <td>
+                            <EditIcon @click="openModal('editAll', shift)" />
+                            <DeleteIcon @click="deleteShift(shift.id, false)" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
         <!--MODAL FOR SHIFT AND SHIFT-TIME-->
@@ -290,12 +289,8 @@
         .shift-table {
             max-width: 1024px;
             margin: 0 auto;
-            .md-table-head-label {
-                color: #2196f3;
-                font-size: 17px;
-            }
-            .md-table-cell {
-                font-size: 17px;
+            .shift-name {
+                font-weight: bold;
             }
         }
     }
