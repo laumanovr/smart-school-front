@@ -28,9 +28,7 @@
         <div class="schedule-content" v-if="showContent && shiftTimes.length">
             <div class="other-actions">
                 <div class="switch-filter">
-                    <md-switch class="md-primary" v-model="classViewSchedule">
-                        Учитель/Класс
-                    </md-switch>
+                    <v-switch label="Учитель/Класс" v-model="classViewSchedule"/>
                 </div>
                 <div class="scroll-arrows">
                     <QuadArrowIcon class="left" @click="scrollTable('left')" />
