@@ -174,9 +174,7 @@
                             ></v-select>
 
                             <div class="with-group">
-                                <md-switch class="md-primary" v-model="sendScheduleObj.grouped">
-                                    Группа
-                                </md-switch>
+                                <v-switch label="Группа" v-model="sendScheduleObj.grouped"/>
                                 <template v-if="sendScheduleObj.grouped">
                                     <v-text-field :rules="required" label="Название" v-model="sendScheduleObj.groupTitle"/>
                                 </template>
