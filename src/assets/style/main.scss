@@ -1,5 +1,3 @@
-@import 'material-default';
-@import 'material-ui';
 @import 'toaster';
 
 .header-title {
@@ -60,10 +58,6 @@ h4  {
 }
 .blue-light {
   background: rgba(51, 157, 250, 0.1);
-}
-
-.md-button-content {
-  color: #fff;
 }
 
 .select-filter-block {
