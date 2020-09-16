@@ -5,9 +5,9 @@
             <template v-slot:title><button class="blue go-back" @click="$router.go(-1)">< Назад</button></template>
             <template v-slot:center><h1>Все смены</h1></template>
             <template v-slot:right>
-                <md-button class="md-primary md-raised" @click="openModal('addShift', {})">
+                <v-btn color="primary" @click="openModal('addShift', {})">
                     Добавить смену
-                </md-button>
+                </v-btn>
             </template>
         </SuperAdminSchoolHead>
 
@@ -70,8 +70,8 @@
                         @closeModal="closeModal"
                     />
                     <div class="btn-actions">
-                        <md-button class="md-primary green" @click="submitUpdateAllShiftAndTimes">Сохранить</md-button>
-                        <md-button class="md-primary red" @click="closeModal">Отмена</md-button>
+                        <v-btn color="red" @click="closeModal">Отмена</v-btn>
+                        <v-btn color="green" @click="submitUpdateAllShiftAndTimes">Сохранить</v-btn>
                     </div>
                 </template>
             </div>

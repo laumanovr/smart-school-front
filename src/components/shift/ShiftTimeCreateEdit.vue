@@ -2,7 +2,7 @@
     <div class="shift-time-container">
         <h4>{{mode == 'addShiftTime' ? 'Добавьте время уроков' : 'Время уроков'}}</h4>
         <div class="add-shift-time">
-            <md-button class="md-primary blue" @click="addShiftTimeToArray">Добавить</md-button>
+            <v-btn color="primary" @click="addShiftTimeToArray">Добавить</v-btn>
         </div>
 
         <div class="empty-fields" v-show="isEmptyFields">Некоторые поля не заполнены!</div>
@@ -32,11 +32,11 @@
         </div>
 
         <div class="btn-actions" v-if="mode == 'addShiftTime' && shiftTimeList.length">
-            <md-button class="md-primary green" @click="saveShiftTime">Сохранить</md-button>
-            <md-button class="md-primary red" @click="closeModal">Отмена</md-button>
+            <v-btn color="red" @click="closeModal">Отмена</v-btn>
+            <v-btn color="green" @click="saveShiftTime">Сохранить</v-btn>
         </div>
         <div class="btn-actions" v-if="mode == 'addShiftTime' && !shiftTimeList.length">
-            <md-button class="md-primary red" @click="closeModal">Отмена</md-button>
+            <v-btn color="red" @click="closeModal">Отмена</v-btn>
         </div>
     </div>
 </template>

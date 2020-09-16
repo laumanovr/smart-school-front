@@ -7,7 +7,7 @@
                 </div>
             </template>
             <template v-slot:right>
-                <md-button class="md-primary md-raised" @click="generateQuarters">Сгенерировать</md-button>
+                <v-btn color="primary" @click="generateQuarters">Сгенерировать</v-btn>
             </template>
         </SuperAdminSchoolHead>
 
