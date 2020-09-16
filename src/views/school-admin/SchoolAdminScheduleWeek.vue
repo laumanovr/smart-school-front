@@ -617,7 +617,7 @@
                     tr {
                         th {
                             border: 1px solid rgba(#707070, 0.8);
-                            height: 43px;
+                            height: 49px;
                             text-align: center;
                             color: #339DFA;
                         }
@@ -625,6 +625,7 @@
                             border-top: 1px solid rgba(#707070, 0.8);
                             border-left: 1px solid rgba(#707070, 0.8);
                             border-right: 1px solid rgba(#707070, 0.8);
+                            font-size: 14px;
                             &.teacher-name {
                                 text-align: center;
                                 span {
@@ -672,8 +673,7 @@
                         th {
                             border: 1px solid rgba(#707070, 0.8);
                             border-right: 2px solid rgba(#707070, 0.8);
-                            min-height: 43px;
-                            height: 43px;
+                            min-height: 49px;
                             .day {
                                 text-align: center;
                                 color: #339DFA;
@@ -733,7 +733,7 @@
                 justify-content: center;
                 margin-left: 70px;
                 .left {
-                    transform: rotate(180deg);
+                    transform: rotate(180deg) translateY(6px);
                 }
             }
         }
