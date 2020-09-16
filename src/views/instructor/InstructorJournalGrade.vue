@@ -454,7 +454,7 @@
                             transform: translateX(10px);
                             width: 35px;
                             height: 35px;
-                            line-height: 32px;
+                            line-height: 37px;
                             &.left {
                                 margin: 0 8px;
                             }
