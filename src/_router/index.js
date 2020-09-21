@@ -7,7 +7,6 @@ import SchoolAdmin from '@/views/super-admin/SchoolAdmin'
 import Instructor from '@/views/super-admin/Instructor'
 import Courses from '@/views/super-admin/Courses'
 import Dashboard from '@/views/school-admin/Dashboard'
-import SchoolAdminManage from '@/views/school-admin/SchoolAdminManage'
 import Teachers from '@/views/school-admin/Teachers'
 import SchoolAdminCourses from '@/views/school-admin/SchoolAdminCourses'
 import SuperAdminEmpty from '@/views/super-admin/SuperAdminEmpty'
@@ -17,7 +16,7 @@ import Calendar from "@/views/super-admin/Calendar";
 
 const loadComponent = path => () => import(`@/views/${path}.vue`);
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes = [
 	{
@@ -34,7 +33,7 @@ const routes = [
     // SUPER-ADMIN
 	{
 		path: '/super-admin',
-		component: () => import('@/views/super-admin/Dashboard'),
+		component: loadComponent('super-admin/SuperAdminManage'),
         beforeEnter: (to, from, next) => {
             $user.checkSuperAdmin(next);
         },
@@ -42,12 +41,12 @@ const routes = [
 			{
 				path: '/',
 				name: 'superAdminDashboard',
-				component: () => import('@/views/super-admin/SuperAdminDashboard')
+				component: loadComponent('super-admin/SuperAdminDashboard')
 			},
 			{
 				name: 'superAdminSchools',
 				path: 'schools',
-				component: () => import('@/views/super-admin/Schools')
+				component: loadComponent('super-admin/Schools')
 			},
 			{
 				name: 'superSchoolAdmin',
@@ -105,7 +104,7 @@ const routes = [
     // SCHOOL-ADMIN
 	{
 		path: '/school-admin',
-		component: SchoolAdminManage,
+		component: loadComponent('school-admin/SchoolAdminManage'),
         beforeEnter: (to, from, next) => {
             $user.checkSchoolAdmin(next);
         },
