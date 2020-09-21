@@ -167,7 +167,7 @@
                 gradeReasons: [],
                 gradeMonthFrom: new Date().getMonth(),
                 gradeMonthTo: new Date().getMonth() + 1,
-                scheduleMonthNumber: new Date().getMonth() + 2,
+                scheduleMonthNumber: new Date().getMonth() + 1,
                 allCourses: [],
                 topics: [],
                 topicPage: 0
