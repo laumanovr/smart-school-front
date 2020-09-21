@@ -2,7 +2,7 @@
 	<div class="dashboard">
 		<SuperAdminHeader>
 			<template v-slot:title>Министерство Образования Кыргызской Республики</template>
-			<template v-slot:userName>Азамат Жеенбеков</template>
+			<template v-slot:userName>Супер Админ</template>
 		</SuperAdminHeader>
 		<div class="dashboard__container">
 			<super-admin-sidebar />
@@ -17,7 +17,7 @@
 import SuperAdminSidebar from '@/components/navigations/sidebars/AdminSidebar'
 import SuperAdminHeader from '@/components/navigations/sidebars/SuperAdminHeader'
 export default {
-  name: 'Dashboard',
+  name: 'SuperAdminManage',
   components: { SuperAdminHeader, SuperAdminSidebar },
   computed: {
       userProfile () {
