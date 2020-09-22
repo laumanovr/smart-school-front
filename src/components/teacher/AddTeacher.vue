@@ -45,16 +45,7 @@
         <div class="spacer">
             <v-text-field label="Номер телефона" v-model="user.phone"></v-text-field>
         </div>
-        <div>
-            <v-select
-                :items="courses"
-                :rules="required"
-                item-text="courseTitle"
-                item-value="id"
-                label="Предметы"
-                v-model="user.courseId"
-            ></v-select>
-        </div>
+
         <div class="form-footer">
             <div class="btn-actions">
                 <v-btn color="primary" type="submit">Сохранить</v-btn>
@@ -71,7 +62,6 @@ import {RoleService} from '@/_services/role.service'
 import {LanguageService} from '@/_services/language.service'
 import {CourseService} from '@/_services/course.service'
 import {InstructorCourseService} from '@/_services/instructor-course.service'
-
 const instructorCourseService = new InstructorCourseService()
 const courseService = new CourseService()
 const languageService = new LanguageService()
@@ -98,7 +88,6 @@ export default {
             v => !!v || 'Input is required'
         ],
         menu2: false,
-        courses: [],
     }),
     computed: {
         userProfile() {
@@ -109,9 +98,8 @@ export default {
         },
     },
     mounted() {
-        this.fetchRoles()
-        this.fetchLanguages()
-        this.fetchCourses()
+        this.fetchRoles();
+        this.fetchLanguages();
     },
     methods: {
         fetchRoles() {
@@ -124,16 +112,12 @@ export default {
                 this.languages = res
             }).catch(err => console.log(err))
         },
-        fetchCourses() {
-            courseService.listBySchool(this.userProfile.schools[0].id).then(res => {
-                this.courses = res
-            }).catch(err => console.log(err))
-        },
+
         submit() {
             if (this.$refs.form.validate()) {
-                this.user.roles = this.roles.filter(i => i.code === 'ROLE_INSTRUCTOR').map(i => i.id)
-                this.user.dob = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY')
-                this.user.schoolId = this.userProfile.schools[0].id
+                this.user.roles = this.roles.filter(i => i.code === 'ROLE_INSTRUCTOR').map(i => i.id);
+                this.user.dob = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY');
+                this.user.schoolId = this.userProfile.schools[0].id;
                 if (this.isEdit) {
                     this.personEdit(this.user)
                 } else {
@@ -143,53 +127,16 @@ export default {
         },
         personCreate(data) {
             personService.create(data).then(res => {
-                if (res.success) {
-                    const courseData = {
-                        archived: false,
-                        courseId: this.user.courseId,
-                        personId: res.message,
-                        schoolId: this.userProfile.schools[0].id
-                    }
-                    this.courseCreate(courseData)
-                } else {
-                    this.$toast.error(res.message)
-                }
-            }).catch(err => console.log(err))
+                this.$toast.success('Успешно создано!');
+                this.$emit('close');
+            }).catch(err => this.$toast.error(err));
         },
         personEdit(data) {
             personService.edit(data).then(res => {
-                if (res.success) {
-                    const courseData = {
-                        archived: false,
-                        courseId: this.user.courseId,
-                        personId: data.id,
-                        schoolId: this.userProfile.schools[0].id
-                    }
-                    this.courseEdit(courseData)
-                } else {
-                    this.$toast.error(res.message)
-                }
-            }).catch(err => console.log(err))
+                this.$toast.success('Успешно обновлено!');
+                this.$emit('close');
+            }).catch(err => this.$toast.error(err));
         },
-        courseCreate(data) {
-            instructorCourseService.create(data).then(res => {
-                this.$toast.success('Успешно создано!')
-                this.$emit('close')
-            }).catch(err => console.log(err))
-        },
-        courseEdit(data) {
-            instructorCourseService.listByInstructor(data.personId).then(res => {
-                if (res._embedded) {
-                    data.id = res._embedded.instructorCourseResourceList[0].id;
-                    return instructorCourseService.edit(data);
-                } else {
-                    return instructorCourseService.create(data);
-                }
-            }).then(res => {
-                this.$toast.success('Успешно обновлено!')
-                this.$emit('close')
-            }).catch(err => console.log(err))
-        }
     }
 }
 </script>
