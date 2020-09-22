@@ -232,16 +232,16 @@
             },
 
             deleteClass () {
-                instructorClassService._delete(this.sendObj.id).then(res => {
-                    this.fetchAllClasses()
-                    this.$toast.success('Успешно');
-                    this.isDeleting = false
-                    // return SchoolClassService._delete(this.sendObj.classId);
-                })
-                .catch(err => {
-                    this.isDeleting = false
+                instructorClassService._delete(this.sendObj.id).then(() => {
+                     SchoolClassService._delete(this.sendObj.classId).then(() => {
+                         this.isDeleting = false;
+                         this.$toast.success('Успешно');
+                         this.fetchAllClasses();
+                     }).catch((err) => {
+                        this.$toast.error(err);
+                     });
+                }).catch(err => {
                     this.$toast.error(err);
-                    console.log(err)
                 });
             },
 
