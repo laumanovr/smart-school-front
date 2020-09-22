@@ -45,6 +45,7 @@
                 <th>Логин</th>
                 <th><img alt="" src="../../assets/images/icons/plus.svg"></th>
                 <th></th>
+                <th></th>
             </template>
 
             <template v-slot:body="{ item }">
@@ -54,6 +55,7 @@
                 <td>{{ item.username }}</td>
                 <td @click="editUser(item)" class="actions"><img alt="" src="../../assets/images/icons/pen.svg"></td>
                 <td><CourseIcon @click="addCourseModal(item)"/></td>
+                <td><TrashIcon @click="deleteTeacher(item, true)"/></td>
             </template>
         </SmartTable>
         <v-dialog
@@ -103,6 +105,17 @@
                 </div>
             </div>
         </modal>
+
+        <!--DELETE TEACHER MODAL-->
+        <modal name="delete-teacher-modal" height="200px">
+            <div class="modal-container">
+                <h4>Вы действительно хотите удалить?</h4>
+                <div class="btn-actions">
+                    <v-btn color="primary" @click="$modal.hide('delete-teacher-modal')">Отмена</v-btn>
+                    <v-btn color="red" @click="deleteTeacher('', '')">Удалить</v-btn>
+                </div>
+            </div>
+        </modal>
     </div>
 </template>
 
@@ -127,6 +140,7 @@ import InstructorService from "@/_services/instructor.service";
 import PreLoader from "@/components/preloader/PreLoader";
 import CourseIcon from '@/components/icons/CourseIcon';
 import DeleteIcon from '@/components/icons/DeleteIcon';
+import TrashIcon from '@/components/icons/TrashIcon';
 import {CourseService} from '@/_services/course.service';
 const courseService = new CourseService();
 
@@ -138,6 +152,7 @@ export default {
         ExcelJs,
         CourseIcon,
         DeleteIcon,
+        TrashIcon,
         SmartSelect, SmartBtn2, SmartSearchInput, SmartButton, AddTeacher, SuperAdminSchoolHead, SmartTable},
     data: () => ({
         required: [v => !!v || 'Обязательное поле'],
@@ -164,7 +179,8 @@ export default {
             personId: 0,
             schoolId: 0
         },
-        selectedCourseCode: ''
+        selectedCourseCode: '',
+        deleteTeacherId: ''
     }),
     computed: {
         userProfile() {
@@ -347,6 +363,23 @@ export default {
                     this.$toast.error(err);
                     this.isLoading = false;
                 });
+            }
+        },
+
+        deleteTeacher(teacher, confirm) {
+            if (confirm) {
+                this.deleteTeacherId = teacher.id;
+                this.$modal.show('delete-teacher-modal');
+            } else {
+                this.isLoading = true;
+                InstructorService.deleteInstructor(this.deleteTeacherId).then(() => {
+                    this.$modal.hide('delete-teacher-modal');
+                    this.$toast.success('Успешно удалено!');
+                    this.fetchInstructors();
+                }).catch((err) => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                })
             }
         },
 

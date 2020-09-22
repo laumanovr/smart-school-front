@@ -15,6 +15,11 @@ export class InstructorService extends BaseApiService {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/response/list`;
         return this.sendPostRequest(url, body);
     }
+
+    deleteInstructor(personId) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/person/${personId}`;
+        return this.sendDeleteRequest(url);
+    }
 }
 
 export default new InstructorService()
