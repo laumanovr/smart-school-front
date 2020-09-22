@@ -15,6 +15,8 @@
             padding: 3px;
             border-radius: 5px;
             background: #90a1ff;
+            width: 100%;
+            height: 100%;
         }
     }
 </style>
