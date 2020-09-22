@@ -83,7 +83,7 @@
         </v-dialog>
 
         <!--DELETE SCHOOL ADMIN MODAL-->
-        <modal name="school-admin-delete">
+        <modal name="school-admin-delete" height="230px">
             <div class="modal-container">
                 <h4>Вы действительно хотите удалить?</h4>
                 <h4>{{ deleteAdmin.name }}</h4>
