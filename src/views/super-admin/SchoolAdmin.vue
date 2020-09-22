@@ -79,7 +79,9 @@
             v-model="isAddAdmin"
             width="546"
         >
-            <AddSchoolAdmin @close="onCloseModal"></AddSchoolAdmin>
+            <template v-if="isAddAdmin">
+                <AddSchoolAdmin :selectedAdmin="selectedPerson" @close="onCloseModal"></AddSchoolAdmin>
+            </template>
         </v-dialog>
 
         <!--DELETE SCHOOL ADMIN MODAL-->
@@ -127,8 +129,7 @@ export default {
     data: () => ({
         isAddAdmin: false,
         users: [],
-	    isEdit: false,
-	    user: {},
+        selectedPerson: {},
         totalPages: 1,
         isLoading: false,
         schoolPage: 0,
@@ -155,6 +156,7 @@ export default {
     methods: {
         onAddAdmin() {
             this.isAddAdmin = true;
+            this.selectedPerson = {};
         },
 
         onCloseModal() {
@@ -239,19 +241,29 @@ export default {
             }
         },
 
-        onEdit(item) {
-            personService.getById(item.id).then(res => {
-	            this.isEdit = false
-	            this.user = {
-	            	name: res.firstName,
-		            surname: res.lastName,
-		            middleName: res.middleName,
-		            dob: res.dateOfBirth,
-		            gender: res.gender,
-		            email: res.email,
-		            phone: res.phone,
-	            }
-            }).catch(err => console.log(err))
+        onEdit(user) {
+            this.isLoading = true;
+            personService.getById(user.id).then((res) => {
+                this.selectedPerson = {
+                    id: res.id,
+                    name: res.firstName,
+                    surname: res.lastName,
+                    middleName: res.middleName,
+                    dob: res.dateOfBirth,
+                    gender: res.gender,
+                    email: res.email,
+                    phone: res.phone,
+                    address: res.address,
+                    schoolId: res.schools[0],
+                    pin: res.pin,
+                    languageId: res.languageId
+                };
+                this.isAddAdmin = true;
+                this.isLoading = false;
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.isLoading = false;
+            })
         },
 
         removeSchoolAdmin(user, confirm) {
