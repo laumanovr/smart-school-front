@@ -62,6 +62,7 @@
                 <th>Район</th>
                 <th>Логин</th>
                 <th><img alt="" src="../../assets/images/icons/plus.svg"></th>
+                <th></th>
             </template>
 
             <template v-slot:body="{ item }">
@@ -70,6 +71,7 @@
                 <td>{{ item.rayonTitle }}</td>
                 <td>{{ item.username }}</td>
                 <td><img class="clickable-icons" @click="onEdit(item)" alt="" src="../../assets/images/icons/pen.svg"></td>
+                <td><TrashIcon @click="removeSchoolAdmin(item, true)"/></td>
             </template>
         </SmartTable>
         <v-dialog
@@ -79,6 +81,18 @@
         >
             <AddSchoolAdmin @close="onCloseModal"></AddSchoolAdmin>
         </v-dialog>
+
+        <!--DELETE SCHOOL ADMIN MODAL-->
+        <modal name="school-admin-delete">
+            <div class="modal-container">
+                <h4>Вы действительно хотите удалить?</h4>
+                <h4>{{ deleteAdmin.name }}</h4>
+                <div class="btn-actions">
+                    <v-btn color="primary" @click="$modal.hide('school-admin-delete')">Отмена</v-btn>
+                    <v-btn color="red" @click="removeSchoolAdmin('', false)">Удалить</v-btn>
+                </div>
+            </div>
+        </modal>
     </div>
 </template>
 
@@ -125,6 +139,10 @@ export default {
         },
         filteredRayons: [],
         filteredSchools: [],
+        deleteAdmin: {
+            id: '',
+            name: '',
+        }
     }),
     computed: {
         currentRegions() {
@@ -146,10 +164,13 @@ export default {
 
         fetchSchoolAdmins() {
             this.isLoading = true;
-            personService.list(this.filterObj.regionId, this.filterObj.rayonId, this.filterObj.schoolId).then(res => {
+            personService.listSchoolAdmins(this.filterObj.regionId, this.filterObj.rayonId, this.filterObj.schoolId).then(res => {
                 this.users = res;
                 this.isLoading = false;
-            }).catch(err => console.log(err))
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.isLoading = false;
+            })
         },
 
         fetchRayonsByRegion(regionId) {
@@ -231,6 +252,24 @@ export default {
 		            phone: res.phone,
 	            }
             }).catch(err => console.log(err))
+        },
+
+        removeSchoolAdmin(user, confirm) {
+            if (confirm) {
+                this.deleteAdmin.id = user.id;
+                this.deleteAdmin.name = `${user.surname} ${user.name}`;
+                this.$modal.show('school-admin-delete');
+            } else {
+                this.isLoading = true;
+                personService.deleteSchoolAdmin(this.deleteAdmin.id).then(() => {
+                    this.$toast.success('Успешно удалено!');
+                    this.$modal.hide('school-admin-delete');
+                    this.fetchSchoolAdmins();
+                }).catch((err) => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                })
+            }
         }
     }
 }
