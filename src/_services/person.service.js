@@ -10,11 +10,6 @@ export  class PersonService extends BaseApiService {
         return this.sendGetRequest(url);
     }
 
-    // _delete (id) {
-    //     const url = `${process.env.VUE_APP_BASE_URL}/v1/chronicle/${id}`;
-    //     return this.sendDeleteRequest(url);
-    // }
-
     create (data) {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/person/create`;
         return this.sendPostRequest(url, data);
@@ -25,9 +20,14 @@ export  class PersonService extends BaseApiService {
         return this.sendPostRequest(url, data);
     }
 
-    list (regionId='', rayonId='', schoolId='') {
+    listSchoolAdmins (regionId='', rayonId='', schoolId='') {
         const baseUrl = `${process.env.VUE_APP_BASE_URL}/v1/person/list-school-admin`;
         const url = baseUrl + `?regionId=${regionId}&rayonId=${rayonId}&schoolId=${schoolId}`;
         return this.sendGetRequest(url);
+    }
+
+    deleteSchoolAdmin(personId) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/person/${personId}`;
+        return this.sendDeleteRequest(url);
     }
 }
