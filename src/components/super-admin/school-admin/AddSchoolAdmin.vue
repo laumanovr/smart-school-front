@@ -1,7 +1,7 @@
 <template>
     <v-form @submit.prevent="submit" ref="form">
         <div class="form-head">
-            <span>Добавить администратора</span>
+            <span>{{isEdit ? 'Редактировать' : 'Добавить администратора' }}</span>
             <img alt="" src="../../../assets/images/profile-icon.svg">
             <button class="profile-edit">
                 <img src="../../../assets/images/icons/edit.svg">
@@ -15,6 +15,9 @@
         </div>
         <div>
             <v-text-field label="Отчество" v-model="schoolAdmin.middleName"></v-text-field>
+        </div>
+        <div>
+            <v-text-field label="ПИН/ИНН" v-model="schoolAdmin.pin" type="number" :rules="required"></v-text-field>
         </div>
         <div>
             <v-radio-group :mandatory="false" :rules="required" row v-model="schoolAdmin.gender">
@@ -81,16 +84,15 @@
 </template>
 
 <script>
-import { PersonService } from '@/_services/person.service'
-import { SchoolService } from '@/_services/school.service'
-import { LanguageService } from '@/_services/language.service'
-import moment from 'moment'
-import { RoleService } from '@/_services/role.service'
-
-const roleService = new RoleService()
-const languageService = new LanguageService()
-const schoolService = new SchoolService()
-const personService = new PersonService()
+import { PersonService } from '@/_services/person.service';
+import { SchoolService } from '@/_services/school.service';
+import { LanguageService } from '@/_services/language.service';
+import moment from 'moment';
+import { RoleService } from '@/_services/role.service';
+const roleService = new RoleService();
+const languageService = new LanguageService();
+const schoolService = new SchoolService();
+const personService = new PersonService();
 
 export default {
   name: 'AddSchoolAdmin',
@@ -98,8 +100,10 @@ export default {
     role: {
       type: String,
       default: 'ROLE_ADMIN'
-    }
+    },
+    selectedAdmin: Object
   },
+
   data: () => ({
     schoolAdmin: {
       enabled: true,
@@ -115,11 +119,20 @@ export default {
     roles: [],
     page: 0
   }),
-  mounted () {
+
+  computed: {
+      isEdit() {
+          return Object.values(this.selectedAdmin).length > 0;
+      }
+  },
+
+  mounted() {
     this.fetchSchools();
     this.fetchLanguages();
     this.fetchRoles();
+    this.schoolAdmin = this.isEdit ? this.selectedAdmin : this.schoolAdmin;
   },
+
   methods: {
     addScrollListenerSchoolSelect() {
         this.$nextTick(() => {
@@ -171,12 +184,24 @@ export default {
 
     submit () {
       if (this.$refs.form.validate()) {
-        this.schoolAdmin.roles = this.roles.filter(i => i.code === this.role).map(i => i.id)
-        this.schoolAdmin.dob = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY')
-        personService.create(this.schoolAdmin).then(res => {
-          this.$toast.success('Успешно создано!')
-          this.$emit('close')
-        }).catch(err => console.log(err))
+        this.schoolAdmin.roles = this.roles.filter(i => i.code === this.role).map(i => i.id);
+        this.schoolAdmin.dob = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY');
+
+        if (this.isEdit) {
+            personService.edit(this.schoolAdmin).then(() => {
+                this.$toast.success('Успешно обновлено!');
+                this.$emit('close')
+            }).catch((err) => {
+                this.$toast.error(err);
+            })
+        } else {
+            personService.create(this.schoolAdmin).then(() => {
+                this.$toast.success('Успешно создано!');
+                this.$emit('close')
+            }).catch((err) => {
+                this.$toast.error(err);
+            })
+        }
       }
     }
   }
