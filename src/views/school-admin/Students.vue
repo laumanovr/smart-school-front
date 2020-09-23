@@ -86,6 +86,7 @@
 					<v-text-field v-model="studentObj.name" :rules="required" label="Имя"></v-text-field>
 					<v-text-field v-model="studentObj.surname" :rules="required" label="Фамилия"></v-text-field>
 					<v-text-field v-model="studentObj.middleName" :rules="required" label="Отчество"></v-text-field>
+                    <v-text-field v-model="studentObj.pin" :rules="required" label="ПИН/ИНН"></v-text-field>
 				</div>
 
 				<div>
@@ -537,10 +538,11 @@ export default {
 				this.studentObj.surname = item.surname;
 				this.studentObj.id = item.id;
 				this.studentObj.gender = item.gender === 0 ? 'MALE' : 'FEMALE';
-				this.parentPersonObj.name = res.parents && res.parents.length ? res.parents[0].parentTitle : ''
-				this.studentObj.phone = res.phone
-				this.isAddStudentModal = true
-				this.isStudentEdit = true
+				this.parentPersonObj.name = res.parents && res.parents.length ? res.parents[0].parentTitle : '';
+				this.studentObj.phone = res.phone;
+				this.studentObj.pin = res.pin;
+				this.isAddStudentModal = true;
+				this.isStudentEdit = true;
 			}).catch(err => console.log(err))
 		},
 
