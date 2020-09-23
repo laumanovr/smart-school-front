@@ -18,6 +18,9 @@
             <v-text-field label="Отчество" v-model="user.middleName"></v-text-field>
         </div>
         <div>
+            <v-text-field :rules="required" label="ПИН/ИНН" v-model="user.pin" type="number"></v-text-field>
+        </div>
+        <div>
             <v-radio-group :mandatory="false" :rules="required" row v-model="user.gender">
                 <v-radio label="М" value="MALE"></v-radio>
                 <v-radio label="Ж" value="FEMALE"></v-radio>
@@ -35,11 +38,11 @@
                         label="Дата рождения"
                         readonly
                         v-bind="attrs"
-                        v-model="birthday"
+                        v-model="user.birthday"
                         v-on="on"
                     ></v-text-field>
                 </template>
-                <v-date-picker @input="menu2 = false" v-model="birthday"></v-date-picker>
+                <v-date-picker @input="onSelectDate" v-model="birthday"></v-date-picker>
             </v-menu>
         </div>
         <div class="spacer">
@@ -81,7 +84,7 @@ export default {
         }
     },
     data: () => ({
-        birthday: '1970-2-11',
+        birthday: '1970-10-11',
         roles: [],
         languages: [],
         required: [
@@ -93,15 +96,25 @@ export default {
         userProfile() {
             return this.$store.state.account.profile
         },
-        birthDay() {
-            return moment(this.user.birthday).isValid() ? this.user.birthday : '1970-2-11';
-        },
+//        birthDay() {
+//            return moment(this.user.birthday).isValid() ? this.user.birthday : '1970-2-11';
+//        },
     },
     mounted() {
         this.fetchRoles();
         this.fetchLanguages();
+        if (this.isEdit) {
+            this.birthday = moment(this.user.birthday, 'DD.MM.YYYY').format('YYYY-MM-DD');
+        } else {
+            this.user.birthday = '11.10.1970';
+        }
     },
     methods: {
+        onSelectDate() {
+            this.menu2 = false;
+            this.user.birthday = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY');
+        },
+
         fetchRoles() {
             roleService.listPageable(0).then(res => {
                 this.roles = res
