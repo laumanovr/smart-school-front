@@ -536,6 +536,7 @@ export default {
 				this.studentObj.classId = item.classId;
 				this.studentObj.name = item.name;
 				this.studentObj.surname = item.surname;
+				this.studentObj.middleName = item.middleName;
 				this.studentObj.id = item.id;
 				this.studentObj.gender = item.gender === 0 ? 'MALE' : 'FEMALE';
 				this.parentPersonObj.name = res.parents && res.parents.length ? res.parents[0].parentTitle : '';
