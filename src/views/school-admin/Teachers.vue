@@ -285,8 +285,9 @@ export default {
                     gender: res.gender,
                     phone: res.phone,
                     courseId: item.courseId,
-                    birthday: moment(res.dateOfBirth, 'DD.MM.YYYY').format('YYYY-MM-DD')
-                }
+                    pin: res.pin,
+                    birthday: res.dateOfBirth
+                };
                 this.isAddUser = true;
                 this.isEdit = true;
             }).catch(err => console.log(err));
