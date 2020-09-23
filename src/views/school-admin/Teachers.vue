@@ -375,7 +375,7 @@ export default {
                 InstructorService.deleteInstructor(this.deleteTeacherId).then(() => {
                     this.$modal.hide('delete-teacher-modal');
                     this.$toast.success('Успешно удалено!');
-                    this.fetchInstructors();
+                    this.filterByCourse(this.selectedCourseCode);
                 }).catch((err) => {
                     this.$toast.error(err);
                     this.isLoading = false;
