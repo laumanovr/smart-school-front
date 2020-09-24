@@ -206,6 +206,11 @@ const routes = [
                 component: loadComponent('instructor/InstructorJournalGrade')
             },
             {
+                name: 'instructorOnlineLesson',
+                path: 'online-lesson',
+                component: loadComponent('instructor/InstructorOnlineLesson')
+            },
+            {
                 name: 'instructorMessage',
                 path: 'message',
                 component: SuperAdminEmpty // Временно
