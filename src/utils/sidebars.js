@@ -145,6 +145,11 @@ export const instructorSidebars = [
 		icon: 'schedule.svg',
 		route: '/instructor-page/schedule'
 	},
+    {
+        name: 'Онлайн Урок',
+        icon: 'videocam.svg',
+        route: '/instructor-page/online-lesson'
+    },
 	{
 		name: 'Сообщения',
 		icon: 'message.svg',
