@@ -9,6 +9,7 @@
     "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'"
   },
   "dependencies": {
+    "@mycure/vue-jitsi-meet": "^0.0.7",
     "core-js": "^3.6.5",
     "exceljs": "^4.1.1",
     "file-saver": "^2.0.2",
