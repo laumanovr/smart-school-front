@@ -55,8 +55,11 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-for="student in studentGrades" :key="student.student.id">
-                        <td>{{student.student.surname}} {{ student.student.name }}</td>
+                    <tr v-for="(student, i) in studentGrades" :key="student.student.id">
+                        <td>
+                            <span class="index">{{i+1}}.</span>
+                            <span class="name">{{student.student.surname}} {{ student.student.name }}</span>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
@@ -465,6 +468,17 @@
                     }
                     td {
                         white-space: nowrap;
+                        display: flex;
+                        align-items: center;
+                        border-right: 0;
+                        .index {
+                            width: 10%;
+                            text-align: left;
+                        }
+                        .name {
+                            width: 90%;
+                            text-align: center;
+                        }
                     }
                 }
                 table.grades {
