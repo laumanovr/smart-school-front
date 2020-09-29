@@ -17,7 +17,14 @@
             <v-text-field label="Отчество" v-model="schoolAdmin.middleName"></v-text-field>
         </div>
         <div>
-            <v-text-field label="ПИН/ИНН" v-model="schoolAdmin.pin" type="number" :rules="required"></v-text-field>
+            <v-text-field
+                label="ПИН/ИНН"
+                v-model="schoolAdmin.pin"
+                type="number"
+                counter="14"
+                :rules="required"
+                @input="limitNumbers(schoolAdmin, 'pin', 14)"
+            />
         </div>
         <div>
             <v-radio-group :mandatory="false" :rules="required" row v-model="schoolAdmin.gender">
@@ -84,6 +91,7 @@
 </template>
 
 <script>
+import { limitNumbers } from '@/utils/limit-numbers';
 import { PersonService } from '@/_services/person.service';
 import { SchoolService } from '@/_services/school.service';
 import { LanguageService } from '@/_services/language.service';
@@ -134,6 +142,8 @@ export default {
   },
 
   methods: {
+    limitNumbers: limitNumbers,
+
     addScrollListenerSchoolSelect() {
         this.$nextTick(() => {
             const schoolSelect = document.querySelector('.v-menu__content');
