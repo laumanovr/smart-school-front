@@ -158,7 +158,7 @@ export default {
         required: [v => !!v || 'Обязательное поле'],
         isAddUser: false,
         instructors: [],
-        user: {},
+        user: {pin: ''},
         isEdit: false,
         exportName: '',
         exportRows: [],

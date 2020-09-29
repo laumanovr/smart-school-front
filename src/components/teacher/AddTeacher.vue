@@ -18,7 +18,14 @@
             <v-text-field label="Отчество" v-model="user.middleName"></v-text-field>
         </div>
         <div>
-            <v-text-field :rules="required" label="ПИН/ИНН" v-model="user.pin" type="number"></v-text-field>
+            <v-text-field
+                label="ПИН/ИНН"
+                v-model="user.pin"
+                type="number"
+                counter="14"
+                :rules="required"
+                @input="limitNumbers(user, 'pin', 14)"
+            />
         </div>
         <div>
             <v-radio-group :mandatory="false" :rules="required" row v-model="user.gender">
@@ -59,6 +66,7 @@
 </template>
 
 <script>
+import { limitNumbers } from '@/utils/limit-numbers';
 import {PersonService} from '@/_services/person.service'
 import moment from 'moment'
 import {RoleService} from '@/_services/role.service'
@@ -110,6 +118,8 @@ export default {
         }
     },
     methods: {
+        limitNumbers: limitNumbers,
+
         onSelectDate() {
             this.menu2 = false;
             this.user.birthday = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY');
