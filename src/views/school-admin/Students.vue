@@ -86,7 +86,14 @@
 					<v-text-field v-model="studentObj.name" :rules="required" label="Имя"></v-text-field>
 					<v-text-field v-model="studentObj.surname" :rules="required" label="Фамилия"></v-text-field>
 					<v-text-field v-model="studentObj.middleName" :rules="required" label="Отчество"></v-text-field>
-                    <v-text-field v-model="studentObj.pin" :rules="required" label="ПИН/ИНН"></v-text-field>
+                    <v-text-field
+                        label="ПИН/ИНН"
+                        v-model="studentObj.pin"
+                        type="number"
+                        counter="14"
+                        :rules="required"
+                        @input="limitNumbers"
+                    />
 				</div>
 
 				<div>
@@ -165,17 +172,18 @@
 
 		<v-dialog v-model="showDetailModal" width="546">
 			<v-form>
-				<div class="form-head">
+				<div class="form-head head-title">
 					<h2>Полная информация</h2>
 				</div>
-				<v-text-field v-model="studentDetail.username" label="Логин и Пароль" readonly type="text"/>
-				<v-text-field v-model="studentDetail.name" label="Имя" readonly type="text"/>
-				<v-text-field v-model="studentDetail.surname" label="Фамилия" readonly type="text"/>
-				<v-text-field v-model="studentDetail.phone" label="Телефон" readonly type="text"/>
+				<v-text-field v-model="studentDetail.username" label="Логин и Пароль" readonly outlined type="text"/>
+				<v-text-field v-model="studentDetail.name" label="Имя" readonly outlined type="text"/>
+				<v-text-field v-model="studentDetail.surname" label="Фамилия" readonly outlined type="text"/>
+				<v-text-field v-model="studentDetail.middleName" label="Отчество" readonly outlined type="text"/>
+				<v-text-field v-model="studentDetail.phone" label="Телефон" readonly outlined type="text"/>
 				<v-text-field
                     :value="studentDetail.parents && studentDetail.parents.length ? studentDetail.parents[0].parentTitle : ''"
 				    label="Имя родителя"
-				    readonly type="text"
+				    readonly outlined type="text"
                 />
                 <div class="course-titles">
                     <div class="label">Предметы</div>
@@ -398,6 +406,14 @@ export default {
 	},
 
 	methods: {
+        limitNumbers(inputValue) {
+            if (inputValue.length > 14) {
+                setTimeout(() => {
+                    this.studentObj.pin = inputValue.slice(0, 14);
+                }, 30)
+            }
+        },
+
 		showCourseName(obj) {
 		    if (obj.courseCode) {
                 return this.$t(`adminCourses.${obj.courseCode}`) + ' - ' + obj.instructorTitle;
@@ -814,6 +830,10 @@ export default {
         font-size: 13px;
         color: #838080;
     }
+}
+
+.head-title {
+    margin-bottom: 20px;
 }
 
 .v-form {
