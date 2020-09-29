@@ -92,7 +92,7 @@
                         type="number"
                         counter="14"
                         :rules="required"
-                        @input="limitNumbers"
+                        @input="limitNumbers(studentObj, 'pin', 14)"
                     />
 				</div>
 
@@ -246,6 +246,7 @@
 </template>
 
 <script>
+import { limitNumbers } from '@/utils/limit-numbers';
 import SuperAdminSchoolHead from '@/components/super-admin/schools/SuperAdminSchoolHead';
 import SmartTable from '@/components/table/SmartTable';
 import SmartButton from '@/components/button/SmartButton';
@@ -406,13 +407,7 @@ export default {
 	},
 
 	methods: {
-        limitNumbers(inputValue) {
-            if (inputValue.length > 14) {
-                setTimeout(() => {
-                    this.studentObj.pin = inputValue.slice(0, 14);
-                }, 30)
-            }
-        },
+        limitNumbers: limitNumbers,
 
 		showCourseName(obj) {
 		    if (obj.courseCode) {
