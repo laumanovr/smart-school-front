@@ -34,4 +34,9 @@ export  class InstructorCourseService extends BaseApiService {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/course/list/school/${id}?size=500`;
         return this.sendGetRequest(url);
     }
+
+    getAllWithoutPagination(schoolId) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/course/list/school/interface/${schoolId}`;
+        return this.sendGetRequest(url);
+    }
 }
