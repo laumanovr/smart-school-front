@@ -14,5 +14,10 @@ export class StudentCourseService extends BaseApiService {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/student-course/list/student/${studentId}`;
         return this.sendGetRequest(url);
     }
+
+    deleteWithArray(data) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/student-course/remove-massive`;
+        return this.sendPostRequest(url, data);
+    }
 }
 export default new StudentCourseService();
