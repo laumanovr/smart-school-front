@@ -187,39 +187,49 @@
 		</v-dialog>
 
 		<!--ADD COURSE MODAL-->
-		<modal name="course-modal" height="auto">
-			<div class="modal-container">
-                <v-form ref="addCourseForm">
-				<h4>Добавить предмет</h4>
-				<div>
-					<v-select
-						v-model="studentObj.classId"
-						:items="students"
-						:rules="required"
-						item-text="classTitle"
-						item-value="classId"
-						label="Класс"
-					>
-					</v-select>
-				</div>
-				<div>
-					<v-select
-                        :error="emptyInstrCourse"
-						v-model="instrCourseObj"
-						:item-text="showCourseName"
-						:items="instrCourses"
-						:rules="required"
-						label="Предмет"
-						return-object
-					>
-					</v-select>
-				</div>
-				<div class="btn-actions">
-					<v-btn color="primary" @click="submitAddCourseToStudents">Сохранить</v-btn>
-                    <v-btn color="red" @click="$modal.hide('course-modal')">Отмена</v-btn>
-				</div>
-                </v-form>
-			</div>
+		<modal name="course-modal" width="730px" height="auto" class="add-course-modal">
+            <div class="modal-container">
+                <div class="course-content">
+                    <div class="added-courses">
+                        <h4>Добавленные:</h4>
+                        <div class="course" v-for="(course, i) in studentDetail.courses">
+                            <span class="course-title">{{$t(`adminCourses.${course.courseName}`) + ' - ' + course.instructorTitle}}</span>
+                            <TrashIcon @click="deleteCourseFromClass(course, i)"/>
+                        </div>
+                    </div>
+                    <v-form ref="addCourseForm" class="course-form">
+                        <h4>Добавить предмет</h4>
+                        <div>
+                            <v-select
+                                v-model="studentCourseCreate.classId"
+                                :items="students"
+                                :rules="required"
+                                item-text="classTitle"
+                                item-value="classId"
+                                label="Класс"
+                                @change="onSelectClass"
+                            >
+                            </v-select>
+                        </div>
+                        <div>
+                            <v-select
+                                :error="emptyInstrCourse"
+                                v-model="instrCourseObj"
+                                :item-text="showCourseName"
+                                :items="instrCourses"
+                                :rules="required"
+                                label="Предмет"
+                                return-object
+                            >
+                            </v-select>
+                        </div>
+                        <div class="btn-actions">
+                            <v-btn color="red" @click="$modal.hide('course-modal')">Отмена</v-btn>
+                            <v-btn color="green" @click="submitAddCourseToStudents">Сохранить</v-btn>
+                        </div>
+                    </v-form>
+                </div>
+            </div>
 		</modal>
 	</div>
 </template>
@@ -255,6 +265,8 @@ import {InstructorCourseService} from '@/_services/instructor-course.service';
 const instructorCourseService = new InstructorCourseService();
 import StudentCourseService from '@/_services/student-course.service';
 import InfoIcon from '@/components/icons/InfoIcon';
+import ScheduleWeekService from '@/_services/schedule-week.service';
+import TrashIcon from '@/components/icons/TrashIcon';
 
 export default {
 	components: {
@@ -268,7 +280,8 @@ export default {
 		SmartButton,
 		SuperAdminSchoolHead,
 		SmartTable,
-		InfoIcon
+		InfoIcon,
+        TrashIcon
 	},
 
 	data() {
@@ -344,10 +357,17 @@ export default {
 			pageSize: 0,
 			isDeleting: false,
 			showDetailModal: false,
-			studentDetail: {},
+			studentDetail: {
+			    courses: []
+            },
 			instrCourses: [],
 			instrCourseObj: {},
-			sendStudentCourses: [],
+            studentCourseCreate: {
+                chronicleId: 0,
+                classId: 0,
+                courseId: 0,
+                instructorId: 0
+            },
 			isLoading: false,
 			totalPages: 1,
             emptyInstrCourse: false,
@@ -376,7 +396,9 @@ export default {
 
 	methods: {
 		showCourseName(obj) {
-            return this.$t(`adminCourses.${obj.courseName}`) + ' - ' + obj.instructorTitle;
+		    if (obj.courseCode) {
+                return this.$t(`adminCourses.${obj.courseCode}`) + ' - ' + obj.instructorTitle;
+            }
 		},
 
 		onMassDelete() {
@@ -452,30 +474,67 @@ export default {
 		},
 
 		showDetailInfo(studentId) {
+            this.isLoading = true;
 			studentService.getDetails(studentId).then((res) => {
 				this.studentDetail = res;
-				StudentCourseService.getByStudentId(studentId).then((res) => {
-					this.studentDetail.courses = res;
-					this.showDetailModal = true;
-				}).catch(err => this.$toast.error(err));
-			}).catch(err => this.$toast.error(err));
+		        this.getStudentCourses(studentId);
+                this.showDetailModal = true;
+			}).catch(err => {
+                this.$toast.error(err);
+                this.isLoading = false;
+            })
 		},
+
+        async getStudentCourses(studentId) {
+            await StudentCourseService.getByStudentId(studentId).then((res) => {
+                this.studentDetail.courses = res;
+                this.isLoading = false;
+            }).catch(err => {
+                this.$toast.error(err);
+                this.isLoading = false;
+            })
+        },
+
+        onSelectClass(classId) {
+            this.isLoading = true;
+		    const studentId = this.students.find((student) => student.classId === classId).id;
+		    this.getStudentCourses(studentId);
+        },
 
 		openAddCourseModal() {
 			this.instrCourseObj = {};
-			this.studentObj.classId = '';
-			this.sendStudentCourses = [];
+            this.studentDetail.courses = [];
+			this.studentCourseCreate.classId = '';
             this.emptyInstrCourse = false;
             this.$modal.show('course-modal');
 		},
 
 		fetchInstructorCourses() {
-			instructorCourseService.listBySchool(this.userProfile.schools[0].id).then((res) => {
-				if (res._embedded) {
-					this.instrCourses = res._embedded.instructorCourseResourceList
-				}
-			})
+            ScheduleWeekService.getAllBySchoolAndShift(this.userProfile.schools[0].id, '').then((res) => {
+                this.instrCourses = res;
+            }).catch((err) => {
+                this.$toast.error(err);
+            })
 		},
+
+        deleteCourseFromClass(courseObj, index) {
+            const removeClassCourse = {
+                classId: courseObj.classId,
+                instructorCourseDtos: [{
+                    archived: true,
+                    courseId: courseObj.courseId,
+                    personId: courseObj.instructorId,
+                    schoolId: this.userProfile.schools[0].id
+                }],
+                yearId: this.userProfile.schools[0].chronicleId
+            };
+            StudentCourseService.deleteWithArray(removeClassCourse).then(() => {
+                this.studentDetail.courses.splice(index, 1);
+                this.$toast.success('Удалено!');
+            }).catch((err) => {
+                this.$toast.error(err);
+            });
+        },
 
         submitAddCourseToStudents() {
             if (this.$refs.addCourseForm.validate()) {
@@ -483,20 +542,14 @@ export default {
                     this.emptyInstrCourse = true;
                     return;
                 }
-                this.students.filter(student => student.classId === this.studentObj.classId).forEach((student) => {
-                    let studentCourse = {
-                        archived: false,
-                        chronicleId: this.studentClassObj.chronicleId,
-                        classId: this.studentObj.classId,
-                        courseId: this.instrCourseObj.courseId,
-                        instructorId: this.instrCourseObj.instructorId,
-                        studentId: student.id
-                    };
-                    this.sendStudentCourses.push(studentCourse)
+                this.studentCourseCreate = Object.assign({}, this.studentCourseCreate, {
+                    courseId: this.instrCourseObj.courseId,
+                    instructorId: this.instrCourseObj.instructorId,
+                    chronicleId: this.userProfile.schools[0].chronicleId
                 });
-                StudentCourseService.createBatch(this.sendStudentCourses).then(() => {
+                StudentCourseService.addCourseToClass(this.studentCourseCreate).then(() => {
                     this.$modal.hide('course-modal');
-                    this.$toast.success('Успешно добавлены');
+                    this.$toast.success('Успешно добавлено');
                 }).catch(err => this.$toast.error(err));
             }
         },
@@ -715,6 +768,38 @@ export default {
             &.no-border {
                 .v-select__slot {
                     border: 0;
+                }
+            }
+        }
+    }
+
+    .add-course-modal {
+        .modal-container {
+            .course-content {
+                display: flex;
+                justify-content: center;
+                .added-courses {
+                    border-right: 2px solid #9E9E9E;
+                    padding-right: 25px;
+                    width: 50%;
+                    .course {
+                        display: flex;
+                        align-items: center;
+                        &:not(:last-child) {
+                            border-bottom: 1px solid #c7c6c6;
+                            padding: 5px 0;
+                        }
+                        .course-title {
+                            width: 92%;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            margin-right: 10px;
+                        }
+                    }
+                }
+                .course-form {
+                    width: 50%;
                 }
             }
         }
