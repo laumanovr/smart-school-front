@@ -1,5 +1,6 @@
 <template>
 <div class="school-admin-classes">
+    <PreLoader v-if="isLoading"/>
     <SuperAdminSchoolHead>
         <template v-slot:title>Классы</template>
         <template v-slot:center>
@@ -124,6 +125,7 @@
     import {InstructorClassService} from '@/_services/instructor-class.service';
     import DeletePopup from "@/components/delete-popup/DeletePopup";
     const instructorClassService = new InstructorClassService();
+    import PreLoader from '@/components/preloader/PreLoader';
 
     export default {
         components: {
@@ -133,7 +135,8 @@
             SmartSearchInput,
             SmartButton,
             SuperAdminSchoolHead,
-            SmartTable
+            SmartTable,
+            PreLoader
         },
         data() {
             return {
@@ -167,7 +170,8 @@
                 teachers: [],
                 classInstructors: [],
                 allClasses: [],
-                totalPages: 1
+                totalPages: 1,
+                isLoading: false
             }
         },
 
@@ -188,7 +192,7 @@
         methods: {
             fetchAllClasses() {
                 instructorClassService.getAllClasses(this.userProfile.schools[0].id).then((res) => {
-                    this.classes = res;
+                    this.classes = res.sort((a, b) => a.classLevel - b.classLevel);
                     this.allClasses = res;
                     this.classInstructors = JSON.parse(JSON.stringify(res));
                     this.classInstructors.unshift({personId: 0, personTitle: 'Показать все'});
@@ -232,11 +236,13 @@
             },
 
             deleteClass () {
+                this.isLoading = true;
                 if (this.sendObj.id) {
                     instructorClassService._delete(this.sendObj.id).then(() => {
                         this.deleteSchoolClass();
                     }).catch(err => {
                         this.$toast.error(err);
+                        this.isLoading = false;
                     });
                 } else {
                     this.deleteSchoolClass();
@@ -248,8 +254,10 @@
                     this.isDeleting = false;
                     this.$toast.success('Успешно');
                     this.fetchAllClasses();
+                    this.isLoading = false;
                 }).catch((err) => {
                     this.$toast.error(err);
+                    this.isLoading = false;
                 });
             },
 
