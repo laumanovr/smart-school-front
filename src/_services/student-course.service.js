@@ -5,6 +5,11 @@ export class StudentCourseService extends BaseApiService {
         super();
     }
 
+    addCourseToClass(data) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/student-course/add-course-class`;
+        return this.sendPostRequest(url, data);
+    }
+
     createBatch (data) {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/student-course/batch/create`;
         return this.sendPostRequest(url, data);
