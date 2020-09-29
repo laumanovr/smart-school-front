@@ -232,15 +232,23 @@
             },
 
             deleteClass () {
-                instructorClassService._delete(this.sendObj.id).then(() => {
-                     SchoolClassService._delete(this.sendObj.classId).then(() => {
-                         this.isDeleting = false;
-                         this.$toast.success('Успешно');
-                         this.fetchAllClasses();
-                     }).catch((err) => {
+                if (this.sendObj.id) {
+                    instructorClassService._delete(this.sendObj.id).then(() => {
+                        this.deleteSchoolClass();
+                    }).catch(err => {
                         this.$toast.error(err);
-                     });
-                }).catch(err => {
+                    });
+                } else {
+                    this.deleteSchoolClass();
+                }
+            },
+
+            async deleteSchoolClass() {
+                await SchoolClassService._delete(this.sendObj.classId).then(() => {
+                    this.isDeleting = false;
+                    this.$toast.success('Успешно');
+                    this.fetchAllClasses();
+                }).catch((err) => {
                     this.$toast.error(err);
                 });
             },
