@@ -172,17 +172,20 @@
 				<v-text-field v-model="studentDetail.name" label="Имя" readonly type="text"/>
 				<v-text-field v-model="studentDetail.surname" label="Фамилия" readonly type="text"/>
 				<v-text-field v-model="studentDetail.phone" label="Телефон" readonly type="text"/>
-				<template v-for="course in studentDetail.courses">
-					<v-text-field
-                        :value="$t(`adminCourses.${course.courseName}`) + '-' + course.instructorTitle"
-                        label="Предмет"
-					    readonly type="text"/>
-				</template>
 				<v-text-field
                     :value="studentDetail.parents && studentDetail.parents.length ? studentDetail.parents[0].parentTitle : ''"
 				    label="Имя родителя"
-				    readonly type="text"/>
-				<v-btn color="primary" @click="showDetailModal = false">Закрыть</v-btn>
+				    readonly type="text"
+                />
+                <div class="course-titles">
+                    <div class="label">Предметы</div>
+                    <span v-for="course in studentDetail.courses">
+                        {{$t(`adminCourses.${course.courseName}`)}},
+                    </span>
+                </div>
+                <div class="btn-actions">
+				    <v-btn color="primary" @click="showDetailModal = false">Закрыть</v-btn>
+                </div>
 			</v-form>
 		</v-dialog>
 
@@ -803,6 +806,13 @@ export default {
                 }
             }
         }
+    }
+}
+
+.course-titles {
+    .label {
+        font-size: 13px;
+        color: #838080;
     }
 }
 
