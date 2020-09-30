@@ -532,6 +532,7 @@ export default {
 		},
 
         deleteCourseFromClass(courseObj, index) {
+            this.isLoading = true;
             const removeClassCourse = {
                 classId: courseObj.classId,
                 instructorCourseDtos: [{
@@ -545,8 +546,10 @@ export default {
             StudentCourseService.deleteWithArray(removeClassCourse).then(() => {
                 this.studentDetail.courses.splice(index, 1);
                 this.$toast.success('Удалено!');
+                this.isLoading = false;
             }).catch((err) => {
                 this.$toast.error(err);
+                this.isLoading = false;
             });
         },
 
