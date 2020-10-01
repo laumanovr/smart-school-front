@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import Sidebar from '@/utils/sidebars'
+import Sidebar from '@/utils/sidebars';
 
 export default {
     name: 'Sidebar',
