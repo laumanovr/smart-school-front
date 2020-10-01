@@ -1,13 +1,30 @@
 <template>
     <div class="smart-input">
         <img src="../../assets/images/icons/search.svg" alt="">
-        <input @input="$emit('onTyping', $event.target.value)" @keydown.enter="$emit('onEnter', $event.target.value)" type="text" class="smart-input__input" placeholder="Искать">
+        <input
+            v-model="searchObj[searchField]"
+            @input="$emit('onTyping', $event.target.value)"
+            @keydown.enter="$emit('onEnter', $event.target.value)"
+            type="text" class="smart-input__input" placeholder="Введите слово"
+        >
     </div>
 </template>
 
 <script>
 export default {
-  name: 'SmartSearchInput'
+  name: 'SmartSearchInput',
+    props: {
+      searchObj: {
+          type: Object,
+          default: () => {
+              return {field: ''}
+          }
+      },
+      searchField: {
+          type: String,
+          default: 'field'
+      }
+    }
 }
 </script>
 
