@@ -107,12 +107,11 @@ export default {
         display: flex;
         margin-bottom: 20px;
 	    align-items: center;
-
-        div {
+        & > div {
             margin-right: 15px;
-            &.select-course {
-                margin-right: 30px;
-            }
+        }
+        .select-course {
+            margin-right: 30px;
         }
     }
 
