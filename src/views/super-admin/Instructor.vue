@@ -4,11 +4,9 @@
         <SuperAdminSchoolHead>
             <template v-slot:title>Учителя</template>
             <template v-slot:center>
-                <SmartSearchInput></SmartSearchInput>
+                <SmartSearchInput :searchObj="filterObj.searchRequest" :searchField="'query'"/>
+                <button class="search-btn" @click="searchByFIO">Поиск</button>
             </template>
-            <!--			<template v-slot:right>-->
-            <!--                <SmartButton @clicked="onAddAdmin">Добавить Учителя + </SmartButton>-->
-            <!--			</template>-->
         </SuperAdminSchoolHead>
         <SmartTable
             :schools="instructors"
@@ -101,13 +99,6 @@
                 <td>{{ item.phone }}</td>
             </template>
         </SmartTable>
-        <v-dialog
-            id="add-form"
-            v-model="isAddAdmin"
-            width="546"
-        >
-            <AddSchoolAdmin @close="onCloseModal" role="ROLE_INSTRUCTOR"></AddSchoolAdmin>
-        </v-dialog>
     </div>
 </template>
 
@@ -163,6 +154,7 @@ export default {
                 offset: 0
             },
             searchRequest: {
+                query: '',
                 regionId: '',
                 rayonId: '',
                 schoolId: '',
@@ -255,6 +247,7 @@ export default {
         filterTeachers() {
             this.currentPage = 1;
             this.filterObj.pageRequest.offset = 0;
+            this.filterObj.searchRequest.query = '';
             this.fetchTeachers();
         },
 
@@ -291,6 +284,16 @@ export default {
                this.filterObj.searchRequest.rayonId = '';
                this.filterObj.searchRequest.schoolId = '';
             }
+        },
+
+        searchByFIO() {
+            this.filterObj.searchRequest.regionId = '';
+            this.filterObj.searchRequest.rayonId = '';
+            this.filterObj.searchRequest.schoolId = '';
+            this.filterObj.searchRequest.courseCode = '';
+            this.filterObj.pageRequest.offset = 0;
+            this.currentPage = 1;
+            this.fetchTeachers();
         },
 
         onAddAdmin() {
