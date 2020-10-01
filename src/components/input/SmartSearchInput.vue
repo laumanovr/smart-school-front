@@ -5,7 +5,7 @@
             v-model="searchObj[searchField]"
             @input="$emit('onTyping', $event.target.value)"
             @keydown.enter="$emit('onEnter', $event.target.value)"
-            type="text" class="smart-input__input" placeholder="Введите слово"
+            type="text" class="smart-input__input" placeholder="Искать..."
         >
     </div>
 </template>
