@@ -472,7 +472,7 @@
                         align-items: center;
                         border-right: 0;
                         .index {
-                            width: 10%;
+                            min-width: 20px;
                             text-align: left;
                         }
                         .name {
