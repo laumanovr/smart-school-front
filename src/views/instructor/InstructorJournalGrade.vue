@@ -476,8 +476,7 @@
                             text-align: left;
                         }
                         .name {
-                            width: 90%;
-                            text-align: center;
+
                         }
                     }
                 }
