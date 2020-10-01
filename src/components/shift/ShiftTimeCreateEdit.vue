@@ -18,13 +18,23 @@
                 <div class="time">
                     <label>От</label>
                     <div class="el">
-                        <timeselector v-model="shtime.timeStart"/>
+                        <timeselector
+                            ref="timeStart"
+                            v-model="shtime.timeStart"
+                            :interval="{m: 5}"
+                            @selectedMinute="closeTimePicker('timeStart')"
+                        />
                     </div>
                 </div>
                 <div class="time">
                     <label>До</label>
                     <div class="el">
-                        <timeselector v-model="shtime.timeEnd"/>
+                        <timeselector
+                            ref="timeEnd"
+                            v-model="shtime.timeEnd"
+                            :interval="{m: 5}"
+                            @selectedMinute="closeTimePicker('timeEnd')"
+                        />
                     </div>
                 </div>
                 <DeleteIcon class="delete" @click="deleteShiftTime(shtime)" />
@@ -80,7 +90,11 @@
 
             closeModal() {
                 this.$emit('closeModal');
-            }
+            },
+
+            closeTimePicker(timePicker) {
+                this.$refs[timePicker][0].close();
+            },
         }
     }
 </script>
