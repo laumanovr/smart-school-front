@@ -4,7 +4,8 @@
         <SuperAdminSchoolHead>
             <template v-slot:title>Ученики</template>
             <template v-slot:center>
-                <SmartSearchInput></SmartSearchInput>
+                <SmartSearchInput :searchObj="filterObj" :searchField="'query'"/>
+                <button class="search-btn" @click="searchStudentByFIO">Поиск</button>
             </template>
         </SuperAdminSchoolHead>
         <SmartTable
@@ -122,7 +123,8 @@ export default {
                 schoolId: '',
                 classLevel: '',
                 regionId: '',
-                rayonId: ''
+                rayonId: '',
+                query: ''
             },
             classes: [],
             filteredRayons: [],
@@ -150,7 +152,8 @@ export default {
                 this.filterObj.schoolId,
                 this.filterObj.classLevel,
                 this.filterObj.regionId,
-                this.filterObj.rayonId
+                this.filterObj.rayonId,
+                this.filterObj.query
             ).then(res => {
                 this.pageSize = res.page.size;
                 this.totalElements = res.page.totalElements;
@@ -173,6 +176,7 @@ export default {
         },
 
         filterStudents() {
+            this.filterObj.query = '';
             this.currentPage = 1;
             this.fetchStudents(0);
         },
@@ -207,6 +211,15 @@ export default {
                     this.removeSchoolSelectScrollListener();
                 }
             })
+        },
+
+        searchStudentByFIO() {
+            this.filterObj.schoolId = '';
+            this.filterObj.classLevel = '';
+            this.filterObj.regionId = '';
+            this.filterObj.rayonId = '';
+            this.currentPage = 1;
+            this.fetchStudents(0);
         },
 
         addScrollListenerSchoolSelect() {
