@@ -109,7 +109,10 @@ export default {
 	    align-items: center;
 
         div {
-            margin-right: 25px;
+            margin-right: 15px;
+            &.select-course {
+                margin-right: 30px;
+            }
         }
     }
 

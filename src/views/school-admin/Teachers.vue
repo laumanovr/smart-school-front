@@ -4,10 +4,8 @@
         <SuperAdminSchoolHead>
             <template v-slot:title>Учителя</template>
             <template v-slot:center>
-                <SmartButton @clicked="onAddAdmin">
-                    Добавить Учителя <img alt="" src="../../assets/images/icons/add-user.svg">
-                </SmartButton>
-                <SmartSearchInput></SmartSearchInput>
+                <SmartSearchInput :searchObj="search" :searchField="'query'"/>
+                <button class="search-btn" @click="searchTeacherByFIO">Поиск</button>
             </template>
             <template v-slot:right>
                 <SmartBtn2 @onClick="isAddFile = true">
@@ -37,6 +35,9 @@
                     class="select-course"
                     @change="filterByCourse"
                 ></v-select>
+                <SmartButton @clicked="onAddAdmin">
+                    Добавить Учителя <img alt="" src="../../assets/images/icons/add-user.svg">
+                </SmartButton>
             </template>
             <template v-slot:head>
 	            <th>№</th>
@@ -180,7 +181,10 @@ export default {
             schoolId: 0
         },
         selectedCourseCode: '',
-        deleteTeacherId: ''
+        deleteTeacherId: '',
+        search: {
+            query: ''
+        }
     }),
     computed: {
         userProfile() {
@@ -199,7 +203,13 @@ export default {
         fetchInstructors(page = 0, size = 10) {
             this.isLoading = true;
             this.instructors = [];
-            InstructorService.list(page, this.school.id, this.selectedCourseCode, size).then((res) => {
+            InstructorService.list(
+                page,
+                this.school.id,
+                this.selectedCourseCode,
+                size,
+                this.search.query
+            ).then((res) => {
                 this.totalPages = res.page.totalPages;
                 this.totalElements = res.page.totalElements;
                 this.pageSize = res.page.size;
@@ -228,11 +238,12 @@ export default {
         },
 
         filterByCourse(courseCode) {
+            this.search.query = '';
+            this.currentPage = 1;
             if (courseCode) {
                 this.selectedCourseCode = courseCode;
                 this.fetchInstructors(0);
             } else {
-                this.currentPage = 1;
                 this.selectedCourseCode = '';
                 this.fetchInstructors(0, 1000);
             }
@@ -257,6 +268,12 @@ export default {
                 this.filterSchoolCourses = JSON.parse(JSON.stringify(res.sort((a, b) => a.courseTitle.localeCompare(b.courseTitle))));
                 this.filterSchoolCourses.unshift({courseTitle: 'Показать все', courseCode: ''})
             });
+        },
+
+        searchTeacherByFIO() {
+            this.currentPage = 1;
+            this.selectedCourseCode = '';
+            this.fetchInstructors();
         },
 
         onAddAdmin() {
