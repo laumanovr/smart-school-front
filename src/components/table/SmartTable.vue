@@ -109,7 +109,7 @@ export default {
 	    align-items: center;
 
         div {
-            margin-right: 10px;
+            margin-right: 25px;
         }
     }
 
