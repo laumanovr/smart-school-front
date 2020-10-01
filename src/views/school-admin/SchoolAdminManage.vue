@@ -5,7 +5,7 @@
 			<template v-slot:userName v-if="userProfile.user">{{ userProfile.user.firstName }} {{ userProfile.user.lastName }}</template>
 		</SuperAdminHeader>
 		<div class="school-admin-manage__container">
-			<AdminSidebar type="schoolAdmin"></AdminSidebar>
+			<Sidebar :role="'schoolAdmin'"/>
 			<div class="school-admin-manage__body" id="school-admin-manage__body">
                 <router-view></router-view>
             </div>
@@ -14,11 +14,12 @@
 </template>
 
 <script>
-import SuperAdminHeader from '@/components/navigations/sidebars/SuperAdminHeader'
-import AdminSidebar from '@/components/navigations/sidebars/AdminSidebar'
+import SuperAdminHeader from '@/components/navigations/sidebars/SuperAdminHeader';
+import Sidebar from '@/components/navigations/sidebars/Sidebar';
+
 export default {
   name: 'SchoolAdminManage',
-  components: { AdminSidebar, SuperAdminHeader },
+  components: { Sidebar, SuperAdminHeader },
   computed: {
     userProfile () {
       return this.$store.state.account.profile
