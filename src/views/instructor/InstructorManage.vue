@@ -5,7 +5,7 @@
 			<template v-if="userProfile.user" v-slot:userName>{{ userProfile.user.firstName }} {{ userProfile.user.lastName }}</template>
 		</SuperAdminHeader>
 		<div class="instructor-manage__container">
-			<AdminSidebar type="instructor"></AdminSidebar>
+			<Sidebar :role="'instructor'"/>
 			<div class="instructor-manage__body">
 				<router-view></router-view>
 			</div>
@@ -15,11 +15,11 @@
 
 <script>
 import SuperAdminHeader from "@/components/navigations/sidebars/SuperAdminHeader";
-import AdminSidebar from "@/components/navigations/sidebars/AdminSidebar";
+import Sidebar from "@/components/navigations/sidebars/Sidebar";
 
 export default {
 	name: "InstructorManage",
-	components: {AdminSidebar, SuperAdminHeader},
+	components: {Sidebar, SuperAdminHeader},
 	computed: {
 		userProfile() {
 			return this.$store.state.account.profile;
