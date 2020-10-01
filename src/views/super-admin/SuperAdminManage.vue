@@ -5,7 +5,7 @@
 			<template v-slot:userName>Супер Админ</template>
 		</SuperAdminHeader>
 		<div class="dashboard__container">
-			<super-admin-sidebar />
+			<Sidebar :role="'superAdmin'"/>
             <div class="dashboard__container__body">
                 <router-view></router-view>
             </div>
@@ -14,11 +14,12 @@
 </template>
 
 <script>
-import SuperAdminSidebar from '@/components/navigations/sidebars/AdminSidebar'
-import SuperAdminHeader from '@/components/navigations/sidebars/SuperAdminHeader'
+import Sidebar from '@/components/navigations/sidebars/Sidebar';
+import SuperAdminHeader from '@/components/navigations/sidebars/SuperAdminHeader';
+
 export default {
   name: 'SuperAdminManage',
-  components: { SuperAdminHeader, SuperAdminSidebar },
+  components: { SuperAdminHeader, Sidebar },
   computed: {
       userProfile () {
           return this.$store.state.account.profile;
