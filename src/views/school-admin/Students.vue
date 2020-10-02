@@ -5,7 +5,7 @@
 			<template v-slot:title>Ученики</template>
 			<template v-slot:center>
 				<SmartSearchInput :searchObj="search" :searchField="'query'"/>
-                <button class="search-btn" @click="fetchStudents(false)">Поиск</button>
+                <button class="search-btn" @click="searchStudents">Поиск</button>
 			</template>
 			<template v-slot:right>
 				<SmartBtn2 @onClick="isAddFile = true">
@@ -34,6 +34,7 @@
                         :items="filterClasses"
                         item-text="classTitle"
                         item-value="id"
+                        v-model="selectedClassId"
                         label="Фильтр по классам"
                         class="select-class"
                         :class="{'no-border': selectedFilterClass}"
@@ -449,7 +450,6 @@ export default {
 
         filterByClass(klassId) {
             this.search.query = '';
-            this.selectedClassId = klassId;
             this.selectedFilterClass = true;
             if (klassId) {
                 this.students = this.allStudents.filter((student) => student.classId === klassId);
@@ -462,6 +462,11 @@ export default {
                 this.totalElements = this.students.length;
                 this.prepareExport();
             }
+        },
+
+        searchStudents() {
+            this.selectedClassId = '';
+            this.fetchStudents(false);
         },
 
         prepareExport() {
