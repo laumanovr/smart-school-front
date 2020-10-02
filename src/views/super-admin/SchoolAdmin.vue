@@ -4,7 +4,8 @@
         <SuperAdminSchoolHead>
             <template v-slot:title>Администратор</template>
             <template v-slot:center>
-                <SmartSearchInput></SmartSearchInput>
+                <SmartSearchInput :searchObj="filterObj" :searchField="'query'"/>
+                <button class="search-btn" @click="searchSchoolAdmins">Поиск</button>
             </template>
             <template v-slot:right>
                 <SmartButton @clicked="onAddAdmin">Добавить администратора +</SmartButton>
@@ -136,7 +137,8 @@ export default {
         filterObj: {
             regionId: '',
             rayonId: '',
-            schoolId: ''
+            schoolId: '',
+            query: ''
         },
         filteredRayons: [],
         filteredSchools: [],
@@ -166,7 +168,12 @@ export default {
 
         fetchSchoolAdmins() {
             this.isLoading = true;
-            personService.listSchoolAdmins(this.filterObj.regionId, this.filterObj.rayonId, this.filterObj.schoolId).then(res => {
+            personService.listSchoolAdmins(
+                this.filterObj.regionId,
+                this.filterObj.rayonId,
+                this.filterObj.schoolId,
+                this.filterObj.query
+            ).then(res => {
                 this.users = res;
                 this.isLoading = false;
             }).catch((err) => {
@@ -227,18 +234,28 @@ export default {
         },
 
         filterSchoolAdmins() {
+            this.filterObj.query = '';
             this.fetchSchoolAdmins();
         },
 
         clearSelect(selectName) {
             if (selectName === 'region') {
-                this.filterObj.regionId = '';
-                this.filterObj.rayonId = '';
-                this.filterObj.schoolId = '';
+                this.clearLocation();
             } else {
                 this.filterObj.rayonId = '';
                 this.filterObj.schoolId = '';
             }
+        },
+
+        searchSchoolAdmins() {
+            this.clearLocation();
+            this.fetchSchoolAdmins();
+        },
+
+        clearLocation() {
+            this.filterObj.regionId = '';
+            this.filterObj.rayonId = '';
+            this.filterObj.schoolId = '';
         },
 
         onEdit(user) {
