@@ -20,9 +20,9 @@ export  class PersonService extends BaseApiService {
         return this.sendPostRequest(url, data);
     }
 
-    listSchoolAdmins (regionId='', rayonId='', schoolId='') {
+    listSchoolAdmins (regionId='', rayonId='', schoolId='', query='') {
         const baseUrl = `${process.env.VUE_APP_BASE_URL}/v1/person/list-school-admin`;
-        const url = baseUrl + `?regionId=${regionId}&rayonId=${rayonId}&schoolId=${schoolId}`;
+        const url = baseUrl + `?regionId=${regionId}&rayonId=${rayonId}&schoolId=${schoolId}&query=${query}`;
         return this.sendGetRequest(url);
     }
 
