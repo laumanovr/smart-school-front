@@ -4,10 +4,8 @@
 		<SuperAdminSchoolHead>
 			<template v-slot:title>Ученики</template>
 			<template v-slot:center>
-				<SmartButton @clicked="onAddStudent">
-					Добавить ученика <img alt="" src="../../assets/images/icons/add-user.svg">
-				</SmartButton>
-				<SmartSearchInput></SmartSearchInput>
+				<SmartSearchInput :searchObj="search" :searchField="'query'"/>
+                <button class="search-btn" @click="fetchStudents(false)">Поиск</button>
 			</template>
 			<template v-slot:right>
 				<SmartBtn2 @onClick="isAddFile = true">
@@ -41,7 +39,12 @@
                         :class="{'no-border': selectedFilterClass}"
                         @change="filterByClass"
                     ></v-select>
-				    <SmartButton @clicked="openAddCourseModal">Добавить предмет</SmartButton>
+                    <SmartButton @clicked="onAddStudent">
+                        Добавить ученика <img alt="" src="../../assets/images/icons/add-user.svg">
+                    </SmartButton>
+				    <SmartButton @clicked="openAddCourseModal">
+                        Добавить предмет
+                    </SmartButton>
                 </div>
 			</template>
 			<template v-slot:head>
@@ -384,7 +387,11 @@ export default {
 			totalPages: 1,
             emptyInstrCourse: false,
             filterClasses: [],
-            selectedFilterClass: false
+            selectedFilterClass: false,
+            selectedClassId: '',
+            search: {
+			    query: ''
+            }
 		}
 	},
 
@@ -402,7 +409,7 @@ export default {
 		this.studentClassObj.chronicleId = this.userProfile.schools[0].chronicleId;
 		this.fetchAllClasses();
 		this.fetchRoles();
-		this.fetchStudents();
+		this.fetchStudents(true);
 		this.fetchInstructorCourses();
 	},
 
@@ -419,16 +426,21 @@ export default {
 			this.isMassDeleting = true
 		},
 
-        async fetchStudents() {
+        async fetchStudents(refreshAll) {
             this.isLoading = true;
-            studentService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
-                this.allStudents = JSON.parse(JSON.stringify(res));
-                this.students = this.allStudents;
+            studentService.getAllBySchool(this.userProfile.schools[0].id, this.search.query).then((res) => {
+                if (refreshAll) {
+                    this.allStudents = JSON.parse(JSON.stringify(res));
+                }
+                this.students = res;
                 this.students = this.students.map((student, i) => ({...student, index: i}));
                 this.totalElements = this.students.length;
                 this.pageSize = this.students.length;
                 this.isLoading = false;
                 this.prepareExport();
+                if (this.selectedClassId) {
+                    this.filterByClass(this.selectedClassId);
+                }
             }).catch((err) => {
                 this.$toast.error(err);
                 this.isLoading = false;
@@ -436,6 +448,8 @@ export default {
         },
 
         filterByClass(klassId) {
+            this.search.query = '';
+            this.selectedClassId = klassId;
             this.selectedFilterClass = true;
             if (klassId) {
                 this.students = this.allStudents.filter((student) => student.classId === klassId);
@@ -466,16 +480,16 @@ export default {
 		},
 
 		massDelete() {
-			const ids = this.students.filter(i => i.checked).map(i => i.id)
-			this.isLoading = true
+			const ids = this.students.filter(i => i.checked).map(i => i.id);
+			this.isLoading = true;
 			studentService.massDelete(ids).then(res => {
-				this.$toast.success('Успешно!')
-				this.isSelectAll = false
-				this.fetchStudents()
-				this.isMassDeleting = false
+				this.$toast.success('Успешно!');
+				this.isSelectAll = false;
+				this.fetchStudents(true);
+				this.isMassDeleting = false;
 				this.isLoading = false
 			}).catch(err => {
-				console.log(err)
+			    this.$toast.error(err);
 				this.isLoading = false
 			})
 		},
@@ -585,11 +599,10 @@ export default {
 
 		deleteStudent() {
 			studentService._delete(this.studentObj.id).then(res => {
-				this.isDeleting = false
-				this.$toast.success('Успешно')
-				this.fetchStudents()
+				this.isDeleting = false;
+				this.$toast.success('Успешно');
+				this.fetchStudents(true)
 			}).catch(err => {
-				console.log(err);
 				this.$toast.error(err);
 				this.isDeleting = false
 			})
@@ -638,6 +651,7 @@ export default {
 		    if (!this.$refs.studentForm.validate()) {
 		        return;
             }
+            this.search.query = '';
 			this.studentObj.schoolId = this.userProfile.schools[0].id;
 			this.studentObj.chronicleYearId = this.userProfile.schools[0].chronicleId;
 			this.studentObj.dateOfBirth = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY');
@@ -654,7 +668,7 @@ export default {
 			if (this.isStudentEdit) {
 				studentService.edit(d).then(res => {
 					this.isAddStudentModal = false
-					this.fetchStudents()
+					this.fetchStudents(true)
 
 					studentClassService.getByStudent(d.id).then(res => {
 						this.studentClassObj.classId = this.studentObj.classId;
@@ -692,8 +706,8 @@ export default {
 					this.studentClassObj.classId = this.studentObj.classId;
 					this.studentClassObj.studentId = studentId;
 
-					studentClassService.create(this.studentClassObj).then((res) => {
-						this.fetchStudents();
+					 studentClassService.create(this.studentClassObj).then((res) => {
+						this.fetchStudents(true);
 						this.isAddStudentModal = false;
 						this.$toast.success('Успешно');
 					}).catch(err => {
@@ -722,12 +736,12 @@ export default {
 		},
 
 		onLeftClick() {
-			this.currentPage--;
-			this.fetchStudents(this.currentPage - 1);
+//			this.currentPage--;
+//			this.fetchStudents(this.currentPage - 1);
 		},
 		onRightClick() {
-			this.currentPage++;
-			this.fetchStudents(this.currentPage - 1);
+//			this.currentPage++;
+//			this.fetchStudents(this.currentPage - 1);
 		},
 		onSubmit(data) {
 			this.isLoading = true
@@ -741,7 +755,7 @@ export default {
 				fileImportService.importIsouStudent(d).then(res => {
 					this.$toast.success('Успешно!')
 					this.isAddFile = false;
-					this.fetchStudents();
+					this.fetchStudents(true);
 					this.isLoading = false
 				}).catch(err => {
 					this.isLoading = false
@@ -752,7 +766,7 @@ export default {
 				fileImportService.importStudent(d).then(res => {
 					this.$toast.success('Успешно!')
 					this.isAddFile = false;
-					this.fetchStudents();
+					this.fetchStudents(true);
 					this.isLoading = false
 				}).catch(err => {
 					this.$toast.error(err)
@@ -771,10 +785,10 @@ export default {
     .filter-class {
         display: flex;
         align-items: center;
-        width: 450px;
         justify-content: space-between;
         .select-class {
             max-width: 185px;
+            margin-right: 20px;
             .v-select__slot {
                 border: 1px solid #9E9E9E;
                 border-bottom: 0;
@@ -787,6 +801,9 @@ export default {
                     border: 0;
                 }
             }
+        }
+        .smart-btn {
+            margin-left: 20px;
         }
     }
 
