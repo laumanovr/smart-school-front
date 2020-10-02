@@ -5,7 +5,8 @@
             <template v-slot:title>Школы</template>
             <template v-slot:center>
                 <SmartButton @clicked="onAddSchool">Добавить Школу +</SmartButton>
-                <SmartSearchInput></SmartSearchInput>
+                <SmartSearchInput :searchObj="filterObj" :searchField="'query'"/>
+                <button class="search-btn" @click="searchSchool">Поиск</button>
             </template>
             <template v-slot:right>
                 <ExcelJs :rows="exportRows" :headers="exportHeaders" :file-name="exportName"></ExcelJs>
@@ -44,7 +45,7 @@
                         />
                         <TrashIcon v-show="filterObj.rayonId" @click="filterObj.rayonId=''"/>
                     </div>
-                    <v-btn color="primary" @click="fetchSchools(0)">Фильтр</v-btn>
+                    <v-btn color="primary" @click="filterSchools">Фильтр</v-btn>
                 </div>
             </template>
             <template v-slot:head>
@@ -141,7 +142,8 @@ export default {
         filteredRayons: [],
         filterObj: {
             regionId: '',
-            rayonId: ''
+            rayonId: '',
+            query: ''
         }
     }),
     computed: {
@@ -160,7 +162,7 @@ export default {
         },
         fetchSchools(page) {
             this.isLoading = true;
-            schoolService.listPageable(page, this.filterObj.regionId, this.filterObj.rayonId).then(res => {
+            schoolService.listPageable(page, this.filterObj.regionId, this.filterObj.rayonId, this.filterObj.query).then(res => {
                 this.totalElements = res.page.totalElements;
                 this.pageSize = res.page.pageSize;
                 this.totalPages = res.page.totalPages;
@@ -188,6 +190,19 @@ export default {
             rayonService.listByRegion(regionId).then((res) => {
                 this.filteredRayons = res;
             });
+        },
+
+        filterSchools() {
+            this.currentPage = 1;
+            this.filterObj.query = '';
+            this.fetchSchools(0);
+        },
+
+        searchSchool() {
+            this.currentPage = 1;
+            this.filterObj.regionId = '';
+            this.filterObj.rayonId = '';
+            this.fetchSchools(0);
         },
 
         onCLoseModal() {
