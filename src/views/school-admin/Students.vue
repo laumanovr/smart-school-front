@@ -620,6 +620,7 @@ export default {
 		},
 
 		onEditStudent(item) {
+            this.isLoading = true;
 			studentService.getDetails(item.id).then(res => {
                 this.studentObj.id = item.id;
                 this.studentObj.classId = item.classId;
@@ -634,7 +635,11 @@ export default {
                 this.parentPersonObj.name = res.parents && res.parents.length ? res.parents[0].parentTitle : '';
                 this.isAddStudentModal = true;
                 this.isStudentEdit = true;
-            }).catch(err => console.log(err))
+                this.isLoading = false;
+            }).catch(err => {
+                this.isLoading = false;
+                this.$toast.error(err);
+            })
 		},
 
 		fetchRoles() {
