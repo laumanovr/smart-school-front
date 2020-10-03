@@ -621,18 +621,20 @@ export default {
 
 		onEditStudent(item) {
 			studentService.getDetails(item.id).then(res => {
-				this.studentObj.classId = item.classId;
-				this.studentObj.name = item.name;
-				this.studentObj.surname = item.surname;
-				this.studentObj.middleName = item.middleName;
-				this.studentObj.id = item.id;
-				this.studentObj.gender = item.gender === 0 ? 'MALE' : 'FEMALE';
-				this.parentPersonObj.name = res.parents && res.parents.length ? res.parents[0].parentTitle : '';
-				this.studentObj.phone = res.phone;
-				this.studentObj.pin = res.pin;
-				this.isAddStudentModal = true;
-				this.isStudentEdit = true;
-			}).catch(err => console.log(err))
+                this.studentObj.id = item.id;
+                this.studentObj.classId = item.classId;
+                this.studentObj.name = item.name;
+                this.studentObj.surname = item.surname;
+                this.studentObj.middleName = item.middleName;
+                this.studentObj.dateOfBirth = res.dateOfBirth;
+                this.birthday = moment(res.dateOfBirth, 'DD.MM.YYYY').format('YYYY-MM-DD');
+                this.studentObj.gender = item.gender === 0 ? 'MALE' : 'FEMALE';
+				this.studentObj.phone = res.phone.replace('+', '');
+                this.studentObj.pin = res.pin;
+                this.parentPersonObj.name = res.parents && res.parents.length ? res.parents[0].parentTitle : '';
+                this.isAddStudentModal = true;
+                this.isStudentEdit = true;
+            }).catch(err => console.log(err))
 		},
 
 		fetchRoles() {
