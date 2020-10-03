@@ -629,7 +629,7 @@ export default {
                 this.studentObj.dateOfBirth = res.dateOfBirth;
                 this.birthday = moment(res.dateOfBirth, 'DD.MM.YYYY').format('YYYY-MM-DD');
                 this.studentObj.gender = item.gender === 0 ? 'MALE' : 'FEMALE';
-				this.studentObj.phone = res.phone.replace('+', '');
+				this.studentObj.phone = res.phone ? res.phone.replace('+', '') : '';
                 this.studentObj.pin = res.pin;
                 this.parentPersonObj.name = res.parents && res.parents.length ? res.parents[0].parentTitle : '';
                 this.isAddStudentModal = true;
