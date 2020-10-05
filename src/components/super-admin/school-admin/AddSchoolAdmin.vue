@@ -44,11 +44,11 @@
                         label="День рождения"
                         readonly
                         v-bind="attrs"
-                        v-model="birthday"
+                        v-model="schoolAdmin.dob"
                         v-on="on"
                     ></v-text-field>
                 </template>
-                <v-date-picker @input="menu2 = false" v-model="birthday"></v-date-picker>
+                <v-date-picker @input="onSelectDob" v-model="birthday"></v-date-picker>
             </v-menu>
         </div>
         <div class="spacer">
@@ -115,9 +115,10 @@ export default {
   data: () => ({
     schoolAdmin: {
       enabled: true,
-      roles: []
+      dob: '11.02.1970',
+      roles: [],
     },
-    birthday: '1970-2-11',
+    birthday: '1970-02-11',
     required: [
       v => !!v || 'поле обязательно для заполнения'
     ],
@@ -180,6 +181,11 @@ export default {
         }).catch(err => console.log(err))
     },
 
+      onSelectDob() {
+          this.menu2 = false;
+          this.schoolAdmin.dob = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY');
+      },
+
     fetchRoles () {
       roleService.listPageable(0).then(res => {
         this.roles = res
@@ -195,7 +201,6 @@ export default {
     submit () {
       if (this.$refs.form.validate()) {
         this.schoolAdmin.roles = this.roles.filter(i => i.code === this.role).map(i => i.id);
-        this.schoolAdmin.dob = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY');
 
         if (this.isEdit) {
             personService.edit(this.schoolAdmin).then(() => {
