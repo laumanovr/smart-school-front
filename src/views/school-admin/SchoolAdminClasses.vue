@@ -164,7 +164,11 @@
                     {num: 11},
                 ],
                 classLabels: [
-                    {label: 'А'}, {label: 'Б'}, {label: 'В'}, {label: 'Г'}, {label: 'Д'}, {label: 'Е'}, {label: 'Ё'}, {label: 'Ж'},
+                    {label: 'А'}, {label: 'Б'}, {label: 'В'}, {label: 'Г'}, {label: 'Д'}, {label: 'Е'}, {label: 'Ё'},
+                    {label: 'Ж'}, {label: 'З'}, {label: 'И'}, {label: 'К'}, {label: 'Л'}, {label: 'М'}, {label: 'Н'},
+                    {label: 'О'}, {label: 'П'}, {label: 'Р'}, {label: 'С'}, {label: 'Т'}, {label: 'У'}, {label: 'Ф'},
+                    {label: 'Х'}, {label: 'Ц'}, {label: 'Ч'}, {label: 'Ш'}, {label: 'Ы'}, {label: 'Э'}, {label: 'Ю'},
+                    {label: 'Я'}
                 ],
                 languages: [],
                 teachers: [],
