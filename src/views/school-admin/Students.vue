@@ -66,7 +66,7 @@
 				<td>{{ item.surname }} {{ item.name }}</td>
 				<td>{{ item.classTitle }}</td>
 				<td>{{ item.gender === 0 ? 'М' : 'Ж' }}</td>
-				<td>{{ item.dateOfBirth }}</td>
+				<td>{{ formatDOB(item.dateOfBirth) }}</td>
 				<td>
 					<InfoIcon @click="showDetailInfo(item.id)"/>
 				</td>
@@ -115,14 +115,14 @@
 					>
 						<template v-slot:activator="{ on, attrs }">
 							<v-text-field
-								v-model="birthday"
+								v-model="studentObj.dateOfBirth"
 								v-bind="attrs"
 								v-on="on"
 								label="Дата рождения"
 								readonly
 							></v-text-field>
 						</template>
-						<v-date-picker v-model="birthday" @input="menu2 = false"></v-date-picker>
+						<v-date-picker v-model="birthday" @input="onSelectDOB"></v-date-picker>
 					</v-menu>
 				</div>
 
@@ -179,11 +179,9 @@
 				<div class="form-head head-title">
 					<h2>Полная информация</h2>
 				</div>
-				<v-text-field v-model="studentDetail.username" label="Логин и Пароль" readonly outlined type="text"/>
-				<v-text-field v-model="studentDetail.name" label="Имя" readonly outlined type="text"/>
-				<v-text-field v-model="studentDetail.surname" label="Фамилия" readonly outlined type="text"/>
-				<v-text-field v-model="studentDetail.middleName" label="Отчество" readonly outlined type="text"/>
-				<v-text-field v-model="studentDetail.phone" label="Телефон" readonly outlined type="text"/>
+				<v-text-field :value="studentDetail.username" label="Логин и Пароль" readonly outlined type="text"/>
+				<v-text-field :value="`${studentDetail.surname} ${studentDetail.name} ${studentDetail.middleName || ''}`" label="ФИО" readonly outlined type="text"/>
+				<v-text-field :value="studentDetail.phone" label="Телефон" readonly outlined type="text"/>
 				<v-text-field
                     :value="studentDetail.parents && studentDetail.parents.length ? studentDetail.parents[0].parentTitle : ''"
 				    label="Имя родителя"
@@ -311,7 +309,7 @@ export default {
 				chronicleYearId: 1,
 				classId: 0,
 				comeBy: '',
-				dateOfBirth: '',
+				dateOfBirth: '11.02.2000',
 				email: '',
 				enabled: true,
 				gender: '',
@@ -363,7 +361,7 @@ export default {
 			isStudentEdit: false,
 			roles: [],
 			languages: [],
-			birthday: '2000-2-11',
+			birthday: '2000-02-11',
 			menu2: false,
 			exportHeaders: [],
 			exportRows: [],
@@ -423,10 +421,6 @@ export default {
             }
 		},
 
-		onMassDelete() {
-			this.isMassDeleting = true
-		},
-
         async fetchStudents(refreshAll) {
             this.isLoading = true;
             studentService.getAllBySchool(this.userProfile.schools[0].id, this.search.query).then((res) => {
@@ -477,12 +471,25 @@ export default {
             this.exportName = 'Умная школа: Ученики';
         },
 
+        formatDOB(date) {
+            return moment(date, 'YYYY-MM-DD').format('DD.MM.YYYY');
+        },
+
+        onSelectDOB() {
+            this.menu2 = false;
+            this.studentObj.dateOfBirth = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY');
+        },
+
 		selectAll() {
 			this.students = this.students.map(i => {
 				i.checked = !this.isSelectAll
 				return i
 			})
 		},
+
+        onMassDelete() {
+            this.isMassDeleting = true
+        },
 
 		massDelete() {
 			const ids = this.students.filter(i => i.checked).map(i => i.id);
