@@ -38,11 +38,11 @@ export default {
 	},
 	created() {
 		if (this.showClass) {
-			this.fetchScheduleWeek(this.userProfile.personId).then(res => {
-				this.classes = [];
-				res.forEach(i => {
-					if (!this.classes.some(el => el.classId === i.classId)) this.classes.push(i)
-				});
+			this.fetchScheduleWeek(this.userProfile.personId).then((res) => {
+                this.classes = res.filter((obj, index, selfArr) =>
+                    index === selfArr.findIndex((el) =>
+                        (el['classId'] === obj['classId'])
+                    )).sort((a, b) => a.classLevel - b.classLevel);
 				this.onClassClick(this.classes[0]);
 				this.$emit('sendData', this.classes);
 			});
