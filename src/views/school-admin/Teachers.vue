@@ -220,13 +220,19 @@ export default {
                 this.exportHeaders = [
                     'Ф.И.О',
                     'Предмет',
-                    'Логин/Пароль'
+                    'Логин/Пароль',
+                    'Дата рождения',
+                    'Телефон',
+                    'Пол'
                 ];
                 this.exportRows = this.instructors.map((i) => {
                     return [
                         i.lastName+' '+i.firstName+' '+this.checkMiddleName(i.middleName),
                         this.translateCourses(i.courses),
-                        i.username
+                        i.username,
+                        i.birthDay,
+                        i.phone,
+                        i.gender = i.gender === 'MALE' ? 'M' : 'Ж'
                     ];
                 });
                 this.exportName = 'Умная школа: Учителя';
