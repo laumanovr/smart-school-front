@@ -211,7 +211,8 @@ export default {
 			    page,
                 this.userProfile.personId,
                 this.topic.courseId,
-                this.topic.classLevel
+                this.topic.classLevel,
+                this.userProfile.schools[0].quarterId
             ).then((res) => {
 				this.totalPages = res.page.totalPages;
 				this.totalElements = res.page.totalElements;
