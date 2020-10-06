@@ -4,9 +4,6 @@
 		<ClassSelectHeader @classSelected="onClassSelect" :headTitle="$t('topics.title')" :showClass="true"/>
 
 		<div class="instructor-topic__body">
-<!--			<div class="instructor-topic__hint">-->
-<!--				First of all choose a lesson-->
-<!--			</div>-->
 			<SmartTable
 				:page-size="topics.length"
 				:schools="topics"
@@ -18,12 +15,12 @@
 			>
 				<template v-slot:firstItem>
 					<v-select
-						:items="courses"
-						v-model="courseId"
-						item-text="courseName"
-						item-value="courseId"
-						:label="$t('courses')"
-						@change="onCourse"
+						:items="instructorCourses"
+						:item-text="showCourseName"
+                        item-value="courseId"
+                        :label="$t('courses')"
+                        v-model="topic.courseId"
+                        @change="onChangeCourse"
 					></v-select>
 					<SmartButton @clicked="onAddTopic">{{ $t('add_topic') }}</SmartButton>
 				</template>
@@ -41,7 +38,7 @@
 					<td>{{ item.startDate }} - {{ item.endDate }}</td>
 					<td>{{ item.title }}</td>
 					<td>
-						<div class="instructor-topic__assignment">
+						<div class="instructor-topic__assignment" v-if="showHW">
 							<div class="instructor-topic__assignment__content">
 								<ul>
 									<li class="instructor-topic__assignment__list" v-for="assignment in item.assignments" :key="assignment.id">
@@ -73,32 +70,39 @@
 				</template>
 			</SmartTable>
 		</div>
+
+        <!--Topic Modal-->
 		<v-dialog
 			max-width="550"
-			v-model="isAdd"
-			v-if="isAdd"
+			v-model="showModal"
+			v-if="showModal"
 		>
-			<AddTopic :is-edit="isEdit" :edit-topic="topic" @close="isAdd = false" @fetch="fetchTopics(0)"></AddTopic>
+			<AddTopic :is-edit="isEdit" :topic="topic" @close="showModal = false" @fetch="fetchTopics(0)"></AddTopic>
 		</v-dialog>
+
+        <!--Assignment Modal-->
 		<v-dialog
 			max-width="550"
-			v-model="isAddAssignment"
-			v-if="isAddAssignment"
+			v-model="showAssignmentModal"
+			v-if="showAssignmentModal"
 		>
 			<AddAssignment
 				:is-edit="isEditAssignment"
-				:data="assignmentData"
-				:edit-assignment="assignment"
-				@close="isAddAssignment = false"
-				@fetch="fetchAssignment(0)"
+				:assignment="assignment"
+				@close="showAssignmentModal = false"
+				@fetch="fetchTopics"
 			></AddAssignment>
 		</v-dialog>
+
+        <!--Delete Topic Modal-->
 		<v-dialog
 			max-width="450"
 			v-model="isDeleting"
 		>
 			<DeletePopup @cancel="isDeleting = false" @accept="deleteTopic"></DeletePopup>
 		</v-dialog>
+
+        <!--Delete Assignment Modal-->
 		<v-dialog
 			max-width="450"
 			v-model="isAssignmentDelete"
@@ -122,6 +126,7 @@ import { AssignmentService } from '@/_services/assignment.service'
 const assignmentService = new AssignmentService();
 const topicService = new TopicService();
 import PreLoader from "@/components/preloader/PreLoader";
+import ScheduleWeekService from '@/_services/schedule-week.service';
 
 export default {
 	name: "InstructorTopic",
@@ -138,147 +143,199 @@ export default {
 			isAssignmentDelete: false,
 			isEdit: false,
 			topics: [],
-			topic: {},
-			isAdd: false,
-			courseId: '',
-			isAddAssignment: false,
+            instructorCourses: [],
+            allCourses: [],
+			topic: {
+                classLevel: '',
+                courseId: '',
+                quarterId: ''
+            },
+			showModal: false,
+			showAssignmentModal: false,
 			isEditAssignment: false,
 			assignment: {},
 			currentClass: {},
-			assignmentData: {},
-            isLoading: false
+            isLoading: false,
+            showHW: false
 		}
 	},
 	computed: {
 		userProfile() {
 			return this.$store.state.account.profile
 		},
-		courses() {
-			return this.$store.getters["scheduleWeek/getCourses"].map(i => {
-				i.courseName = this.$t(`adminCourses.${i.courseCode}`);
-				return i
-			})
-		}
 	},
+
+    created() {
+	    this.fetchInstructorCourses();
+    },
+
 	methods: {
-		fetchTopics(page) {
+        fetchInstructorCourses() {
+            ScheduleWeekService.getByInstructor(this.userProfile.personId).then((res) => {
+                if (res.length) {
+                    this.instructorCourses = res;
+                    this.allCourses = res;
+                }
+            })
+        },
+
+        onClassSelect(selectedClass) {
+            if (!selectedClass) {
+                this.$toast.info('У вас нет классов!');
+                return;
+            }
+            this.currentClass = selectedClass;
+            this.topic.classLevel = selectedClass.classLevel;
+            this.filterCourses(selectedClass);
+        },
+
+        filterCourses(selectedClass) {
+            this.instructorCourses = this.allCourses.filter((course) =>
+                course.classId === selectedClass.classId
+            ).filter((obj, index, selfArr) =>
+                index === selfArr.findIndex((el) =>
+                    (el['courseId'] === obj['courseId'])
+                ));
+            this.topic.courseId = this.instructorCourses.length ? this.instructorCourses[0].courseId : 0;
+            this.fetchTopics();
+        },
+
+        onChangeCourse() {
+            this.fetchTopics();
+        },
+
+		fetchTopics(page = 0) {
 		    this.isLoading = true;
-			topicService.getByInstructor(page, this.userProfile.personId, this.courseId).then(res => {
+            this.topics = [];
+			topicService.getByInstructor(
+			    page,
+                this.userProfile.personId,
+                this.topic.courseId,
+                this.topic.classLevel
+            ).then((res) => {
 				this.totalPages = res.page.totalPages;
 				this.totalElements = res.page.totalElements;
-				let topics = [];
 				this.currentPage = res.page.number + 1;
 				if (res._embedded) {
-					topics = res._embedded.topicResourceList.map((i, index) => {
-						i.index = index + 1;
-						return i
-					})
-				} else topics  =[];
-				this.fetchAssignments(topics)
-			}).catch(err => console.log(err))
+                    this.topics = res._embedded.topicResourceList.map((topic, i) => ({...topic, index: i + 1}));
+                    this.fetchAssignments(this.topics);
+                } else {
+                    this.isLoading = false;
+                }
+			}).catch((err) => {
+			    this.$toast.error(err);
+			    this.isLoading = false;
+            })
 		},
-		onClassSelect (_class) {
-			this.currentClass = _class;
-            this.courseId = this.courses.length ? this.courses[0].courseId : '';
-            this.fetchTopics(0);
-        },
+
 		async fetchAssignments (topics) {
+            this.showHW = false;
 			for (const topic of topics) {
-				await assignmentService.getByTopic(topic.id).then(res => {
+				await assignmentService.getByTopic(topic.id).then((res) => {
 					if (res._embedded) {
-						topic.assignments = res._embedded.assignmentResourceList
-					} else topic.assignments = []
-					topic.totalElements = res.page.totalElements
-					topic.totalPages = res.page.totalPages
+						topic.assignments = res._embedded.assignmentResourceList;
+                    }
+					topic.totalElements = res.page.totalElements;
+					topic.totalPages = res.page.totalPages;
 					topic.currentPage = res.page.number + 1
-				}).catch(err => console.log(err));
+				}).catch((err) => {
+				    this.$toast.error(err);
+                    this.isLoading = false;
+                });
 			}
 			this.topics = topics;
             this.isLoading = false;
+            this.showHW = true;
 		},
-		onCourse (id) {
-			this.fetchTopics(0)
-		},
-		onAssignmentEdit (assignment, topic) {
+
+        showCourseName(courseObj) {
+            return this.$t(`adminCourses.${courseObj.courseCode}`);
+        },
+
+        onPageChange(val) {
+            if (val === 'left') this.currentPage -= 1;
+            else this.currentPage += 1;
+            this.fetchTopics(this.currentPage - 1)
+        },
+
+//      TOPICS
+        onAddTopic() {
+            this.topic.title = '';
+            this.topic.description = '';
+            this.topic.startDate = '';
+            this.topic.endDate = '';
+            this.isEdit = false;
+            this.showModal = true;
+        },
+
+        onTopicEdit (topic) {
+            this.topic.id = topic.id;
+            this.topic.classLevel = topic.classLevel;
+            this.topic.courseId = topic.courseId;
+            this.topic.quarterId = topic.quarterId;
+            this.topic.title = topic.title;
+            this.topic.description = topic.description;
+            this.topic.startDate = topic.startDate;
+            this.topic.endDate = topic.endDate;
+            this.showModal = true;
+            this.isEdit = true;
+        },
+
+        onTopicDelete (topic) {
+            this.topic.id = topic.id;
+            this.isDeleting = true;
+        },
+
+        deleteTopic() {
+            topicService._delete(this.topic.id).then(() => {
+                this.$toast.success(this.$t('successMessage'));
+                this.isDeleting = false;
+                this.fetchTopics(0)
+            }).catch((err) => {
+                this.$toast.error(err);
+            })
+        },
+
+
+//        ASSIGNMENTS
+		onAddAssignment(topic) {
 			this.assignment = {
-				id: assignment.id,
-				title: assignment.title,
-				description: assignment.description,
-				deadline: assignment.deadline,
-				courseId: this.courseId,
-				classId: this.currentClass.classId,
-				instructorId: this.userProfile.personId
-			}
-			this.isAddAssignment = true
-			this.isEditAssignment = true
+				topicId: topic.id,
+                courseId: this.topic.courseId,
+                classId: this.currentClass.classId,
+                instructorId: this.userProfile.personId
+			};
+            this.isEditAssignment = false;
+			this.showAssignmentModal = true;
 		},
-		onAssignmentDelete (assignment, item) {
-			this.topic = item
-			this.assignment = assignment
-			this.isAssignmentDelete = true
-		},
-		onTopicEdit (item) {
-			topicService.getById(item.id).then(res => {
-				this.topic = res
-				this.isAdd = true
-				this.isEdit = true
-			}).catch(err => console.log(err))
-		},
-		onTopicDelete (item) {
-			this.topic = item
-			this.isDeleting = true
-		},
-		onAddTopic () {
-			this.isEdit = false
-			this.isAdd = true
-		},
-		deleteTopic () {
-			topicService._delete(this.topic.id).then(res => {
-				this.$toast.success(this.$t('successMessage'))
-				this.isDeleting = false
-				this.fetchTopics(0)
-			}).catch(err => {
-				console.log(err)
-			})
-		},
-		onPageChange(val) {
-			if (val === 'left') this.currentPage -= 1;
-			else this.currentPage += 1;
-			this.fetchTopics(this.currentPage - 1)
-		},
-		onAddAssignment(item) {
-			this.topic = item
-			this.assignmentData = {
-				topicId: item.id,
-				classId: this.currentClass.classId,
-				courseId: this.courseId
-			}
-			this.isAddAssignment = true
-		},
-		fetchAssignment () {
-			assignmentService.getByTopic(this.topic.id).then(res => {
-				let assignments = []
-				if (res._embedded) {
-					assignments = res._embedded.assignmentResourceList
-				} else assignments = []
-				this.topics = this.topics.map(i => {
-					if (i.id === this.topic.id) {
-						this.topic.totalElements = res.page.totalElements
-						this.topic.totalPages = res.page.totalPages
-						this.topic.currentPage = res.page.number + 1
-						this.topic.assignments = assignments
-					}
-					return i
-				})
-			})
-		},
+
+        onAssignmentEdit(assignment, topic) {
+            this.assignment = {
+                id: assignment.id,
+                title: assignment.title,
+                description: assignment.description,
+                deadline: assignment.deadline,
+                courseId: this.topic.courseId,
+                classId: this.currentClass.classId,
+                instructorId: this.userProfile.personId,
+                topicId: topic.id
+            };
+            this.isEditAssignment = true;
+            this.showAssignmentModal = true;
+        },
+
+        onAssignmentDelete (assignment, item) {
+            this.assignment = assignment;
+            this.isAssignmentDelete = true;
+        },
+
 		deleteAssignment() {
-			assignmentService._delete(this.assignment.id).then(res => {
-				this.$toast.success(this.$t('successMessage'))
-				this.isAssignmentDelete = false
-				this.fetchAssignment()
+			assignmentService._delete(this.assignment.id).then(() => {
+				this.$toast.success(this.$t('successMessage'));
+				this.isAssignmentDelete = false;
+                this.fetchTopics();
 			}).catch(err => {
-				console.log(err)
+				this.$toast.error(err);
 			})
 		},
 	}
