@@ -166,6 +166,7 @@
                 step: 0,
                 selectedReasonId: '',
                 selectedTopicId: '',
+                selectedClassLevel: '',
                 instructorCourses: [],
                 currentMonthDays: [],
                 studentGrades: [],
@@ -218,6 +219,7 @@
                     return;
                 }
                 this.isLoading = true;
+                this.selectedClassLevel = klass.classLevel;
                 this.monthDataRequest.classId = klass.classId;
                 this.monthDataRequest.instructorId = this.userProfile.personId;
                 this.monthDataRequest.chronicleId = this.school.chronicleId;
@@ -259,7 +261,9 @@
                 topicService.getByInstructor(
                     this.topicPage,
                     this.userProfile.personId,
-                    this.monthDataRequest.courseId
+                    this.monthDataRequest.courseId,
+                    this.selectedClassLevel,
+                    this.school.quarterId
                 ).then((res) => {
                     if (res._embedded) {
                         this.topics = res._embedded.topicResourceList;
