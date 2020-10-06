@@ -15,26 +15,6 @@
 					outlined
 				></v-textarea>
 			</div>
-<!--			<div class="add-topic__item">-->
-<!--				<v-select-->
-<!--					v-model="assignment.classId"-->
-<!--					:items="classes"-->
-<!--					:label="$t('_class')"-->
-<!--					:rules="required"-->
-<!--					item-text="title"-->
-<!--					item-value="classId"-->
-<!--				></v-select>-->
-<!--			</div>-->
-<!--			<div class="add-topic__item">-->
-<!--				<v-select-->
-<!--					v-model="assignment.courseId"-->
-<!--					:items="courses"-->
-<!--					:label="$t('course')"-->
-<!--					:rules="required"-->
-<!--					item-text="courseName"-->
-<!--					item-value="courseId"-->
-<!--				></v-select>-->
-<!--			</div>-->
 			<div class="add-topic__item">
 				<v-menu
 					v-model="menu2"
@@ -46,7 +26,7 @@
 				>
 					<template v-slot:activator="{ on, attrs }">
 						<v-text-field
-							v-model="deadline"
+							v-model="assignment.deadline"
 							v-bind="attrs"
 							v-on="on"
 							:label="$t('topics.deadline')"
@@ -54,7 +34,7 @@
 							readonly
 						></v-text-field>
 					</template>
-					<v-date-picker v-model="deadline" @input="menu2 = false"></v-date-picker>
+					<v-date-picker v-model="deadline" @input="onSelectDeadline"></v-date-picker>
 				</v-menu>
 			</div>
 			<div class="add-assignment__footer">
@@ -66,20 +46,18 @@
 </template>
 
 <script>
-import moment from 'moment'
-import { AssignmentService } from '@/_services/assignment.service'
+import moment from 'moment';
+import { AssignmentService } from '@/_services/assignment.service';
+const assignmentService = new AssignmentService();
 
-const assignmentService = new AssignmentService()
 export default {
 	name: 'AddAssignment',
 	props: {
-		data: { type: Object, default: () => {} },
 		isEdit: { type: Boolean, default: false },
-		editAssignment: { type: Object, default: () => {} }
+		assignment: { type: Object, default: () => {} }
 	},
 	data () {
 		return {
-			assignment: {},
 			required: [
 				v => !!v || this.$t('required')
 			],
@@ -99,37 +77,45 @@ export default {
 		},
 		classes () {
 			return this.$store.getters['scheduleWeek/getClasses'].map(i => {
-				i.title = `${i.classLevel}${i.classLabel}`
-				return i
+				i.title = `${i.classLevel}${i.classLabel}`;
+				return i;
 			})
 		}
 	},
+
 	mounted () {
 		if (this.isEdit) {
-			this.assignment = this.editAssignment
-			this.deadline = moment(this.editAssignment.deadline, 'DD.MM.YYYY').format('YYYY-MM-DD')
-		}
-	},
+			this.deadline = moment(this.assignment.deadline, 'DD.MM.YYYY').format('YYYY-MM-DD')
+		} else {
+		    this.deadline = moment().format('YYYY-MM-DD');
+        }
+    },
+
 	methods: {
-		submit () {
+	    onSelectDeadline() {
+            this.assignment.deadline = moment(this.deadline, 'YYYY-MM-DD').format('DD.MM.YYYY');
+            this.menu2 = false;
+        },
+
+		submit() {
 			if (this.$refs.form.validate()) {
-				this.assignment.instructorId = this.userProfile.personId
-				this.assignment.topicId = this.data.topicId
-				this.assignment.courseId = this.data.courseId
-				this.assignment.classId = this.data.classId
-				this.assignment.deadline = moment(this.deadline, 'YYYY-MM-DD').format('DD.MM.YYYY')
+                this.assignment.chronicleId = this.userProfile.schools[0].chronicleId;
 				if (this.isEdit) {
-					assignmentService.edit(this.assignment).then(res => {
-						this.$toast.success(this.$t('successMessage'))
-						this.$emit('close')
-						this.$emit('fetch')
-					}).catch(err => console.log(err))
+					assignmentService.edit(this.assignment).then(() => {
+						this.$toast.success(this.$t('successMessage'));
+						this.$emit('close');
+						this.$emit('fetch');
+					}).catch((err) => {
+					    this.$toast.error(err);
+                    })
 				} else {
-					assignmentService.create(this.assignment).then(res => {
-						this.$toast.success(this.$t('successMessage'))
-						this.$emit('close')
-						this.$emit('fetch')
-					}).catch(err => console.log(err))
+					assignmentService.create(this.assignment).then(() => {
+						this.$toast.success(this.$t('successMessage'));
+						this.$emit('close');
+						this.$emit('fetch');
+					}).catch((err) => {
+                        this.$toast.error(err);
+                    })
 				}
 			}
 		}
