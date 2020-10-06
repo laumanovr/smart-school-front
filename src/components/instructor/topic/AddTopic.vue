@@ -1,7 +1,7 @@
 <template>
 	<div class="add-topic">
 		<div class="add-topic__title">
-			{{ $t('add_topic') }}
+			{{ isEdit ? 'Редактировать' : $t('add_topic') }}
 		</div>
 		<v-form ref="form" @submit.prevent="submit">
 			<div class="add-topic__item">
@@ -15,32 +15,7 @@
 					:label="$t('common.description')"
 				></v-textarea>
 			</div>
-			<div class="add-topic__item">
-				<v-select
-					:rules="required"
-					v-model="topic.classLevel"
-					:items="classLevels"
-					:label="$t('_class')"
-				></v-select>
-				<v-select
-					:rules="required"
-					v-model="topic.quarterId"
-					:items="quarters"
-					item-value="id"
-					item-text="semester"
-					:label="$t('quarter')"
-				></v-select>
-			</div>
-			<div class="add-topic__item">
-				<v-select
-					:rules="required"
-					v-model="topic.courseId"
-					:items="courses"
-					item-text="courseName"
-					item-value="courseId"
-					:label="$t('course')"
-				></v-select>
-			</div>
+
 			<div class="add-topic__item">
 				<v-menu
 					v-model="menu2"
@@ -52,7 +27,7 @@
 				>
 					<template v-slot:activator="{ on, attrs }">
 						<v-text-field
-							v-model="startDate"
+							v-model="topic.startDate"
 							:label="$t('topics.startDate')"
 							prepend-icon="event"
 							readonly
@@ -60,7 +35,7 @@
 							v-on="on"
 						></v-text-field>
 					</template>
-					<v-date-picker v-model="startDate" @input="menu2 = false"></v-date-picker>
+					<v-date-picker v-model="startDate" @input="onSelectTopicDate('menu2')"></v-date-picker>
 				</v-menu>
 				<v-menu
 					v-model="menu1"
@@ -72,7 +47,7 @@
 				>
 					<template v-slot:activator="{ on, attrs }">
 						<v-text-field
-							v-model="endDate"
+							v-model="topic.endDate"
 							:label="$t('topics.endDate')"
 							prepend-icon="event"
 							readonly
@@ -80,7 +55,7 @@
 							v-on="on"
 						></v-text-field>
 					</template>
-					<v-date-picker v-model="endDate" @input="menu1 = false"></v-date-picker>
+					<v-date-picker v-model="endDate" @input="onSelectTopicDate('menu1')"></v-date-picker>
 				</v-menu>
 			</div>
 			<div class="add-topic__footer">
@@ -92,17 +67,15 @@
 </template>
 
 <script>
-import moment from 'moment'
-import { QuarterService } from "@/_services/quarter.service";
+import moment from 'moment';
 import { TopicService } from "@/_services/topic.service";
+const topicService = new TopicService();
 
-const topicService = new TopicService()
-const quarterService = new QuarterService()
 export default {
 	name: "AddTopic",
 	props: {
 		isEdit: { type: Boolean, default: false },
-		editTopic: { type: Object, default: () => {} }
+		topic: { type: Object, default: () => {} }
 	},
 	data () {
 		return {
@@ -114,55 +87,52 @@ export default {
 			endDate: moment().format('YYYY-MM-DD'),
 			menu2: false,
 			menu1: false,
-			quarters: [],
-			topic: {}
 		}
 	},
 	computed: {
 		userProfile() {
 			return this.$store.state.account.profile
 		},
-		courses () {
-			return this.$store.getters["scheduleWeek/getCourses"].map(i => {
-				i.courseName = this.$t(`adminCourses.${i.courseCode}`)
-				return i
-			})
-		}
 	},
 	mounted() {
 		if (this.isEdit) {
-			this.topic = this.editTopic
-			this.startDate = moment(this.editTopic.startDate, 'DD.MM.YYYY').format('YYYY-MM-DD')
-			this.endDate = moment(this.editTopic.endDate, 'DD.MM.YYYY').format('YYYY-MM-DD')
-		}
-		this.fetchQuarters()
+			this.startDate = moment(this.topic.startDate, 'DD.MM.YYYY').format('YYYY-MM-DD');
+			this.endDate = moment(this.topic.endDate, 'DD.MM.YYYY').format('YYYY-MM-DD');
+		} else {
+            this.topic.startDate = moment().format('DD.MM.YYYY');
+            this.topic.endDate = moment().format('DD.MM.YYYY');
+        }
 	},
 	methods: {
-		fetchQuarters () {
-			quarterService.getBySchoolAndChronicle(this.userProfile.schools[0].id, this.userProfile.schools[0].chronicleId).then(res => {
-				this.quarters = res
-			}).catch(err => console.log(err))
-		},
+        onSelectTopicDate(picker) {
+            this.topic.startDate = moment(this.startDate, 'YYYY-MM-DD').format('DD.MM.YYYY');
+            this.topic.endDate = moment(this.endDate, 'YYYY-MM-DD').format('DD.MM.YYYY');
+            this[picker] = false;
+        },
+
 		submit () {
 			if (this.$refs.form.validate()) {
-				this.topic.parentId = null
-				this.topic.personId = this.userProfile.personId
-				this.topic.archived = false
-				this.topic.startDate = moment(this.startDate, 'YYYY-MM-DD').format('DD.MM.YYYY')
-				this.topic.endDate = moment(this.endDate, 'YYYY-MM-DD').format('DD.MM.YYYY')
+				this.topic.parentId = null;
+				this.topic.personId = this.userProfile.personId;
+				this.topic.archived = false;
+                this.topic.quarterId = this.userProfile.schools[0].quarterId;
 
 				if (this.isEdit) {
-					topicService.edit(this.topic).then(res => {
-						this.$toast.success(this.$t('successMessage'))
-						this.$emit('fetch')
-						this.$emit('close')
-					}).catch(err => console.log(err))
+					topicService.edit(this.topic).then(() => {
+						this.$toast.success(this.$t('successMessage'));
+						this.$emit('fetch');
+						this.$emit('close');
+					}).catch((err) => {
+					    this.$toast.error(err);
+                    })
 				} else {
-					topicService.create(this.topic).then(res => {
-						this.$toast.success(this.$t('successMessage'))
-						this.$emit('fetch')
-						this.$emit('close')
-					}).catch(err => console.log(err))
+					topicService.create(this.topic).then(() => {
+						this.$toast.success(this.$t('successMessage'));
+						this.$emit('fetch');
+						this.$emit('close');
+					}).catch((err) => {
+                        this.$toast.error(err);
+                    })
 				}
 			}
 		}
