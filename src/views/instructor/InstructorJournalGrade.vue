@@ -263,7 +263,8 @@
                     this.userProfile.personId,
                     this.monthDataRequest.courseId,
                     this.selectedClassLevel,
-                    this.school.quarterId
+                    this.school.quarterId,
+                    100
                 ).then((res) => {
                     if (res._embedded) {
                         this.topics = res._embedded.topicResourceList;
