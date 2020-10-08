@@ -248,5 +248,12 @@
     "RUSSIAN_LANGUAGE_AND_LITERATURE": "Русский язык и Литература",
     "KYRGYZLANGUAGEANDLITERATURE": "Кыргыз тили жана адабияты",
     "ART": "ИЗО"
+  },
+  "roles": {
+    "ROLE_SUPER_ADMIN": "Супер Админ",
+    "ROLE_ADMIN": "Админ школы",
+    "ROLE_STUDENT": "Ученик",
+    "ROLE_INSTRUCTOR": "Учитель",
+    "ROLE_PARENT": "Родитель"
   }
 }
