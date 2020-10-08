@@ -83,10 +83,12 @@
                     item-value="id"
                     label="Школа"
                     v-model="trackObj.schoolId"
-                    @update:search-input="searchSchools"
+                    clearable
+                    hide-no-data
+                    :loading="schoolLoader"
+                    :search-input.sync="searchSchool"
                     @change="onSelectSchool"
                 />
-                <TrashIcon @click="trackObj.schoolId=''" v-show="trackObj.schoolId"/>
             </div>
             <v-btn color="primary" @click="getAnalytics">Показать</v-btn>
         </div>
@@ -149,9 +151,11 @@
                 isLoading: false,
                 typingTimer: null,
                 isTimerBlock: false,
+                schoolLoader: false,
                 dateStart: '',
                 dateEnd: moment().format('YYYY-MM-DD'),
                 currentRole: '',
+                searchSchool: '',
                 roles: [],
                 schools: [],
                 analyticsData: []
@@ -192,31 +196,11 @@
                         this.schools = res._embedded.schoolResourceList;
                     }
                     this.isLoading = false;
+                    this.schoolLoader = false;
                 }).catch((err) => {
                     this.$toast.error(err);
                     this.isLoading = false;
                 })
-            },
-
-            searchSchools(inputValue) {
-                if (inputValue) {
-                    clearTimeout(this.typingTimer);
-                    this.typingTimer = null;
-
-                    if (!this.isTimerBlock) {
-                        this.typingTimer = setTimeout(() => {
-                            this.isLoading = true;
-                            this.fetchAllSchools(inputValue);
-                        }, 900);
-                    }
-                }
-            },
-
-            onSelectSchool() {
-                this.isTimerBlock = true;
-                setTimeout(() => {
-                    this.isTimerBlock = false;
-                }, 3000)
             },
 
             onSelectTrackDate(picker) {
@@ -286,6 +270,26 @@
                 })
             },
 
+            onSelectSchool() {
+                this.isTimerBlock = true;
+                setTimeout(() => {
+                    this.isTimerBlock = false;
+                }, 3000)
+            },
+        },
+
+        watch: {
+            searchSchool(inputValue) {
+                clearTimeout(this.typingTimer);
+                this.typingTimer = null;
+
+                if (!this.isTimerBlock) {
+                    this.schoolLoader = true;
+                    this.typingTimer = setTimeout(() => {
+                        this.fetchAllSchools(inputValue);
+                    }, 900);
+                }
+            }
         }
     }
 </script>
