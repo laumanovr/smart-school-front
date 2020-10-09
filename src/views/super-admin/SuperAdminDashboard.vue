@@ -330,6 +330,9 @@
         table.analytics {
             max-width: 1024px;
             margin: 30px auto 0;
+            th {
+                white-space: nowrap;
+            }
         }
 
         /*----------------------------------------------------------*/
