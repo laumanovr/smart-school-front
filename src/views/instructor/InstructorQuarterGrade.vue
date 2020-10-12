@@ -1,170 +1,356 @@
 <template>
-	<div class="instructor-quarter-grade">
-		<ClassSelectHeader :headTitle="$t('quarter_grade')" :showClass="true"/>
+    <div class="instructor-quarter-grade">
+        <PreLoader v-if="isLoading"/>
 
-		<div class="instructor-quarter-grade__body">
-			<table class="instructor-quarter-grade__table">
-				<thead>
-				<tr>
-					<th>{{ $t('full_name') }}</th>
-					<th><span class="blue">I - {{ $t('quarter') }}</span></th>
-					<th><span class="blue">II - {{ $t('quarter') }}</span></th>
-					<th><span class="green">{{ $t('half_year') }}</span></th>
-					<th><span class="blue">III - {{ $t('quarter') }}</span></th>
-					<th><span class="blue">IV - {{ $t('quarter') }}</span></th>
-					<th><span class="green">{{ $t('yearly') }}</span></th>
-				</tr>
-				</thead>
-				<tbody>
-				<tr v-for="item in 10" :key="item">
-					<td class="full-name">1. Алексей Макаров</td>
-					<td><span>5</span></td>
-					<td><span>5</span></td>
-					<td><span>5</span></td>
-					<td><span>5</span></td>
-					<td><span>5</span></td>
-					<td><span>5</span></td>
-				</tr>
-				</tbody>
-			</table>
-		</div>
-	</div>
+        <ClassSelectHeader
+            :headTitle="$t('quarter_grade')"
+            :showClass="true"
+            @classSelected="onSelectKlass"
+        />
+
+        <v-select
+            class="v-select-item"
+            :items="instructorCourses"
+            :item-text="showCourseName"
+            item-value="courseId"
+            :label="$t('courses')"
+            v-model="requestObj.courseId"
+            @change="onChangeCourse"
+        />
+
+        <div class="instructor-quarter-grade__body">
+            <table class="instructor-quarter-grade__table" v-if="studentQuarterGrades.length">
+                <thead>
+                <tr>
+                    <th>{{ $t('full_name') }}</th>
+                    <th v-for="quarter in schoolQuarters">
+                        <span class="blue">{{quarterTitle[quarter.semester]}} - {{ $t('quarter') }}</span>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(student, i) in studentQuarterGrades" :key="i">
+                    <td class="full-name">{{i + 1}}. {{student.studentTitle}}</td>
+                    <template v-for="quarter in schoolQuarters">
+                        <td
+                            v-if="getQuarterGrade(quarter, student.grades)"
+                            @keyup="setQuarterGrade($event, quarter, student, getQuarterGrade(quarter, student.grades))"
+                            :contenteditable="true"
+                        >
+                            {{ getQuarterGrade(quarter, student.grades).mark }}
+                        </td>
+                        <td
+                            @keyup="setQuarterGrade($event, quarter, student)"
+                            :contenteditable="true"
+                            v-else>
+                        </td>
+                    </template>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="btn-actions saveGrade" v-if="studentQuarterGrades.length">
+            <v-btn color="primary" @click="submitQuarterGrades">Сохранить</v-btn>
+        </div>
+    </div>
 </template>
 
 <script>
-import ClassSelectHeader from "@/components/instructor/ClassSelectHeader";
-export default {
-	name: "InstructorQuarterGrade",
-	components: {ClassSelectHeader},
-	data () {
-		return {
-			classes: []
-		}
-	},
-	computed: {
-		userProfile () {
-			return this.$store.state.account.profile
-		}
-	},
-	mounted() {
-	},
-	methods: {
+    import ClassSelectHeader from '@/components/instructor/ClassSelectHeader';
+    import QuarterGradeService from '@/_services/quarter-grade.service';
+    import {QuarterService} from '@/_services/quarter.service';
+    const quarterService = new QuarterService();
+    import ScheduleWeekService from '@/_services/schedule-week.service';
+    import PreLoader from '@/components/preloader/PreLoader';
 
-	}
-}
+    export default {
+        name: 'InstructorQuarterGrade',
+        components: {ClassSelectHeader, PreLoader},
+        data() {
+            return {
+                quarterTitle: {
+                    '1': 'I',
+                    '2': 'II',
+                    '3': 'III',
+                    '4': 'IV',
+                },
+                isLoading: false,
+                requestObj: {
+                    classId: '',
+                    courseId: '',
+                },
+                sendQuarterGradeObj: {
+                    chronicleId: 0,
+                    classId: 0,
+                    instructorId: 0,
+                    students: []
+                },
+                schoolQuarters: [],
+                instructorCourses: [],
+                allCourses: [],
+                studentQuarterGrades: []
+            }
+        },
+        computed: {
+            userProfile() {
+                return this.$store.state.account.profile
+            },
+            school() {
+                return this.userProfile.schools[0]
+            }
+        },
+
+        created() {
+            this.isLoading = true;
+            this.sendQuarterGradeObj.instructorId = this.userProfile.personId;
+            this.sendQuarterGradeObj.chronicleId = this.school.chronicleId;
+            this.fetchSchoolQuarters();
+            this.fetchInstructorCourses();
+        },
+
+        methods: {
+            fetchStudentQuarterGrades() {
+                this.isLoading = true;
+                QuarterGradeService.getStudentsQuarterGrades(
+                    this.requestObj.classId,
+                    this.requestObj.courseId,
+                    this.school.chronicleId,
+                    this.userProfile.personId
+                ).then((res) => {
+                    this.studentQuarterGrades = res;
+                    this.isLoading = false;
+                }).catch((err) => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                })
+            },
+
+            onSelectKlass(selectedClass) {
+                if (!selectedClass) {
+                    this.$toast.info('У вас нет классов!');
+                    this.isLoading = false;
+                    return;
+                }
+                this.requestObj.classId = selectedClass.classId;
+                this.sendQuarterGradeObj.classId = selectedClass.classId;
+                this.filterCourses(selectedClass);
+            },
+
+            filterCourses(selectedClass) {
+                this.instructorCourses = this.allCourses.filter((course) =>
+                    course.classId === selectedClass.classId
+                ).filter((obj, index, selfArr) =>
+                    index === selfArr.findIndex((el) =>
+                        (el['courseId'] === obj['courseId'])
+                    ));
+                this.requestObj.courseId = this.instructorCourses.length ? this.instructorCourses[0].courseId : 0;
+                this.fetchStudentQuarterGrades()
+            },
+
+            onChangeCourse() {
+                this.fetchStudentQuarterGrades()
+            },
+
+            getQuarterGrade(currentQuarter, studentQuarterGrades) {
+                return studentQuarterGrades.find((quarterGrade) => quarterGrade.quarterId === currentQuarter.id);
+            },
+
+            setQuarterGrade(e, quarter, student, currentQGrade) {
+                if (isNaN(Number(e.target.innerText))) {
+                    e.target.innerText = '';
+                    this.sendQuarterGradeObj.students = [];
+                    return;
+                }
+                let inputValue = e.target.innerText = e.target.innerText.trim().slice(0, 1);
+
+                const newQuarterGradeObj = {
+                    quarterId: quarter.id,
+                    studentTitle: student.studentTitle,
+                    m2mStudentCourseId: student.m2mStudentCourseId,
+                    mark: inputValue,
+                    gradeType: "QUARTER_GRADE",
+                    gradeId: currentQGrade ? currentQGrade.gradeId : 0,
+                    comment: ''
+                };
+
+                this.sendQuarterGradeObj.students.forEach((existQGrade, i, selfArr) => {
+                    // DELETE FROM LOCAL ARRAY
+                    let isExist = existQGrade.quarterId === newQuarterGradeObj.quarterId &&
+                        existQGrade.studentTitle === newQuarterGradeObj.studentTitle &&
+                        existQGrade.m2mStudentCourseId === newQuarterGradeObj.m2mStudentCourseId;
+                    if (isExist) {
+                        selfArr.splice(i, 1);
+                    }
+                });
+
+                if (inputValue.length) {
+                    this.sendQuarterGradeObj.students.push(newQuarterGradeObj);
+                } else {
+                    if (currentQGrade) {
+                        // FOR DELETE FROM SERVER
+                        newQuarterGradeObj.mark = 99;
+                        this.sendQuarterGradeObj.students.push(newQuarterGradeObj);
+                    }
+                }
+            },
+
+            showCourseName(courseObj) {
+                return this.$t(`adminCourses.${courseObj.courseCode}`);
+            },
+
+            fetchSchoolQuarters() {
+                quarterService.getBySchoolAndChronicle(this.school.id, this.school.chronicleId).then((res) => {
+                    this.schoolQuarters = res;
+                }).catch((err) => {
+                    this.$toast.error(err);
+                })
+            },
+
+            fetchInstructorCourses() {
+                ScheduleWeekService.getByInstructor(this.userProfile.personId).then((res) => {
+                    if (res.length) {
+                        this.instructorCourses = res;
+                        this.allCourses = res;
+                    }
+                }).catch((err) => {
+                    this.$toast.error(err);
+                })
+            },
+
+            submitQuarterGrades() {
+                if (!this.sendQuarterGradeObj.students.length) {
+                    this.$toast.info('Сначала поставьте оценку!');
+                    return;
+                }
+                this.isLoading = true;
+                QuarterGradeService.createWithArray(this.sendQuarterGradeObj).then(() => {
+                    this.sendQuarterGradeObj.students = [];
+                    this.$toast.success('Успешно!');
+                    this.isLoading = false;
+                }).catch((err) => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                })
+            }
+        }
+    }
 </script>
 
 <style lang="scss" scoped>
-.instructor-quarter-grade {
-	padding: 25px;
-	font-family: Helvetica, sans-serif;
-	font-style: normal;
-	font-weight: normal;
+    .instructor-quarter-grade {
+        padding: 25px;
+        font-family: Helvetica, sans-serif;
 
-	&__body {
-		margin: 20px 0;
-	}
+        .saveGrade {
+            position: fixed;
+            bottom: 15px;
+            width: 100%;
+        }
 
-	&__table {
-		background: #FFFFFF;
-		width: 100%;
-		box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.06);
-		border-radius: 4px;
+        .v-select-item {
+            margin: 25px 0;
+        }
 
-		th, td {
-			padding: 0 10px;
+        &__body {
+            margin: 20px 0 45px;
+        }
 
-			span {
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				width: 90%;
-				height: 64px;
-				margin: auto;
-			}
+        &__table {
+            background: #FFFFFF;
+            width: 1024px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+            border-radius: 4px;
 
-			&:not(:nth-child(4)):not(:nth-child(1)):not(:last-child) {
-				span {
-					background: rgba(74, 39, 243, 0.1);
-				}
-			}
+            th, td {
+                &:not(:first-child) {
+                    max-width: 150px;
+                    overflow: hidden;
+                    white-space: nowrap;
+                }
 
-			&:nth-child(4), &:last-child {
-				span {
-					background: rgba(0, 217, 95, 0.1);
-				}
-			}
-		}
+                &:nth-child(2), &:nth-child(3) {
+                    background: rgba(74, 39, 243, 0.1);
+                    border-right: 10px solid #fff;
+                    width: 150px;
+                }
 
-		thead {
-			tr {
-				border-radius: 4px;
-				height: 40px;
+                &:nth-child(4) {
+                    background: rgba(0, 217, 95, 0.1);
+                    border-right: 10px solid #fff;
+                    width: 150px;
+                }
+                &:last-child {
+                    background: rgba(0, 217, 95, 0.1);
+                    width: 150px;
+                }
+            }
 
-				th:first-child {
-					font-family: Open Sans, sans-serif;
-					font-size: 14px;
-					line-height: 119%;
-					text-align: center;
-					color: #707683;
-				}
+            thead {
+                tr {
+                    border-radius: 4px;
+                    height: 40px;
 
-				th {
-					span {
-						border-radius: 5px;
-						height: 40px;
-						font-family: Helvetica;
-						font-style: normal;
-						font-weight: normal;
-						font-size: 12px;
-						line-height: 14px;
+                    th:first-child {
+                        font-family: Open Sans, sans-serif;
+                        font-size: 14px;
+                        line-height: 119%;
+                        text-align: center;
+                        color: #707683;
+                    }
 
-						&.blue {
-							background: linear-gradient(180deg, #4A27F3 0%, #339DFA 100%);
-							display: flex;
-							align-items: center;
-							justify-content: center;
-							letter-spacing: 0.01em;
-							color: #FFFFFF;
-						}
+                    th {
+                        span {
+                            border-radius: 5px;
+                            height: 40px;
+                            font-size: 14px;
+                            line-height: 14px;
+                            font-weight: bold;
 
-						&.green {
-							background: #00D95F;
-						}
-					}
-				}
-			}
-		}
+                            &.blue {
+                                background: linear-gradient(180deg, #4A27F3 0%, #339DFA 100%);
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                letter-spacing: 0.01em;
+                                color: #FFFFFF;
+                            }
 
-		tr {
-			border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-			height: 64px;
+                            &.green {
+                                background: #00D95F;
+                            }
+                        }
+                    }
+                }
+            }
 
-			td:not(:first-child) {
-				text-align: center;
-				font-size: 18px;
-				line-height: 21px;
-				letter-spacing: 0.01em;
-				color: #323C47;
-			}
+            tr {
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+                height: 64px;
 
-			.full-name {
-				padding-left: 30px;
-				width: 300px;
-				font-size: 14px;
-				line-height: 16px;
-				letter-spacing: 0.01em;
-				color: #323C47;
-			}
-		}
+                td:not(:first-child) {
+                    text-align: center;
+                    font-size: 18px;
+                    line-height: 21px;
+                    letter-spacing: 0.01em;
+                    color: #323C47;
+                }
 
-		tbody {
-			tr {
-				&:hover {
-					box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
-				}
-			}
-		}
-	}
-}
+                .full-name {
+                    padding-left: 30px;
+                    font-size: 14px;
+                    line-height: 16px;
+                    letter-spacing: 0.01em;
+                    color: #323C47;
+                }
+            }
+
+            tbody {
+                tr {
+                    &:hover {
+                        box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+                    }
+                }
+            }
+        }
+    }
 </style>
