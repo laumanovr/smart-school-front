@@ -110,6 +110,7 @@
 
         methods: {
             fetchStudentQuarterGrades() {
+                this.studentQuarterGrades = [];
                 this.isLoading = true;
                 QuarterGradeService.getStudentsQuarterGrades(
                     this.requestObj.classId,
