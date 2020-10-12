@@ -145,7 +145,12 @@
                         (el['courseId'] === obj['courseId'])
                     ));
                 this.requestObj.courseId = this.instructorCourses.length ? this.instructorCourses[0].courseId : 0;
-                this.fetchStudentQuarterGrades()
+                if (this.requestObj.courseId) {
+                    this.fetchStudentQuarterGrades();
+                } else {
+                    this.studentQuarterGrades = [];
+                    this.isLoading = false;
+                }
             },
 
             onChangeCourse() {
