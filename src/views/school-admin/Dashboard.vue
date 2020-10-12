@@ -310,6 +310,9 @@
             th {
                 white-space: nowrap;
             }
+            th, td {
+                font-weight: bold;
+            }
         }
 
         .empty-data {
