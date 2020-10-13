@@ -166,6 +166,7 @@ export default {
 	},
 
     created() {
+        this.isLoading = true;
 	    this.fetchInstructorCourses();
     },
 
@@ -182,6 +183,7 @@ export default {
         onClassSelect(selectedClass) {
             if (!selectedClass) {
                 this.$toast.info('У вас нет классов!');
+                this.isLoading = false;
                 return;
             }
             this.currentClass = selectedClass;
@@ -197,7 +199,12 @@ export default {
                     (el['courseId'] === obj['courseId'])
                 ));
             this.topic.courseId = this.instructorCourses.length ? this.instructorCourses[0].courseId : 0;
-            this.fetchTopics();
+            if (this.topic.courseId) {
+                this.fetchTopics();
+            } else {
+                this.topics = [];
+                this.isLoading = false;
+            }
         },
 
         onChangeCourse() {
