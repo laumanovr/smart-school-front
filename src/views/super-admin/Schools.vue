@@ -10,7 +10,6 @@
             </template>
             <template v-slot:right>
                 <ExcelJs :rows="exportRows" :headers="exportHeaders" :file-name="exportName"></ExcelJs>
-                <SmartBtn2>Распечатать</SmartBtn2>
             </template>
         </SuperAdminSchoolHead>
         <SmartTable
