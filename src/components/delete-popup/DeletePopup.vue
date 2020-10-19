@@ -5,21 +5,10 @@
             <v-card-actions>
                 <v-spacer></v-spacer>
 
-                <v-btn
-                    @click="$emit('cancel')"
-                    color="green darken-1"
-                    text
-                >
-                    Нет
-                </v-btn>
-
-                <v-btn
-                    @click="$emit('accept')"
-                    color="red darken-1"
-                    text
-                >
-                    Да
-                </v-btn>
+                <div class="btn-actions">
+                    <v-btn @click="$emit('cancel')" color="red darken-1">Нет</v-btn>
+                    <v-btn @click="$emit('accept')" color="green darken-1">Да</v-btn>
+                </div>
             </v-card-actions>
         </v-card>
 </template>
