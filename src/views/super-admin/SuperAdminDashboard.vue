@@ -111,9 +111,9 @@
             <tr v-for="(data, i) in analyticsData" :key="i">
                 <td>{{ i + 1 }}</td>
                 <td>{{ data.schoolName }}</td>
-                <td>{{ data[getSpecificRole()] }}</td>
+                <td>{{ data[getSpecificRoleCount()] }}</td>
                 <td>{{ data.uniqueUsers.length }}</td>
-                <td>{{ countPercent(data.uniqueUsers.length, data[getSpecificRole()])}}%</td>
+                <td>{{ data.inPercent }}%</td>
             </tr>
             </tbody>
         </table>
@@ -215,7 +215,7 @@
                 }
             },
 
-            getSpecificRole() {
+            getSpecificRoleCount() {
                 const rolesObj = {
                     ROLE_INSTRUCTOR: 'totalInstructors',
                     ROLE_STUDENT: 'totalStudents',
@@ -256,8 +256,9 @@
                                     (el['userId'] === obj['userId'])
                                 ));
                         }
+                        school.inPercent = this.countPercent(school.uniqueUsers.length, school[this.getSpecificRoleCount()]);
                         return school;
-                    }).sort((a, b) => b.uniqueUsers.length - a.uniqueUsers.length);
+                    }).sort((a, b) => b.inPercent - a.inPercent);
 
                     if (this.trackObj.schoolId) {
                         // Filter by school
