@@ -83,14 +83,14 @@
             </div>
 
             <div>
-                <v-select
+                <v-autocomplete
                     :rules="required"
                     :items="teachers"
                     item-text="instructorTitle"
                     item-value="instructorId"
                     label="Классный руководитель"
                     v-model="instrClassObj.personId"
-                ></v-select>
+                />
             </div>
 
             <div class="form-footer">
@@ -277,12 +277,12 @@
                 }
             },
 
-            fetchTeachers () {
-                instructorCourseService.listBySchool(this.userProfile.schools[0].id, 0).then(res => {
-                    if (res._embedded) {
-                        this.teachers = res._embedded.instructorCourseResourceList;
-                    }
-                }).catch(err => console.log(err))
+            fetchTeachers() {
+                instructorCourseService.getAllWithoutPagination(this.userProfile.schools[0].id).then((res) => {
+                    this.teachers = res.sort((a, b) => a.instructorTitle.localeCompare(b.instructorTitle));
+                }).catch((err) => {
+                    this.$toast.error(err);
+                })
             },
 
             submitClass() {
