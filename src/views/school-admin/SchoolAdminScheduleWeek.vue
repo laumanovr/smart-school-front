@@ -239,7 +239,7 @@
                 <div class="lesson-day">{{objDay[sendScheduleObj.weekDay]}} - {{'Урок ' + selectedShiftTime.name}}</div>
                 <h4>{{mode == 'create' ? 'Добавить предмет' : 'Редактировать' }}</h4>
                 <v-form ref="scheduleForm">
-                    <v-select
+                    <v-autocomplete
                         :items="allTeachers"
                         :rules="required"
                         :item-text="getTeacherAndCourseName"
@@ -247,7 +247,7 @@
                         label="Предмет"
                         v-model="sendScheduleObj.instrCourseId"
                         @change="onSelectScheduleCourse"
-                    ></v-select>
+                    />
                     <div class="btn-actions">
                         <v-btn color="red" @click="closeClassViewModal">Отмена</v-btn>
                         <v-btn color="green" @click="submit">Сохранить</v-btn>
