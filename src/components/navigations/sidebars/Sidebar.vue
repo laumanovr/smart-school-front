@@ -123,6 +123,7 @@ export default {
         &.expanded {
             max-height: 310px;
             transition: max-height 0.3s ease-in;
+            background: #282552;
         }
     }
 }
