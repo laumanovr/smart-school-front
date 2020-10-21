@@ -1,9 +1,9 @@
 export default {
-	isExistRole (role) {
+	isExistRole(role) {
 		let user = JSON.parse(localStorage.getItem('user'));
 		return user.roles.some(i => i.code === role)
 	},
-	
+
 	checkSchoolAdmin(next) {
 		if (this.isExistRole('ROLE_ADMIN')) {
 			next()
@@ -11,7 +11,7 @@ export default {
 			next('/login')
 		}
 	},
-	
+
 	checkInstructor(next) {
 		if (this.isExistRole('ROLE_INSTRUCTOR')) {
 			next()
@@ -19,7 +19,7 @@ export default {
 			next('/login')
 		}
 	},
-	
+
 	checkSuperAdmin(next) {
 		if (this.isExistRole('ROLE_SUPER_ADMIN')) {
 			next()
@@ -27,7 +27,7 @@ export default {
 			next('/login')
 		}
 	},
-	
+
 	checkParent(next) {
 		if (this.isExistRole('ROLE_PARENT')) {
 			next()
@@ -35,15 +35,15 @@ export default {
 			next('/login')
 		}
 	},
-	
-	checkRayonHeader(next) {
+
+	checkRayonHead(next) {
 		if (this.isExistRole('ROLE_RAYON_HEADER')) {
 			next()
 		} else {
 			next('/login')
 		}
 	},
-	
+
 	checkStudent(next) {
 		if (this.isExistRole('ROLE_STUDENT')) {
 			next()
