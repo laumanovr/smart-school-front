@@ -11,19 +11,33 @@ export default {
             route: '/super-admin/schools'
         },
         {
-            name: 'Администратор',
-            icon: 'teachers.svg',
-            route: '/super-admin/school-admin'
-        },
-        {
-            name: 'Учителя',
-            icon: 'teachers.svg',
-            route: '/super-admin/instructors'
-        },
-        {
-            name: 'Ученики',
-            icon: 'students.svg',
-            route: '/super-admin/students'
+            users: [
+                {
+                    name: 'Пользователи',
+                    icon: 'teachers.svg',
+                    route: '#'
+                },
+                {
+                    name: 'Администратор',
+                    icon: 'teachers.svg',
+                    route: '/super-admin/school-admin'
+                },
+                {
+                    name: 'Районо',
+                    icon: 'teachers.svg',
+                    route: '/super-admin/rayon-head'
+                },
+                {
+                    name: 'Учителя',
+                    icon: 'teachers.svg',
+                    route: '/super-admin/instructors'
+                },
+                {
+                    name: 'Ученики',
+                    icon: 'students.svg',
+                    route: '/super-admin/students'
+                },
+            ]
         },
         {
             name: 'Предметы',
