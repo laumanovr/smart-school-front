@@ -25,8 +25,8 @@ export  class RoleService extends BaseApiService {
         return this.sendPostRequest(url, data);
     }
 
-    listPageable (page) {
-        const url = `${process.env.VUE_APP_BASE_URL}/v1/security/role?page=${page}`;
+    listPageable() {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/security/role/interface`;
         return this.sendGetRequest(url);
     }
 }
