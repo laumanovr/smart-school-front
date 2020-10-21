@@ -96,14 +96,14 @@
             <tr>
                 <th>№</th>
                 <th>Ф.И.О</th>
-                <th>Заходит в систему %</th>
+                <th>Заходит в систему (кол-во)</th>
             </tr>
             </thead>
             <tbody>
             <tr v-for="(data, i) in currentSchool.uniqueUsers" :key="i">
                 <td>{{ i + 1 }}</td>
                 <td>{{ data.name }}</td>
-                <td>{{ countPercent(data.tracks.length)}}%</td>
+                <td>{{ countPercent(data.tracks.length)}}</td>
             </tr>
             </tbody>
         </table>
@@ -191,10 +191,10 @@
                 }
             },
 
-            countPercent(uniqueUsers) {
-                let result = (uniqueUsers / 300) * 100;
-                result = result.toFixed(1);
-                return result > 100 ? 100 : result;
+            countPercent(userTrackLength) {
+                let result = userTrackLength / 4;
+                result = Math.floor(result);
+                return result < 1 ? 1 : result;
             },
 
             getAnalytics() {
