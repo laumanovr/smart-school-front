@@ -16,7 +16,11 @@ const roles = [
 	{
 		code: 'ROLE_INSTRUCTOR',
 		url: '/instructor-page'
-	}
+	},
+    {
+        code: 'ROLE_RAYON_HEADER',
+        url: '/rayon-head'
+    }
 ];
 
 const state = {
@@ -29,10 +33,10 @@ const actions = {
 		userService.login(data).then(res => {
 			localStorage.setItem('user', JSON.stringify(res));
 			commit('SET_USER', res);
-			dispatch('getProfile');
 			const role = roles.find(i => i.code === res.roles[0].code)
-			router.push(role.url);
-		}).catch(err => console.log(err));
+            router.push(role.url);
+            dispatch('getProfile');
+        }).catch(err => console.log(err));
 	},
 	getProfile({commit, dispatch}) {
 		userService.getProfile().then(res => {
