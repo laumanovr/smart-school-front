@@ -53,6 +53,11 @@ const routes = [
 				path: 'school-admin',
 				component: SchoolAdmin
 			},
+            {
+                name: 'rayonHead',
+                path: 'rayon-head',
+                component: loadComponent('super-admin/RayonHead')
+            },
 			{
 				name: 'superAdminInstructors',
 				path: 'instructors',
