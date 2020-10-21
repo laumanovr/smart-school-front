@@ -3,6 +3,7 @@
 		<SuperAdminHeader>
 			<template v-slot:title v-if="userProfile.schools">{{ userProfile.schools[0].name }}</template>
 			<template v-slot:userName v-if="userProfile.user">{{ userProfile.user.firstName }} {{ userProfile.user.lastName }}</template>
+            <template v-slot:roleName>Админ школы</template>
 		</SuperAdminHeader>
 		<div class="school-admin-manage__container">
 			<Sidebar :role="'schoolAdmin'"/>
