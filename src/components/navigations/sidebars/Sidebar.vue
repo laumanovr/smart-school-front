@@ -1,16 +1,31 @@
 <template>
     <div class="super-admin-sidebar">
         <div class="super-admin-sidebar__items">
-            <router-link
-                :class="{ 'active' : $route.path === sidebar.route }"
-                :key="index"
-                :to="sidebar.route"
-                class="super-admin-sidebar__item"
-                v-for="(sidebar, index) in sidebars"
-            >
-                <img :src="require(`../../../assets/images/icons/${sidebar.icon}`)" alt="">
-                {{ sidebar.name }}
-            </router-link>
+            <template v-for="(tab, index) in sidebars">
+                <router-link
+                    v-if="tab.route"
+                    :key="index"
+                    :class="{'active' : $route.path === tab.route}"
+                    :to="tab.route"
+                    class="super-admin-sidebar__item"
+                >
+                    <img :src="require(`../../../assets/images/icons/${tab.icon}`)">
+                    {{ tab.name }}
+                </router-link>
+                <div class="users" v-if="tab.users" :class="{'expanded': isExpand}">
+                    <router-link
+                        v-for="innerTab in tab.users"
+                        :to="innerTab.route"
+                        :key="innerTab.route"
+                        class="super-admin-sidebar__item"
+                        :class="{'active' : $route.path === innerTab.route}"
+                        @click.native="expandTabs(innerTab)"
+                    >
+                        <img :src="require(`../../../assets/images/icons/${innerTab.icon}`)">
+                        {{innerTab.name}}
+                    </router-link>
+                </div>
+            </template>
         </div>
         <div class="super-admin-sidebar__setting">
             <img alt="" src="../../../assets/images/icons/setting.svg">
@@ -27,10 +42,18 @@ export default {
         role: String
     },
     data: () => ({
-        sidebars: []
+        sidebars: [],
+        isExpand: false
     }),
     mounted() {
         this.sidebars = Sidebar[this.role];
+    },
+    methods: {
+        expandTabs(tab) {
+            if (tab.route === '#') {
+                this.isExpand = !this.isExpand;
+            }
+        }
     }
 }
 </script>
@@ -85,12 +108,22 @@ export default {
 
         &.active {
             background: linear-gradient(180deg, #4A27F3 -33.33%, #339DFA 66.67%);
-            box-shadow: 0px 3.68142px 9.20354px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 3.68142px 9.20354px rgba(0, 0, 0, 0.05);
             border-radius: 5px;
         }
 	    &:hover {
 		    text-decoration: unset;
 	    }
+    }
+    .users {
+        max-height: 65px;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+        will-change: max-height;
+        &.expanded {
+            max-height: 310px;
+            transition: max-height 0.3s ease-in;
+        }
     }
 }
 </style>
