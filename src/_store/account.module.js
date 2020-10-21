@@ -32,10 +32,10 @@ const actions = {
 	login({commit, dispatch}, data) {
 		userService.login(data).then(res => {
 			localStorage.setItem('user', JSON.stringify(res));
-			commit('SET_USER', res);
-			const role = roles.find(i => i.code === res.roles[0].code)
-            router.push(role.url);
             dispatch('getProfile');
+            commit('SET_USER', res);
+            const role = roles.find(i => i.code === res.roles[0].code);
+            router.push(role.url);
         }).catch(err => console.log(err));
 	},
 	getProfile({commit, dispatch}) {
