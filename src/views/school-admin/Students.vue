@@ -375,6 +375,7 @@ export default {
 			    courses: []
             },
 			instrCourses: [],
+            allScheduleCourses: [],
 			instrCourseObj: {},
             studentCourseCreate: {
                 chronicleId: 0,
@@ -528,6 +529,15 @@ export default {
         async getStudentCourses(studentId) {
             await StudentCourseService.getByStudentId(studentId).then((res) => {
                 this.studentDetail.courses = res;
+                this.instrCourses = this.allScheduleCourses;
+                this.studentDetail.courses.forEach((exiCourse) => {
+                    this.instrCourses = this.instrCourses.filter((item) => {
+                        let equal = item.instructorId === exiCourse.instructorId && item.courseId === exiCourse.courseId;
+                        if (!equal) {
+                            return item;
+                        }
+                    })
+                });
                 this.isLoading = false;
             }).catch(err => {
                 this.$toast.error(err);
@@ -537,7 +547,7 @@ export default {
 
         onSelectClass(classId) {
             this.isLoading = true;
-		    const studentId = this.students.find((student) => student.classId === classId).id;
+		    const studentId = this.students.filter((student) => student.classId === classId)[1].id;
 		    this.getStudentCourses(studentId);
         },
 
@@ -551,6 +561,7 @@ export default {
 
 		fetchInstructorCourses() {
             ScheduleWeekService.getAllBySchoolAndShift(this.userProfile.schools[0].id, '').then((res) => {
+                this.allScheduleCourses = res;
                 this.instrCourses = res;
             }).catch((err) => {
                 this.$toast.error(err);
