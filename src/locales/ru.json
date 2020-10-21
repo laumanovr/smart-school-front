@@ -250,7 +250,13 @@
     "ELEMENTARYSCHOOL": "Начальная школа",
     "RUSSIAN_LANGUAGE_AND_LITERATURE": "Русский язык и Литература",
     "KYRGYZLANGUAGEANDLITERATURE": "Кыргыз тили жана адабияты",
-    "ART": "ИЗО"
+    "ART": "ИЗО",
+    "ECONOMY": "Экономика",
+    "PAINTING": "Рисование",
+    "LOGICS": "Логика",
+    "manas_taanuu": "Манас таануу",
+    "BLS": "ОБЖ",
+    "ETHICS": "Этика"
   },
   "roles": {
     "ROLE_SUPER_ADMIN": "Супер Админ",
