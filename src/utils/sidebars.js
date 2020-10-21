@@ -170,5 +170,33 @@ export default {
             icon: 'message.svg',
             route: '/instructor-page/message'
         },
+    ],
+
+    rayonHead: [
+        {
+            name: 'Аналитика',
+            icon: 'chart.svg',
+            route: '/rayon-head'
+        },
+        {
+            name: 'Школы',
+            icon: 'schools.svg',
+            route: '/rayon-head/schools'
+        },
+        {
+            name: 'Учителя',
+            icon: 'teachers.svg',
+            route: '/rayon-head/instructors'
+        },
+        {
+            name: 'Ученики',
+            icon: 'students.svg',
+            route: '/rayon-head/students'
+        },
+        {
+            name: 'Календарь',
+            icon: 'calendar.svg',
+            route: '/rayon-head/calendar'
+        }
     ]
 }
