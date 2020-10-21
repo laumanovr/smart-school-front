@@ -12,7 +12,7 @@
 	        <div>
 		        <slot name="userName"></slot>
 	        </div>
-	        <div>Администратор</div>
+	        <div><slot name="roleName"></slot></div>
         </span>
         <span><img src="../../../assets/images/user.svg" alt=""></span>
         <span style="cursor: pointer">
