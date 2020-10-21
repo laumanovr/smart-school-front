@@ -222,6 +222,67 @@ const routes = [
             }
         ],
     },
+
+    // RAYON-HEAD
+    {
+        path: '/rayon-head',
+        component: loadComponent('rayon-head/RayonHeadManage'),
+        beforeEnter: (to, from, next) => {
+            $user.checkRayonHead(next);
+        },
+        children: [
+            {
+                path: '/',
+                name: 'rayonHeadDashboard',
+                component: loadComponent('rayon-head/Dashboard')
+            },
+            {
+                name: 'rayonHeadSchools',
+                path: 'schools',
+                component: loadComponent('rayon-head/Schools')
+            },
+            {
+                name: 'rayonHeadInstructors',
+                path: 'instructors',
+                component: loadComponent('rayon-head/Instructors')
+            },
+            {
+                name: 'rayonHeadStudents',
+                path: 'students',
+                component: loadComponent('rayon-head/Students')
+            },
+            {
+                name: 'rayonHeadCalendar',
+                path: 'calendar',
+                component: loadComponent('rayon-head/Calendar')
+            },
+            // {
+            //     name: 'superAdminCourses',
+            //     path: 'courses',
+            //     component: Courses
+            // },
+            // {
+            //     name: 'superAdminRayon',
+            //     path: 'rayon',
+            //     component: Rayon
+            // },
+            // {
+            //     name: 'superAdminAnnouncement',
+            //     path: 'announcements',
+            //     component: loadComponent('super-admin/Announcements')
+            // },
+            // {
+            //     name: 'superAdminLibrary',
+            //     path: 'library',
+            //     component: loadComponent('super-admin/Library')
+            // },
+            // {
+            //     name: 'superAdminChronicle',
+            //     path: 'chronicle',
+            //     component: Chronicle
+            // },
+        ],
+    },
 	{ path: '*', redirect: '/' }
 ];
 
