@@ -77,7 +77,13 @@
 			v-model="showModal"
 			v-if="showModal"
 		>
-			<AddTopic :is-edit="isEdit" :topic="topic" @close="showModal = false" @fetch="fetchTopics(0)"></AddTopic>
+			<AddTopic
+                :is-edit="isEdit"
+                :topic="topic"
+                @close="showModal=false"
+                @fetch="fetchTopics(0)"
+                @loading="showLoader"
+            ></AddTopic>
 		</v-dialog>
 
         <!--Assignment Modal-->
@@ -91,6 +97,7 @@
 				:assignment="assignment"
 				@close="showAssignmentModal = false"
 				@fetch="fetchTopics"
+                @loading="showLoader"
 			></AddAssignment>
 		</v-dialog>
 
@@ -236,22 +243,27 @@ export default {
             })
 		},
 
-		async fetchAssignments (topics) {
+		async fetchAssignments(topics) {
             this.showHW = false;
-			for (const topic of topics) {
-				await assignmentService.getByTopic(topic.id).then((res) => {
-					if (res._embedded) {
-						topic.assignments = res._embedded.assignmentResourceList;
-                    }
-					topic.totalElements = res.page.totalElements;
-					topic.totalPages = res.page.totalPages;
-					topic.currentPage = res.page.number + 1
-				}).catch((err) => {
-				    this.$toast.error(err);
-                    this.isLoading = false;
-                });
-			}
-			this.topics = topics;
+            const requests = topics.map((topic) => {
+                return new Promise((resolve, reject) => {
+                    assignmentService.getByTopic(topic.id).then((res) => {
+                        if (res._embedded) {
+                            resolve(res._embedded.assignmentResourceList);
+                        } else {
+                            resolve([]);
+                        }
+                    }).catch((err) => {
+                        reject(err);
+                        this.$toast.error(err);
+                    })
+                })
+            });
+            const results = await Promise.all(requests);
+            this.topics = this.topics.map((topic, index) => {
+                topic.assignments = results[index];
+                return topic;
+            });
             this.isLoading = false;
             this.showHW = true;
 		},
@@ -306,6 +318,10 @@ export default {
 
 
 //        ASSIGNMENTS
+        showLoader(bool) {
+            this.isLoading = bool;
+        },
+
 		onAddAssignment(topic) {
 			this.assignment = {
 				topicId: topic.id,
