@@ -26,6 +26,8 @@
                     <th v-for="quarter in schoolQuarters">
                         <span class="blue">{{quarterTitle[quarter.semester]}} - {{ $t('quarter') }}</span>
                     </th>
+                    <th><span class="blue">Итог.оценка</span></th>
+                    <th v-if="showGosExam"><span class="blue">Гос.экзамен</span></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -45,6 +47,8 @@
                             v-else>
                         </td>
                     </template>
+                    <td :contenteditable="true"></td>
+                    <td :contenteditable="true" v-if="showGosExam"></td>
                 </tr>
                 </tbody>
             </table>
@@ -74,7 +78,6 @@
                     '3': 'III',
                     '4': 'IV',
                 },
-                isLoading: false,
                 requestObj: {
                     classId: '',
                     courseId: '',
@@ -88,7 +91,9 @@
                 schoolQuarters: [],
                 instructorCourses: [],
                 allCourses: [],
-                studentQuarterGrades: []
+                studentQuarterGrades: [],
+                isLoading: false,
+                showGosExam: false,
             }
         },
         computed: {
@@ -135,6 +140,8 @@
                 this.requestObj.classId = selectedClass.classId;
                 this.sendQuarterGradeObj.classId = selectedClass.classId;
                 this.filterCourses(selectedClass);
+                const classLevel = selectedClass.classLevel;
+                this.showGosExam = classLevel.includes('9') || classLevel.includes('11');
             },
 
             filterCourses(selectedClass) {
@@ -263,7 +270,6 @@
 
         &__table {
             background: #FFFFFF;
-            width: 1024px;
             box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
             border-radius: 4px;
 
@@ -285,8 +291,18 @@
                     border-right: 10px solid #fff;
                     width: 150px;
                 }
-                &:last-child {
+                &:nth-child(5) {
                     background: rgba(0, 217, 95, 0.1);
+                    border-right: 10px solid #fff;
+                    width: 150px;
+                }
+                &:nth-child(6) {
+                    border-right: 10px solid #fff;
+                    background: rgb(6 205 198 / 10%);
+                    width: 150px;
+                }
+                &:nth-child(7) {
+                    background: #ccd6ff;
                     width: 150px;
                 }
             }
@@ -342,7 +358,8 @@
                 }
 
                 .full-name {
-                    padding-left: 30px;
+                    min-width: 250px;
+                    padding: 0 25px;
                     font-size: 14px;
                     line-height: 16px;
                     letter-spacing: 0.01em;
