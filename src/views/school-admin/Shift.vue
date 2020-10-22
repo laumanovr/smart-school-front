@@ -207,7 +207,10 @@
                         return new Promise((resolve, reject) => {
                             ShiftTimeService.create(shiftTime).then((res) => {
                                 resolve(res);
-                            }).catch(err => reject(err))
+                            }).catch((err) => {
+                                reject(err);
+                                this.$toast.error(err);
+                            })
                         })
                     });
                 } else {
@@ -215,7 +218,10 @@
                         return new Promise((resolve, reject) => {
                             ShiftTimeService.update(shiftTime).then((res) => {
                                 resolve(res);
-                            }).catch(err => reject(err))
+                            }).catch((err) => {
+                                reject(err);
+                                this.$toast.error(err);
+                            })
                         })
                     });
                 }
