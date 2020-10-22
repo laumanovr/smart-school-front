@@ -49,11 +49,11 @@ export default {
             icon: 'country.svg',
             route: '/super-admin/rayon'
         },
-        {
-            name: 'Календарь',
-            icon: 'calendar.svg',
-            route: '/super-admin/calendar'
-        },
+        // {
+        //     name: 'Календарь',
+        //     icon: 'calendar.svg',
+        //     route: '/super-admin/calendar'
+        // },
         {
             name: 'Объявления',
             icon: 'announcement.svg',
@@ -193,10 +193,10 @@ export default {
             icon: 'students.svg',
             route: '/rayon-head/students'
         },
-        {
-            name: 'Календарь',
-            icon: 'calendar.svg',
-            route: '/rayon-head/calendar'
-        }
+        // {
+        //     name: 'Календарь',
+        //     icon: 'calendar.svg',
+        //     route: '/rayon-head/calendar'
+        // }
     ]
 }
