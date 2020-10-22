@@ -1,5 +1,6 @@
 <template>
     <div class="quarter-calendar page-space">
+        <PreLoader v-if="isLoading"/>
         <SuperAdminSchoolHead>
             <template v-slot:title>
                 <div class="header-title">
@@ -7,24 +8,68 @@
                 </div>
             </template>
             <template v-slot:right>
-                <v-btn color="primary" @click="generateQuarters">Сгенерировать</v-btn>
+                <v-btn color="primary" @click="generateQuarters">Авто-сгенерировать</v-btn>
             </template>
         </SuperAdminSchoolHead>
 
-        <div class="content-block">
+        <div class="content-block" v-if="schoolQuarters.length">
             <div class="all-quarters">
                 <div class="quarter" v-for="quarter in schoolQuarters" :key="quarter.id">
-                    <span>{{quarterTitle[quarter.semester]}}</span>
-                    <span>
-                        <v-text-field v-model="quarter.startDate" label="От" readonly/>
-                    </span>
-                    <span>
-                        <v-text-field v-model="quarter.endDate" label="До" readonly/>
-                    </span>
+                    <span class="quarter-name">{{quarterTitle[quarter.semester]}}</span>
+                    <div class="date-from">
+                        <v-menu
+                            v-model="quarter.showPickerFrom"
+                            :close-on-content-click="false"
+                            :nudge-right="40"
+                            transition="scale-transition"
+                            offset-y
+                            min-width="290px"
+                        >
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-text-field
+                                    v-model="quarter.startDate"
+                                    label="От"
+                                    prepend-icon="event"
+                                    readonly
+                                    v-bind="attrs"
+                                    v-on="on"/>
+                            </template>
+                            <v-date-picker
+                                v-model="quarter.dateStart"
+                                @input="onSelectQuarterDate(quarter, 'showPickerFrom')"
+                            ></v-date-picker>
+                        </v-menu>
+                    </div>
+                    <div>
+                        <v-menu
+                            v-model="quarter.showPickerTo"
+                            :close-on-content-click="false"
+                            :nudge-right="40"
+                            transition="scale-transition"
+                            offset-y
+                            min-width="290px"
+                        >
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-text-field
+                                    v-model="quarter.endDate"
+                                    label="До"
+                                    prepend-icon="event"
+                                    readonly
+                                    v-bind="attrs"
+                                    v-on="on"/>
+                            </template>
+                            <v-date-picker
+                                v-model="quarter.dateEnd"
+                                @input="onSelectQuarterDate(quarter, 'showPickerTo')"
+                            ></v-date-picker>
+                        </v-menu>
+                    </div>
                 </div>
             </div>
+            <div class="btn-actions">
+                <v-btn color="green" @click="submitSave">Сохранить</v-btn>
+            </div>
         </div>
-
     </div>
 </template>
 
@@ -33,27 +78,30 @@
     import {QuarterService} from '@/_services/quarter.service';
     const quarterService = new QuarterService();
     import moment from 'moment';
+    import PreLoader from "@/components/preloader/PreLoader";
 
     export default {
         name: 'quarter',
         components: {
-            SuperAdminSchoolHead
+            SuperAdminSchoolHead,
+            PreLoader
         },
 
         data() {
             return {
+                isLoading: false,
                 quarterTitle: {
-                  '1': 'I четверть',
-                  '2': 'II четверть',
-                  '3': 'III четверть',
-                  '4': 'IV четверть',
+                    '1': 'I четверть',
+                    '2': 'II четверть',
+                    '3': 'III четверть',
+                    '4': 'IV четверть',
                 },
                 schoolQuarters: []
             }
         },
 
         computed: {
-            userProfile () {
+            userProfile() {
                 return this.$store.state.account.profile
             },
             school() {
@@ -62,6 +110,7 @@
         },
 
         mounted() {
+            this.isLoading = true;
             this.getQuartersBySchool();
         },
 
@@ -69,45 +118,77 @@
             getQuartersBySchool() {
                 quarterService.getBySchoolAndChronicle(this.school.id, this.school.chronicleId).then((res) => {
                     this.schoolQuarters = res.map((quarter) => {
+                        quarter.dateStart = quarter.startDate;
+                        quarter.dateEnd = quarter.endDate;
                         quarter.startDate = moment(quarter.startDate, 'YYYY-MM-DD').format('DD.MM.YYYY');
                         quarter.endDate = moment(quarter.endDate, 'YYYY-MM-DD').format('DD.MM.YYYY');
+                        quarter.showPickerFrom = false;
+                        quarter.showPickerTo = false;
+                        quarter.status = true;
                         return quarter;
-                    });
-                }).catch((err) => this.$toast.error(err.message));
+                    }).sort((a, b) => a.semester - b.semester);
+                    this.isLoading = false;
+                }).catch((err) => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                });
             },
 
             generateQuarters() {
                 if (!this.schoolQuarters.length) {
+                    this.isLoading = true;
                     quarterService.generateQuarter(this.school.id, this.school.chronicleId).then(() => {
                         this.getQuartersBySchool()
-                    }).catch((err) => this.$toast.error(err.message));
+                    }).catch((err) => this.$toast.error(err));
                 }
             },
 
+            onSelectQuarterDate(quarter, showPicker) {
+                quarter[showPicker] = false;
+                quarter.startDate = moment(quarter.dateStart, 'YYYY-MM-DD').format('DD.MM.YYYY');
+                quarter.endDate = moment(quarter.dateEnd, 'YYYY-MM-DD').format('DD.MM.YYYY');
+            },
 
+            async submitSave() {
+                this.isLoading = true;
+                const requests = this.schoolQuarters.map((quarter) => {
+                    return new Promise((resolve, reject) => {
+                        quarterService.edit(quarter).then((res) => {
+                            resolve(res);
+                        }).catch((err) => {
+                            reject(err);
+                            this.$toast.error(err);
+                            this.isLoading = false;
+                        });
+                    })
+                });
+                const results = await Promise.all(requests);
+                if (results.length) {
+                    this.$toast.success('Успешно!');
+                    this.isLoading = false;
+                }
+            },
         }
-
     }
 </script>
 
 <style lang="scss" scoped>
     .quarter-calendar {
-            .all-quarters {
-                background: #fff;
-                width: 865px;
-                margin: 0 auto;
-                padding: 20px;
-                border-radius: 8px;
-                .quarter {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    span {
-                        display: inline-block;
-                        margin-right: 20px;
-                    }
+        .all-quarters {
+            background: #fff;
+            width: 865px;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 8px;
+            .quarter {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                .quarter-name, .date-from {
+                    margin-right: 20px;
                 }
             }
+        }
     }
 
 </style>
