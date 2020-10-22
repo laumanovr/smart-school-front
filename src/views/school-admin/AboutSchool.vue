@@ -160,7 +160,7 @@
         methods: {
             getQuartersBySchool() {
                 quarterService.getBySchoolAndChronicle(this.school.id, this.school.chronicleId).then((res) => {
-                    this.schoolQuarters = res;
+                    this.schoolQuarters = res.sort((a, b) => a.semester - b.semester);
                 }).catch((err) => this.$toast.error(err.message));
             },
 
