@@ -99,6 +99,7 @@ export default {
 
 		submit() {
 			if (this.$refs.form.validate()) {
+			    this.$emit('loading', true);
                 this.assignment.chronicleId = this.userProfile.schools[0].chronicleId;
 				if (this.isEdit) {
 					assignmentService.edit(this.assignment).then(() => {
@@ -107,6 +108,7 @@ export default {
 						this.$emit('fetch');
 					}).catch((err) => {
 					    this.$toast.error(err);
+                        this.$emit('loading', false);
                     })
 				} else {
 					assignmentService.create(this.assignment).then(() => {
@@ -115,6 +117,7 @@ export default {
 						this.$emit('fetch');
 					}).catch((err) => {
                         this.$toast.error(err);
+                        this.$emit('loading', false);
                     })
 				}
 			}
