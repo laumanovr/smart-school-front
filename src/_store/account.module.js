@@ -1,5 +1,5 @@
-import {userService} from '@/_services/user.service'
-import router from '@/_router'
+import {userService} from '@/_services/user.service';
+import router from '@/_router';
 
 const user = JSON.parse(localStorage.getItem('user'));
 const profile = JSON.parse(localStorage.getItem('profile'));
@@ -25,19 +25,23 @@ const roles = [
 
 const state = {
 	user: user ? user : {},
-	profile: profile ? profile : {}
+	profile: profile ? profile : {},
+    onError: ''
 };
 
 const actions = {
 	login({commit, dispatch}, data) {
-		userService.login(data).then(res => {
+		userService.login(data).then((res) => {
 			localStorage.setItem('user', JSON.stringify(res));
             commit('SET_USER', res);
             dispatch('getProfile');
-        }).catch(err => console.log(err));
+        }).catch((err) => {
+            console.log(err);
+            commit('SET_ERROR', err);
+        });
 	},
 	getProfile({commit, dispatch}) {
-		userService.getProfile().then(res => {
+		userService.getProfile().then((res) => {
             commit('SET_PROFILE', res);
             localStorage.setItem('profile', JSON.stringify(res));
             const role = roles.find(i => i.code === res.role[0].code);
@@ -45,7 +49,10 @@ const actions = {
             if (res.role[0].code.includes('ROLE_SUPER_ADMIN')) {
                 dispatch('location/fetchRegions', {}, {root: true});
             }
-		}).catch(err => console.log(err));
+		}).catch((err) => {
+            console.log(err);
+            commit('SET_ERROR', err);
+        });
 	},
 	logout({commit}) {
 		userService.logout();
@@ -62,7 +69,10 @@ const mutations = {
 	},
 	SET_PROFILE(state, data) {
 		state.profile = data;
-	}
+	},
+    SET_ERROR(state, err) {
+	    state.onError = err;
+    }
 };
 
 export const account = {
