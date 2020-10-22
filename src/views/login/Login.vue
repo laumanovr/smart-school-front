@@ -1,5 +1,6 @@
 <template>
 	<div class="login-page">
+        <PreLoader v-if="isLoading"/>
 		<div class="login-page__images">
 			<div>
 				<img src="../../assets/images/background-image.svg">
@@ -52,28 +53,42 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapState } from 'vuex';
+import PreLoader from '@/components/preloader/PreLoader';
+
 export default {
+    components: {
+        PreLoader
+    },
 	data () {
 		return {
+		    isLoading: false,
 			username: '',
 			password: '',
-			submitted: false,
 		};
 	},
-	mounted () {
-		this.logout();
-	},
+    computed: {
+        ...mapState('account', ['onError'])
+    },
 	methods: {
 		...mapActions('account', [ 'login', 'logout' ]),
-		handleSubmit (e) {
-			this.submitted = true;
+		handleSubmit() {
 			const { username, password } = this;
 			if (username && password) {
+			    this.isLoading = true;
 				this.login({ username, password });
 			}
 		}
-	}
+	},
+    watch: {
+        onError(message) {
+            if (message) {
+                this.isLoading = false;
+                this.$toast.error(message);
+                this.$store.state.account.onError = '';
+            }
+        }
+    }
 };
 </script>
 <style lang="scss" scoped>
