@@ -4,7 +4,13 @@
             <template v-slot:title>Библиотека</template>
         </SuperAdminSchoolHead>
 
-        <SmartTable :schools="libraries">
+        <SmartTable
+            :page-size="libraries.length"
+            :schools="libraries"
+            :total-elements="4"
+            :totalPages="1"
+            :current-page="1"
+        >
             <template v-slot:firstItem>
                 <SmartSelect>Школа <v-icon>$chevronDown</v-icon></SmartSelect>
                 <SmartSelect>Класс <v-icon>$chevronDown</v-icon></SmartSelect>
