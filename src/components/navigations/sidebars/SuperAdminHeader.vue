@@ -20,17 +20,23 @@
         </span>
         <span class="divider"></span>
         <span style="cursor: pointer"><img src="../../../assets/images/icons/ring-bell.svg"></span>
-         <span style="cursor: pointer" @click="$router.push('/login')"><img src="../../../assets/images/icons/logout.svg"></span>
+         <span style="cursor: pointer" @click="systemLogout"><img src="../../../assets/images/icons/logout.svg"></span>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 export default {
     name: 'SuperAdminHeader',
-	data: () => ({
-	})
+    methods: {
+        ...mapActions('account', [ 'login', 'logout' ]),
+        systemLogout() {
+            this.logout();
+            this.$router.push('/login');
+        }
+    }
 }
 </script>
 
