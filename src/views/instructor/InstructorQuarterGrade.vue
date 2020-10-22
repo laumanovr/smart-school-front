@@ -26,8 +26,8 @@
                     <th v-for="quarter in schoolQuarters">
                         <span class="blue">{{quarterTitle[quarter.semester]}} - {{ $t('quarter') }}</span>
                     </th>
-                    <th><span class="blue">Итог.оценка</span></th>
                     <th v-if="showGosExam"><span class="blue">Гос.экзамен</span></th>
+                    <th><span class="blue">Итог.оценка</span></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -47,8 +47,8 @@
                             v-else>
                         </td>
                     </template>
-                    <td :contenteditable="true"></td>
                     <td :contenteditable="true" v-if="showGosExam"></td>
+                    <td :contenteditable="true"></td>
                 </tr>
                 </tbody>
             </table>
