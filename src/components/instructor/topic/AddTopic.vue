@@ -112,6 +112,7 @@ export default {
 
 		submit () {
 			if (this.$refs.form.validate()) {
+			    this.$emit('loading', true);
 				this.topic.parentId = null;
 				this.topic.personId = this.userProfile.personId;
 				this.topic.archived = false;
@@ -124,6 +125,7 @@ export default {
 						this.$emit('close');
 					}).catch((err) => {
 					    this.$toast.error(err);
+                        this.$emit('loading', false);
                     })
 				} else {
 					topicService.create(this.topic).then(() => {
@@ -132,6 +134,7 @@ export default {
 						this.$emit('close');
 					}).catch((err) => {
                         this.$toast.error(err);
+                        this.$emit('loading', false);
                     })
 				}
 			}
