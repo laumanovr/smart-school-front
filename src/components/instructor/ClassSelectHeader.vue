@@ -62,7 +62,7 @@ export default {
 	font-family: Helvetica;
 	font-style: normal;
 	background: #FFFFFF;
-	height: 67px;
+	min-height: 67px;
 	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
 	border-radius: 4px;
 	display: flex;
@@ -81,6 +81,7 @@ export default {
 		flex: 3;
 		display: flex;
 		justify-content: center;
+        flex-wrap: wrap;
 	}
 
 	&__item {
@@ -91,7 +92,7 @@ export default {
 		color: #707683;
 		margin: 0 5px;
 		padding: 15px 8px;
-		transition: all 0.2s;
+        white-space: nowrap;
 
 		&:hover {
 			background: rgba(#339DFA, 0.2);
