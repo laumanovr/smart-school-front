@@ -32,16 +32,16 @@ const actions = {
 	login({commit, dispatch}, data) {
 		userService.login(data).then(res => {
 			localStorage.setItem('user', JSON.stringify(res));
-            dispatch('getProfile');
             commit('SET_USER', res);
-            const role = roles.find(i => i.code === res.roles[0].code);
-            router.push(role.url);
+            dispatch('getProfile');
         }).catch(err => console.log(err));
 	},
 	getProfile({commit, dispatch}) {
 		userService.getProfile().then(res => {
-			commit('SET_PROFILE', res);
-			localStorage.setItem('profile', JSON.stringify(res));
+            commit('SET_PROFILE', res);
+            localStorage.setItem('profile', JSON.stringify(res));
+            const role = roles.find(i => i.code === res.role[0].code);
+            router.push(role.url);
             if (res.role[0].code.includes('ROLE_SUPER_ADMIN')) {
                 dispatch('location/fetchRegions', {}, {root: true});
             }
