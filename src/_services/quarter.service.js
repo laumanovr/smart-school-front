@@ -31,12 +31,12 @@ export class QuarterService extends BaseApiService {
         return this.sendPostRequest(url, data);
     }
 
-    edit(data,quarter_id) {
-        const url = `${process.env.VUE_APP_BASE_URL}/v1/quarter/edit/${quarter_id}`;
+    edit(data) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/quarter/edit/${data.id}`;
         return this.sendPostRequest(url, data);
     }
 
-    delete(id) {
+    _delete(id) {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/quarter/${id}`;
         return this.sendDeleteRequest(url);
     }
