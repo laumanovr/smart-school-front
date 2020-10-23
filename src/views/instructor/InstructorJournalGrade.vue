@@ -302,7 +302,7 @@
             },
 
             showCurrentMark(grade) {
-                return isNaN(grade.mark) ? 'Н' : grade.mark;
+                return isNaN(grade.mark) || grade.mark.includes('95') ? 'Н' : grade.mark;
             },
 
             setGradeMark(e, student, day, currentGrade) {
