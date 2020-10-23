@@ -26,7 +26,7 @@
 
         data() {
             return {
-                jitsiDomain: 'tm.meet.socservice.kg',
+                jitsiDomain: 'meet.ds.edu.gov.kg',
                 showWidget: false,
                 isLoading: false
             }
