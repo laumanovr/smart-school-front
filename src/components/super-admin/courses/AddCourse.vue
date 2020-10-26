@@ -4,7 +4,7 @@
 			<v-text-field :rules="required" v-model="course.title" label="Название"></v-text-field>
 		</div>
 		<div>
-			<v-text-field :rules="required" v-model="course.code" label="Код"></v-text-field>
+			<v-text-field :rules="required" v-model.trim="course.code" label="Код"></v-text-field>
 		</div>
 		<div>
 			<v-textarea
