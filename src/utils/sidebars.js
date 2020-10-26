@@ -108,24 +108,29 @@ export default {
             route: '/school-admin/students'
         },
         {
-            name: 'Объявления',
-            icon: 'announcement.svg',
-            route: '/school-admin/announcements'
-        },
-        {
             name: 'Расписание',
             icon: 'schedule.svg',
             route: '/school-admin/schedule-week'
         },
         {
-            name: 'Библиотека',
-            icon: 'library.svg',
-            route: '/school-admin/library'
-        },
-        {
             name: 'Четверть',
             icon: 'schedule.svg',
             route: '/school-admin/school-quarter'
+        },
+        {
+            name: 'Отчеты',
+            icon: 'report.svg',
+            route: '/school-admin/admin-report'
+        },
+        {
+            name: 'Объявления',
+            icon: 'announcement.svg',
+            route: '/school-admin/announcements'
+        },
+        {
+            name: 'Библиотека',
+            icon: 'library.svg',
+            route: '/school-admin/library'
         },
     ],
 
@@ -133,42 +138,47 @@ export default {
         {
             name: 'Аналитика',
             icon: 'chart.svg',
-            route: '/instructor-page'
+            route: '/instructor'
         },
         {
             name: 'Журнал',
             icon: 'journal.svg',
-            route: '/instructor-page/journal-grade'
+            route: '/instructor/journal-grade'
         },
         {
             name: 'Ит.Оценки',
             icon: 'quarter-grade.svg',
-            route: '/instructor-page/quarter-grade'
+            route: '/instructor/quarter-grade'
         },
         {
             name: 'Мои классы',
             icon: 'my-class.svg',
-            route: '/instructor-page/classes'
+            route: '/instructor/classes'
         },
         {
             name: 'Темы',
             icon: 'book-open.svg',
-            route: '/instructor-page/topics'
+            route: '/instructor/topics'
         },
         {
             name: 'Расписание',
             icon: 'schedule.svg',
-            route: '/instructor-page/schedule'
+            route: '/instructor/schedule'
         },
         {
             name: 'Онлайн Урок',
             icon: 'videocam.svg',
-            route: '/instructor-page/online-lesson'
+            route: '/instructor/online-lesson'
+        },
+        {
+            name: 'Отчеты',
+            icon: 'report.svg',
+            route: '/instructor/instructor-report'
         },
         {
             name: 'Сообщения',
             icon: 'message.svg',
-            route: '/instructor-page/message'
+            route: '/instructor/message'
         },
     ],
 
