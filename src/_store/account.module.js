@@ -15,7 +15,7 @@ const roles = [
 	},
 	{
 		code: 'ROLE_INSTRUCTOR',
-		url: '/instructor-page'
+		url: '/instructor'
 	},
     {
         code: 'ROLE_RAYON_HEADER',
