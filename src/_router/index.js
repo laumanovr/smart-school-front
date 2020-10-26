@@ -167,13 +167,18 @@ const routes = [
 				name: 'shifts',
 				path: 'shifts',
 				component: loadComponent('school-admin/Shift')
-			}
+			},
+            {
+                name: 'adminReport',
+                path: 'admin-report',
+                component: loadComponent('school-admin/SchoolAdminReport')
+            }
 		],
 	},
 
     // INSTRUCTOR
 	{
-        path: '/instructor-page',
+        path: '/instructor',
         component: loadComponent('instructor/InstructorManage'),
         beforeEnter: (to, from, next) => {
             $user.checkInstructor(next);
@@ -215,10 +220,15 @@ const routes = [
                 component: loadComponent('instructor/InstructorOnlineLesson')
             },
             {
+                name: 'instructorReport',
+                path: 'instructor-report',
+                component: loadComponent('instructor/InstructorReport')
+            },
+            {
                 name: 'instructorMessage',
                 path: 'message',
                 component: SuperAdminEmpty // Временно
-            }
+            },
         ],
     },
 
