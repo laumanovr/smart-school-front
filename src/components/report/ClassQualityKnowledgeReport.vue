@@ -73,7 +73,7 @@
         </div>
 
         <div class="print-btn" v-if="showTable">
-            <v-btn color="primary" @click="printPdf">Экспорт</v-btn>
+            <v-btn color="primary" @click="exportPdf">Экспорт</v-btn>
         </div>
     </div>
 </template>
@@ -225,7 +225,7 @@
                 return result.toFixed(1);
             },
 
-            printPdf() {
+            exportPdf() {
                 this.$refs.report.style.width = '90vh';
                 this.$refs.report.style.height = '90vh';
                 this.$refs.report.querySelector('.report-title').style.width = '1170px';
