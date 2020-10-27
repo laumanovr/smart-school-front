@@ -256,7 +256,18 @@
     "LOGICS": "Логика",
     "manas_taanuu": "Манас таануу",
     "BLS": "ОБЖ",
-    "ETHICS": "Этика"
+    "ETHICS": "Этика",
+
+    "PRE_CONSCRIPTION_TRAINING_KG": "Аскерге чейинки даярдык",
+    "NATURAL_SCIENCE_KG": "Табият таануу",
+    "FOREIGN_LANGUAGE_KG": "Чет тили",
+    "HISTORY_KG": "Тарых",
+    "ELEMENTARY_SCHOOL_KG": "Башталгыч класс",
+    "RUSSIAN_LANGUAGE_KG": "Орус Тили",
+    "RUSSIAN_LITERATURE_KG": "Орус Адабияты",
+    "WORK_KG": "Эмгек",
+    "PHYSICAL_EDUCATION_KG": "Дене Тарбия",
+    "HUMAN_SOCIETY_KG": "Адам жана Коом"
   },
   "roles": {
     "ROLE_SUPER_ADMIN": "Супер Админ",
