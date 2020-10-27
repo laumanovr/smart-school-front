@@ -16,6 +16,18 @@ export class AnalyticsService extends BaseApiService {
         const url = baseUrl + `?chronicleId=${chronicleId}&schoolId=${schoolId}&quarterId=${quarterId}&rayonId=${rayonId}`;
         return this.sendGetRequest(url);
     }
+
+    getStudentPerformance(schoolId='', chronicleId='', quarterId='', classId='') {
+        const baseUrl = `${process.env.VUE_APP_BASE_URL}/v1/analytic/performance`;
+        const url = baseUrl + `?chronicleId=${chronicleId}&schoolId=${schoolId}&classId=${classId}&quarterId=${quarterId}`;
+        return this.sendGetRequest(url);
+    }
+
+    getTotalStudentsCount(schoolId, classId, rayonId='') {
+        const baseUrl = `${process.env.VUE_APP_BASE_URL}/v1/analytic/student-count`;
+        const url = baseUrl + `?schoolId=${schoolId}&classId=${classId}`;
+        return this.sendGetRequest(url);
+    }
 }
 
 export default new AnalyticsService();
