@@ -226,8 +226,8 @@
             },
 
             printPdf() {
-                this.$refs.report.style.width = '120vh';
-                this.$refs.report.style.height = '120vh';
+                this.$refs.report.style.width = '90vh';
+                this.$refs.report.style.height = '90vh';
                 this.$refs.report.querySelector('.report-title').style.width = '1170px';
                 const clonedTable = this.$refs.report.cloneNode(true);
                 this.synchronizeCssStyles(this.$refs.report, clonedTable, true);
