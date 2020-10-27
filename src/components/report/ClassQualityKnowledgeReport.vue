@@ -33,13 +33,14 @@
                 :rules="required"
                 v-model="reportObj.quarterId"
                 class="v-select-item"
+                @change="setQuarterTitle"
             />
             <v-btn color="primary" @click="fetchQualityKnowledgeReport">Сгенерировать</v-btn>
         </v-form>
 
         <div class="report-content" ref="report" v-if="showTable">
             <div class="report-title">
-                <h3>Отчет <br> по качеству знаний и успеваемости за {{selectedChronicleYear}} учебный год <br>
+                <h3>Отчет <br> по качеству знаний и успеваемости за {{selectedChronicleYear}}, четверть-{{selectedQuarterTitle}}, <br>
                     школы {{school.name}}</h3>
             </div>
             <table class="table bordered report">
@@ -106,7 +107,8 @@
                 allChronicleYears: [],
                 schoolQuarters: [],
                 selectedClassTotalStudents: '',
-                selectedChronicleYear: ''
+                selectedChronicleYear: '',
+                selectedQuarterTitle: ''
             }
         },
 
@@ -153,6 +155,11 @@
                 }).catch((err) => {
                     this.$toast.error(err);
                 })
+            },
+
+            setQuarterTitle(quatId) {
+                this.selectedQuarterTitle = this.schoolQuarters.find(quat => quat.id === quatId).semester;
+                this.showTable = false;
             },
 
             fetchQualityKnowledgeReport() {
