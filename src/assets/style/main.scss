@@ -77,15 +77,17 @@ h4  {
   .v-select {
     max-width: 230px;
   }
-  .select-clear-block {
-    display: flex;
-    align-items: center;
-    margin-right: 20px;
-  }
+}
+
+.select-clear-block {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
 }
 
 .v-select-item {
   max-width: 220px;
+  margin-right: 15px;
 }
 
 table {
