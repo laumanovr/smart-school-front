@@ -9,14 +9,12 @@
                     <tr>
                         <th class="light-purple">Класс</th>
                         <th>Классный Руководитель</th>
-                        <th class="light-purple">Предмет</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="klass in instrClasses" :key="klass.id">
                         <td class="light-purple">{{ klass.classLevel + '-' + klass.classLabel }}</td>
-                        <td>{{ getInstructorName(klass.classId) }}</td>
-                        <td class="light-purple">{{ $t(`adminCourses.${klass.courseCode}`) }}</td>
+                        <td>{{ klass.personTitle }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -25,7 +23,6 @@
 </template>
 
 <script>
-    import ScheduleWeekService from '@/_services/schedule-week.service';
     import ClassSelectHeader from '@/components/instructor/ClassSelectHeader';
     import {InstructorClassService} from '@/_services/instructor-class.service';
     const instructorClassService = new InstructorClassService();
@@ -41,7 +38,6 @@
                 isLoading: false,
                 showData: false,
                 instrClasses: [],
-                allSchoolClasses: [],
             }
         },
 
@@ -53,34 +49,21 @@
 
         async created() {
             this.isLoading = true;
-            await this.fetchAllSchoolClasses();
             await this.fetchInstructorClasses();
         },
 
         methods: {
             fetchInstructorClasses() {
-                ScheduleWeekService.getByInstructor(this.userProfile.personId).then((res) => {
-                    this.instrClasses = res.filter((obj, index, selfArr) =>
-                        index === selfArr.findIndex((el) =>
-                            (el['classId'] === obj['classId'])
-                        ));
-                    this.showData = true;
+                instructorClassService.getByInstructorId(this.userProfile.personId).then((res) => {
+                    if (res._embedded) {
+                        this.instrClasses = res._embedded.instructorClassResourceList;
+                        this.showData = true;
+                    }
                     this.isLoading = false;
                 }).catch(err => {
                     this.$toast.error(err);
                     this.isLoading = false;
                 })
-            },
-
-            fetchAllSchoolClasses() {
-                instructorClassService.getAllClasses(this.userProfile.schools[0].id).then((res) => {
-                    this.allSchoolClasses = res;
-                })
-            },
-
-            getInstructorName(klassId) {
-                const teacher = this.allSchoolClasses.find(klass => klass.classId === klassId);
-                return teacher ? teacher.personTitle : '';
             },
         }
     }
