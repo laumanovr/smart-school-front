@@ -19,7 +19,7 @@ export class AnalyticsService extends BaseApiService {
 
     getStudentPerformance(schoolId='', chronicleId='', quarterId='', classId='') {
         const baseUrl = `${process.env.VUE_APP_BASE_URL}/v1/analytic/performance`;
-        const url = baseUrl + `?chronicleId=${chronicleId}&schoolId=${schoolId}&classId=${classId}&quarterId=${quarterId}`;
+        const url = baseUrl + `?chronicleId=${chronicleId}&schoolId=${schoolId}&quarterId=${quarterId}&classId=${classId}`;
         return this.sendGetRequest(url);
     }
 
