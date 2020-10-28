@@ -1,21 +1,20 @@
 <template>
-    <div class="report">
-        <h2>Admin report</h2>
+    <div class="admin-report-container">
+        <AllClassesQualityReport/>
     </div>
 </template>
 
 <script>
-    import AnalyticsService from '@/_services/analytics.service';
-
+    import AllClassesQualityReport from '@/components/report/AllClassesQualityReport';
     export default {
-        data() {
-            return {
-
-            }
-        },
-
-        methods: {
-
+        components: {
+            AllClassesQualityReport
         }
     }
 </script>
+
+<style lang="scss">
+    .admin-report-container {
+        margin: 25px;
+    }
+</style>
