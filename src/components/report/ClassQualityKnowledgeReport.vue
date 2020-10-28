@@ -201,7 +201,7 @@
             },
 
             countTotal(number) {
-                if (number[2].includes('9')) {
+                if (number[2].includes('8')) {
                     return Math.ceil(number);
                 } else if (number > 0 && number < 1) {
                     return 1;
