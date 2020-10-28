@@ -117,11 +117,11 @@ export default {
             icon: 'schedule.svg',
             route: '/school-admin/school-quarter'
         },
-        // {
-        //     name: 'Отчеты',
-        //     icon: 'report.svg',
-        //     route: '/school-admin/admin-report'
-        // },
+        {
+            name: 'Отчеты',
+            icon: 'report.svg',
+            route: '/school-admin/admin-report'
+        },
         {
             name: 'Объявления',
             icon: 'announcement.svg',
