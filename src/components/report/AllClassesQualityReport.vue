@@ -183,20 +183,20 @@
                                     });
                                     this.classReports.push(classObj)
                                 });
-                                this.classReports = this.classReports.map((klass) => {
-                                    const totalStudents = klass.totalStudentCount;
-                                    const totalMarks = klass.totalFive + klass.totalFour + klass.totalThree + klass.totalTwo;
-                                    klass.totalFive = this.countTotal((totalStudents * (klass.totalFive / totalMarks)).toFixed(1));
-                                    klass.totalFour = this.countTotal((totalStudents * (klass.totalFour / totalMarks)).toFixed(1));
-                                    klass.totalThree = this.countTotal((totalStudents * (klass.totalThree / totalMarks)).toFixed(1));
-                                    klass.totalTwo = this.countTotal((totalStudents * (klass.totalTwo / totalMarks)).toFixed(1));
-                                    //
-                                    const totalGrades = klass.totalFive + klass.totalFour + klass.totalThree + klass.totalTwo;
-                                    if (totalGrades < totalStudents) {
-                                        klass.totalFive++
-                                    }
-                                    return klass;
-                                });
+//                                this.classReports = this.classReports.map((klass) => {
+//                                    const totalStudents = klass.totalStudentCount;
+//                                    const totalMarks = klass.totalFive + klass.totalFour + klass.totalThree + klass.totalTwo;
+//                                    klass.totalFive = this.countTotal((totalStudents * (klass.totalFive / totalMarks)).toFixed(1));
+//                                    klass.totalFour = this.countTotal((totalStudents * (klass.totalFour / totalMarks)).toFixed(1));
+//                                    klass.totalThree = this.countTotal((totalStudents * (klass.totalThree / totalMarks)).toFixed(1));
+//                                    klass.totalTwo = this.countTotal((totalStudents * (klass.totalTwo / totalMarks)).toFixed(1));
+//                                    //
+//                                    const totalGrades = klass.totalFive + klass.totalFour + klass.totalThree + klass.totalTwo;
+//                                    if (totalGrades < totalStudents) {
+//                                        klass.totalFive++
+//                                    }
+//                                    return klass;
+//                                });
                                 this.showTable = true;
                                 this.isLoading = false;
                             }).catch((err) => {
