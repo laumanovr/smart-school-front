@@ -234,7 +234,7 @@
             },
 
             countPerformance(klass) {
-                const totalGrades = klass.totalFive + klass.totalFour + klass.totalThree + klass.totalTwo;
+                const totalGrades = klass.totalFive + klass.totalFour + klass.totalThree;
                 const result = (totalGrades / klass.totalStudentCount) * 100;
                 return result.toFixed(1);
             },
