@@ -135,6 +135,7 @@
             setQuarterTitle(quatId) {
                 this.selectedQuarterTitle = this.schoolQuarters.find(quat => quat.id === quatId).semester;
                 this.showTable = false;
+                this.classReports = [];
             },
 
             fetchQualityKnowledgeReport() {
