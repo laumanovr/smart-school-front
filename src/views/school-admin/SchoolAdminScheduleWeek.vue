@@ -238,6 +238,9 @@
             <div class="modal-container">
                 <div class="lesson-day">{{objDay[sendScheduleObj.weekDay]}} - {{'Урок ' + selectedShiftTime.name}}</div>
                 <h4>{{mode == 'create' ? 'Добавить предмет' : 'Редактировать' }}</h4>
+                <div class="delete-schedule" v-if="mode == 'edit'">
+                    <DeleteIcon @click="removeSchedule" />
+                </div>
                 <v-form ref="scheduleForm">
                     <v-autocomplete
                         :items="allTeachers"
@@ -250,7 +253,7 @@
                     />
                     <div class="btn-actions">
                         <v-btn color="red" @click="closeClassViewModal">Отмена</v-btn>
-                        <v-btn color="green" @click="submit">Сохранить</v-btn>
+                        <v-btn color="green" @click="submit" :disabled="!sendScheduleObj.instrCourseId">Сохранить</v-btn>
                     </div>
                 </v-form>
             </div>
@@ -291,7 +294,8 @@
                     weekDay: '',
                     groupTitle: '',
                     grouped: false,
-                    archived: false
+                    archived: false,
+                    instrCourseId: ''
                 },
                 objDay: {
                     MONDAY: 'Понедельник',
@@ -536,6 +540,7 @@
                         }
                     });
                     this.closeModal();
+                    this.closeClassViewModal();
                     this.$toast.success('Успешно удалено!');
                     this.isLoading = false;
                 }).catch(err => {
@@ -567,10 +572,11 @@
                     this.sendScheduleObj.grouped = schedule.grouped;
                     this.sendScheduleObj.groupTitle = schedule.groupTitle;
                     this.sendScheduleObj.id = schedule.id;
-                    this.sendScheduleObj.instrCourseId = this.allTeachers.find((teacher) =>
+                    const instrCours = this.allTeachers.find((teacher) =>
                         teacher.instructorId === schedule.instructorId &&
                         teacher.courseId === schedule.courseId
-                    ).id;
+                    );
+                    this.sendScheduleObj.instrCourseId = instrCours ? instrCours.id : '';
                 }
                 this.$modal.show('class-view-schedule-modal');
             },
