@@ -46,6 +46,9 @@
 				    <SmartButton @clicked="openDeleteCourseModal">
                         Отвязать предмет
                     </SmartButton>
+                    <!--<SmartButton @clicked="openRefreshClassCourseModal">-->
+                        <!--Обновить уроки-->
+                    <!--</SmartButton>-->
                 </div>
 			</template>
 			<template v-slot:head>
@@ -223,6 +226,24 @@
                     </div>
             </div>
 		</modal>
+
+        <!--REFRESH COURSE MODAL-->
+        <modal name="refresh-course-modal" width="500px">
+            <div class="modal-container">
+                <h4>Обновить уроки класса из расписания</h4>
+                <v-select
+                    :items="students"
+                    label="Класс"
+                    item-text="classTitle"
+                    item-value="classId"
+                    v-model="refreshClass.classId"
+                />
+                <div class="btn-actions">
+                    <v-btn color="red" @click="closeRefreshCourseModal">Отмена</v-btn>
+                    <v-btn color="green" @click="submitRefreshClassCourse">Обновить</v-btn>
+                </div>
+            </div>
+        </modal>
 	</div>
 </template>
 
@@ -370,6 +391,11 @@ export default {
             selectedClassId: '',
             search: {
 			    query: ''
+            },
+            refreshClass: {
+                schoolId: 0,
+                chronicleId: 0,
+                classId: 0
             }
 		}
 	},
@@ -377,15 +403,20 @@ export default {
 	computed: {
 		userProfile() {
 			return this.$store.state.account.profile
-		}
+		},
+        school() {
+            return this.userProfile.schools[0]
+        }
 	},
 
 	created() {
-		this.studentObj.languageId = this.userProfile.schools[0].languageId;
-		this.parentPersonObj.languageId = this.userProfile.schools[0].languageId;
-		this.parentPersonObj.schoolId = this.userProfile.schools[0].id;
-		this.studentObj.chronicleYearId = this.userProfile.schools[0].chronicleId;
-		this.studentClassObj.chronicleId = this.userProfile.schools[0].chronicleId;
+		this.studentObj.languageId = this.school.languageId;
+		this.parentPersonObj.languageId = this.school.languageId;
+		this.parentPersonObj.schoolId = this.school.id;
+		this.studentObj.chronicleYearId = this.school.chronicleId;
+		this.studentClassObj.chronicleId = this.school.chronicleId;
+		this.refreshClass.schoolId = this.school.id;
+        this.refreshClass.chronicleId = this.school.chronicleId;
 		this.fetchAllClasses();
 		this.fetchRoles();
 		this.fetchStudents(true);
@@ -566,6 +597,27 @@ export default {
                 this.$toast.error(err);
                 this.isLoading = false;
             });
+        },
+
+        openRefreshClassCourseModal() {
+            this.refreshClass.classId = '';
+            this.$modal.show('refresh-course-modal');
+        },
+
+        submitRefreshClassCourse() {
+            this.isLoading = true;
+            StudentCourseService.refreshScheduleCourses(this.refreshClass).then(() => {
+                this.$toast.success('Успешно обновлено!');
+                this.isLoading = false;
+                this.closeRefreshCourseModal();
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.isLoading = false;
+            });
+        },
+
+        closeRefreshCourseModal() {
+            this.$modal.hide('refresh-course-modal');
         },
 
 //        submitAddCourseToStudents() {
