@@ -46,9 +46,9 @@
 				    <SmartButton @clicked="openDeleteCourseModal">
                         Отвязать предмет
                     </SmartButton>
-                    <!--<SmartButton @clicked="openRefreshClassCourseModal">-->
-                        <!--Обновить уроки-->
-                    <!--</SmartButton>-->
+                    <SmartButton @clicked="openRefreshClassCourseModal">
+                        Обновить уроки
+                    </SmartButton>
                 </div>
 			</template>
 			<template v-slot:head>
@@ -203,45 +203,49 @@
 		</v-dialog>
 
 		<!--DELETE COURSE MODAL-->
-		<modal name="course-modal" width="500px" height="420px" class="add-course-modal">
+        <modal name="course-modal" width="500px" height="420px" class="add-course-modal">
             <div class="modal-container">
                 <h4>Отвязать предмет</h4>
-                    <div>
-                        <v-select
-                            v-model="studentCourseCreate.classId"
-                            :items="students"
-                            :rules="required"
-                            item-text="classTitle"
-                            item-value="classId"
-                            label="Класс"
-                            @change="onSelectClass"
-                        />
+                <div>
+                    <v-select
+                        v-model="studentCourseCreate.classId"
+                        :items="students"
+                        item-text="classTitle"
+                        item-value="classId"
+                        label="Класс"
+                        @change="onSelectClass"
+                    />
+                </div>
+                <div class="added-courses">
+                    <h4>Добавленные:</h4>
+                    <div class="course" v-for="(course, i) in studentDetail.courses">
+                        <span class="course-title">
+                            {{$t(`adminCourses.${course.courseName}`) + ' - ' + course.instructorTitle}}
+                        </span>
+                        <TrashIcon @click="deleteCourseFromClass(course, i)"/>
                     </div>
-                    <div class="added-courses">
-                        <h4>Добавленные:</h4>
-                        <div class="course" v-for="(course, i) in studentDetail.courses">
-                            <span class="course-title">{{$t(`adminCourses.${course.courseName}`) + ' - ' + course.instructorTitle}}</span>
-                            <TrashIcon @click="deleteCourseFromClass(course, i)"/>
-                        </div>
-                    </div>
+                </div>
             </div>
-		</modal>
+        </modal>
 
         <!--REFRESH COURSE MODAL-->
         <modal name="refresh-course-modal" width="500px">
             <div class="modal-container">
                 <h4>Обновить уроки класса из расписания</h4>
-                <v-select
-                    :items="students"
-                    label="Класс"
-                    item-text="classTitle"
-                    item-value="classId"
-                    v-model="refreshClass.classId"
-                />
-                <div class="btn-actions">
-                    <v-btn color="red" @click="closeRefreshCourseModal">Отмена</v-btn>
-                    <v-btn color="green" @click="submitRefreshClassCourse">Обновить</v-btn>
-                </div>
+                <v-form ref="form">
+                    <v-select
+                        :items="students"
+                        label="Класс"
+                        item-text="classTitle"
+                        item-value="classId"
+                        v-model="refreshClass.classId"
+                        :rules="required"
+                    />
+                    <div class="btn-actions">
+                        <v-btn color="red" @click="closeRefreshCourseModal">Отмена</v-btn>
+                        <v-btn color="green" @click="submitRefreshClassCourse">Обновить</v-btn>
+                    </div>
+                </v-form>
             </div>
         </modal>
 	</div>
@@ -605,15 +609,17 @@ export default {
         },
 
         submitRefreshClassCourse() {
-            this.isLoading = true;
-            StudentCourseService.refreshScheduleCourses(this.refreshClass).then(() => {
-                this.$toast.success('Успешно обновлено!');
-                this.isLoading = false;
-                this.closeRefreshCourseModal();
-            }).catch((err) => {
-                this.$toast.error(err);
-                this.isLoading = false;
-            });
+            if (this.$refs.form.validate()) {
+                this.isLoading = true;
+                StudentCourseService.refreshScheduleCourses(this.refreshClass).then(() => {
+                    this.$toast.success('Успешно обновлено!');
+                    this.isLoading = false;
+                    this.closeRefreshCourseModal();
+                }).catch((err) => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                });
+            }
         },
 
         closeRefreshCourseModal() {
