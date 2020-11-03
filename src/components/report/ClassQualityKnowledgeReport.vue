@@ -145,7 +145,7 @@
                         this.reportObj.classId
                     ).then((res) => {
                         if (res.length) {
-                            this.classReport = res[0];
+                            this.classReport = res.find((klass) => klass.classId === this.reportObj.classId);
                             AnalyticsService.getTotalStudentsCount(this.school.id, this.reportObj.classId).then((res) => {
                                 this.classReport.totalStudentsCount = res[0].totalStudentCount;
                                 this.showTable = true;
