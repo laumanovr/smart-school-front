@@ -28,6 +28,23 @@ export class AnalyticsService extends BaseApiService {
         const url = baseUrl + `?schoolId=${schoolId}&classId=${classId}`;
         return this.sendGetRequest(url);
     }
+
+    // CLASS-MOVE-ACTIVITY
+    createClassActivity(data) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/class-move-history/create`;
+        return this.sendPostRequest(url, data);
+    }
+
+    getClassActivityList(schoolId='', chronicleId='', quarterId='', classId='') {
+        const baseUrl = `${process.env.VUE_APP_BASE_URL}/v1/class-move-history/list`;
+        const url = baseUrl + `?schoolId=${schoolId}&chronicleId=${chronicleId}&quarterId=${quarterId}&classId=${classId}`;
+        return this.sendGetRequest(url);
+    }
+
+    updateClassActivity(data) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/class-move-history/edit/${data.id}`;
+        return this.sendPostRequest(url, data);
+    }
 }
 
 export default new AnalyticsService();
