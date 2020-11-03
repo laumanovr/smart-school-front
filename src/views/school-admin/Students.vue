@@ -177,18 +177,24 @@
 			<ImportFile @submit="onSubmit"></ImportFile>
 		</v-dialog>
 
+        <!--STUDENT DETAIL MODAL-->
 		<v-dialog v-model="showDetailModal" width="546">
 			<v-form>
 				<div class="form-head head-title">
 					<h2>Полная информация</h2>
 				</div>
-				<v-text-field :value="studentDetail.username" label="Логин и Пароль" readonly outlined type="text"/>
+				<v-text-field :value="studentDetail.username" label="Логин/Пароль ученика" readonly outlined type="text"/>
 				<v-text-field :value="`${studentDetail.surname} ${studentDetail.name} ${studentDetail.middleName || ''}`" label="ФИО" readonly outlined type="text"/>
 				<v-text-field :value="studentDetail.phone" label="Телефон" readonly outlined type="text"/>
 				<v-text-field
-                    :value="studentDetail.parents && studentDetail.parents.length ? studentDetail.parents[0].parentTitle : ''"
+                    :value="studentDetail.parents.length ? studentDetail.parents[0].parentTitle : ''"
 				    label="Имя родителя"
 				    readonly outlined type="text"
+                />
+                <v-text-field
+                    :value="studentDetail.parents.length ? studentDetail.parents[0].parentUsername : ''"
+                    label="Логин/Пароль родителя"
+                    readonly outlined type="text"
                 />
                 <div class="course-titles">
                     <div class="label">Предметы</div>
@@ -376,7 +382,8 @@ export default {
 			isDeleting: false,
 			showDetailModal: false,
 			studentDetail: {
-			    courses: []
+			    courses: [],
+                parents: []
             },
 			instrCourseObj: {},
             studentCourseCreate: {
