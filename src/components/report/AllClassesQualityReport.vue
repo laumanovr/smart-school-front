@@ -152,7 +152,11 @@
                             const requests = this.allReports.map((item) => {
                                 return new Promise((resolve, reject) => {
                                     AnalyticsService.getTotalStudentsCount(this.school.id, item.classId).then((res) => {
-                                        resolve(res[0]);
+                                        if (res.length) {
+                                            resolve(res[0]);
+                                        } else {
+                                            resolve({totalStudentCount: 0});
+                                        }
                                     }).catch((err) => {
                                         reject(err);
                                     });
@@ -184,20 +188,6 @@
                                     });
                                     this.classReports.push(classObj)
                                 });
-//                                this.classReports = this.classReports.map((klass) => {
-//                                    const totalStudents = klass.totalStudentCount;
-//                                    const totalMarks = klass.totalFive + klass.totalFour + klass.totalThree + klass.totalTwo;
-//                                    klass.totalFive = this.countTotal((totalStudents * (klass.totalFive / totalMarks)).toFixed(1));
-//                                    klass.totalFour = this.countTotal((totalStudents * (klass.totalFour / totalMarks)).toFixed(1));
-//                                    klass.totalThree = this.countTotal((totalStudents * (klass.totalThree / totalMarks)).toFixed(1));
-//                                    klass.totalTwo = this.countTotal((totalStudents * (klass.totalTwo / totalMarks)).toFixed(1));
-//                                    //
-//                                    const totalGrades = klass.totalFive + klass.totalFour + klass.totalThree + klass.totalTwo;
-//                                    if (totalGrades < totalStudents) {
-//                                        klass.totalFive++
-//                                    }
-//                                    return klass;
-//                                });
                                 this.showTable = true;
                                 this.isLoading = false;
                             }).catch((err) => {
@@ -215,28 +205,22 @@
                 }
             },
 
-            countTotal(number) {
-                if (number[2].includes('8')) {
-                    return Math.ceil(number);
-                } else if (number > 0 && number < 1) {
-                    return 1;
-                } else if (number >= 1) {
-                    return Math.floor(number);
-                } else {
-                    return 0;
-                }
-            },
-
             countKnowledgeQuality(klass) {
-                const totalGrades = klass.totalFive + klass.totalFour;
-                const result = (totalGrades / klass.totalStudentCount) * 100;
-                return result.toFixed(1);
+                if (klass.totalStudentCount) {
+                    const totalGrades = klass.totalFive + klass.totalFour;
+                    const result = (totalGrades / klass.totalStudentCount) * 100;
+                    return result.toFixed(1);
+                }
+                return 0;
             },
 
             countPerformance(klass) {
-                const totalGrades = klass.totalFive + klass.totalFour + klass.totalThree;
-                const result = (totalGrades / klass.totalStudentCount) * 100;
-                return result.toFixed(1);
+                if (klass.totalStudentCount) {
+                    const totalGrades = klass.totalFive + klass.totalFour + klass.totalThree;
+                    const result = (totalGrades / klass.totalStudentCount) * 100;
+                    return result.toFixed(1);
+                }
+                return 0;
             },
 
             exportPdf() {
