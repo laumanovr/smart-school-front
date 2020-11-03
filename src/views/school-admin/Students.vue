@@ -237,21 +237,11 @@
         <!--REFRESH COURSE MODAL-->
         <modal name="refresh-course-modal" width="500px">
             <div class="modal-container">
-                <h4>Обновить уроки класса из расписания</h4>
-                <v-form ref="form">
-                    <v-select
-                        :items="students"
-                        label="Класс"
-                        item-text="classTitle"
-                        item-value="classId"
-                        v-model="refreshClass.classId"
-                        :rules="required"
-                    />
-                    <div class="btn-actions">
-                        <v-btn color="red" @click="closeRefreshCourseModal">Отмена</v-btn>
-                        <v-btn color="green" @click="submitRefreshClassCourse">Обновить</v-btn>
-                    </div>
-                </v-form>
+                <h4>Обновить уроки всех классов из расписания</h4>
+                <div class="btn-actions">
+                    <v-btn color="red" @click="closeRefreshCourseModal">Отмена</v-btn>
+                    <v-btn color="green" @click="submitRefreshClassCourse">Обновить</v-btn>
+                </div>
             </div>
         </modal>
 	</div>
@@ -403,7 +393,7 @@ export default {
             refreshClass: {
                 schoolId: 0,
                 chronicleId: 0,
-                classId: 0
+                classId: null
             }
 		}
 	},
@@ -589,22 +579,20 @@ export default {
         },
 
         openRefreshClassCourseModal() {
-            this.refreshClass.classId = '';
+            this.refreshClass.classId = null;
             this.$modal.show('refresh-course-modal');
         },
 
         submitRefreshClassCourse() {
-            if (this.$refs.form.validate()) {
-                this.isLoading = true;
-                StudentCourseService.refreshScheduleCourses(this.refreshClass).then(() => {
-                    this.$toast.success('Успешно обновлено!');
-                    this.isLoading = false;
-                    this.closeRefreshCourseModal();
-                }).catch((err) => {
-                    this.$toast.error(err);
-                    this.isLoading = false;
-                });
-            }
+            this.isLoading = true;
+            StudentCourseService.refreshScheduleCourses(this.refreshClass).then(() => {
+                this.$toast.success('Успешно обновлено!');
+                this.isLoading = false;
+                this.closeRefreshCourseModal();
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.isLoading = false;
+            });
         },
 
         closeRefreshCourseModal() {
