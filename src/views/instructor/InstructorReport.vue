@@ -4,6 +4,7 @@
             <h3>Отчеты</h3>
             <v-select
                 class="v-select-item"
+                placeholder="Выбрать"
                 :items="reportTypes"
                 item-text="title"
                 item-value="type"
