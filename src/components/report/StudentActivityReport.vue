@@ -41,7 +41,7 @@
         <div class="report-content" ref="report" v-if="showTable">
             <div class="report-title">
                 <h3>
-                    Отчет <br> по качеству знаний и успеваемости за {{selectedChronicleYear}}, четверть-{{selectedQuarterTitle}}, <br>
+                    Отчет <br> по движению учащихся за {{selectedChronicleYear}}, четверть-{{selectedQuarterTitle}}, <br>
                     школы {{school.name}}
                 </h3>
             </div>
@@ -305,6 +305,11 @@
 
 <style lang="scss">
     .student-activity-report-container {
+        .header-title {
+            h3 {
+                font-size: 25px;
+            }
+        }
         .v-select-item {
             max-width: 160px;
             &.year {

@@ -244,6 +244,11 @@
 
 <style lang="scss">
     .quality-knowledge-container {
+        .header-title {
+            h3 {
+                font-size: 25px;
+            }
+        }
         .v-select-item {
             max-width: 160px;
             &.year {
