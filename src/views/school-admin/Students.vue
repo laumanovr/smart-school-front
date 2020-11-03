@@ -378,8 +378,6 @@ export default {
 			studentDetail: {
 			    courses: []
             },
-//			instrCourses: [],
-//            allScheduleCourses: [],
 			instrCourseObj: {},
             studentCourseCreate: {
                 chronicleId: 0,
@@ -389,7 +387,6 @@ export default {
             },
 			isLoading: false,
 			totalPages: 1,
-//            emptyInstrCourse: false,
             filterClasses: [],
             selectedFilterClass: false,
             selectedClassId: '',
@@ -424,7 +421,6 @@ export default {
 		this.fetchAllClasses();
 		this.fetchRoles();
 		this.fetchStudents(true);
-//		this.fetchInstructorCourses();
 	},
 
 	methods: {
@@ -543,15 +539,6 @@ export default {
         async getStudentCourses(studentId) {
             await StudentCourseService.getByStudentId(studentId).then((res) => {
                 this.studentDetail.courses = res;
-//                this.instrCourses = this.allScheduleCourses;
-//                this.studentDetail.courses.forEach((exiCourse) => {
-//                    this.instrCourses = this.instrCourses.filter((item) => {
-//                        let equal = item.instructorId === exiCourse.instructorId && item.courseId === exiCourse.courseId;
-//                        if (!equal) {
-//                            return item;
-//                        }
-//                    })
-//                });
                 this.isLoading = false;
             }).catch(err => {
                 this.$toast.error(err);
@@ -571,15 +558,6 @@ export default {
 			this.studentCourseCreate.classId = '';
             this.$modal.show('course-modal');
 		},
-
-//		fetchInstructorCourses() {
-//            ScheduleWeekService.getAllBySchoolAndShift(this.userProfile.schools[0].id, '').then((res) => {
-//                this.allScheduleCourses = res;
-//                this.instrCourses = res;
-//            }).catch((err) => {
-//                this.$toast.error(err);
-//            })
-//		},
 
         deleteCourseFromClass(courseObj, index) {
             this.isLoading = true;
@@ -625,24 +603,6 @@ export default {
         closeRefreshCourseModal() {
             this.$modal.hide('refresh-course-modal');
         },
-
-//        submitAddCourseToStudents() {
-//            if (this.$refs.addCourseForm.validate()) {
-//                if (!this.instrCourseObj.courseId) {
-//                    this.emptyInstrCourse = true;
-//                    return;
-//                }
-//                this.studentCourseCreate = Object.assign({}, this.studentCourseCreate, {
-//                    courseId: this.instrCourseObj.courseId,
-//                    instructorId: this.instrCourseObj.instructorId,
-//                    chronicleId: this.userProfile.schools[0].chronicleId
-//                });
-//                StudentCourseService.addCourseToClass(this.studentCourseCreate).then(() => {
-//                    this.$modal.hide('course-modal');
-//                    this.$toast.success('Успешно добавлено');
-//                }).catch(err => this.$toast.error(err));
-//            }
-//        },
 
 		downloadTemplate() {
 			const a = document.createElement('a');
