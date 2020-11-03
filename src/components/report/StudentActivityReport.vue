@@ -35,7 +35,7 @@
                 class="v-select-item"
                 @change="setQuarterTitle"
             />
-            <v-btn color="primary" @click="findClassActivityReport">Найти</v-btn>
+            <v-btn color="primary" @click="findClassActivityReport">Показать</v-btn>
         </v-form>
 
         <div class="report-content" ref="report" v-if="showTable">
