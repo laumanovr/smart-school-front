@@ -80,17 +80,17 @@
 
 <script>
     import AnalyticsService from '@/_services/analytics.service';
-    import {InstructorClassService} from '@/_services/instructor-class.service';
-    const instructorClassService = new InstructorClassService();
     import {QuarterService} from '@/_services/quarter.service';
     const quarterService = new QuarterService();
-    import {ChronicleService} from '@/_services/chronicle.service';
-    const chronicleService = new ChronicleService();
     import PreLoader from '@/components/preloader/PreLoader';
 
     export default {
         components: {
             PreLoader
+        },
+        props: {
+            instrClasses: Array,
+            allChronicleYears: Array,
         },
         data() {
             return {
@@ -103,11 +103,9 @@
                 showTable: false,
                 isLoading: false,
                 classReport: {},
-                instrClasses: [],
-                allChronicleYears: [],
                 schoolQuarters: [],
-                selectedClassTotalStudents: '',
                 selectedChronicleYear: '',
+                selectedClassTotalStudents: '',
                 selectedQuarterTitle: ''
             }
         },
@@ -121,33 +119,7 @@
             }
         },
 
-        created() {
-            this.fetchInstructorClasses();
-            this.getAllChronicleYears();
-        },
-
         methods: {
-            fetchInstructorClasses() {
-                instructorClassService.getByInstructorId(this.userProfile.personId).then((res) => {
-                    if (res._embedded) {
-                        this.instrClasses = res._embedded.instructorClassResourceList.map((klass) => {
-                            klass.classTitle = klass.classLevel + klass.classLabel;
-                            return klass;
-                        });
-                    }
-                }).catch((err) => {
-                    this.$toast.error(err);
-                })
-            },
-
-            getAllChronicleYears() {
-                chronicleService.list().then((res) => {
-                    this.allChronicleYears = res;
-                }).catch((err) => {
-                    this.$toast.error(err);
-                })
-            },
-
             getSchoolQuarters(chronicleId) {
                 this.selectedChronicleYear = this.allChronicleYears.find((item) => item.id === chronicleId).selectorTitle;
                 quarterService.getBySchoolAndChronicle(this.school.id, chronicleId).then((res) => {
@@ -176,13 +148,6 @@
                             this.classReport = res[0];
                             AnalyticsService.getTotalStudentsCount(this.school.id, this.reportObj.classId).then((res) => {
                                 this.classReport.totalStudentsCount = res[0].totalStudentCount;
-//                                const totalStudents = this.classReport.totalStudentsCount;
-//                                const klass = this.classReport;
-//                                const total = klass.totalFive + klass.totalFour + klass.totalThree + klass.totalTwo;
-//                                this.classReport.totalFive = this.countTotal((totalStudents * (klass.totalFive / total)).toFixed(1));
-//                                this.classReport.totalFour = this.countTotal((totalStudents * (klass.totalFour / total)).toFixed(1));
-//                                this.classReport.totalThree = this.countTotal((totalStudents * (klass.totalThree / total)).toFixed(1));
-//                                this.classReport.totalTwo = this.countTotal((totalStudents * (klass.totalTwo / total)).toFixed(1));
                                 this.showTable = true;
                                 this.isLoading = false;
                             }).catch((err) => {
@@ -226,8 +191,8 @@
             },
 
             exportPdf() {
-                this.$refs.report.style.width = '90vh';
-                this.$refs.report.style.height = '90vh';
+                this.$refs.report.style.width = this.setDisplaySize();
+                this.$refs.report.style.height = this.setDisplaySize();
                 this.$refs.report.querySelector('.report-title').style.width = '1170px';
                 const clonedTable = this.$refs.report.cloneNode(true);
                 this.synchronizeCssStyles(this.$refs.report, clonedTable, true);
@@ -269,6 +234,10 @@
                 }
                 return cssAccumulator.join('; ');
             },
+
+            setDisplaySize() {
+                return window.innerWidth <= 1366 ? '110vh' : '80vh';
+            }
         }
     }
 </script>
