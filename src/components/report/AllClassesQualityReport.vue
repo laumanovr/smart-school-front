@@ -127,6 +127,7 @@
             },
 
             fetchQualityKnowledgeReport() {
+                this.classReports = [];
                 if (this.$refs.form.validate()) {
                     this.isLoading = true;
                     this.showTable = false;
