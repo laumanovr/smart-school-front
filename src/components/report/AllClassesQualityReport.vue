@@ -75,13 +75,14 @@
     import AnalyticsService from '@/_services/analytics.service';
     import {QuarterService} from '@/_services/quarter.service';
     const quarterService = new QuarterService();
-    import {ChronicleService} from '@/_services/chronicle.service';
-    const chronicleService = new ChronicleService();
     import PreLoader from '@/components/preloader/PreLoader';
 
     export default {
         components: {
             PreLoader
+        },
+        props: {
+            allChronicleYears: Array
         },
         data() {
             return {
@@ -94,7 +95,6 @@
                 isLoading: false,
                 allReports: [],
                 classReports: [],
-                allChronicleYears: [],
                 schoolQuarters: [],
                 selectedChronicleYear: '',
                 selectedQuarterTitle: ''
@@ -110,19 +110,7 @@
             }
         },
 
-        created() {
-            this.getAllChronicleYears();
-        },
-
         methods: {
-            getAllChronicleYears() {
-                chronicleService.list().then((res) => {
-                    this.allChronicleYears = res;
-                }).catch((err) => {
-                    this.$toast.error(err);
-                })
-            },
-
             getSchoolQuarters(chronicleId) {
                 this.selectedChronicleYear = this.allChronicleYears.find((item) => item.id === chronicleId).selectorTitle;
                 quarterService.getBySchoolAndChronicle(this.school.id, chronicleId).then((res) => {
