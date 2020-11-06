@@ -45,6 +45,13 @@ export class AnalyticsService extends BaseApiService {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/class-move-history/edit/${data.id}`;
         return this.sendPostRequest(url, data);
     }
+
+    //  VEDOMOST STATEMENT
+    getClassStatement(chronicleId='', quarterId='', classId='') {
+        const baseUrl = `${process.env.VUE_APP_BASE_URL}/v1/analytic/statement/quarter-grade`;
+        const url = baseUrl + `?chronicleId=${chronicleId}&quarterId=${quarterId}&classId=${classId}`;
+        return this.sendGetRequest(url);
+    }
 }
 
 export default new AnalyticsService();
