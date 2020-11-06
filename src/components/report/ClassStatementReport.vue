@@ -251,21 +251,23 @@
                 this.excellentStudents = [];
                 this.normalStudents = [];
                 this.studentStatements.forEach((student) => {
-                    const isExcellent = student.courses
-                                        .filter((course) => course.grades.length)
-                                        .every((course) => course.grades[0].mark === '5');
+                    if (student.courses.filter((course) => course.grades.length).length) {
+                        const isExcellent = student.courses
+                                            .filter((course) => course.grades.length)
+                                            .every((course) => course.grades[0].mark === '5');
 
-                    const hasFour = student.courses
-                                    .filter((course) => course.grades.length)
-                                    .some((course) => course.grades[0].mark === '4');
-
-                    const noThreeNTwo = student.courses
+                        const hasFour = student.courses
                                         .filter((course) => course.grades.length)
-                                        .every((course) => course.grades[0].mark !== '3' && course.grades[0].mark !== '2');
-                    if (isExcellent) {
-                        this.excellentStudents.push({studentTitle: student.studentTitle});
-                    } else if (hasFour && noThreeNTwo) {
-                        this.normalStudents.push({studentTitle: student.studentTitle});
+                                        .some((course) => course.grades[0].mark === '4');
+
+                        const noThreeNTwo = student.courses
+                                            .filter((course) => course.grades.length)
+                                            .every((course) => course.grades[0].mark !== '3' && course.grades[0].mark !== '2');
+                        if (isExcellent) {
+                            this.excellentStudents.push({studentTitle: student.studentTitle});
+                        } else if (hasFour && noThreeNTwo) {
+                            this.normalStudents.push({studentTitle: student.studentTitle});
+                        }
                     }
                 });
             },
