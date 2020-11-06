@@ -23,12 +23,19 @@
                 :allChronicleYears="allChronicleYears"
             />
         </template>
+        <template v-if="reportType == 'statement'">
+            <ClassStatementReport
+                :allChronicleYears="allChronicleYears"
+                :classes="instrClasses"
+            />
+        </template>
     </div>
 </template>
 
 <script>
     import ClassQualityKnowledgeReport from '@/components/report/ClassQualityKnowledgeReport';
     import StudentActivityReport from '@/components/report/StudentActivityReport';
+    import ClassStatementReport from '@/components/report/ClassStatementReport';
     import {InstructorClassService} from '@/_services/instructor-class.service';
     const instructorClassService = new InstructorClassService();
     import {ChronicleService} from '@/_services/chronicle.service';
@@ -37,7 +44,8 @@
     export default {
         components: {
             ClassQualityKnowledgeReport,
-            StudentActivityReport
+            StudentActivityReport,
+            ClassStatementReport
         },
         data() {
             return {
@@ -46,7 +54,8 @@
                 allChronicleYears: [],
                 reportTypes: [
                     {title: 'Отчет по движению', type: 'activity'},
-                    {title: 'Отчет по качеству знаний', type: 'performance'}
+                    {title: 'Отчет по качеству знаний', type: 'performance'},
+                    {title: 'Ведомость успеваемости', type: 'statement'}
                 ]
             }
         },
