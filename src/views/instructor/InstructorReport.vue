@@ -15,18 +15,21 @@
             <ClassQualityKnowledgeReport
                 :instrClasses="instrClasses"
                 :allChronicleYears="allChronicleYears"
+                :schoolQuarters="schoolQuarters"
             />
         </template>
         <template v-if="reportType == 'activity'">
             <StudentActivityReport
                 :instrClasses="instrClasses"
                 :allChronicleYears="allChronicleYears"
+                :schoolQuarters="schoolQuarters"
             />
         </template>
         <template v-if="reportType == 'statement'">
             <ClassStatementReport
                 :allChronicleYears="allChronicleYears"
                 :classes="instrClasses"
+                :schoolQuarters="schoolQuarters"
             />
         </template>
     </div>
@@ -40,6 +43,8 @@
     const instructorClassService = new InstructorClassService();
     import {ChronicleService} from '@/_services/chronicle.service';
     const chronicleService = new ChronicleService();
+    import {QuarterService} from '@/_services/quarter.service';
+    const quarterService = new QuarterService();
 
     export default {
         components: {
@@ -52,6 +57,7 @@
                 reportType: '',
                 instrClasses: [],
                 allChronicleYears: [],
+                schoolQuarters: [],
                 reportTypes: [
                     {title: 'Отчет по движению', type: 'activity'},
                     {title: 'Отчет по качеству знаний', type: 'performance'},
@@ -70,6 +76,7 @@
         created() {
             this.fetchInstructorClasses();
             this.getAllChronicleYears();
+            this.getSchoolQuarters();
         },
         methods: {
             fetchInstructorClasses() {
@@ -88,6 +95,14 @@
             getAllChronicleYears() {
                 chronicleService.list().then((res) => {
                     this.allChronicleYears = res;
+                }).catch((err) => {
+                    this.$toast.error(err);
+                })
+            },
+
+            getSchoolQuarters() {
+                quarterService.getBySchoolAndChronicle(this.school.id, this.school.chronicleId).then((res) => {
+                    this.schoolQuarters = res.sort((a, b) => a.semester - b.semester);
                 }).catch((err) => {
                     this.$toast.error(err);
                 })
