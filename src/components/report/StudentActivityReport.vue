@@ -16,16 +16,6 @@
                 class="v-select-item"
             />
             <v-select
-                :items="allChronicleYears"
-                item-text="selectorTitle"
-                item-value="id"
-                label="Академический год"
-                :rules="required"
-                v-model="classActivityObj.chronicleId"
-                @change="getSchoolQuarters"
-                class="v-select-item year"
-            />
-            <v-select
                 :items="schoolQuarters"
                 item-text="semester"
                 item-value="id"
@@ -33,7 +23,7 @@
                 :rules="required"
                 v-model="classActivityObj.quarterId"
                 class="v-select-item"
-                @change="setQuarterTitle"
+                @change="setDataTitle"
             />
             <v-btn color="primary" @click="findClassActivityReport">Показать</v-btn>
         </v-form>
@@ -65,10 +55,14 @@
                 <tbody>
                 <tr>
                     <td>{{ selectedClassTitle }}</td>
-                    <td contenteditable="true" @keydown="setValue($event, 'qinitial')">{{classActivityObj.qinitial}}
+                    <td contenteditable="true" @keydown="setValue($event, 'qinitial')">
+                        {{classActivityObj.qinitial}}
                     </td>
-                    <td contenteditable="true" @keydown="setValue($event, 'qfinal')">{{classActivityObj.qfinal}}</td>
-                    <td contenteditable="true" @keydown="setValue($event, 'comeCount')">{{classActivityObj.comeCount}}
+                    <td contenteditable="true" @keydown="setValue($event, 'qfinal')">
+                        {{classActivityObj.qfinal}}
+                    </td>
+                    <td contenteditable="true" @keydown="setValue($event, 'comeCount')">
+                        {{classActivityObj.comeCount}}
                     </td>
                     <td contenteditable="true" @keydown="setValue($event, 'leaveCount')">
                         {{classActivityObj.leaveCount}}
@@ -111,8 +105,6 @@
 
 <script>
     import PreLoader from '@/components/preloader/PreLoader';
-    import {QuarterService} from '@/_services/quarter.service';
-    const quarterService = new QuarterService();
     import AnalyticsService from '@/_services/analytics.service';
 
     export default {
@@ -122,13 +114,13 @@
         props: {
             instrClasses: Array,
             allChronicleYears: Array,
+            schoolQuarters: Array
         },
         data() {
             return {
                 required: [v => !!v || this.$t('required')],
                 classActivityObj: {
                     classId: 0,
-                    chronicleId: 0,
                     quarterId: 0,
                     qinitial: 0,
                     qfinal: 0,
@@ -144,7 +136,6 @@
                 },
                 showTable: false,
                 isLoading: false,
-                schoolQuarters: [],
                 selectedClassTitle: '',
                 selectedChronicleYear: '',
                 selectedQuarterTitle: '',
@@ -160,17 +151,9 @@
             }
         },
         methods: {
-            getSchoolQuarters(chronicleId) {
-                this.selectedChronicleYear = this.allChronicleYears.find((item) => item.id === chronicleId).selectorTitle;
-                quarterService.getBySchoolAndChronicle(this.school.id, chronicleId).then((res) => {
-                    this.schoolQuarters = res.sort((a, b) => a.semester - b.semester);
-                }).catch((err) => {
-                    this.$toast.error(err);
-                })
-            },
-
-            setQuarterTitle(quatId) {
+            setDataTitle(quatId) {
                 this.selectedQuarterTitle = this.schoolQuarters.find(quat => quat.id === quatId).semester;
+                this.selectedChronicleYear = this.allChronicleYears.find((item) => item.id === this.school.chronicleId).selectorTitle;
                 this.showTable = false;
             },
 
@@ -183,7 +166,7 @@
                     this.showTable = false;
                     AnalyticsService.getClassActivityList(
                         this.school.id,
-                        this.classActivityObj.chronicleId,
+                        this.school.chronicleId,
                         this.classActivityObj.quarterId,
                         this.classActivityObj.classId
                     ).then((res) => {
@@ -211,7 +194,7 @@
 
             clearClassData() {
                 this.mode = 'add';
-                const keys = ['chronicleId', 'quarterId', 'classId'];
+                const keys = ['quarterId', 'classId'];
                 for (let key in this.classActivityObj) {
                     if (this.classActivityObj.hasOwnProperty(key) && !keys.includes(key)) {
                         this.classActivityObj[key] = 0;
