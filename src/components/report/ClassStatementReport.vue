@@ -16,16 +16,6 @@
                 class="v-select-item"
             />
             <v-select
-                :items="allChronicleYears"
-                item-text="selectorTitle"
-                item-value="id"
-                label="Академический год"
-                :rules="required"
-                v-model="requestObj.chronicleId"
-                @change="getSchoolQuarters"
-                class="v-select-item year"
-            />
-            <v-select
                 :items="schoolQuarters"
                 item-text="semester"
                 item-value="id"
@@ -170,7 +160,6 @@
                 selectedClassTitle: '',
                 requestObj: {
                     classId: 0,
-                    chronicleId: 0,
                     quarterId: 0
                 },
                 classInstructor: {}
@@ -184,9 +173,12 @@
                 return this.userProfile.schools[0];
             }
         },
+        created() {
+            this.getSchoolQuarters();
+        },
         methods: {
-            getSchoolQuarters(chronicleId) {
-                quarterService.getBySchoolAndChronicle(this.school.id, chronicleId).then((res) => {
+            getSchoolQuarters() {
+                quarterService.getBySchoolAndChronicle(this.school.id, this.school.chronicleId).then((res) => {
                     this.schoolQuarters = res.sort((a, b) => a.semester - b.semester);
                 }).catch((err) => {
                     this.$toast.error(err);
@@ -207,7 +199,7 @@
                 const klass = this.classes.find(i => i.classId === this.requestObj.classId);
                 this.selectedClassTitle = `${klass.classLevel} ${klass.classLabel}`;
                 this.selectedQuarterTitle = this.schoolQuarters.find(quat => quat.id === this.requestObj.quarterId).semester;
-                this.selectedChronicleYear = this.allChronicleYears.find((item) => item.id === this.requestObj.chronicleId).selectorTitle;
+                this.selectedChronicleYear = this.allChronicleYears.find((item) => item.id === this.school.chronicleId).selectorTitle;
             },
 
             async findClassStatement() {
@@ -218,7 +210,7 @@
                     this.getSelectedDataTitles();
                     await this.getInstructorOfClass();
                     AnalyticsService.getClassStatement(
-                        this.requestObj.chronicleId,
+                        this.school.chronicleId,
                         this.requestObj.quarterId,
                         this.requestObj.classId
                     ).then((res) => {
