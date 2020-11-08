@@ -14,11 +14,13 @@
         <template v-if="reportType == 'performance'">
             <AllClassesQualityReport
                 :allChronicleYears="allChronicleYears"
+                :schoolQuarters="schoolQuarters"
             />
         </template>
         <template v-if="reportType == 'activity'">
             <AllClassActivityReport
                 :allChronicleYears="allChronicleYears"
+                :schoolQuarters="schoolQuarters"
             />
         </template>
     </div>
@@ -29,6 +31,8 @@
     import AllClassActivityReport from '@/components/report/AllClassActivityReport';
     import {ChronicleService} from '@/_services/chronicle.service';
     const chronicleService = new ChronicleService();
+    import {QuarterService} from '@/_services/quarter.service';
+    const quarterService = new QuarterService();
 
     export default {
         components: {
@@ -39,6 +43,7 @@
             return {
                 reportType: '',
                 allChronicleYears: [],
+                schoolQuarters: [],
                 reportTypes: [
                     {title: 'Отчет по движению', type: 'activity'},
                     {title: 'Отчет по качеству знаний', type: 'performance'}
@@ -55,11 +60,20 @@
         },
         created() {
             this.getAllChronicleYears();
+            this.getSchoolQuarters();
         },
         methods: {
             getAllChronicleYears() {
                 chronicleService.list().then((res) => {
                     this.allChronicleYears = res;
+                }).catch((err) => {
+                    this.$toast.error(err);
+                })
+            },
+
+            getSchoolQuarters() {
+                quarterService.getBySchoolAndChronicle(this.school.id, this.school.chronicleId).then((res) => {
+                    this.schoolQuarters = res.sort((a, b) => a.semester - b.semester);
                 }).catch((err) => {
                     this.$toast.error(err);
                 })
