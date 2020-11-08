@@ -7,16 +7,6 @@
 
         <v-form class="select-form select-clear-block" ref="form">
             <v-select
-                :items="allChronicleYears"
-                item-text="selectorTitle"
-                item-value="id"
-                label="Академический год"
-                :rules="required"
-                v-model="requestData.chronicleId"
-                @change="getSchoolQuarters"
-                class="v-select-item year"
-            />
-            <v-select
                 :items="schoolQuarters"
                 item-text="semester"
                 item-value="id"
@@ -24,7 +14,7 @@
                 :rules="required"
                 v-model="requestData.quarterId"
                 class="v-select-item"
-                @change="setQuarterTitle"
+                @change="setDataTitle"
             />
             <v-btn color="primary" @click="findClassActivityReport">Показать</v-btn>
         </v-form>
@@ -81,8 +71,6 @@
 
 <script>
     import PreLoader from '@/components/preloader/PreLoader';
-    import {QuarterService} from '@/_services/quarter.service';
-    const quarterService = new QuarterService();
     import AnalyticsService from '@/_services/analytics.service';
 
     export default {
@@ -91,18 +79,17 @@
         },
         props: {
             allChronicleYears: Array,
+            schoolQuarters: Array
         },
         data() {
             return {
                 required: [v => !!v || this.$t('required')],
                 requestData: {
-                    chronicleId: '',
                     quarterId: ''
                 },
                 showTable: false,
                 isLoading: false,
                 activityReports: [],
-                schoolQuarters: [],
                 selectedChronicleYear: '',
                 selectedQuarterTitle: '',
             }
@@ -116,17 +103,9 @@
             }
         },
         methods: {
-            getSchoolQuarters(chronicleId) {
-                this.selectedChronicleYear = this.allChronicleYears.find((item) => item.id === chronicleId).selectorTitle;
-                quarterService.getBySchoolAndChronicle(this.school.id, chronicleId).then((res) => {
-                    this.schoolQuarters = res.sort((a, b) => a.semester - b.semester);
-                }).catch((err) => {
-                    this.$toast.error(err);
-                })
-            },
-
-            setQuarterTitle(quatId) {
+            setDataTitle(quatId) {
                 this.selectedQuarterTitle = this.schoolQuarters.find(quat => quat.id === quatId).semester;
+                this.selectedChronicleYear = this.allChronicleYears.find((item) => item.id === this.school.chronicleId).selectorTitle;
                 this.showTable = false;
             },
 
@@ -137,7 +116,7 @@
                     this.showTable = false;
                     AnalyticsService.getClassActivityList(
                         this.school.id,
-                        this.requestData.chronicleId,
+                        this.school.chronicleId,
                         this.requestData.quarterId,
                     ).then((res) => {
                         if (res.length) {
