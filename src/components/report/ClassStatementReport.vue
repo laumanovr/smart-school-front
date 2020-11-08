@@ -49,7 +49,7 @@
                     <div><span class="label">Школа:</span><span class="value">{{school.name}}</span></div>
                     <div>
                         <span class="label">Класс.руководитель:</span>
-                        <span class="value">{{ userProfile.user.lastName }} {{ userProfile.user.firstName}}</span>
+                        <span class="value">{{ classInstructor.personTitle }}</span>
                     </div>
                     <div><span class="label">Академ.год:</span><span class="value">{{selectedChronicleYear}}</span>
                     </div>
@@ -133,7 +133,7 @@
                     </tbody>
                 </table>
             </div>
-            <h3 class="instructor-name">Классный руководитель: {{ userProfile.user.lastName }} {{ userProfile.user.firstName}}</h3>
+            <h3 class="instructor-name">Классный руководитель: {{ classInstructor.personTitle }}</h3>
         </div>
     </div>
 </template>
@@ -143,6 +143,8 @@
     import PreLoader from '@/components/preloader/PreLoader';
     import {QuarterService} from '@/_services/quarter.service';
     const quarterService = new QuarterService();
+    import {InstructorClassService} from '@/_services/instructor-class.service';
+    const instructorClassService = new InstructorClassService();
 
     export default {
         props: {
@@ -170,7 +172,8 @@
                     classId: 0,
                     chronicleId: 0,
                     quarterId: 0
-                }
+                },
+                classInstructor: {}
             }
         },
         computed: {
@@ -190,6 +193,16 @@
                 })
             },
 
+            getInstructorOfClass() {
+                instructorClassService.getByClassId(this.requestObj.classId).then((res) => {
+                    if (res._embedded) {
+                        this.classInstructor = res._embedded.instructorClassResourceList[0];
+                    }
+                }).catch((err) => {
+                    console.log(err);
+                })
+            },
+
             getSelectedDataTitles() {
                 const klass = this.classes.find(i => i.classId === this.requestObj.classId);
                 this.selectedClassTitle = `${klass.classLevel} ${klass.classLabel}`;
@@ -197,12 +210,13 @@
                 this.selectedChronicleYear = this.allChronicleYears.find((item) => item.id === this.requestObj.chronicleId).selectorTitle;
             },
 
-            findClassStatement() {
+            async findClassStatement() {
                 if (this.$refs.form.validate()) {
                     this.showTable = false;
                     this.isLoading = true;
                     this.studentStatements = [];
                     this.getSelectedDataTitles();
+                    await this.getInstructorOfClass();
                     AnalyticsService.getClassStatement(
                         this.requestObj.chronicleId,
                         this.requestObj.quarterId,
@@ -235,7 +249,7 @@
                         this.studentStatements.forEach((student) => {
                             student.courses.forEach((course) => {
                                 const equal = course.courseId === subject.courseId &&
-                                    course.grades.length && course.grades[0].mark === mark;
+                                              course.grades.length && course.grades[0].mark === mark;
                                 if (equal) {
                                     equalObj.totalMarks += 1;
                                 }
