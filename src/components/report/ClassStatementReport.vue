@@ -131,15 +131,14 @@
 <script>
     import AnalyticsService from '@/_services/analytics.service';
     import PreLoader from '@/components/preloader/PreLoader';
-    import {QuarterService} from '@/_services/quarter.service';
-    const quarterService = new QuarterService();
     import {InstructorClassService} from '@/_services/instructor-class.service';
     const instructorClassService = new InstructorClassService();
 
     export default {
         props: {
             allChronicleYears: Array,
-            classes: Array
+            classes: Array,
+            schoolQuarters: Array
         },
         components: {
             PreLoader
@@ -151,7 +150,6 @@
                 showTable: false,
                 studentStatements: [],
                 classAllSubjects: [],
-                schoolQuarters: [],
                 totalGrades: [],
                 excellentStudents: [],
                 normalStudents: [],
@@ -173,18 +171,7 @@
                 return this.userProfile.schools[0];
             }
         },
-        created() {
-            this.getSchoolQuarters();
-        },
         methods: {
-            getSchoolQuarters() {
-                quarterService.getBySchoolAndChronicle(this.school.id, this.school.chronicleId).then((res) => {
-                    this.schoolQuarters = res.sort((a, b) => a.semester - b.semester);
-                }).catch((err) => {
-                    this.$toast.error(err);
-                })
-            },
-
             getInstructorOfClass() {
                 instructorClassService.getByClassId(this.requestObj.classId).then((res) => {
                     if (res._embedded) {
