@@ -50,7 +50,7 @@
                 <thead>
                 <tr>
                     <th class="num">№</th>
-                    <th>Ф.И.О</th>
+                    <th class="FIO">Ф.И.О</th>
                     <th v-for="subject in classAllSubjects" class="subject">
                         {{$t(`adminCourses.${subject.courseCode}`)}}
                     </th>
@@ -58,8 +58,8 @@
                 </thead>
                 <tbody>
                 <tr v-for="(student, i) in studentStatements" :key="i">
-                    <td>{{i + 1}}</td>
-                    <td>{{student.studentTitle}}</td>
+                    <td class="num">{{i + 1}}</td>
+                    <td class="FIO">{{student.studentTitle}}</td>
                     <td v-for="subject in classAllSubjects">
                         {{ getQuarterMark(student.courses, subject) }}
                     </td>
@@ -71,21 +71,21 @@
                 <tbody>
                 <tr v-for="mark in totalGrades">
                     <td class="num"></td>
-                    <td>"{{mark.grade}}"</td>
+                    <td class="FIO">"{{mark.grade}}"</td>
                     <td v-for="item in mark.total" class="total-mark">
                         {{item.totalMarks}}
                     </td>
                 </tr>
                 <tr>
                     <td class="num"></td>
-                    <td>Качество знаний</td>
+                    <td class="FIO">Качество знаний</td>
                     <td v-for="subject in classAllSubjects" class="total-mark">
                         {{countQuality(subject)}}%
                     </td>
                 </tr>
                 <tr>
                     <td class="num"></td>
-                    <td>Успеваемость</td>
+                    <td class="FIO">Успеваемость</td>
                     <td v-for="subject in classAllSubjects" class="total-mark">
                         {{countPerformance(subject)}}%
                     </td>
@@ -341,7 +341,6 @@
 
 <style lang="scss">
     .class-statement-container {
-        overflow-x: hidden;
         .v-select-item {
             max-width: 160px;
             &.year {
@@ -372,14 +371,10 @@
                 }
             }
             table.report {
-                table-layout: fixed;
-                width: 1190px;
+                width: auto;
                 margin: 25px auto;
                 th, td {
                     padding: 0;
-                }
-                th {
-
                 }
                 td {
                     font-weight: bold;
@@ -387,11 +382,20 @@
                 }
                 .num {
                     width: 30px;
+                    min-width: 30px;
+                    max-width: 30px;
+                }
+                .FIO {
+                    width: 240px;
+                    min-width: 240px;
+                    max-width: 240px;
                 }
                 .subject {
-                    transform: rotate(90deg) translateX(-40px);
+                    transform: rotate(90deg) translateX(-45px);
                     width: 55px;
-                    height: 158px;
+                    min-width: 55px;
+                    max-width: 55px;
+                    height: 170px;
                     text-align: center;
                     white-space: nowrap;
                     &.long-name {
@@ -411,10 +415,10 @@
             .good-students {
                 display: flex;
                 justify-content: center;
-                width: 1190px;
+                width: 1000px;
                 margin: 0 auto 25px;
                 table {
-                    width: 450px;
+                    width: 420px;
                     margin: 0;
                     &:first-child {
                         margin-right: 10px;
