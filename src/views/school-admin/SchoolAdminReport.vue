@@ -23,30 +23,42 @@
                 :schoolQuarters="schoolQuarters"
             />
         </template>
+        <template v-if="reportType == 'statement'">
+            <ClassStatementReport
+                :allChronicleYears="allChronicleYears"
+                :schoolQuarters="schoolQuarters"
+                :classes="allClasses"
+            />
+        </template>
     </div>
 </template>
 
 <script>
     import AllClassesQualityReport from '@/components/report/AllClassesQualityReport';
     import AllClassActivityReport from '@/components/report/AllClassActivityReport';
+    import ClassStatementReport from '@/components/report/ClassStatementReport';
     import {ChronicleService} from '@/_services/chronicle.service';
     const chronicleService = new ChronicleService();
     import {QuarterService} from '@/_services/quarter.service';
     const quarterService = new QuarterService();
+    import SchoolClassService from '@/_services/school-class.service';
 
     export default {
         components: {
             AllClassesQualityReport,
-            AllClassActivityReport
+            AllClassActivityReport,
+            ClassStatementReport
         },
         data() {
             return {
                 reportType: '',
                 allChronicleYears: [],
                 schoolQuarters: [],
+                allClasses: [],
                 reportTypes: [
                     {title: 'Отчет по движению', type: 'activity'},
-                    {title: 'Отчет по качеству знаний', type: 'performance'}
+                    {title: 'Отчет по качеству знаний', type: 'performance'},
+                    {title: 'Ведомость успеваемости', type: 'statement'}
                 ]
             }
         },
@@ -61,6 +73,7 @@
         created() {
             this.getAllChronicleYears();
             this.getSchoolQuarters();
+            this.getSchoolAllClasses();
         },
         methods: {
             getAllChronicleYears() {
@@ -74,6 +87,18 @@
             getSchoolQuarters() {
                 quarterService.getBySchoolAndChronicle(this.school.id, this.school.chronicleId).then((res) => {
                     this.schoolQuarters = res.sort((a, b) => a.semester - b.semester);
+                }).catch((err) => {
+                    this.$toast.error(err);
+                })
+            },
+
+            getSchoolAllClasses() {
+                SchoolClassService.getAllBySchool(this.school.id).then((res) => {
+                    this.allClasses = res.map((klass) => {
+                        klass.classTitle = klass.classLevel + klass.classLabel;
+                        klass.classId = klass.id;
+                        return klass;
+                    });
                 }).catch((err) => {
                     this.$toast.error(err);
                 })
