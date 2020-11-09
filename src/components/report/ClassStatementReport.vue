@@ -406,6 +406,8 @@
                 }
                 .total-mark {
                     width: 55px;
+                    min-width: 55px;
+                    max-width: 55px;
                     &.long-name {
                         width: 76px;
                     }
