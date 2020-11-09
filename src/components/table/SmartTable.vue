@@ -23,7 +23,7 @@
                     <button v-if="menu === 'Students'" @click="$emit('deleteStudents')">
 	                    <img src="../../assets/images/icons/delete.svg" alt="">
                     </button>
-                    <button class="add" v-else @click="$emit('addCourses')"> Add +</button>
+                    <button class="add" v-else @click="$emit('addCourses')">Добавить +</button>
                 </div>
                 <thead>
                 <tr>
