@@ -335,6 +335,7 @@
                 text-align: right;
                 button {
                     margin: 0;
+                    width: 90px;
                 }
             }
         }
