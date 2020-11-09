@@ -266,7 +266,7 @@
             },
 
             getQuarterMark(studentCourses, subject) {
-                const foundObj = studentCourses.find(course => course.courseId === subject.courseId);
+                const foundObj = studentCourses.find(course => course.courseId === subject.courseId && course.grades.length);
                 if (foundObj) {
                     return foundObj.grades.length ? foundObj.grades[0].mark : '';
                 }
