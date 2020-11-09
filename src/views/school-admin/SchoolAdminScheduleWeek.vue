@@ -50,7 +50,7 @@
                             <span v-if="teacher.teacherName" :class="{'space': teacher.several}">{{teacher.teacherName}}</span>
                             <span class="empty" v-else>-</span>
                         </td>
-                        <td class="course-name">{{ $t(`adminCourses.${teacher.courseName}`) }}</td>
+                        <td class="course-name">{{ $t(`adminCourses.${teacher.courseCode}`) }}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -354,7 +354,7 @@
             },
 
             getTeacherAndCourseName(teacher) {
-                return this.$t(`adminCourses.${teacher.courseName}`) + ' - ' + teacher.instructorTitle;
+                return this.$t(`adminCourses.${teacher.courseCode}`) + ' - ' + teacher.instructorTitle;
             },
 
             getFullClassTitle(klass) {
@@ -362,9 +362,9 @@
             },
 
             getAllSchoolInstructors() {
-                instructorCourseService.listBySchool(this.school.id).then((res) => {
-                    if (res._embedded) {
-                        Object.entries(res._embedded.instructorCourseResourceList.reduce((obj, el) => {
+                instructorCourseService.getAllWithoutPagination(this.school.id).then((res) => {
+                    if (res.length) {
+                        Object.entries(res.map((item, index) => ({...item, id: index + 1})).reduce((obj, el) => {
                             obj[el.instructorId] = [...obj[el.instructorId] || [], el];
                             return obj;
                         }, {})).forEach((item) => {
@@ -586,10 +586,10 @@
             },
 
             onSelectScheduleCourse(instrCourseId) {
-                const instrCourseObj = this.allTeachers.find((teacher) => teacher.id === instrCourseId);
+                const instrCourseObj = this.allTeachers.find((instrCourse) => instrCourse.id === instrCourseId);
                 this.sendScheduleObj.instructorId = instrCourseObj.instructorId;
                 this.sendScheduleObj.courseId = instrCourseObj.courseId;
-                this.sendScheduleObj.courseCode = instrCourseObj.courseName;
+                this.sendScheduleObj.courseCode = instrCourseObj.courseCode;
             },
 
         }
