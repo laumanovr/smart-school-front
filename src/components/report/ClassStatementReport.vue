@@ -389,13 +389,22 @@
                     width: 30px;
                 }
                 .subject {
-                    transform: rotate(90deg) translateX(-35px);
+                    transform: rotate(90deg) translateX(-40px);
                     width: 55px;
-                    height: 150px;
-                    text-align: right;
+                    height: 158px;
+                    text-align: center;
+                    white-space: nowrap;
+                    &.long-name {
+                        width: 76px;
+                        white-space: pre-line;
+                        transform: rotate(90deg) translateX(-20px);
+                    }
                 }
                 .total-mark {
                     width: 55px;
+                    &.long-name {
+                        width: 76px;
+                    }
                 }
             }
 
