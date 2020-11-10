@@ -85,11 +85,10 @@
 
             <template v-slot:body="{ item }">
                 <td>{{ item.schools[0].name }}</td>
-                <!--<td>{{ showCourses(item.courses) }}</td>-->
                 <td>{{ item.lastName }} {{ item.firstName }}</td>
                 <td class="instr-courses">
                     <template v-if="item.courses.length">
-                        <span v-for="courseCode in item.courses">{{$t(`adminCourses.${courseCode}`)}},</span>
+                        <span v-for="course in item.courses">{{ course[langObj[currentLang]] }},</span>
                     </template>
                     <span v-else></span>
                 </td>
@@ -133,6 +132,11 @@ export default {
         TrashIcon
     },
     data: () => ({
+        langObj: {
+            RU: 'courseTitle',
+            KG: 'courseTitleKG',
+            EN: 'courseCode',
+        },
         isAddAdmin: false,
         instructors: [],
         gender: {
@@ -169,6 +173,9 @@ export default {
     computed: {
         currentRegions() {
             return this.$store.state.location.regions;
+        },
+        currentLang() {
+            return this.$root.$i18n.locale;
         }
     },
     mounted() {
