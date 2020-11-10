@@ -27,7 +27,7 @@
                         <td v-for="day in days" :key="day.day">
                             <div class="lesson" v-if="getSpecificClassSchedule(day.day, time.id).length">
                                 <div v-for="klass in getSpecificClassSchedule(day.day, time.id)">
-                                    {{ klass.classLevel + klass.classLabel + ' - ' + $t(`adminCourses.${klass.courseCode}`) }}
+                                    {{ klass.classLevel + klass.classLabel + ' - ' + klass[langObj[currentLang]] }}
                                 </div>
                             </div>
                             <div class="lesson" v-else></div>
@@ -58,6 +58,9 @@
             },
             school() {
                 return this.userProfile.schools[0];
+            },
+            currentLang() {
+                return this.$root.$i18n.locale;
             }
         },
 
@@ -71,6 +74,11 @@
                     {day: 5, name: 'Пятница'},
                     {day: 6, name: 'Суббота'},
                 ],
+                langObj: {
+                    RU: 'courseTitle',
+                    KG: 'courseTitleKG',
+                    EN: 'courseCode',
+                },
                 showTable: false,
                 isLoading: false,
                 teacherSchedules: [],
