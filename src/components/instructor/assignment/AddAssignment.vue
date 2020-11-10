@@ -66,12 +66,6 @@ export default {
 		}
 	},
 	computed: {
-		courses () {
-			return this.$store.getters["scheduleWeek/getCourses"].map(i => {
-				i.courseName = this.$t(`adminCourses.${i.courseCode}`)
-				return i
-			})
-		},
 		userProfile() {
 			return this.$store.state.account.profile
 		},
