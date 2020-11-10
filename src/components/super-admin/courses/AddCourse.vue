@@ -1,5 +1,7 @@
 <template>
     <div class="admin-course-container">
+        <PreLoader v-if="isLoading"/>
+
         <v-form @submit.prevent="submit" ref="form">
             <h3>{{isEdit ? 'Редактировать предмет' : 'Добавить предмет'}}</h3>
             <div>
@@ -38,9 +40,13 @@
 <script>
 import { AdminCourseService } from '@/_services/admin-course.service'
 const adminCourseService = new AdminCourseService();
+import PreLoader from '@/components/preloader/PreLoader';
 
 export default {
 	name: "AddCourse",
+    components: {
+        PreLoader
+    },
     props: {
 	    isEdit: {
 	        type: Boolean,
@@ -54,9 +60,8 @@ export default {
         languages: Array
     },
 	data: () => ({
-		required: [
-            v => !!v || 'поле обязательно для заполнения',
-		],
+		required: [v => !!v || 'поле обязательно для заполнения'],
+        isLoading: false,
 		course: {
             title: '',
             code: '',
@@ -78,19 +83,24 @@ export default {
     methods: {
 	    submit () {
             if (this.$refs.form.validate()) {
+                this.isLoading = true;
 	            if (this.isEdit) {
                     adminCourseService.edit(this.course).then(() => {
                         this.$toast.success('Успешно обновлено');
                         this.$emit('close');
+                        this.isLoading = false;
                     }).catch((err) => {
                         this.$toast.error(err);
+                        this.isLoading = false;
                     });
                 } else {
                     adminCourseService.create(this.course).then(() => {
                         this.$toast.success('Успешно создано');
                         this.$emit('close');
+                        this.isLoading = false;
                     }).catch((err) => {
                         this.$toast.error(err);
+                        this.isLoading = false;
                     });
                 }
             }
