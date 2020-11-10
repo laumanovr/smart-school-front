@@ -47,11 +47,19 @@
         computed: {
             userProfile() {
                 return this.$store.state.account.profile
+            },
+            currentLang() {
+                return this.$root.$i18n.locale;
             }
         },
 
         data() {
             return {
+                langObj: {
+                    RU: 'courseTitle',
+                    KG: 'courseTitleKG',
+                    EN: 'courseCode',
+                },
                 required: [v => !!v || 'Обязательное поле'],
                 jitsiRoomName: '',
                 lesson: {
@@ -75,7 +83,7 @@
                     if (res.length) {
                         this.allData = res.map((item) => {
                             item.classTitle = `${item.classLevel} ${item.classLabel}`;
-                            item.courseTitle = this.$t(`adminCourses.${item.courseCode}`);
+                            item.courseTitle = item[this.langObj[this.currentLang]];
                             return item;
                         });
                         this.classes = this.allData.filter((obj, index, selfArr) =>
