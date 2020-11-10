@@ -7,6 +7,14 @@
       <div class="super-admin-header__title">
 	      <slot name="title">No title</slot>
       </div>
+        <v-select
+            class="select-lang"
+            :items="languages"
+            item-text="title"
+            item-value="code"
+            v-model="currentLang"
+            @change="changeLang"
+        />
       <div class="super-admin-header__user-info">
         <span>
 	        <div>
@@ -30,17 +38,37 @@
 import { mapActions } from 'vuex';
 export default {
     name: 'SuperAdminHeader',
+    data() {
+        return {
+            currentLang: '',
+            languages: [
+                {title: 'РУ', code: 'RU'},
+                {title: 'КГ', code: 'KG'},
+                {title: 'EN', code: 'EN'},
+            ]
+        }
+    },
+    mounted() {
+        const selectedLang = JSON.parse(window.localStorage.getItem('schoolLang'));
+        this.currentLang = selectedLang ? selectedLang : 'RU';
+        this.$root.$i18n.locale = this.currentLang;
+    },
     methods: {
         ...mapActions('account', [ 'login', 'logout' ]),
         systemLogout() {
             this.logout();
             this.$router.push('/login');
+        },
+
+        changeLang(lang) {
+            window.localStorage.setItem('schoolLang', JSON.stringify(lang));
+            this.$router.go(0);
         }
     }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
   .super-admin-header {
     height: 76px;
     background: #FFFFFF;
@@ -84,7 +112,7 @@ export default {
           border: 1px solid #EFF4F7;
           transform: rotate(90deg);
           width: 52px;
-          height: 0px;
+          height: 0;
         }
       }
       span:nth-child(2) {
@@ -95,7 +123,6 @@ export default {
       }
 
       > span:first-child {
-		margin: 0 20px;
         div:first-child {
           font-size: 14px;
           line-height: 16px;
@@ -111,6 +138,12 @@ export default {
           color: #A6ACBE;
         }
       }
+    }
+    .select-lang {
+        max-width: 55px;
+        .v-input__slot:before {
+            content: none;
+        }
     }
   }
 </style>
