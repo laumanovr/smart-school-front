@@ -143,6 +143,11 @@ export default {
 		DeletePopup, AddTopic, SmartSelect, SmartButton, SmartSearchInput, SmartTable, ClassSelectHeader},
 	data() {
 		return {
+            langObj: {
+                RU: 'courseTitle',
+                KG: 'courseTitleKG',
+                EN: 'courseCode',
+            },
 			totalPages: 1,
 			totalElements: 0,
 			currentPage: 1,
@@ -170,6 +175,9 @@ export default {
 		userProfile() {
 			return this.$store.state.account.profile
 		},
+        currentLang() {
+            return this.$root.$i18n.locale;
+        }
 	},
 
     created() {
@@ -269,7 +277,7 @@ export default {
 		},
 
         showCourseName(courseObj) {
-            return this.$t(`adminCourses.${courseObj.courseCode}`);
+            return courseObj[this.langObj[this.currentLang]];
         },
 
         onPageChange(val) {
