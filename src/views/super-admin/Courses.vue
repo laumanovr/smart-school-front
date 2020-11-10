@@ -100,7 +100,7 @@ export default {
         SmartSearchInput,
         CourseMenu, CourseGrid, DeletePopup, SmartButton, AddCourse, SuperAdminSchoolHead, SmartTable},
     data: () => ({
-        required: [v => !!v || 'обязательное поле'],
+        required: [v => !!v || ''],
         isAdd: false,
         courses: [],
         page: 0,
@@ -153,11 +153,15 @@ export default {
                 this.courses = res.map((i, index) => {
                     i.pos = index + 1;
                     return i;
-                })
+                });
                 this.allCourses = this.courses;
                 this.totalElements = this.courses.length;
                 this.pageSize = this.totalElements;
                 this.currentPage = 1;
+                if (this.courseFilter.classType && this.courseFilter.language) {
+                    // temp
+                    this.filterCourses();
+                }
             }).catch(err => console.log(err))
         },
         onEdit(item) {
