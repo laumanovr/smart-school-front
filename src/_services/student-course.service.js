@@ -15,6 +15,11 @@ export class StudentCourseService extends BaseApiService {
         return this.sendPostRequest(url, data);
     }
 
+    getByStudentIdAndChronicle(studentId, chronicleId) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/student-course/list/student-interface/${studentId}/chronicle/${chronicleId}`;
+        return this.sendGetRequest(url);
+    }
+
     getByStudentId(studentId) {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/student-course/list/student/${studentId}`;
         return this.sendGetRequest(url);
