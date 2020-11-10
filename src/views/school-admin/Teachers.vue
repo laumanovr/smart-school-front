@@ -72,14 +72,14 @@
         </v-dialog>
 
         <!--ADD COURSE MODAL-->
-        <modal name="add-course-modal" height="auto">
+        <modal name="add-course-modal" width="700px" height="auto">
             <div class="modal-container">
                 <div class="course-content">
                     <div class="added">
                         <h4>Добавленные:</h4>
                         <div class="teacher-courses">
                             <div class="course" v-for="(instrCourse, i) in teacherCourses" :key="i">
-                                <span>{{ $t(`adminCourses.${instrCourse.courseName}`) }}</span>
+                                <span>{{ instrCourse[langObj[currentLang]] }}</span>
                                 <DeleteIcon @click="deleteTeacherCourse(instrCourse.id, i)"/>
                             </div>
                         </div>
@@ -90,7 +90,7 @@
                             <v-select
                                 :rules="required"
                                 :items="schoolCourses"
-                                item-text="courseTitle"
+                                :item-text="getLocaleCourseTitle"
                                 item-value="id"
                                 label="Добавить предмет"
                                 v-model="addTeacherCourse.courseId"
@@ -154,8 +154,20 @@ export default {
         CourseIcon,
         DeleteIcon,
         TrashIcon,
-        SmartSelect, SmartBtn2, SmartSearchInput, SmartButton, AddTeacher, SuperAdminSchoolHead, SmartTable},
+        SmartSelect,
+        SmartBtn2,
+        SmartSearchInput,
+        SmartButton,
+        AddTeacher,
+        SuperAdminSchoolHead,
+        SmartTable
+    },
     data: () => ({
+        langObj: {
+            RU: 'courseTitle',
+            KG: 'courseTitleKG',
+            EN: 'courseCode',
+        },
         required: [v => !!v || 'Обязательное поле'],
         isAddUser: false,
         instructors: [],
@@ -192,6 +204,9 @@ export default {
         },
         school() {
             return this.userProfile.schools[0];
+        },
+        currentLang() {
+            return this.$root.$i18n.locale;
         }
     },
     async mounted() {
@@ -258,7 +273,7 @@ export default {
         translateCourses(courses) {
             const translatedArr = [];
             courses.forEach((course) => {
-                translatedArr.push(this.$t(`adminCourses.${course}`))
+                translatedArr.push(course[this.langObj[this.currentLang]]);
             });
             return translatedArr.join(', ');
         },
@@ -274,6 +289,10 @@ export default {
                 this.filterSchoolCourses = JSON.parse(JSON.stringify(res.sort((a, b) => a.courseTitle.localeCompare(b.courseTitle))));
                 this.filterSchoolCourses.unshift({courseTitle: 'Показать все', courseCode: ''})
             });
+        },
+
+        getLocaleCourseTitle(courseObj) {
+            return courseObj[this.langObj[this.currentLang]];
         },
 
         searchTeacherByFIO() {
@@ -362,6 +381,10 @@ export default {
             instructorCourseService.listByInstructor(instructor.id).then((res) => {
                 this.teacherCourses = res._embedded ? res._embedded.instructorCourseResourceList : [];
                 if (this.teacherCourses.length) {
+                    this.teacherCourses = this.teacherCourses.map((course) => {
+                        course.courseCode = course.courseName;
+                        return course;
+                    });
                     const existCourses = this.teacherCourses.map(course => course.courseId);
                     existCourses.forEach((existCourseId) => {
                         this.schoolCourses = this.schoolCourses.filter(course => course.id !== existCourseId);
