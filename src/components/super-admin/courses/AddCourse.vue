@@ -1,31 +1,42 @@
 <template>
-	<v-form @submit.prevent="submit" ref="form">
-		<div>
-			<v-text-field :rules="required" v-model="course.title" label="Название"></v-text-field>
-		</div>
-		<div>
-			<v-text-field :rules="required" v-model.trim="course.code" label="Код"></v-text-field>
-		</div>
-		<div>
-			<v-textarea
-					v-model="course.description"
-					outlined
-					name="input-7-4"
-					label="Описание"
-			></v-textarea>
-		</div>
-		<div class="form-footer">
-            <div class="btn-actions">
-			    <v-btn type="submit" color="primary">Сохранить</v-btn>
-			    <v-btn color="red" @click="$emit('close')">Отменить</v-btn>
+    <div class="admin-course-container">
+        <v-form @submit.prevent="submit" ref="form">
+            <h3>{{isEdit ? 'Редактировать предмет' : 'Добавить предмет'}}</h3>
+            <div>
+                <v-text-field :rules="required" v-model="course.title" label="На русском"/>
             </div>
-		</div>
-	</v-form>
+            <div>
+                <v-text-field :rules="required" v-model.trim="course.courseTitleKG" label="На кыргызском"/>
+            </div>
+            <div>
+                <v-text-field :rules="required" v-model.trim="course.code" label="На английском"/>
+            </div>
+            <v-select
+                :items="classTypes"
+                item-text="title"
+                item-value="type"
+                label="Классы"
+                v-model="course.classType"
+            />
+            <v-select
+                :items="languages"
+                item-text="title"
+                item-value="type"
+                label="Язык обучения"
+                v-model="course.languageCode"
+            />
+            <div class="form-footer">
+                <div class="btn-actions">
+                    <v-btn color="red" @click="$emit('close')">Отменить</v-btn>
+                    <v-btn type="submit" color="green">Сохранить</v-btn>
+                </div>
+            </div>
+        </v-form>
+    </div>
 </template>
 
 <script>
 import { AdminCourseService } from '@/_services/admin-course.service'
-
 const adminCourseService = new AdminCourseService();
 
 export default {
@@ -38,35 +49,49 @@ export default {
         editCourse: {
 	        type: Object,
             default: {}
-        }
+        },
+        classTypes: Array,
+        languages: Array
     },
 	data: () => ({
 		required: [
             v => !!v || 'поле обязательно для заполнения',
 		],
-		course: {}
+		course: {
+            title: '',
+            code: '',
+            courseTitleKG: '',
+            classType: '',
+            languageCode: ''
+        }
 	}),
     mounted() {
 	    if (this.isEdit) this.course = {
-	        code: this.editCourse.code,
-            description: this.editCourse.description,
+            id: this.editCourse.id,
             title: this.editCourse.title,
-            id: this.editCourse.id
-        };
+            code: this.editCourse.code,
+            courseTitleKG: this.editCourse.courseTitleKG,
+            classType: this.editCourse.classType,
+            languageCode: this.editCourse.languageCode
+        }
     },
     methods: {
 	    submit () {
-	        if (this.$refs.form.validate()) {
+            if (this.$refs.form.validate()) {
 	            if (this.isEdit) {
-                    adminCourseService.edit(this.course).then(res => {
+                    adminCourseService.edit(this.course).then(() => {
                         this.$toast.success('Успешно обновлено');
                         this.$emit('close');
-                    }).catch(err => console.log(err));
+                    }).catch((err) => {
+                        this.$toast.error(err);
+                    });
                 } else {
-                    adminCourseService.create(this.course).then(res => {
+                    adminCourseService.create(this.course).then(() => {
                         this.$toast.success('Успешно создано');
                         this.$emit('close');
-                    }).catch(err => console.log(err));
+                    }).catch((err) => {
+                        this.$toast.error(err);
+                    });
                 }
             }
 	    }
