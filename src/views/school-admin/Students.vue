@@ -199,7 +199,7 @@
                 <div class="course-titles">
                     <div class="label">Предметы</div>
                     <span v-for="course in studentDetail.courses">
-                        {{$t(`adminCourses.${course.courseName}`)}},
+                        {{ course[langObj[currentLang]] }},
                     </span>
                 </div>
                 <div class="btn-actions">
@@ -226,7 +226,7 @@
                     <h4>Добавленные:</h4>
                     <div class="course" v-for="(course, i) in studentDetail.courses">
                         <span class="course-title">
-                            {{$t(`adminCourses.${course.courseName}`) + ' - ' + course.instructorTitle}}
+                            {{course[langObj[currentLang]] + ' - ' + course.personTitle}}
                         </span>
                         <TrashIcon @click="deleteCourseFromClass(course, i)"/>
                     </div>
@@ -310,6 +310,11 @@ export default {
 
 	data() {
 		return {
+            langObj: {
+                RU: 'courseTitle',
+                KG: 'courseTitleKG',
+                EN: 'courseCode',
+            },
 			isAddFile: false,
 			isMassDeleting: false,
 			isSelectAll: false,
@@ -414,6 +419,9 @@ export default {
 		},
         school() {
             return this.userProfile.schools[0]
+        },
+        currentLang() {
+            return this.$root.$i18n.locale;
         }
 	},
 
@@ -432,12 +440,6 @@ export default {
 
 	methods: {
         limitNumbers: limitNumbers,
-
-		showCourseName(obj) {
-		    if (obj.courseCode) {
-                return this.$t(`adminCourses.${obj.courseCode}`) + ' - ' + obj.instructorTitle;
-            }
-		},
 
         async fetchStudents(refreshAll) {
             this.isLoading = true;
@@ -544,7 +546,7 @@ export default {
 		},
 
         async getStudentCourses(studentId) {
-            await StudentCourseService.getByStudentId(studentId).then((res) => {
+            await StudentCourseService.getByStudentIdAndChronicle(studentId, this.school.chronicleId).then((res) => {
                 this.studentDetail.courses = res;
                 this.isLoading = false;
             }).catch(err => {
