@@ -72,6 +72,11 @@
         components: {ClassSelectHeader, PreLoader},
         data() {
             return {
+                langObj: {
+                    RU: 'courseTitle',
+                    KG: 'courseTitleKG',
+                    EN: 'courseCode',
+                },
                 quarterTitle: {
                     '1': 'I',
                     '2': 'II',
@@ -102,6 +107,9 @@
             },
             school() {
                 return this.userProfile.schools[0]
+            },
+            currentLang() {
+                return this.$root.$i18n.locale;
             }
         },
 
@@ -208,7 +216,7 @@
             },
 
             showCourseName(courseObj) {
-                return this.$t(`adminCourses.${courseObj.courseCode}`);
+                return courseObj[this.langObj[this.currentLang]];
             },
 
             fetchSchoolQuarters() {
