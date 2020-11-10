@@ -1,5 +1,28 @@
 <template>
     <div class="super-admin-courses">
+        <v-form ref="filterForm">
+            <div class="select-filter-block">
+                <v-select
+                    class="v-select-item"
+                    :items="classTypes"
+                    item-text="title"
+                    item-value="type"
+                    label="Классы"
+                    :rules="required"
+                    v-model="courseFilter.classType"
+                />
+                <v-select
+                    class="v-select-item"
+                    :items="languages"
+                    item-text="title"
+                    item-value="type"
+                    label="Язык обучения"
+                    :rules="required"
+                    v-model="courseFilter.language"
+                />
+                <v-btn color="primary" @click="filterCourses">Фильтр</v-btn>
+            </div>
+        </v-form>
         <SuperAdminSchoolHead>
             <template v-slot:title>Предметы</template>
             <template v-slot:right>
@@ -13,15 +36,17 @@
             </template>
             <template v-slot:head>
                 <th>№</th>
-                <th>Название</th>
-                <th>Описание</th>
+                <th>На русском</th>
+                <th>На кыргызском</th>
+                <th>На английском</th>
                 <th></th>
                 <th></th>
             </template>
             <template slot="body" slot-scope="{item}">
                 <td>{{ item.pos }}</td>
                 <td>{{ item.title }}</td>
-                <td>{{ item.description }}</td>
+                <td>{{ item.courseTitleKG }}</td>
+                <td>{{ item.code }}</td>
                 <td>
                     <img @click="onEdit(item)" class="clickable-icons" alt="" src="../../assets/images/icons/edit-green.svg">
                 </td>
@@ -40,7 +65,13 @@
             v-model="isAdd"
             width="546"
         >
-            <AddCourse @close="onCloseModal" :is-edit="isEdit" :edit-course="course"></AddCourse>
+            <AddCourse
+                @close="onCloseModal"
+                :is-edit="isEdit"
+                :edit-course="course"
+                :classTypes="classTypes"
+                :languages="languages"
+            />
         </v-dialog>
         <v-dialog
             max-width="450"
@@ -61,8 +92,7 @@ import DeletePopup from "@/components/delete-popup/DeletePopup";
 import CourseGrid from "@/components/super-admin/courses/CourseGrid";
 import CourseMenu from "@/components/super-admin/courses/CourseMenu";
 import SmartSearchInput from "@/components/input/SmartSearchInput";
-
-const adminCourseService = new AdminCourseService()
+const adminCourseService = new AdminCourseService();
 
 export default {
     name: 'Courses',
@@ -70,6 +100,7 @@ export default {
         SmartSearchInput,
         CourseMenu, CourseGrid, DeletePopup, SmartButton, AddCourse, SuperAdminSchoolHead, SmartTable},
     data: () => ({
+        required: [v => !!v || 'обязательное поле'],
         isAdd: false,
         courses: [],
         page: 0,
@@ -78,13 +109,35 @@ export default {
         pageSize: 0,
         course: {},
         isDeleting: false,
-        isGrid: true,
-        allCourses: []
+        isGrid: false,
+        allCourses: [],
+        classTypes: [
+            {title: 'Начальные классы', type: 'JUNIOR'},
+            {title: 'Старшие классы', type: 'SENIOR'},
+            {title: 'Все', type: 'ALL'}
+        ],
+        languages: [
+            {title: 'Русский', type: 'RUSSIAN'},
+            {title: 'Кыргызский', type: 'KYRGYZ'}
+        ],
+        courseFilter: {
+            classType: '',
+            language: ''
+        }
     }),
     mounted() {
         this.fetchCourses()
     },
     methods: {
+        filterCourses() {
+            if (this.$refs.filterForm.validate()) {
+                this.courses = this.allCourses.filter((course) =>
+                    course.classType === this.courseFilter.classType &&
+                    course.languageCode === this.courseFilter.language
+                )
+            }
+        },
+
         onCloseModal() {
             this.isAdd = false
             this.fetchCourses()
@@ -106,11 +159,9 @@ export default {
             }).catch(err => console.log(err))
         },
         onEdit(item) {
-            adminCourseService.getById(item.id).then(res => {
-                this.course = res;
-                this.isAdd = true;
-                this.isEdit = true;
-            }).catch(err => console.log(err));
+            this.course = item;
+            this.isAdd = true;
+            this.isEdit = true;
         },
         onDelete (item) {
             this.course = item;
@@ -140,6 +191,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+    .super-admin-courses {
+        margin: 30px;
+        .v-select-item {
+            max-width: 190px;
+        }
+    }
     .course-menu-grid {
         margin: 20px 30px;
     }
