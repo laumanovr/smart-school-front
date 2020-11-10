@@ -139,13 +139,15 @@ export default {
         },
 
         onCloseModal() {
-            this.isAdd = false
-            this.fetchCourses()
+            this.isAdd = false;
+            this.fetchCourses();
         },
+
         onAdd () {
-            this.isAdd = true
+            this.isAdd = true;
             this.isEdit = false;
         },
+
         fetchCourses() {
             adminCourseService.list().then(res => {
                 this.courses = res.map((i, index) => {
