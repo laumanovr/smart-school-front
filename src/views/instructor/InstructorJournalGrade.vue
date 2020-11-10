@@ -124,11 +124,19 @@
             },
             school() {
                 return this.userProfile.schools[0];
+            },
+            currentLang() {
+                return this.$root.$i18n.locale;
             }
         },
 
         data() {
             return {
+                langObj: {
+                    RU: 'courseTitle',
+                    KG: 'courseTitleKG',
+                    EN: 'courseCode',
+                },
                 numMonths: {
                     '01': 'Январь',
                     '02': 'Февраль',
@@ -187,7 +195,7 @@
 
         methods: {
             showCourseName(courseObj) {
-                return this.$t(`adminCourses.${courseObj.courseCode}`);
+                return courseObj[this.langObj[this.currentLang]];
             },
 
             getInstructorCourses() {
