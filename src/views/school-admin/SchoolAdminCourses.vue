@@ -17,14 +17,16 @@
                 <th class="top-th">
                     <input type="checkbox">
                 </th>
-                <th>Название</th>
-                <th>Описание</th>
+                <th>На русском</th>
+                <th>На кыргызском</th>
+                <th>На английском</th>
             </template>
 
             <template v-slot:body="{ item }">
                 <td><input :disabled="item.disable" @change="onSelect(item)" type="checkbox" v-model="item.checked"></td>
                 <td>{{ item.title }}</td>
-                <td>{{ item.description }}</td>
+                <td>{{ item.courseTitleKG }}</td>
+                <td>{{ item.code }}</td>
             </template>
         </SmartTable>
     </div>
