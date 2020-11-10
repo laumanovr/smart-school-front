@@ -50,7 +50,7 @@
                             <span v-if="teacher.teacherName" :class="{'space': teacher.several}">{{teacher.teacherName}}</span>
                             <span class="empty" v-else>-</span>
                         </td>
-                        <td class="course-name">{{ $t(`adminCourses.${teacher.courseCode}`) }}</td>
+                        <td class="course-name">{{ teacher[langObj[currentLang]] }}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -136,7 +136,7 @@
                                             getSpecificCourseSchedule(day.day, time.id, klass)
                                             )"
                                     >
-                                    {{ $t(`adminCourses.${getSpecificCourseSchedule(day.day, time.id, klass).courseCode}`).slice(0,4) }}
+                                    {{ getSpecificCourseSchedule(day.day, time.id, klass)[langObj[currentLang]].slice(0,4) }}
                                     </span>
                                     <span
                                         class="noClass"
@@ -297,6 +297,11 @@
                     archived: false,
                     instrCourseId: ''
                 },
+                langObj: {
+                    RU: 'courseTitle',
+                    KG: 'courseTitleKG',
+                    EN: 'courseCode',
+                },
                 objDay: {
                     MONDAY: 'Понедельник',
                     TUESDAY: 'Вторник',
@@ -335,6 +340,9 @@
             },
             school() {
                 return this.userProfile.schools[0];
+            },
+            currentLang() {
+                return this.$root.$i18n.locale;
             }
         },
 
@@ -354,7 +362,7 @@
             },
 
             getTeacherAndCourseName(teacher) {
-                return this.$t(`adminCourses.${teacher.courseCode}`) + ' - ' + teacher.instructorTitle;
+                return teacher[this.langObj[this.currentLang]] + ' - ' + teacher.instructorTitle;
             },
 
             getFullClassTitle(klass) {
