@@ -469,17 +469,22 @@ export default {
                     border-right: 2px solid #9E9E9E;
                     margin-right: 20px;
                     padding-right: 20px;
-                    min-width: 45%;
+                    min-width: 50%;
+                    max-height: 370px;
+                    overflow-y: auto;
                 }
                 .add-new {
-                    min-width: 55%;
+                    min-width: 50%;
                 }
-
                 .teacher-courses {
                     text-align: center;
                     transform: translateY(-10px);
                     .course {
                         margin-bottom: 8px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        border-bottom: 1px solid #eee;
                     }
                     .delete-icon {
                         width: 22px;
