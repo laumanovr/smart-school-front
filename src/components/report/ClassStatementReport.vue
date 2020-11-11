@@ -309,7 +309,10 @@
             },
 
             checkSubjectLength(subject) {
-                return subject[this.langObj[this.currentLang]].length > 20;
+                if (subject[this.langObj[this.currentLang]]) {
+                    return subject[this.langObj[this.currentLang]].length > 20;
+                }
+                return false;
             },
 
             exportPdf() {
