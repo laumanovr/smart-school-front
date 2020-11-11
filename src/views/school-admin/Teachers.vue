@@ -456,9 +456,7 @@ export default {
             color: #fff;
         }
         .instr-courses {
-            span {
-                margin-right: 5px;
-            }
+            width: 400px;
         }
         .modal-container {
             .course-content {
