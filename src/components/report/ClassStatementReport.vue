@@ -51,8 +51,12 @@
                 <tr>
                     <th class="num">№</th>
                     <th class="FIO">Ф.И.О</th>
-                    <th v-for="subject in classAllSubjects" class="subject">
-                        {{$t(`adminCourses.${subject.courseCode}`)}}
+                    <th
+                        v-for="subject in classAllSubjects"
+                        :class="{'long-name': checkSubjectLength(subject)}"
+                        class="subject"
+                    >
+                        {{ subject[langObj[currentLang]] }}
                     </th>
                 </tr>
                 </thead>
@@ -79,14 +83,22 @@
                 <tr>
                     <td class="num"></td>
                     <td class="FIO">Качество знаний</td>
-                    <td v-for="subject in classAllSubjects" class="total-mark">
+                    <td
+                        v-for="subject in classAllSubjects"
+                        class="total-mark"
+                        :class="{'long-name': checkSubjectLength(subject)}"
+                    >
                         {{countQuality(subject)}}%
                     </td>
                 </tr>
                 <tr>
                     <td class="num"></td>
                     <td class="FIO">Успеваемость</td>
-                    <td v-for="subject in classAllSubjects" class="total-mark">
+                    <td
+                        v-for="subject in classAllSubjects"
+                        class="total-mark"
+                        :class="{'long-name': checkSubjectLength(subject)}"
+                    >
                         {{countPerformance(subject)}}%
                     </td>
                 </tr>
@@ -145,6 +157,11 @@
         },
         data() {
             return {
+                langObj: {
+                    RU: 'courseTitle',
+                    KG: 'courseTitleKG',
+                    EN: 'courseCode',
+                },
                 required: [v => !!v || this.$t('required')],
                 isLoading: false,
                 showTable: false,
@@ -169,6 +186,9 @@
             },
             school() {
                 return this.userProfile.schools[0];
+            },
+            currentLang() {
+                return this.$root.$i18n.locale;
             }
         },
         methods: {
@@ -288,6 +308,10 @@
                 return totalPercent.toFixed(1);
             },
 
+            checkSubjectLength(subject) {
+                return subject[this.langObj[this.currentLang]].length > 20;
+            },
+
             exportPdf() {
                 this.$refs.report.style.width = this.setDisplaySize();
                 this.$refs.report.style.height = this.setDisplaySize();
@@ -391,7 +415,7 @@
                     max-width: 240px;
                 }
                 .subject {
-                    transform: rotate(90deg) translateX(-45px);
+                    transform: rotate(90deg) translateX(-48px);
                     width: 55px;
                     min-width: 55px;
                     max-width: 55px;
@@ -400,7 +424,9 @@
                     white-space: nowrap;
                     &.long-name {
                         width: 76px;
+                        min-width: 76px;
                         white-space: pre-line;
+                        word-break: break-all;
                         transform: rotate(90deg) translateX(-20px);
                     }
                 }
@@ -410,6 +436,7 @@
                     max-width: 55px;
                     &.long-name {
                         width: 76px;
+                        min-width: 76px;
                     }
                 }
             }
