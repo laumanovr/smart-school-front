@@ -571,11 +571,11 @@ export default {
         deleteCourseFromClass(courseObj, index) {
             this.isLoading = true;
             const removeClassCourse = {
-                classId: courseObj.classId,
+                classId: courseObj.studentClassId,
                 instructorCourseDtos: [{
                     archived: true,
                     courseId: courseObj.courseId,
-                    personId: courseObj.instructorId,
+                    personId: courseObj.personId,
                     schoolId: this.userProfile.schools[0].id
                 }],
                 yearId: this.userProfile.schools[0].chronicleId
