@@ -1,5 +1,6 @@
 <template>
     <div class="super-admin-courses">
+        <PreLoader v-if="isLoading"/>
         <v-form ref="filterForm">
             <div class="select-filter-block">
                 <v-select
@@ -93,13 +94,15 @@ import CourseGrid from "@/components/super-admin/courses/CourseGrid";
 import CourseMenu from "@/components/super-admin/courses/CourseMenu";
 import SmartSearchInput from "@/components/input/SmartSearchInput";
 const adminCourseService = new AdminCourseService();
+import PreLoader from "@/components/preloader/PreLoader";
 
 export default {
     name: 'Courses',
     components: {
         SmartSearchInput,
-        CourseMenu, CourseGrid, DeletePopup, SmartButton, AddCourse, SuperAdminSchoolHead, SmartTable},
+        CourseMenu, CourseGrid, DeletePopup, SmartButton, AddCourse, SuperAdminSchoolHead, SmartTable, PreLoader},
     data: () => ({
+        isLoading: false,
         required: [v => !!v || ''],
         isAdd: false,
         courses: [],
@@ -125,8 +128,8 @@ export default {
             language: ''
         }
     }),
-    mounted() {
-        this.fetchCourses()
+    created() {
+        this.fetchCourses();
     },
     methods: {
         filterCourses() {
@@ -149,11 +152,12 @@ export default {
         },
 
         fetchCourses() {
-            adminCourseService.list().then(res => {
+            this.isLoading = true;
+            adminCourseService.list().then((res) => {
                 this.courses = res.map((i, index) => {
                     i.pos = index + 1;
                     return i;
-                });
+                }).filter((i) => !i.code.includes('_KG'));
                 this.allCourses = this.courses;
                 this.totalElements = this.courses.length;
                 this.pageSize = this.totalElements;
@@ -162,7 +166,11 @@ export default {
                     // temp
                     this.filterCourses();
                 }
-            }).catch(err => console.log(err))
+                this.isLoading = false;
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.isLoading = false;
+            })
         },
         onEdit(item) {
             this.course = item;
