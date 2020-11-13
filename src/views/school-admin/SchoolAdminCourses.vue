@@ -1,5 +1,6 @@
 <template>
     <div class="school-admin-courses">
+        <PreLoader v-if="isLoading"/>
         <SuperAdminSchoolHead>
             <template v-slot:title>Предметы</template>
             <template v-slot:right>
@@ -33,19 +34,20 @@
 </template>
 
 <script>
-import SuperAdminSchoolHead from '@/components/super-admin/schools/SuperAdminSchoolHead'
-import SmartTable from '@/components/table/SmartTable'
-import {AdminCourseService} from '@/_services/admin-course.service'
-import {CourseService} from '@/_services/course.service'
-import SmartSearchInput from '@/components/input/SmartSearchInput'
-
-const courseService = new CourseService()
-const adminCourseService = new AdminCourseService()
+import SuperAdminSchoolHead from '@/components/super-admin/schools/SuperAdminSchoolHead';
+import SmartTable from '@/components/table/SmartTable';
+import {AdminCourseService} from '@/_services/admin-course.service';
+import {CourseService} from '@/_services/course.service';
+import SmartSearchInput from '@/components/input/SmartSearchInput';
+const courseService = new CourseService();
+const adminCourseService = new AdminCourseService();
+import PreLoader from '@/components/preloader/PreLoader';
 
 export default {
     name: 'SchoolAdminCourses',
-    components: {SmartSearchInput, SuperAdminSchoolHead, SmartTable},
+    components: {SmartSearchInput, SuperAdminSchoolHead, SmartTable, PreLoader},
     data: () => ({
+        isLoading: false,
         items: [],
         adminCourses: [],
         isAddUser: false,
@@ -57,24 +59,29 @@ export default {
             return this.$store.state.account.profile
         }
     },
-    mounted() {
-        this.fetchCourses()
+    created() {
+        this.fetchCourses();
     },
     methods: {
         onCloseModal() {
         },
         fetchCourses() {
-            courseService.listBySchool(this.userProfile.schools[0].id).then(res => {
+            this.isLoading = true;
+            courseService.listBySchool(this.userProfile.schools[0].id).then((res) => {
                 this.items = res;
                 return adminCourseService.list();
-            }).then(res => {
+            }).then((res) => {
                 this.adminCourses = res.map(i => {
                    if (this.items.some(it => it.adminCourseId === i.id)) {
                        i.disable = true;
                    }
                    return i;
                 }).sort((a, b) => a.title.localeCompare(b.title));
-            }).catch(err => console.log(err))
+                this.isLoading = false;
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.isLoading = false;
+            })
         },
         onSelect(item) {
             this.adminCourses = this.adminCourses.map(i => {
