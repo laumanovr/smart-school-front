@@ -157,7 +157,7 @@ export default {
                 this.courses = res.map((i, index) => {
                     i.pos = index + 1;
                     return i;
-                }).filter((i) => !i.code.includes('_KG'));
+                });
                 this.allCourses = this.courses;
                 this.totalElements = this.courses.length;
                 this.pageSize = this.totalElements;
