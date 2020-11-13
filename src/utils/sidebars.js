@@ -203,6 +203,11 @@ export default {
             icon: 'students.svg',
             route: '/rayon-head/students'
         },
+        {
+            name: 'Отчеты',
+            icon: 'report.svg',
+            route: '/rayon-head/rayon-head-report'
+        },
         // {
         //     name: 'Календарь',
         //     icon: 'calendar.svg',
