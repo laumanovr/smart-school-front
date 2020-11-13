@@ -150,7 +150,8 @@
         props: {
             allChronicleYears: Array,
             classes: Array,
-            schoolQuarters: Array
+            schoolQuarters: Array,
+            selectedSchool: Object
         },
         components: {
             PreLoader
@@ -185,7 +186,7 @@
                 return this.$store.state.account.profile
             },
             school() {
-                return this.userProfile.schools[0];
+                return this.userProfile.schools ? this.userProfile.schools[0] : this.selectedSchool;
             },
             currentLang() {
                 return this.$root.$i18n.locale;
