@@ -71,7 +71,8 @@
         },
         props: {
             allChronicleYears: Array,
-            schoolQuarters: Array
+            schoolQuarters: Array,
+            selectedSchool: Object
         },
         data() {
             return {
@@ -93,7 +94,7 @@
                 return this.$store.state.account.profile
             },
             school() {
-                return this.userProfile.schools[0];
+                return this.userProfile.schools ? this.userProfile.schools[0] : this.selectedSchool;
             }
         },
 
