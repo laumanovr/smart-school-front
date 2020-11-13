@@ -261,34 +261,14 @@ const routes = [
                 component: loadComponent('rayon-head/Students')
             },
             {
-                name: 'rayonHeadCalendar',
-                path: 'calendar',
-                component: loadComponent('rayon-head/Calendar')
+                name: 'rayonHeadReport',
+                path: 'rayon-head-report',
+                component: loadComponent('rayon-head/RayonHeadReport')
             },
             // {
-            //     name: 'superAdminCourses',
-            //     path: 'courses',
-            //     component: Courses
-            // },
-            // {
-            //     name: 'superAdminRayon',
-            //     path: 'rayon',
-            //     component: Rayon
-            // },
-            // {
-            //     name: 'superAdminAnnouncement',
-            //     path: 'announcements',
-            //     component: loadComponent('super-admin/Announcements')
-            // },
-            // {
-            //     name: 'superAdminLibrary',
-            //     path: 'library',
-            //     component: loadComponent('super-admin/Library')
-            // },
-            // {
-            //     name: 'superAdminChronicle',
-            //     path: 'chronicle',
-            //     component: Chronicle
+            //     name: 'rayonHeadCalendar',
+            //     path: 'calendar',
+            //     component: loadComponent('rayon-head/Calendar')
             // },
         ],
     },
