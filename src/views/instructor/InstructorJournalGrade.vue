@@ -310,12 +310,15 @@
             },
 
             showCurrentMark(grade) {
-                return isNaN(grade.mark) || grade.mark.includes('95') ? 'Н' : grade.mark;
+                return isNaN(grade.mark) || grade.mark.includes('95') || grade.mark.includes('92') ? 'Н' : grade.mark;
             },
 
             setGradeMark(e, student, day, currentGrade) {
-                const inputValue = e.target.innerText = e.target.innerText.trim().slice(0, 1);
-
+                let inputValue = e.target.innerText = e.target.innerText.trim().slice(0, 1);
+                inputValue = e.target.innerText = isNaN(inputValue) ? 'H' : inputValue;
+                if (!isNaN(inputValue) && inputValue > 5) {
+                    inputValue = e.target.innerText = '5';
+                }
                 let newGradeObj = {
                     classId: this.monthDataRequest.classId,
                     gradeId: currentGrade ? currentGrade.gradeId : 0,
@@ -323,7 +326,7 @@
                     instructorId: this.userProfile.personId,
                     shiftTimeId: day.shiftTimeId,
                     gradeDate: day.day,
-                    mark: inputValue,
+                    mark: !isNaN(inputValue) ? inputValue : 95,
                     gradeType: !isNaN(inputValue) ? 'GRADE' : 'ATTENDANCE',
                     reasonId: this.selectedReasonId,
                     topicId: this.selectedTopicId,
