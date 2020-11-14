@@ -316,7 +316,7 @@
             setGradeMark(e, student, day, currentGrade) {
                 let inputValue = e.target.innerText = e.target.innerText.trim().slice(0, 1);
                 inputValue = e.target.innerText = isNaN(inputValue) ? 'H' : inputValue;
-                if (!isNaN(inputValue) && inputValue > 5) {
+                if (!isNaN(inputValue) && (inputValue < 2 || inputValue > 5)) {
                     inputValue = e.target.innerText = '5';
                 }
                 let newGradeObj = {
