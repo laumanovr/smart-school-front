@@ -104,9 +104,6 @@ export default {
         userProfile() {
             return this.$store.state.account.profile
         },
-//        birthDay() {
-//            return moment(this.user.birthday).isValid() ? this.user.birthday : '1970-2-11';
-//        },
     },
     mounted() {
         this.fetchRoles();
