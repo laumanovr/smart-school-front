@@ -328,7 +328,7 @@ export default {
                     phone: res.phone,
                     courseId: item.courseId,
                     pin: res.pin,
-                    birthday: res.dateOfBirth
+                    birthday: res.dateOfBirth ? res.dateOfBirth : '11.10.1970'
                 };
                 this.isAddUser = true;
                 this.isEdit = true;
