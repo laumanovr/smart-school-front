@@ -10,15 +10,6 @@
                 label="Классы"
                 v-model="courseFilter.classType"
             />
-            <!--<v-select-->
-            <!--class="v-select-item"-->
-            <!--:items="languages"-->
-            <!--item-text="title"-->
-            <!--item-value="type"-->
-            <!--label="Язык обучения"-->
-            <!--:rules="required"-->
-            <!--v-model="courseFilter.language"-->
-            <!--/>-->
             <v-btn color="primary" @click="filterCourses">Фильтр</v-btn>
         </div>
         <SuperAdminSchoolHead>
@@ -122,10 +113,6 @@ export default {
             {title: 'Старшие классы', type: 'SENIOR'},
             {title: 'Все', type: 'ALL'}
         ],
-//        languages: [
-//            {title: 'Русский', type: 'RUSSIAN'},
-//            {title: 'Кыргызский', type: 'KYRGYZ'}
-//        ],
         courseFilter: {
             classType: 'ALL'
         }
