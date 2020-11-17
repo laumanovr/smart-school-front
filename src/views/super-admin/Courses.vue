@@ -1,29 +1,26 @@
 <template>
     <div class="super-admin-courses">
         <PreLoader v-if="isLoading"/>
-        <v-form ref="filterForm">
-            <div class="select-filter-block">
-                <v-select
-                    class="v-select-item"
-                    :items="classTypes"
-                    item-text="title"
-                    item-value="type"
-                    label="Классы"
-                    :rules="required"
-                    v-model="courseFilter.classType"
-                />
-                <v-select
-                    class="v-select-item"
-                    :items="languages"
-                    item-text="title"
-                    item-value="type"
-                    label="Язык обучения"
-                    :rules="required"
-                    v-model="courseFilter.language"
-                />
-                <v-btn color="primary" @click="filterCourses">Фильтр</v-btn>
-            </div>
-        </v-form>
+        <div class="select-filter-block">
+            <v-select
+                class="v-select-item"
+                :items="classTypes"
+                item-text="title"
+                item-value="type"
+                label="Классы"
+                v-model="courseFilter.classType"
+            />
+            <!--<v-select-->
+            <!--class="v-select-item"-->
+            <!--:items="languages"-->
+            <!--item-text="title"-->
+            <!--item-value="type"-->
+            <!--label="Язык обучения"-->
+            <!--:rules="required"-->
+            <!--v-model="courseFilter.language"-->
+            <!--/>-->
+            <v-btn color="primary" @click="filterCourses">Фильтр</v-btn>
+        </div>
         <SuperAdminSchoolHead>
             <template v-slot:title>Предметы</template>
             <template v-slot:right>
@@ -31,10 +28,17 @@
                 <SmartButton @clicked="onAdd">Добавить +</SmartButton>
             </template>
         </SuperAdminSchoolHead>
-        <SmartTable v-if="!isGrid" :schools="courses" :total-elements="totalElements" :page-size="pageSize">
-            <template v-slot:table-head-right>
-                <CourseMenu :is-grid="isGrid" @onChange="onMenuChange"></CourseMenu>
-            </template>
+        <SmartTable
+            v-if="!isGrid"
+            :schools="courses"
+            :total-elements="totalElements"
+            :totalPages="1"
+            :page-size="pageSize"
+            :current-page="1"
+        >
+            <!--<template v-slot:table-head-right>-->
+                <!--<CourseMenu :is-grid="isGrid" @onChange="onMenuChange"></CourseMenu>-->
+            <!--</template>-->
             <template v-slot:head>
                 <th>№</th>
                 <th>На русском</th>
@@ -71,7 +75,6 @@
                 :is-edit="isEdit"
                 :edit-course="course"
                 :classTypes="classTypes"
-                :languages="languages"
             />
         </v-dialog>
         <v-dialog
@@ -119,13 +122,12 @@ export default {
             {title: 'Старшие классы', type: 'SENIOR'},
             {title: 'Все', type: 'ALL'}
         ],
-        languages: [
-            {title: 'Русский', type: 'RUSSIAN'},
-            {title: 'Кыргызский', type: 'KYRGYZ'}
-        ],
+//        languages: [
+//            {title: 'Русский', type: 'RUSSIAN'},
+//            {title: 'Кыргызский', type: 'KYRGYZ'}
+//        ],
         courseFilter: {
-            classType: '',
-            language: ''
+            classType: 'ALL'
         }
     }),
     created() {
@@ -133,11 +135,10 @@ export default {
     },
     methods: {
         filterCourses() {
-            if (this.$refs.filterForm.validate()) {
-                this.courses = this.allCourses.filter((course) =>
-                    course.classType === this.courseFilter.classType &&
-                    course.languageCode === this.courseFilter.language
-                )
+            if (this.courseFilter.classType === 'ALL') {
+                this.courses = this.allCourses;
+            } else {
+                this.courses = this.allCourses.filter((course) => course.classType === this.courseFilter.classType);
             }
         },
 
@@ -162,10 +163,7 @@ export default {
                 this.totalElements = this.courses.length;
                 this.pageSize = this.totalElements;
                 this.currentPage = 1;
-                if (this.courseFilter.classType && this.courseFilter.language) {
-                    // temp
-                    this.filterCourses();
-                }
+                this.filterCourses();
                 this.isLoading = false;
             }).catch((err) => {
                 this.$toast.error(err);
