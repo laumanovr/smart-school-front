@@ -185,7 +185,8 @@
                 scheduleMonthNumber: new Date().getMonth() + 1,
                 allCourses: [],
                 topics: [],
-                topicPage: 0
+                topicPage: 0,
+                inputValue: ''
             }
         },
 
@@ -314,10 +315,17 @@
             },
 
             setGradeMark(e, student, day, currentGrade) {
-                let inputValue = e.target.innerText = e.target.innerText.trim().slice(0, 1);
-                inputValue = e.target.innerText = isNaN(inputValue) ? 'H' : inputValue;
-                if (!isNaN(inputValue) && (inputValue < 2 || inputValue > 5)) {
-                    inputValue = e.target.innerText = '5';
+                if (e.target.innerText.length && e.target.innerText === this.inputValue) {
+                    return;
+                }
+                this.inputValue = e.target.innerText = e.target.innerText.trim().slice(0, 1);
+                this.inputValue = e.target.innerText = isNaN(this.inputValue) ? 'H' : this.inputValue;
+                if (this.inputValue.length && !isNaN(this.inputValue)) {
+                    if (this.inputValue < 2) {
+                        this.inputValue = e.target.innerText = '2';
+                    } else if (this.inputValue > 5) {
+                        this.inputValue = e.target.innerText = '5';
+                    }
                 }
                 let newGradeObj = {
                     classId: this.monthDataRequest.classId,
@@ -326,8 +334,8 @@
                     instructorId: this.userProfile.personId,
                     shiftTimeId: day.shiftTimeId,
                     gradeDate: day.day,
-                    mark: !isNaN(inputValue) ? inputValue : 95,
-                    gradeType: !isNaN(inputValue) ? 'GRADE' : 'ATTENDANCE',
+                    mark: !isNaN(this.inputValue) ? this.inputValue : 95,
+                    gradeType: !isNaN(this.inputValue) ? 'GRADE' : 'ATTENDANCE',
                     reasonId: this.selectedReasonId,
                     topicId: this.selectedTopicId,
                     comment: '',
@@ -344,7 +352,7 @@
                     }
                 });
 
-                if (inputValue.length) {
+                if (this.inputValue.length) {
                     this.sendGradeDtoList.push(newGradeObj);
                 } else {
                     if (currentGrade) {
