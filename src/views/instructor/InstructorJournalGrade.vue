@@ -252,6 +252,7 @@
 
             fetchStudentGrades() {
                 this.studentGrades = [];
+                this.sendGradeDtoList = [];
                 GradeService.getByClassCourseInstructor(
                     this.monthDataRequest.classId,
                     this.monthDataRequest.courseId,
@@ -362,6 +363,18 @@
                         this.sendGradeDtoList.push(newGradeObj);
                     }
                 }
+                this.setCaretToEnd(e.target);
+            },
+
+            setCaretToEnd(target) {
+                const range = document.createRange();
+                const sel = window.getSelection();
+                range.selectNodeContents(target);
+                range.collapse(false);
+                sel.removeAllRanges();
+                sel.addRange(range);
+                target.focus();
+                range.detach();
             },
 
             filterGradesByMonth(nav) {
