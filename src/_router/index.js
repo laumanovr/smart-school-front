@@ -28,6 +28,11 @@ const routes = [
 		name: 'login',
 		component: Login
 	},
+    {
+        path: '/oauth2/login/esia',
+        name: 'loginEsia',
+        component: loadComponent('login/LoginEsi')
+    },
 
     // SUPER-ADMIN
 	{
@@ -281,7 +286,7 @@ const router = new VueRouter({
 	routes
 })
 router.beforeEach((to, from, next) => {
-	const publicPages = [ '/login', '/' ];
+	const publicPages = [ '/login', '/', '/oauth2/login/esia' ];
 	const authRequired = !publicPages.includes(to.path);
 	const loggedIn = localStorage.getItem('user');
 
