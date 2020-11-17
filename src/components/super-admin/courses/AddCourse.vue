@@ -20,13 +20,6 @@
                 label="Классы"
                 v-model="course.classType"
             />
-            <!--<v-select-->
-                <!--:items="languages"-->
-                <!--item-text="title"-->
-                <!--item-value="type"-->
-                <!--label="Язык обучения"-->
-                <!--v-model="course.languageCode"-->
-            <!--/>-->
             <div class="form-footer">
                 <div class="btn-actions">
                     <v-btn color="red" @click="$emit('close')">Отменить</v-btn>
@@ -57,7 +50,6 @@ export default {
             default: {}
         },
         classTypes: Array,
-//        languages: Array
     },
 	data: () => ({
 		required: [v => !!v || 'поле обязательно для заполнения'],
@@ -67,7 +59,6 @@ export default {
             code: '',
             courseTitleKG: '',
             classType: '',
-            languageCode: ''
         }
 	}),
     mounted() {
@@ -77,7 +68,6 @@ export default {
             code: this.editCourse.code,
             courseTitleKG: this.editCourse.courseTitleKG,
             classType: this.editCourse.classType,
-            languageCode: this.editCourse.languageCode
         }
     },
     methods: {
