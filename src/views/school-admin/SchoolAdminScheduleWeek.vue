@@ -30,18 +30,18 @@
                 <div class="switch-filter">
                     <v-switch label="Учитель/Класс" v-model="classViewSchedule"/>
                 </div>
-                <div class="scroll-arrows">
+                <div class="scroll-arrows" v-show="showScrollArrows">
                     <QuadArrowIcon class="left" @click="scrollTable('left')" />
                     <QuadArrowIcon @click="scrollTable('right')" />
                 </div>
             </div>
 
-            <div class="teacher-course-tables" v-if="!classViewSchedule">
+            <div class="teacher-course-tables" v-if="!classViewSchedule" ref="teacherTable">
                 <table class="teachers">
                     <thead>
                     <tr>
-                        <th>Учитель</th>
-                        <th>Предмет</th>
+                        <th ref="teacherLabel">Учитель</th>
+                        <th ref="courseLabel">Предмет</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -54,7 +54,6 @@
                     </tr>
                     </tbody>
                 </table>
-
                 <table class="schedule-teacher-course" ref="scheduleTable">
                     <thead>
                     <tr>
@@ -97,7 +96,7 @@
             </div>
 
             <!--FILTERED SCHEDULE BY CLASSES-->
-            <div class="class-schedule-tables teacher-course-tables" v-if="classViewSchedule">
+            <div class="class-schedule-tables teacher-course-tables" v-if="classViewSchedule" ref="classTable">
                 <table class="class-name-table">
                     <thead>
                     <tr>
@@ -258,6 +257,20 @@
                 </v-form>
             </div>
         </modal>
+
+        <!--FIXED TABLE HEADER-->
+        <FixedScheduleTableHeader
+            ref="fixedTable"
+            :days="days"
+            :shiftTimes="shiftTimes"
+            :fixedTableWidth="fixedTableWidth"
+            :teacherLabelWidth="teacherLabelWidth"
+            :courseLabelWidth="courseLabelWidth"
+            :classViewSchedule="classViewSchedule"
+            :showScrollArrows="showScrollArrows"
+            @scrollTable="scrollTable"
+            :class="{'show': showFixedHeader}"
+        />
     </div>
 </template>
 
@@ -273,13 +286,15 @@
     import DeleteIcon from '@/components/icons/DeleteIcon';
     import * as moment from 'moment';
     import PreLoader from '@/components/preloader/PreLoader';
+    import FixedScheduleTableHeader from '@/components/table/FixedScheduleTableHeader';
 
     export default {
         components: {
             SuperAdminSchoolHead,
             QuadArrowIcon,
             DeleteIcon,
-            PreLoader
+            PreLoader,
+            FixedScheduleTableHeader
         },
         data() {
             return {
@@ -323,6 +338,9 @@
                 showAddGroup: false,
                 showContent: false,
                 originGrouped: false,
+                showFixedHeader: false,
+                showScrollArrows: true,
+                manualScroll: true,
                 currentShiftId: '',
                 selectedShiftTime: {},
                 classes: [],
@@ -331,6 +349,9 @@
                 shiftTimes: [],
                 allTeachers: [],
                 groupedSchedules: [],
+                fixedTableWidth: 0,
+                teacherLabelWidth: 0,
+                courseLabelWidth: 0
             }
         },
 
@@ -349,6 +370,19 @@
         created() {
             this.getAllSchoolShifts();
             this.getAllSchoolInstructors();
+        },
+
+        mounted() {
+            const scheduleContainer = document.querySelector('#school-admin-manage__body');
+            scheduleContainer.addEventListener('scroll', this.verticalScrollListener);
+        },
+
+        beforeDestroy() {
+            const scheduleContainer = document.querySelector('#school-admin-manage__body');
+            scheduleContainer.removeEventListener('scroll', this.verticalScrollListener);
+            if (this.$refs.scheduleTable) {
+                this.$refs.scheduleTable.removeEventListener('scroll', this.horizontalScheduleScrollListener);
+            }
         },
 
         methods: {
@@ -391,6 +425,9 @@
                     this.allSchedules = res;
                     this.showContent = true;
                     this.isLoading = false;
+                    this.$nextTick(() => {
+                        this.showScrollArrows = this.$refs.scheduleTable.scrollWidth > this.$refs.scheduleTable.clientWidth;
+                    });
                 }).catch(err => {
                     this.$toast.error(err);
                     this.isLoading = false;
@@ -425,11 +462,49 @@
             },
 
             scrollTable(nav) {
+                this.manualScroll = false;
                 const scheduleTable = this.$refs.scheduleTable;
+                const fixedTableHeader = this.$refs.fixedTable.$el.querySelector('.fixed-header');
                 if (nav === 'right') {
                     scheduleTable.scrollLeft = scheduleTable.scrollWidth - scheduleTable.clientWidth;
+                    fixedTableHeader.scrollLeft = scheduleTable.scrollWidth - scheduleTable.clientWidth;
                 } else {
                     scheduleTable.scrollLeft = 0;
+                    fixedTableHeader.scrollLeft = 0;
+                }
+                setTimeout(() => {
+                    this.manualScroll = true;
+                }, 450)
+            },
+
+            verticalScrollListener() {
+                const scheduleContainer = document.querySelector('#school-admin-manage__body');
+                if (this.mainTable()) {
+                    if (scheduleContainer.scrollTop >= (this.mainTable().offsetTop - 30)) {
+                        this.$refs.scheduleTable.addEventListener('scroll', this.horizontalScheduleScrollListener);
+                        this.fixedTableWidth = this.mainTable().offsetWidth;
+                        const fixedTableHeader = this.$refs.fixedTable.$el.querySelector('.fixed-header');
+                        fixedTableHeader.scrollLeft = this.$refs.scheduleTable.scrollLeft;
+                        if (this.$refs.teacherTable) {
+                            this.teacherLabelWidth = this.$refs.teacherLabel.offsetWidth;
+                            this.courseLabelWidth = this.$refs.courseLabel.offsetWidth;
+                        }
+                        this.showFixedHeader = true;
+                    } else {
+                        this.showFixedHeader = false;
+                        this.$refs.scheduleTable.removeEventListener('scroll', this.horizontalScheduleScrollListener);
+                    }
+                }
+            },
+
+            mainTable() {
+                return this.classViewSchedule ? this.$refs.classTable : this.$refs.teacherTable;
+            },
+
+            horizontalScheduleScrollListener() {
+                if (this.manualScroll) {
+                    const fixedTableHeader = this.$refs.fixedTable.$el.querySelector('.fixed-header');
+                    fixedTableHeader.scrollLeft = this.$refs.scheduleTable.scrollLeft;
                 }
             },
 
@@ -604,7 +679,7 @@
     }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
     .school-admin-schedule {
         .shift-actions {
             display: flex;
@@ -614,7 +689,13 @@
             }
         }
         .schedule-content {
-            margin: 30px;
+            margin: 27px;
+            &.fixed-table-header {
+                margin: 0 27px;
+                .scroll-arrows {
+                    margin: 0;
+                }
+            }
             .other-actions {
                 display: flex;
                 align-items: center;
@@ -747,7 +828,7 @@
                 justify-content: center;
                 margin-left: 70px;
                 .left {
-                    transform: rotate(180deg) translateY(6px);
+                    transform: rotate(180deg) translateY(7px);
                 }
             }
         }
