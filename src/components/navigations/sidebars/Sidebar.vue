@@ -1,5 +1,8 @@
 <template>
     <div class="super-admin-sidebar">
+        <div class="super-admin-header__logo" v-if="role == 'schoolAdmin'">
+            <img :src="require('../../../assets/images/logo.svg')">
+        </div>
         <div class="super-admin-sidebar__items">
             <template v-for="(tab, index) in sidebars">
                 <router-link
@@ -125,6 +128,15 @@ export default {
             transition: max-height 0.3s ease-in;
             background: #282552;
         }
+    }
+
+    .super-admin-header__logo {
+        background: linear-gradient(180deg, #4A27F3 0%, #34A0FF 100%);
+        flex-basis: 96px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        max-height: 76px;
     }
 }
 </style>
