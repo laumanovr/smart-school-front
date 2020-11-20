@@ -484,12 +484,12 @@
 //                const scheduleContainer = document.querySelector('#school-admin-manage__body');
                 if (this.mainTable()) {
                     if (window.scrollY >= this.mainTable().offsetTop) {
+                        this.showFixedHeader = true;
                         this.fixedTableWidth = this.mainTable().offsetWidth;
                         if (this.$refs.teacherTable) {
                             this.teacherLabelWidth = this.$refs.teacherLabel.offsetWidth;
                             this.courseLabelWidth = this.$refs.courseLabel.offsetWidth;
                         }
-                        this.showFixedHeader = true;
                     } else {
                         this.showFixedHeader = false;
                     }

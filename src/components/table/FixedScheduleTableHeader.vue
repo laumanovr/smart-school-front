@@ -80,11 +80,12 @@
         padding-top: 10px;
         z-index: 997;
         transform: translateY(-100px);
-        transition: transform 0.3s ease-out;
         will-change: transform;
+        transition: 200ms;
+        /*transition: transform 0.3s ease-out;*/
         &.show {
             transform: translateY(0);
-            transition: transform 0.3s ease-in;
+            /*transition: transform 0.3s ease-in;*/
         }
         &.no-arrow {
             padding-top: 20px;
