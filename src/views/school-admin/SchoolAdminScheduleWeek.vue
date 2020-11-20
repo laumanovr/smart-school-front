@@ -373,13 +373,15 @@
         },
 
         mounted() {
-            const scheduleContainer = document.querySelector('#school-admin-manage__body');
-            scheduleContainer.addEventListener('scroll', this.verticalScrollListener);
+            window.addEventListener('scroll', this.verticalScrollListener);
+//            const scheduleContainer = document.querySelector('#school-admin-manage__body');
+//            scheduleContainer.addEventListener('scroll', this.verticalScrollListener);
         },
 
         beforeDestroy() {
-            const scheduleContainer = document.querySelector('#school-admin-manage__body');
-            scheduleContainer.removeEventListener('scroll', this.verticalScrollListener);
+            window.removeEventListener('scroll', this.verticalScrollListener);
+//            const scheduleContainer = document.querySelector('#school-admin-manage__body');
+//            scheduleContainer.removeEventListener('scroll', this.verticalScrollListener);
             if (this.$refs.scheduleTable) {
                 this.$refs.scheduleTable.removeEventListener('scroll', this.horizontalScheduleScrollListener);
             }
@@ -479,9 +481,9 @@
             },
 
             verticalScrollListener() {
-                const scheduleContainer = document.querySelector('#school-admin-manage__body');
+//                const scheduleContainer = document.querySelector('#school-admin-manage__body');
                 if (this.mainTable()) {
-                    if (scheduleContainer.scrollTop >= (this.mainTable().offsetTop - 30)) {
+                    if (window.scrollY >= this.mainTable().offsetTop) {
                         this.fixedTableWidth = this.mainTable().offsetWidth;
                         if (this.$refs.teacherTable) {
                             this.teacherLabelWidth = this.$refs.teacherLabel.offsetWidth;
