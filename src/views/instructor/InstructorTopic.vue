@@ -175,6 +175,9 @@ export default {
 		userProfile() {
 			return this.$store.state.account.profile
 		},
+        school() {
+            return this.userProfile.schools[0]
+        },
         currentLang() {
             return this.$root.$i18n.locale;
         }
@@ -241,7 +244,7 @@ export default {
 				this.currentPage = res.page.number + 1;
 				if (res._embedded) {
                     this.topics = res._embedded.topicResourceList.map((topic, i) => ({...topic, index: i + 1}));
-                    this.fetchAssignments(this.topics);
+                    this.fetchAssignments();
                 } else {
                     this.isLoading = false;
                 }
@@ -251,39 +254,41 @@ export default {
             })
 		},
 
-		async fetchAssignments(topics) {
+        fetchAssignments() {
             this.showHW = false;
-            const requests = topics.map((topic) => {
-                return new Promise((resolve, reject) => {
-                    assignmentService.getByTopic(topic.id).then((res) => {
-                        if (res._embedded) {
-                            resolve(res._embedded.assignmentResourceList);
-                        } else {
-                            resolve([]);
-                        }
-                    }).catch((err) => {
-                        reject(err);
-                        this.$toast.error(err);
-                    })
-                })
+            assignmentService.getByClassAndChronicle(
+                this.currentClass.classId,
+                this.school.chronicleId
+            ).then((res) => {
+                if (res._embedded) {
+                    const foundAssignments = res._embedded.assignmentResourceList.filter((assign) =>
+                        assign.courseId === this.topic.courseId
+                    );
+                    this.topics = this.topics.map((topic) => {
+                        topic.assignments = [];
+                        foundAssignments.forEach((assign) => {
+                            if (topic.id === assign.topicId) {
+                                topic.assignments.push(assign);
+                            }
+                        });
+                        return topic;
+                    });
+                    this.showHW = true;
+                }
+                this.isLoading = false;
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.isLoading = false;
             });
-            const results = await Promise.all(requests);
-            this.topics = this.topics.map((topic, index) => {
-                topic.assignments = results[index];
-                return topic;
-            });
-            this.isLoading = false;
-            this.showHW = true;
-		},
+        },
 
         showCourseName(courseObj) {
             return courseObj[this.langObj[this.currentLang]];
         },
 
-        onPageChange(val) {
-            if (val === 'left') this.currentPage -= 1;
-            else this.currentPage += 1;
-            this.fetchTopics(this.currentPage - 1)
+        onPageChange(nav) {
+            nav === 'left' ? this.currentPage -= 1 : this.currentPage += 1;
+            this.fetchTopics(this.currentPage - 1);
         },
 
 //      TOPICS
