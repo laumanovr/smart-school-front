@@ -427,6 +427,7 @@
                     this.isLoading = false;
                     this.$nextTick(() => {
                         this.showScrollArrows = this.$refs.scheduleTable.scrollWidth > this.$refs.scheduleTable.clientWidth;
+                        this.$refs.scheduleTable.addEventListener('scroll', this.horizontalScheduleScrollListener);
                     });
                 }).catch(err => {
                     this.$toast.error(err);
@@ -481,10 +482,7 @@
                 const scheduleContainer = document.querySelector('#school-admin-manage__body');
                 if (this.mainTable()) {
                     if (scheduleContainer.scrollTop >= (this.mainTable().offsetTop - 30)) {
-                        this.$refs.scheduleTable.addEventListener('scroll', this.horizontalScheduleScrollListener);
                         this.fixedTableWidth = this.mainTable().offsetWidth;
-                        const fixedTableHeader = this.$refs.fixedTable.$el.querySelector('.fixed-header');
-                        fixedTableHeader.scrollLeft = this.$refs.scheduleTable.scrollLeft;
                         if (this.$refs.teacherTable) {
                             this.teacherLabelWidth = this.$refs.teacherLabel.offsetWidth;
                             this.courseLabelWidth = this.$refs.courseLabel.offsetWidth;
@@ -492,7 +490,6 @@
                         this.showFixedHeader = true;
                     } else {
                         this.showFixedHeader = false;
-                        this.$refs.scheduleTable.removeEventListener('scroll', this.horizontalScheduleScrollListener);
                     }
                 }
             },
