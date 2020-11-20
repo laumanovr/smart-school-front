@@ -33,7 +33,7 @@
             <table class="class-name-table">
                 <thead>
                 <tr>
-                    <th style="min-width: 46px">Класс</th>
+                    <th style="min-width: 49px">Класс</th>
                 </tr>
                 </thead>
             </table>

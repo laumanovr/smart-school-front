@@ -713,6 +713,9 @@
                         th {
                             border: 1px solid rgba(#707070, 0.8);
                             height: 49px;
+                            min-width: 49px;
+                            max-width: 49px;
+                            width: 49px;
                             text-align: center;
                             color: #339DFA;
                         }
