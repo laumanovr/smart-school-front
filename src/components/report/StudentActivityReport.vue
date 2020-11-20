@@ -132,7 +132,8 @@
                     leaveCisCount: 0,
                     leaveAbroadCount: 0,
                     leaveOtherCount: 0,
-                    leaveWorkCount: 0
+                    leaveWorkCount: 0,
+                    chronicleId: 0
                 },
                 showTable: false,
                 isLoading: false,
@@ -215,6 +216,7 @@
 
             submitSaveReport() {
                 this.isLoading = true;
+                this.classActivityObj.chronicleId = this.school.chronicleId;
                 if (this.mode === 'add') {
                     AnalyticsService.createClassActivity(this.classActivityObj).then(() => {
                         this.isLoading = false;
