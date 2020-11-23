@@ -174,7 +174,7 @@
 			<DeletePopup @accept="massDelete" @cancel="isMassDeleting = false"></DeletePopup>
 		</v-dialog>
 		<v-dialog v-if="isAddFile" id="add-file" v-model="isAddFile" width="546">
-			<ImportFile @submit="onSubmit"></ImportFile>
+			<ImportFile ref="importFile" :type="'students'" @submit="onSubmit"/>
 		</v-dialog>
 
         <!--STUDENT DETAIL MODAL-->
@@ -779,36 +779,38 @@ export default {
 //			this.fetchStudents(this.currentPage - 1);
 		},
 		onSubmit(data) {
-			this.isLoading = true
-			const d = {
-				chronicleId: data.chronicleId,
-				languageId: data.languageId,
-				file: data.file,
-				schoolId: this.userProfile.schools[0].id
-			};
-			if (data.isIsouMode) {
-				fileImportService.importIsouStudent(d).then(res => {
-					this.$toast.success('Успешно!')
-					this.isAddFile = false;
-					this.fetchStudents(true);
-					this.isLoading = false
-				}).catch(err => {
-					this.isLoading = false
-					this.$toast.error(err)
-					console.log(err)
-				});
-			} else {
-				fileImportService.importStudent(d).then(res => {
-					this.$toast.success('Успешно!')
-					this.isAddFile = false;
-					this.fetchStudents(true);
-					this.isLoading = false
-				}).catch(err => {
-					this.$toast.error(err)
-					this.isLoading = false
-					console.log(err)
-				});
-			}
+            if (this.$refs.importFile.$refs.importForm.validate()) {
+                this.isLoading = true;
+                const d = {
+                    chronicleId: data.chronicleId,
+                    languageId: data.languageId,
+                    file: data.file,
+                    schoolId: this.userProfile.schools[0].id
+                };
+                if (data.isIsouMode) {
+                    fileImportService.importIsouStudent(d).then(res => {
+                        this.$toast.success('Успешно!');
+                        this.isAddFile = false;
+                        this.fetchStudents(true);
+                        this.isLoading = false
+                    }).catch(err => {
+                        this.isLoading = false;
+                        this.$toast.error(err);
+                        console.log(err);
+                    });
+                } else {
+                    fileImportService.importStudent(d).then(res => {
+                        this.$toast.success('Успешно!');
+                        this.isAddFile = false;
+                        this.fetchStudents(true);
+                        this.isLoading = false;
+                    }).catch(err => {
+                        this.$toast.error(err);
+                        this.isLoading = false;
+                        console.log(err);
+                    });
+                }
+            }
 		}
 	}
 }
