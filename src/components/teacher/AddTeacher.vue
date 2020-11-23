@@ -109,7 +109,8 @@ export default {
         this.fetchRoles();
         this.fetchLanguages();
         if (this.isEdit) {
-            this.birthday = moment(this.user.birthday, 'DD.MM.YYYY').format('YYYY-MM-DD');
+            const formattedDate = moment(this.user.birthday, 'DD.MM.YYYY').format('YYYY-MM-DD');
+            this.birthday =  formattedDate.includes('Invalid') ? '1970-10-11' : formattedDate;
         } else {
             this.user.birthday = '11.10.1970';
         }
