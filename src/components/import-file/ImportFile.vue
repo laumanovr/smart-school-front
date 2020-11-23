@@ -1,11 +1,18 @@
 <template>
-        <v-form @submit.prevent="$emit('submit', importData)" ref="form">
+        <v-form @submit.prevent="$emit('submit', importData)" ref="importForm">
 	        <v-switch
 		        v-model="importData.isIsouMode"
 		        label="ИСОУ формат"
 	        ></v-switch>
             <div>
-                <v-file-input :rules="required" v-model="importData.file" chips show-size accept=".xlsx, .xls, .csv" label="Выберите файл"></v-file-input>
+                <v-file-input
+                    :rules="required"
+                    v-model="importData.file"
+                    chips show-size
+                    accept=".xlsx, .xls, .csv"
+                    label="Выберите файл"
+                    @change="checkFileFormat"
+                />
             </div>
             <div>
                 <v-select
@@ -37,12 +44,17 @@
 import SmartBtn2 from "@/components/button/SmartBtn2";
 import { ChronicleService } from "@/_services/chronicle.service";
 import { LanguageService } from "@/_services/language.service";
+const languageService = new LanguageService();
+const chronicleService = new ChronicleService();
+import readXlsxFile from 'read-excel-file';
+import moment from 'moment';
 
-const languageService = new LanguageService()
-const chronicleService = new ChronicleService()
 export default {
     name: "ImportFile",
     components: {SmartBtn2},
+    props: {
+        type: String
+    },
     data () {
         return {
             file: null,
@@ -51,12 +63,14 @@ export default {
             ],
             years: [],
             languages: [],
-            importData: {},
+            importData: {
+                file: null
+            },
         }
     },
     mounted() {
-        this.fetchYears()
-        this.fetchLanguages()
+        this.fetchYears();
+        this.fetchLanguages();
     },
     methods: {
         fetchYears () {
@@ -68,6 +82,54 @@ export default {
             languageService.list().then(res => {
                 this.languages = res;
             }).catch(err => console.log(err));
+        },
+        checkFileFormat() {
+            if (this.type === 'teachers') {
+                this.checkTeachersExcel();
+            } else {
+                this.checkStudentsExcel();
+            }
+        },
+        checkTeachersExcel() {
+            this.$nextTick(() => {
+                readXlsxFile(this.importData.file).then((rows) => {
+                    const valid = rows.slice(2).every((item) =>
+                        moment(item[5], 'DD.MM.YYYY', true).isValid() && typeof(item[5]) === 'string'
+                    );
+                    if (!valid) {
+                        this.$toast.error(
+                            'Формат даты рождения у некоторых не правильный, задайте в формате ДД.ММ.ГГГГ',
+                            {duration: 7000}
+                        );
+                        this.importData.file = null;
+                    }
+                })
+            })
+        },
+        checkStudentsExcel() {
+            this.$nextTick(() => {
+                readXlsxFile(this.importData.file).then((rows) => {
+                    const items = rows.slice(2);
+                    const validDob = items.every((item) =>
+                        moment(item[7], 'DD.MM.YYYY', true).isValid() && typeof(item[7]) === 'string'
+                    );
+                    if (!validDob) {
+                        this.$toast.error(
+                            'Формат даты рождения у некоторых не правильный, укажите в формате ДД.ММ.ГГГГ',
+                            {duration: 7000}
+                        );
+                        this.importData.file = null;
+                    }
+                    const validClassLetter = items.every((item) => item[5] === item[5].toUpperCase());
+                    if (!validClassLetter) {
+                        this.$toast.error(
+                            'Укажите буквы классов с большой буквы, у всех!',
+                            {duration: 7000}
+                        );
+                        this.importData.file = null;
+                    }
+                });
+            });
         }
     }
 }
