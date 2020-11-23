@@ -68,7 +68,7 @@
             <AddTeacher :is-edit="isEdit" :user="user" @close="onCloseModal"></AddTeacher>
         </v-dialog>
         <v-dialog v-if="isAddFile" v-model="isAddFile" width="546" id="add-file">
-            <ImportFile @submit="onSubmit"></ImportFile>
+            <ImportFile ref="importFile" :type="'teachers'" @submit="onSubmit"/>
         </v-dialog>
 
         <!--ADD COURSE MODAL-->
@@ -334,34 +334,36 @@ export default {
                 this.isEdit = true;
             }).catch(err => console.log(err));
         },
-        onSubmit (data) {
-        	this.isLoading = true
-            const d = {
-                languageId: data.languageId,
-                chronicleId: data.chronicleId,
-                file: data.file,
-                schoolId: this.userProfile.schools[0].id
-            };
-            if (data.isIsouMode) {
-	            fileImportService.importIsouInstructor(d).then(res => {
-		            this.$toast.success('Успешно!')
-		            this.isAddFile = false;
-		            this.fetchInstructors();
-		            this.isLoading = false
-	            }).catch(err => {
-		            this.isLoading = false
-	            	console.log(err)
-	            });
-            } else {
-	            fileImportService.importInstructor(d).then(res => {
-		            this.$toast.success('Успешно!')
-		            this.isAddFile = false;
-		            this.fetchInstructors();
-		            this.isLoading = false
-	            }).catch(err => {
-		            this.isLoading = false
-	            	console.log(err)
-	            });
+        onSubmit(data) {
+            if (this.$refs.importFile.$refs.importForm.validate()) {
+                this.isLoading = true;
+                const d = {
+                    languageId: data.languageId,
+                    chronicleId: data.chronicleId,
+                    file: data.file,
+                    schoolId: this.userProfile.schools[0].id
+                };
+                if (data.isIsouMode) {
+                    fileImportService.importIsouInstructor(d).then(res => {
+                        this.$toast.success('Успешно!');
+                        this.isAddFile = false;
+                        this.fetchInstructors();
+                        this.isLoading = false;
+                    }).catch(err => {
+                        this.isLoading = false;
+                        console.log(err)
+                    });
+                } else {
+                    fileImportService.importInstructor(d).then(res => {
+                        this.$toast.success('Успешно!');
+                        this.isAddFile = false;
+                        this.fetchInstructors();
+                        this.isLoading = false;
+                    }).catch(err => {
+                        this.isLoading = false;
+                        console.log(err);
+                    });
+                }
             }
         },
         onLeftClick () {
