@@ -208,7 +208,7 @@
                     this.trackObj.roleId,
                     this.school.id
                 ).then((res) => {
-                    if (res.length && res[0].active) {
+                    if (res.length && res[0].active && res[0].active.length) {
                         this.currentSchool = Object.assign({}, res[0], {
                             active: res[0].active.sort((a, b) => b.count - a.count)
                         });
