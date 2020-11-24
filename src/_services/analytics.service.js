@@ -5,9 +5,9 @@ export class AnalyticsService extends BaseApiService {
         super();
     }
 
-    userTrackPage(startDate, endDate, roleId) {
+    userTrackPage(startDate, endDate, roleId, schoolId='') {
         const baseUrl = `${process.env.VUE_APP_BASE_URL}/v1/user-track-page/list`;
-        const url = baseUrl + `?startDate=${startDate}&endDate=${endDate}&roleId=${roleId}`;
+        const url = baseUrl + `?startDate=${startDate}&endDate=${endDate}&roleId=${roleId}&schoolId=${schoolId}`;
         return this.sendGetRequest(url);
     }
 
