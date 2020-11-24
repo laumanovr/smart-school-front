@@ -19,7 +19,7 @@
             <h3>Аналитика</h3>
         </div>
 
-        <div class="total-quantity" v-if="currentSchool.uniqueUsers">
+        <div class="total-quantity" v-if="currentSchool.schoolId">
             <div class="total-block teachers">
                 <img src="../../assets/images/vector-quantity.svg" alt="">
                 <span class="text">Кол-во учителей</span>
@@ -100,15 +100,15 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(data, i) in currentSchool.uniqueUsers" :key="i">
+            <tr v-for="(user, i) in currentSchool.active" :key="i">
                 <td>{{ i + 1 }}</td>
-                <td>{{ data.name }}</td>
-                <td>{{ countPercent(data.tracks.length)}}</td>
+                <td>{{ user.fullName }}</td>
+                <td>{{ user.count }}</td>
             </tr>
             </tbody>
         </table>
 
-        <div class="empty-data" v-if="currentSchool.uniqueUsers && !currentSchool.uniqueUsers.length">Ничего нет</div>
+        <div class="empty-data" v-if="!currentSchool.active">Ничего нет</div>
     </div>
 </template>
 
@@ -140,7 +140,9 @@
                 dateEnd: moment().format('YYYY-MM-DD'),
                 currentRole: '',
                 roles: [],
-                currentSchool: {}
+                currentSchool: {
+                    active: []
+                }
             }
         },
 
@@ -191,12 +193,6 @@
                 }
             },
 
-            countPercent(userTrackLength) {
-                let result = userTrackLength / 4;
-                result = Math.floor(result);
-                return result < 1 ? 1 : result;
-            },
-
             getAnalytics() {
                 if (!this.trackObj.roleId) {
                     this.$toast.info('Выберите роль');
@@ -204,23 +200,17 @@
                 }
                 this.isLoading = true;
                 this.currentRole = this.roles.find((role) => role.id === this.trackObj.roleId).code;
+                this.currentSchool.active = null;
 
                 AnalyticsService.userTrackPage(
                     `${this.trackObj.startDate} 24:00`,
                     `${this.trackObj.endDate} 24:00`,
-                    this.trackObj.roleId
+                    this.trackObj.roleId,
+                    this.school.id
                 ).then((res) => {
-                    this.currentSchool = res.find((school) => school.schoolId === this.school.id);
-                    this.currentSchool.uniqueUsers = [];
-                    if (this.currentSchool.active) {
-                        Object.entries(this.currentSchool.active.reduce((obj, el) => {
-                            obj[el.userId] = [...obj[el.userId] || [], el];
-                            return obj;
-                        }, {})).forEach((arrItem) => {
-                            this.currentSchool.uniqueUsers.push({
-                                name: arrItem[1][0].fullName,
-                                tracks: arrItem[1]
-                            })
+                    if (res.length && res[0].active) {
+                        this.currentSchool = Object.assign({}, res[0], {
+                            active: res[0].active.sort((a, b) => b.count - a.count)
                         });
                     }
                     this.isLoading = false;
