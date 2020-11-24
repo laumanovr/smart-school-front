@@ -651,7 +651,8 @@ export default {
                 this.studentObj.surname = item.surname;
                 this.studentObj.middleName = item.middleName;
                 this.studentObj.dateOfBirth = res.dateOfBirth;
-                this.birthday = moment(res.dateOfBirth, 'DD.MM.YYYY').format('YYYY-MM-DD');
+                const formattedDate = moment(res.dateOfBirth, 'DD.MM.YYYY').format('YYYY-MM-DD');
+                this.birthday = formattedDate.includes('Invalid') ? '1996-10-11' : formattedDate;
                 this.studentObj.gender = item.gender === 0 ? 'MALE' : 'FEMALE';
 				this.studentObj.phone = res.phone ? res.phone.replace('+', '') : '';
                 this.studentObj.pin = res.pin;
