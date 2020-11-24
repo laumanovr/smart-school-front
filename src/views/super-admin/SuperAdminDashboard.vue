@@ -112,7 +112,7 @@
                 <td>{{ i + 1 }}</td>
                 <td>{{ data.schoolName }}</td>
                 <td>{{ data[getSpecificRoleCount()] }}</td>
-                <td>{{ data.uniqueUsers.length }}</td>
+                <td>{{ data.active.length }}</td>
                 <td>{{ data.inPercent }}%</td>
             </tr>
             </tbody>
@@ -244,26 +244,16 @@
                 AnalyticsService.userTrackPage(
                     `${this.trackObj.startDate} 24:00`,
                     `${this.trackObj.endDate} 24:00`,
-                     this.trackObj.roleId
+                     this.trackObj.roleId,
+                     this.trackObj.schoolId
                 ).then((res) => {
                     this.analyticsData = res.map((school) => {
-                        school.uniqueUsers = [];
                         school.totalAdmins = 1;
                         school.totalStudents = !school.totalStudents ? 0 : school.totalStudents;
-                        if (school.active) {
-                            school.uniqueUsers = school.active.filter((obj, index, selfArr) =>
-                                index === selfArr.findIndex((el) =>
-                                    (el['userId'] === obj['userId'])
-                                ));
-                        }
-                        school.inPercent = this.countPercent(school.uniqueUsers.length, school[this.getSpecificRoleCount()]);
+                        school.active = !school.active ? [] : school.active;
+                        school.inPercent = this.countPercent(school.active.length, school[this.getSpecificRoleCount()]);
                         return school;
                     }).sort((a, b) => b.inPercent - a.inPercent);
-
-                    if (this.trackObj.schoolId) {
-                        // Filter by school
-                        this.analyticsData = this.analyticsData.filter((school) => school.schoolId === this.trackObj.schoolId);
-                    }
                     this.isLoading = false;
                 }).catch((err) => {
                     this.$toast.error(err);
