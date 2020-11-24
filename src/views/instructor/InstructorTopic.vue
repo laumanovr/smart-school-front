@@ -273,8 +273,8 @@ export default {
                         });
                         return topic;
                     });
-                    this.showHW = true;
                 }
+                this.showHW = true;
                 this.isLoading = false;
             }).catch((err) => {
                 this.$toast.error(err);
