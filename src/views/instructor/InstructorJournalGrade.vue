@@ -39,18 +39,18 @@
                 </div>
             </div>
 
-            <div class="grade-tables" v-if="studentGrades.length">
+            <div class="grade-tables" v-if="studentGrades.length" ref="gradeTables">
                 <table class="students bordered">
                     <thead>
                     <tr>
-                        <th>
+                        <th ref="monthLabel">
                             <span class="date" v-if="currentMonthDays.length">
                                 {{numMonths[currentMonthDays[0].day.slice(3, 5)]}}
                                 {{currentMonthDays[0].day.slice(0, 2)}} -
                                 {{currentMonthDays[currentMonthDays.length - 1].day.slice(0, 2)}}
                             </span>
-                            <PlayArrowIcon class="date-arrow left" @click="filterGradesByMonth('prev')"/>
-                            <PlayArrowIcon class="date-arrow" @click="filterGradesByMonth('next')"/>
+                            <PlayArrowIcon class="date-arrow left" @click="filterGradesByMonth('prev', true)"/>
+                            <PlayArrowIcon class="date-arrow" @click="filterGradesByMonth('next', true)"/>
                         </th>
                     </tr>
                     </thead>
@@ -97,6 +97,16 @@
                 <v-btn color="primary" @click="submitSaveGrades">Сохранить</v-btn>
             </div>
         </div>
+
+        <!--Fixed-Grade-Table-Head-->
+        <FixedGradeTableHead
+            ref="fixedTableHead"
+            :currentMonthDays="currentMonthDays"
+            :gradeTablesWidth="gradeTablesWidth"
+            :monthLabelWidth="monthLabelWidth"
+            @navigateByMonth="filterGradesByMonth"
+            :class="{'show': showFixedTableHead}"
+        />
     </div>
 </template>
 
@@ -110,12 +120,14 @@
     import PlayArrowIcon from '@/components/icons/PlayArrowIcon';
     import {TopicService} from "@/_services/topic.service";
     const topicService = new TopicService();
+    import FixedGradeTableHead from '@/components/table/FixedGradeTableHead';
 
     export default {
         components: {
             ClassSelectHeader,
             PreLoader,
-            PlayArrowIcon
+            PlayArrowIcon,
+            FixedGradeTableHead
         },
 
         computed: {
@@ -187,15 +199,37 @@
                 topics: [],
                 selectedStudent: {},
                 topicPage: 0,
-                inputValue: ''
+                inputValue: '',
+                showFixedTableHead: false,
+                gradeTablesWidth: 0,
+                monthLabelWidth: 0
             }
         },
 
         created() {
             this.getInstructorCourses();
+            window.addEventListener('scroll', this.scrollGradesListener);
+        },
+
+        beforeDestroy() {
+            window.removeEventListener('scroll', this.scrollGradesListener);
         },
 
         methods: {
+            scrollGradesListener() {
+                if (this.$refs.gradeTables) {
+                    if (window.scrollY >= this.$refs.gradeTables.offsetTop) {
+                        const fixedTableHead = this.$refs.fixedTableHead.$el.querySelector('.fixed-head');
+                        this.gradeTablesWidth = this.$refs.gradeTables.offsetWidth;
+                        this.monthLabelWidth = this.$refs.monthLabel.offsetWidth;
+                        fixedTableHead.scrollLeft = this.step;
+                        this.showFixedTableHead = true;
+                    } else {
+                        this.showFixedTableHead = false;
+                    }
+                }
+            },
+
             showCourseName(courseObj) {
                 return courseObj[this.langObj[this.currentLang]];
             },
@@ -382,7 +416,8 @@
                 range.detach();
             },
 
-            filterGradesByMonth(nav) {
+            filterGradesByMonth(nav, mainArrow) {
+                const fixedTableHead = this.$refs.fixedTableHead.$el.querySelector('.fixed-head');
                 const gradeTable = this.$refs.tableGrades;
                 let hasScrollBar = gradeTable.scrollWidth > gradeTable.clientWidth;
                 let endOfScroll = gradeTable.scrollWidth - gradeTable.clientWidth;
@@ -391,52 +426,55 @@
                         if (this.step) {
                             this.step -= 300;
                             gradeTable.scrollLeft = this.step;
+                            fixedTableHead.scrollLeft = this.step;
                         } else {
-                            this.isLoading = true;
                             this.step = 0;
-                            this.scrollPrevMonth();
+                            this.scrollPrevMonth(mainArrow);
                             gradeTable.scrollLeft = 0;
                         }
                     } else {
-                        this.isLoading = true;
-                        this.scrollPrevMonth();
+                        this.scrollPrevMonth(mainArrow);
                     }
                 } else {
                     if (hasScrollBar) {
                         if (this.step < endOfScroll) {
                             this.step += 300;
                             gradeTable.scrollLeft = this.step;
+                            fixedTableHead.scrollLeft = this.step;
                         } else {
-                            this.isLoading = true;
                             this.step = 0;
-                            this.scrollNextMonth();
-                            gradeTable.scrollLeft = 0;
+                            this.scrollNextMonth(mainArrow);
                         }
                     } else {
-                        this.isLoading = true;
-                        this.scrollNextMonth();
+                        this.scrollNextMonth(mainArrow);
                     }
                 }
             },
 
-            async scrollNextMonth() {
-                this.scheduleMonthNumber += 1;
-                this.gradeMonthFrom += 1;
-                this.gradeMonthTo += 1;
-                this.gradeRequest.searchRequest.from = this.getFirstDateOfMonth();
-                this.gradeRequest.searchRequest.to = this.getLastDateOfMonth();
-                await this.fetchCurrentMonthSchedule();
-                await this.fetchStudentGrades();
+            async scrollNextMonth(mainArrow) {
+                if (mainArrow) {
+                    this.isLoading = true;
+                    this.scheduleMonthNumber += 1;
+                    this.gradeMonthFrom += 1;
+                    this.gradeMonthTo += 1;
+                    this.gradeRequest.searchRequest.from = this.getFirstDateOfMonth();
+                    this.gradeRequest.searchRequest.to = this.getLastDateOfMonth();
+                    await this.fetchCurrentMonthSchedule();
+                    await this.fetchStudentGrades();
+                }
             },
 
-            async scrollPrevMonth() {
-                this.scheduleMonthNumber -= 1;
-                this.gradeMonthFrom -= 1;
-                this.gradeMonthTo -= 1;
-                this.gradeRequest.searchRequest.from = this.getFirstDateOfMonth();
-                this.gradeRequest.searchRequest.to = this.getLastDateOfMonth();
-                await this.fetchCurrentMonthSchedule();
-                await this.fetchStudentGrades();
+            async scrollPrevMonth(mainArrow) {
+                if (mainArrow) {
+                    this.isLoading = true;
+                    this.scheduleMonthNumber -= 1;
+                    this.gradeMonthFrom -= 1;
+                    this.gradeMonthTo -= 1;
+                    this.gradeRequest.searchRequest.from = this.getFirstDateOfMonth();
+                    this.gradeRequest.searchRequest.to = this.getLastDateOfMonth();
+                    await this.fetchCurrentMonthSchedule();
+                    await this.fetchStudentGrades();
+                }
             },
 
             getFirstDateOfMonth() {
@@ -469,7 +507,7 @@
     }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
     .journal-grade-container {
         margin: 30px 30px 60px;
         .grade-content {
