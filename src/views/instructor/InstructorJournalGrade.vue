@@ -185,6 +185,7 @@
                 scheduleMonthNumber: new Date().getMonth() + 1,
                 allCourses: [],
                 topics: [],
+                selectedStudent: {},
                 topicPage: 0,
                 inputValue: ''
             }
@@ -316,9 +317,12 @@
             },
 
             setGradeMark(e, student, day, currentGrade) {
-                if (e.target.innerText.length && e.target.innerText === this.inputValue) {
+                if (e.target.innerText.length &&
+                    e.target.innerText === this.inputValue &&
+                    this.selectedStudent.student.id === student.student.id) {
                     return;
                 }
+                this.selectedStudent = student;
                 this.inputValue = e.target.innerText = e.target.innerText.trim().slice(0, 1);
                 this.inputValue = e.target.innerText = isNaN(this.inputValue) ? 'H' : this.inputValue;
                 if (this.inputValue.length && !isNaN(this.inputValue)) {
@@ -364,6 +368,7 @@
                     }
                 }
                 this.setCaretToEnd(e.target);
+                console.log(this.sendGradeDtoList);
             },
 
             setCaretToEnd(target) {
