@@ -1,9 +1,11 @@
 <template>
+    <div>
+        <PreLoader v-if="isLoading"/>
         <v-form @submit.prevent="$emit('submit', importData)" ref="importForm">
-	        <v-switch
-		        v-model="importData.isIsouMode"
-		        label="ИСОУ формат"
-	        ></v-switch>
+            <v-switch
+                v-model="importData.isIsouMode"
+                label="ИСОУ формат"
+            ></v-switch>
             <div>
                 <v-file-input
                     :rules="required"
@@ -38,6 +40,7 @@
                 <v-btn color="primary" type="submit">Сохранить</v-btn>
             </div>
         </v-form>
+    </div>
 </template>
 
 <script>
@@ -48,10 +51,11 @@ const languageService = new LanguageService();
 const chronicleService = new ChronicleService();
 import readXlsxFile from 'read-excel-file';
 import moment from 'moment';
+import PreLoader from "@/components/preloader/PreLoader";
 
 export default {
     name: "ImportFile",
-    components: {SmartBtn2},
+    components: {SmartBtn2, PreLoader},
     props: {
         type: String
     },
@@ -66,6 +70,7 @@ export default {
             importData: {
                 file: null
             },
+            isLoading: false
         }
     },
     mounted() {
@@ -91,6 +96,7 @@ export default {
             }
         },
         checkTeachersExcel() {
+            this.isLoading = true;
             this.$nextTick(() => {
                 readXlsxFile(this.importData.file).then((rows) => {
                     const valid = rows.slice(2).every((item) =>
@@ -103,10 +109,14 @@ export default {
                         );
                         this.importData.file = null;
                     }
-                })
+                    this.isLoading = false;
+                }).catch((err) => {
+                    this.isLoading = false;
+                });
             })
         },
         checkStudentsExcel() {
+            this.isLoading = true;
             this.$nextTick(() => {
                 readXlsxFile(this.importData.file).then((rows) => {
                     const items = rows.slice(2);
@@ -128,6 +138,9 @@ export default {
                         );
                         this.importData.file = null;
                     }
+                    this.isLoading = false;
+                }).catch((err) => {
+                    this.isLoading = false;
                 });
             });
         }
