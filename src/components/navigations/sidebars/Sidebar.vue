@@ -1,6 +1,6 @@
 <template>
     <div class="super-admin-sidebar">
-        <div class="super-admin-header__logo" v-if="role == 'schoolAdmin'">
+        <div class="super-admin-header__logo" v-if="role == 'schoolAdmin' || role == 'instructor'">
             <img :src="require('../../../assets/images/logo.svg')">
         </div>
         <div class="super-admin-sidebar__items">
