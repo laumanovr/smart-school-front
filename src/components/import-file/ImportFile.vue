@@ -89,44 +89,15 @@ export default {
             }).catch(err => console.log(err));
         },
         checkFileFormat() {
-            if (this.type === 'teachers') {
-                this.checkTeachersExcel();
-            } else {
+            if (this.type === 'students') {
                 this.checkStudentsExcel();
             }
-        },
-        checkTeachersExcel() {
-            this.isLoading = true;
-            this.$nextTick(() => {
-                readXlsxFile(this.importData.file).then((rows) => {
-                    const valid = rows.slice(2).every((item) => moment(item[5]).isValid());
-                    if (!valid) {
-                        this.$toast.error(
-                            'Даты рождения у некоторых не правильный, проверьте',
-                            {duration: 6000}
-                        );
-                        this.importData.file = null;
-                    }
-                    this.isLoading = false;
-                }).catch((err) => {
-                    this.isLoading = false;
-                });
-            })
         },
         checkStudentsExcel() {
             this.isLoading = true;
             this.$nextTick(() => {
                 readXlsxFile(this.importData.file).then((rows) => {
-                    const items = rows.slice(2);
-                    const validDob = items.every((item) => moment(item[7]).isValid());
-                    if (!validDob) {
-                        this.$toast.error(
-                            'Даты рождения у некоторых не правильный, проверьте',
-                            {duration: 6000}
-                        );
-                        this.importData.file = null;
-                    }
-                    const validClassLetter = items.every((item) => item[5] === item[5].toUpperCase());
+                    const validClassLetter = rows.slice(2).every((item) => item[5] === item[5].toUpperCase());
                     if (!validClassLetter) {
                         this.$toast.error(
                             'Укажите буквы классов с большой буквы, у всех!',
