@@ -81,11 +81,10 @@
         z-index: 997;
         transform: translateY(-100px);
         will-change: transform;
-        transition: 200ms;
-        /*transition: transform 0.3s ease-out;*/
+        transition: transform 0.2s ease-out;
         &.show {
             transform: translateY(0);
-            /*transition: transform 0.3s ease-in;*/
+            transition: transform 0.2s ease-in;
         }
         &.no-arrow {
             padding-top: 20px;
