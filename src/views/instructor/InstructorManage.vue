@@ -35,12 +35,22 @@ export default {
 
 	&__container {
 		display: flex;
-		height: calc(100vh - 76px);
+		/*height: calc(100vh - 76px);*/
 	}
 
 	&__body {
-		width: calc(100% - 96px);
-		overflow-y: auto;
+        width: calc(100% - 100px);
+        margin-left: 100px;
+        min-height: 88vh;
+        overflow-x: auto;
+		/*width: calc(100% - 96px);*/
+		/*overflow-y: auto;*/
 	}
+    .super-admin-sidebar {
+        /**/
+        position: fixed;
+        top: 0;
+        height: 100vh;
+    }
 }
 </style>
