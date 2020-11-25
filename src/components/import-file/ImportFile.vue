@@ -99,13 +99,11 @@ export default {
             this.isLoading = true;
             this.$nextTick(() => {
                 readXlsxFile(this.importData.file).then((rows) => {
-                    const valid = rows.slice(2).every((item) =>
-                        moment(item[5], 'DD.MM.YYYY', true).isValid() && typeof(item[5]) === 'string'
-                    );
+                    const valid = rows.slice(2).every((item) => moment(item[5]).isValid());
                     if (!valid) {
                         this.$toast.error(
-                            'Формат даты рождения у некоторых не правильный, задайте в формате ДД.ММ.ГГГГ',
-                            {duration: 7000}
+                            'Даты рождения у некоторых не правильный, проверьте',
+                            {duration: 6000}
                         );
                         this.importData.file = null;
                     }
@@ -120,13 +118,11 @@ export default {
             this.$nextTick(() => {
                 readXlsxFile(this.importData.file).then((rows) => {
                     const items = rows.slice(2);
-                    const validDob = items.every((item) =>
-                        moment(item[7], 'DD.MM.YYYY', true).isValid() && typeof(item[7]) === 'string'
-                    );
+                    const validDob = items.every((item) => moment(item[7]).isValid());
                     if (!validDob) {
                         this.$toast.error(
-                            'Формат даты рождения у некоторых не правильный, укажите в формате ДД.ММ.ГГГГ',
-                            {duration: 7000}
+                            'Даты рождения у некоторых не правильный, проверьте',
+                            {duration: 6000}
                         );
                         this.importData.file = null;
                     }
@@ -134,7 +130,7 @@ export default {
                     if (!validClassLetter) {
                         this.$toast.error(
                             'Укажите буквы классов с большой буквы, у всех!',
-                            {duration: 7000}
+                            {duration: 6000}
                         );
                         this.importData.file = null;
                     }
