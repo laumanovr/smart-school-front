@@ -337,12 +337,14 @@
                             instructorClassService.update(this.instrClassObj).then(res => {
                                 this.isAddClassModal = false;
                                 this.fetchAllInstrClasses();
+                                this.fetchSchoolClasses();
                                 this.$toast.success('Успешно');
                             }).catch(err => console.log(err));
                         } else {
                             instructorClassService.create(this.instrClassObj).then((res) => {
                                 this.isAddClassModal = false;
                                 this.fetchAllInstrClasses();
+                                this.fetchSchoolClasses();
                                 this.$toast.success('Успешно');
                             })
                         }
@@ -355,6 +357,7 @@
                             instructorClassService.create(this.instrClassObj).then((res) => {
                                 this.isAddClassModal = false;
                                 this.fetchAllInstrClasses();
+                                this.fetchSchoolClasses();
                                 this.$toast.success('Успешно');
                             })
                         })
