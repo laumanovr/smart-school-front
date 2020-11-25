@@ -81,7 +81,16 @@
                     v-model="sendObj.languageId"
                 ></v-select>
             </div>
-
+            <div>
+                <v-select
+                    :rules="required"
+                    :items="shifts"
+                    item-text="name"
+                    item-value="id"
+                    label="Смена"
+                    v-model="sendObj.shiftId"
+                ></v-select>
+            </div>
             <div>
                 <v-autocomplete
                     :rules="required"
@@ -126,6 +135,7 @@
     import DeletePopup from "@/components/delete-popup/DeletePopup";
     const instructorClassService = new InstructorClassService();
     import PreLoader from '@/components/preloader/PreLoader';
+    import ShiftService from '@/_services/shift.service';
 
     export default {
         components: {
@@ -147,7 +157,8 @@
                     classLabel: '',
                     classLevel: 0,
                     languageId: 0,
-                    schoolId: 0
+                    schoolId: 0,
+                    shiftId: 0
                 },
                 isDeleting: false,
                 instrClassObj: {
@@ -174,6 +185,8 @@
                 teachers: [],
                 classInstructors: [],
                 allClasses: [],
+                shifts: [],
+                allSchoolClasses: [],
                 totalPages: 1,
                 isLoading: false
             }
@@ -190,16 +203,36 @@
             this.instrClassObj.chronicleId = this.userProfile.schools[0].chronicleId;
             this.fetchLanguages();
             this.fetchTeachers();
-            this.fetchAllClasses();
+            this.fetchAllInstrClasses();
+            this.fetchSchoolShifts();
+            this.fetchSchoolClasses();
         },
 
         methods: {
-            fetchAllClasses() {
+            fetchSchoolClasses() {
+                SchoolClassService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
+                    this.allSchoolClasses = res;
+                }).catch((err) => {
+                    this.$toast.error(err);
+                })
+            },
+
+            fetchAllInstrClasses() {
                 instructorClassService.getAllClasses(this.userProfile.schools[0].id).then((res) => {
                     this.classes = res.sort((a, b) => a.classLevel - b.classLevel);
                     this.allClasses = res;
                     this.classInstructors = JSON.parse(JSON.stringify(res));
                     this.classInstructors.unshift({personId: 0, personTitle: 'Показать все'});
+                }).catch((err) => {
+                    this.$toast.error(err);
+                })
+            },
+
+            fetchSchoolShifts() {
+                ShiftService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
+                    this.shifts = res;
+                }).catch((err) => {
+                    this.$toast.error(err);
                 })
             },
 
@@ -228,6 +261,7 @@
                 this.sendObj.classLevel = item.classLevel;
                 this.sendObj.languageId = item.languageId;
                 this.sendObj.schoolId = item.schoolId;
+                this.sendObj.shiftId = this.allSchoolClasses.find((i) => i.id === item.classId).shiftId;
                 this.sendObj.id = item.classId;
                 this.instrClassObj.personId = item.personId;
                 this.isAddClassModal = true;
@@ -257,7 +291,7 @@
                 await SchoolClassService._delete(this.sendObj.classId).then(() => {
                     this.isDeleting = false;
                     this.$toast.success('Успешно');
-                    this.fetchAllClasses();
+                    this.fetchAllInstrClasses();
                     this.isLoading = false;
                 }).catch((err) => {
                     this.$toast.error(err);
@@ -294,7 +328,7 @@
                     SchoolClassService.update(this.sendObj).then(res => {
                         return instructorClassService.getByClassId(this.sendObj.id);
                     }).then(res => {
-                        let resource = []
+                        let resource = [];
                         this.instrClassObj.classId = this.sendObj.id;
                         this.instrClassObj.chronicleId = this.userProfile.schools[0].chronicleId;
                         if (res._embedded) {
@@ -302,13 +336,13 @@
                             this.instrClassObj.id = resource.id;
                             instructorClassService.update(this.instrClassObj).then(res => {
                                 this.isAddClassModal = false;
-                                this.fetchAllClasses();
+                                this.fetchAllInstrClasses();
                                 this.$toast.success('Успешно');
                             }).catch(err => console.log(err));
                         } else {
                             instructorClassService.create(this.instrClassObj).then((res) => {
                                 this.isAddClassModal = false;
-                                this.fetchAllClasses();
+                                this.fetchAllInstrClasses();
                                 this.$toast.success('Успешно');
                             })
                         }
@@ -320,7 +354,7 @@
                             this.instrClassObj.classId = klassId;
                             instructorClassService.create(this.instrClassObj).then((res) => {
                                 this.isAddClassModal = false;
-                                this.fetchAllClasses();
+                                this.fetchAllInstrClasses();
                                 this.$toast.success('Успешно');
                             })
                         })
