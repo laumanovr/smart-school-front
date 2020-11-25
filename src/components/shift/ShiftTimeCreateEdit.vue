@@ -8,7 +8,7 @@
         <div class="empty-fields" v-show="isEmptyFields">Некоторые поля не заполнены!</div>
 
         <div class="shift-time-list">
-            <div class="shift-time" v-for="shtime in shiftTimeList" :key="shtime.id">
+            <div class="shift-time" v-for="(shtime, i) in shiftTimeList" :key="shtime.id">
                 <div class="lesson">
                     <label>Урок №</label>
                     <div class="el">
@@ -19,10 +19,10 @@
                     <label>От</label>
                     <div class="el">
                         <timeselector
-                            ref="timeStart"
+                            :ref="'timeStart'+i"
                             v-model="shtime.timeStart"
                             :interval="{m: 5}"
-                            @selectedMinute="closeTimePicker('timeStart')"
+                            @selectedMinute="closeTimePicker('timeStart'+i)"
                         />
                     </div>
                 </div>
@@ -30,10 +30,10 @@
                     <label>До</label>
                     <div class="el">
                         <timeselector
-                            ref="timeEnd"
+                            :ref="'timeEnd'+i"
                             v-model="shtime.timeEnd"
                             :interval="{m: 5}"
-                            @selectedMinute="closeTimePicker('timeEnd')"
+                            @selectedMinute="closeTimePicker('timeEnd'+i)"
                         />
                     </div>
                 </div>
