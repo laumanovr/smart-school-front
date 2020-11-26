@@ -640,6 +640,8 @@ export default {
 			this.isAddStudentModal = true;
 			this.isStudentEdit = false;
 			this.studentObj = {};
+            this.parentPersonObj.name = '';
+            this.parentPersonObj.phone = '';
 		},
 
 		onEditStudent(item) {
