@@ -328,7 +328,7 @@ export default {
                     phone: res.phone,
                     courseId: item.courseId,
                     pin: res.pin,
-                    birthday: res.dateOfBirth
+                    dob: res.dateOfBirth
                 };
                 this.isAddUser = true;
                 this.isEdit = true;
