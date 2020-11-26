@@ -68,6 +68,7 @@
                 <td>{{ lang[item.language] }}</td>
                 <td>{{ item.rayonTitle }}</td>
                 <td><img class="clickable-icons" @click="onEdit(item)" alt="" src="../../assets/images/icons/pen.svg"></td>
+                <td><img class="clickable-icons fix-schedule" @click="fixSchoolSchedule(item)" title="Исправить расписания" src="../../assets/images/icons/schedule.svg"></td>
                 <td><img class="clickable-icons" @click="onDelete(item)" alt="" src="../../assets/images/icons/trash.svg"></td>
             </template>
         </SmartTable>
@@ -106,6 +107,7 @@ import PreLoader from "@/components/preloader/PreLoader";
 import { RayonService } from "@/_services/rayon.service";
 const rayonService = new RayonService();
 import TrashIcon from '@/components/icons/TrashIcon';
+import ScheduleWeekService from '@/_services/schedule-week.service';
 
 export default {
     name: 'Schools',
@@ -238,6 +240,16 @@ export default {
                 console.log(err)
                 this.$toast.error(err);
             });
+        },
+        fixSchoolSchedule(school) {
+            this.isLoading = true;
+            ScheduleWeekService.fixSchoolSchedule(school.id).then(() => {
+                this.isLoading = false;
+                this.$toast.success('Успешно исправлено!');
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.isLoading = false;
+            })
         }
     }
 }
@@ -246,5 +258,10 @@ export default {
 <style lang="scss" scoped>
 .super-admin-schools {
     margin-bottom: 50px;
+    .fix-schedule {
+        background: #2196F3;
+        padding: 2px;
+        border-radius: 5px;
+    }
 }
 </style>
