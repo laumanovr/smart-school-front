@@ -25,16 +25,22 @@
             </template>
         </SuperAdminSchoolHead>
 
-        <div class="schedule-content" v-if="showContent && shiftTimes.length">
+        <div class="schedule-content" v-if="showContent && shiftTimes.length" ref="schedule">
             <div class="other-actions">
-                <div class="switch-filter">
-                    <v-switch label="Учитель/Класс" v-model="classViewSchedule"/>
+                <div class="main-btn">
+                    <div class="switch-filter">
+                        <v-switch label="Учитель/Класс" v-model="classViewSchedule"/>
+                    </div>
+                    <div class="scroll-arrows" v-show="showScrollArrows">
+                        <QuadArrowIcon class="left" @click="scrollTable('left')"/>
+                        <QuadArrowIcon @click="scrollTable('right')"/>
+                    </div>
                 </div>
-                <div class="scroll-arrows" v-show="showScrollArrows">
-                    <QuadArrowIcon class="left" @click="scrollTable('left')" />
-                    <QuadArrowIcon @click="scrollTable('right')" />
+                <div class="print-btn">
+                    <v-btn color="primary" @click="exportPdf">Экспорт</v-btn>
                 </div>
             </div>
+            <h2 class="export-title">Недельное расписание школы {{school.name}}</h2>
 
             <div class="teacher-course-tables" v-if="!classViewSchedule" ref="teacherTable">
                 <table class="teachers">
@@ -368,20 +374,16 @@
         },
 
         created() {
-            this.getAllSchoolShifts();
             this.getAllSchoolInstructors();
+            this.getAllSchoolShifts();
         },
 
         mounted() {
             window.addEventListener('scroll', this.verticalScrollListener);
-//            const scheduleContainer = document.querySelector('#school-admin-manage__body');
-//            scheduleContainer.addEventListener('scroll', this.verticalScrollListener);
         },
 
         beforeDestroy() {
             window.removeEventListener('scroll', this.verticalScrollListener);
-//            const scheduleContainer = document.querySelector('#school-admin-manage__body');
-//            scheduleContainer.removeEventListener('scroll', this.verticalScrollListener);
             if (this.$refs.scheduleTable) {
                 this.$refs.scheduleTable.removeEventListener('scroll', this.horizontalScheduleScrollListener);
             }
@@ -440,6 +442,9 @@
             getAllSchoolShifts() {
                 ShiftService.getAllBySchool(this.school.id).then((res) => {
                     this.allShifts = res;
+                    if (res.length) {
+                        this.onSelectShift(res[0].id);
+                    }
                 }).catch(err => this.$toast.error(err));
             },
 
@@ -481,7 +486,6 @@
             },
 
             verticalScrollListener() {
-//                const scheduleContainer = document.querySelector('#school-admin-manage__body');
                 if (this.mainTable()) {
                     if (window.scrollY >= this.mainTable().offsetTop) {
                         this.showFixedHeader = true;
@@ -674,6 +678,55 @@
                 this.sendScheduleObj.courseCode = instrCourseObj.courseCode;
             },
 
+            exportPdf() {
+                this.$refs.schedule.style.width = this.setDisplaySize();
+                this.$refs.schedule.style.height = this.setDisplaySize();
+                const clonedData = this.$refs.schedule.cloneNode(true);
+                this.synchronizeCssStyles(this.$refs.schedule, clonedData, true);
+                clonedData.querySelector('.schedule-teacher-course').style.overflow = 'visible';
+                clonedData.querySelector('.export-title').style.display = 'block';
+                clonedData.querySelector('.other-actions').remove();
+                clonedData.style.margin = '0';
+                let win = window.open('', '');
+                win.document.body.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif';
+                win.document.body.innerHTML = (clonedData.outerHTML);
+                win.print();
+                win.onafterprint = window.navigator.appVersion.includes('Mac') ? () => win.close() : win.close();
+                this.$refs.schedule.style.width = 'auto';
+                this.$refs.schedule.style.height = 'auto';
+            },
+
+            synchronizeCssStyles(src, destination, recursively) {
+                destination.style.cssText = this.getComputedStyleCssText(src);
+                if (recursively) {
+                    const vSrcElements = src.getElementsByTagName('*');
+                    const vDstElements = destination.getElementsByTagName('*');
+                    for (let i = vSrcElements.length; i--;) {
+                        const vSrcElement = vSrcElements[i];
+                        const vDstElement = vDstElements[i];
+                        vDstElement.style.cssText = this.getComputedStyleCssText(vSrcElement);
+                    }
+                }
+            },
+
+            getComputedStyleCssText(element) {
+                const cssObject = window.getComputedStyle(element);
+                const cssAccumulator = [];
+                if (cssObject.cssText !== ''){
+                    return cssObject.cssText;
+                }
+                for (let prop in cssObject){
+                    if (typeof cssObject[prop] === 'string'){
+                        cssAccumulator.push(prop + ' : ' + cssObject[prop]);
+                    }
+                }
+                return cssAccumulator.join('; ');
+            },
+
+            setDisplaySize() {
+                return window.innerWidth <= 1366 ? '110vh' : '80vh';
+            }
+
         }
     }
 </script>
@@ -700,6 +753,10 @@
                 align-items: center;
                 justify-content: center;
                 margin-bottom: 15px;
+                .main-btn {
+                    display: flex;
+                    align-items: center;
+                }
             }
             .teacher-course-tables {
                 display: flex;
@@ -716,7 +773,7 @@
                             max-width: 49px;
                             width: 49px;
                             text-align: center;
-                            color: #339DFA;
+                            color: #5e5e5e;
                         }
                         td {
                             border-top: 1px solid rgba(#707070, 0.8);
@@ -773,7 +830,7 @@
                             min-height: 49px;
                             .day {
                                 text-align: center;
-                                color: #339DFA;
+                                color: #5e5e5e;
                             }
                             .shiftTime {
                                 display: flex;
@@ -872,6 +929,23 @@
             .group-info {
                 text-align: center;
                 font-size: 18px;
+            }
+        }
+        .export-title {
+            display: none;
+            text-align: center;
+            margin: 20px 0 35px;
+            text-transform: uppercase;
+        }
+        .print-btn {
+            text-align: right;
+            margin-left: 70px;
+            .v-btn:not(.v-btn--round).v-size--default {
+                height: 30px;
+                padding: 0 10px;
+            }
+            .v-btn__content {
+                font-size: 12px;
             }
         }
     }
