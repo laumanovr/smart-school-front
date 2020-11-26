@@ -37,7 +37,7 @@
                         <QuadArrowIcon @click="scrollTable('right')"/>
                     </div>
                 </div>
-                <div class="print-btn">
+                <div class="print-btn" v-show="!classViewSchedule">
                     <v-btn color="primary" @click="exportPdf">Экспорт</v-btn>
                 </div>
             </div>
