@@ -88,7 +88,7 @@ const roleService = new RoleService();
 const languageService = new LanguageService();
 const schoolService = new SchoolService();
 const personService = new PersonService();
-import MaskedInput from 'vue-masked-input'
+import MaskedInput from 'vue-masked-input';
 
 export default {
   name: 'AddSchoolAdmin',
