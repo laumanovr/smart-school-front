@@ -12,6 +12,7 @@
                             :items="allShifts"
                             item-text="name"
                             item-value="id"
+                            v-model="selectedShiftId"
                             label="Выбрать смену"
                             @change="onSelectShift"
                         ></v-select>
@@ -357,7 +358,8 @@
                 groupedSchedules: [],
                 fixedTableWidth: 0,
                 teacherLabelWidth: 0,
-                courseLabelWidth: 0
+                courseLabelWidth: 0,
+                selectedShiftId: 0
             }
         },
 
@@ -443,7 +445,8 @@
                 ShiftService.getAllBySchool(this.school.id).then((res) => {
                     this.allShifts = res;
                     if (res.length) {
-                        this.onSelectShift(res[0].id);
+                        this.selectedShiftId = res[0].id;
+                        this.onSelectShift(this.selectedShiftId);
                     }
                 }).catch(err => this.$toast.error(err));
             },
@@ -575,9 +578,11 @@
                 this.isLoading = true;
                 ScheduleWeekService.create(this.sendScheduleObj).then((res) => {
                     let scheduleObj = JSON.parse(JSON.stringify(this.sendScheduleObj));
+                    scheduleObj.id = res.id;
                     scheduleObj.classTitle = res.classTitle;
                     scheduleObj.courseCode = res.courseCode;
-                    scheduleObj.id = res.id;
+                    scheduleObj.courseTitle = res.courseTitle;
+                    scheduleObj.courseTitleKG = res.courseTitleKG;
                     this.allSchedules.push(scheduleObj);
                     this.closeModal();
                     this.closeClassViewModal();
@@ -603,6 +608,8 @@
                                 schedule.instructorId = this.sendScheduleObj.instructorId;
                                 schedule.courseId = this.sendScheduleObj.courseId;
                                 schedule.courseCode = this.sendScheduleObj.courseCode;
+                                schedule.courseTitle = this.sendScheduleObj.courseTitle;
+                                schedule.courseTitleKG = this.sendScheduleObj.courseTitleKG;
                             }
                         }
                         return schedule;
@@ -676,6 +683,8 @@
                 this.sendScheduleObj.instructorId = instrCourseObj.instructorId;
                 this.sendScheduleObj.courseId = instrCourseObj.courseId;
                 this.sendScheduleObj.courseCode = instrCourseObj.courseCode;
+                this.sendScheduleObj.courseTitle = instrCourseObj.courseTitle;
+                this.sendScheduleObj.courseTitleKG = instrCourseObj.courseTitleKG;
             },
 
             exportPdf() {
