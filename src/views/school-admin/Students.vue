@@ -1,6 +1,6 @@
 <template>
 	<div class="students-container">
-		<pre-loader v-if="isLoading"></pre-loader>
+		<PreLoader v-if="isLoading"/>
 		<SuperAdminSchoolHead>
 			<template v-slot:title>Ученики</template>
 			<template v-slot:center>
@@ -669,6 +669,7 @@ export default {
 		    if (!this.$refs.studentForm.validate()) {
 		        return;
             }
+            this.isLoading = true;
             this.search.query = '';
 			this.studentObj.schoolId = this.userProfile.schools[0].id;
 			this.studentObj.chronicleYearId = this.userProfile.schools[0].chronicleId;
@@ -711,10 +712,11 @@ export default {
 									studentId: this.studentClassObj.studentId
 								};
 								return studentParentService.create(studentParent)
-							}).catch(err => console.log(err))
+							}).catch(err => this.$toast.error(err))
 						}
 					}).then(res => {
 						this.$toast.success('Успешно!');
+                        this.isLoading = false;
 					}).catch(err => this.$toast.error(err))
 				}).catch(err => this.$toast.error(err));
 			} else
@@ -727,9 +729,10 @@ export default {
 						this.fetchStudents(true);
 						this.isAddStudentModal = false;
 						this.$toast.success('Успешно');
+                        this.isLoading = false;
 					}).catch(err => {
 						this.$toast.error(err);
-						console.log(err);
+                         this.isLoading = false;
 					});
 
 					this.parentPersonObj.roles = this.roles.filter(i => i.code === 'ROLE_PARENT').map(i => i.id);
@@ -743,11 +746,11 @@ export default {
 							console.log(res.message);
 						}).catch(err => {
 							this.$toast.error(err);
-							console.log(err);
+                            this.isLoading = false;
 						})
 					}).catch(err => {
 						this.$toast.error(err);
-						console.log(err);
+                        this.isLoading = false;
 					})
 				})
 		},
