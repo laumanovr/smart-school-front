@@ -38,9 +38,9 @@
 						<button>ВОЙТИ</button>
 					</div>
 					<div class="login-page__form__item center">
-						<button class="cancel-btn">
-							ОТМЕНИТЬ
-						</button>
+						<!--<button class="cancel-btn">-->
+							<!--ОТМЕНИТЬ-->
+						<!--</button>-->
 					</div>
 				</div>
 				<div class="login-page__form__footer">
@@ -69,6 +69,13 @@ export default {
 	},
     computed: {
         ...mapState('account', ['onError'])
+    },
+    beforeCreate() {
+        const isInitial = window.sessionStorage.getItem('isInitial');
+        if (!isInitial) {
+            window.location.reload();
+            window.sessionStorage.setItem('isInitial', true);
+        }
     },
 	methods: {
 		...mapActions('account', [ 'login', 'logout' ]),
