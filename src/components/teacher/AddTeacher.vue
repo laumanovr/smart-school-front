@@ -32,26 +32,13 @@
                 <v-radio label="М" value="MALE"></v-radio>
                 <v-radio label="Ж" value="FEMALE"></v-radio>
             </v-radio-group>
-            <v-menu
-                :close-on-content-click="false"
-                :nudge-right="40"
-                min-width="290px"
-                offset-y
-                transition="scale-transition"
-                v-model="menu2"
-            >
-                <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                        label="Дата рождения"
-                        readonly
-                        v-bind="attrs"
-                        v-model="user.birthday"
-                        v-on="on"
-                    ></v-text-field>
-                </template>
-                <v-date-picker @input="onSelectDate" v-model="birthday"></v-date-picker>
-            </v-menu>
         </div>
+
+        <div class="input-mask date">
+            <label>Дата рождения</label>
+            <masked-input v-model="user.dob" mask="11.11.1111" placeholder="ДД.ММ.ГГГГ" />
+        </div>
+
         <div class="spacer">
             <v-text-field label="Номер телефона" v-model="user.phone"></v-text-field>
         </div>
@@ -67,20 +54,20 @@
 
 <script>
 import { limitNumbers } from '@/utils/limit-numbers';
-import {PersonService} from '@/_services/person.service'
-import moment from 'moment'
-import {RoleService} from '@/_services/role.service'
-import {LanguageService} from '@/_services/language.service'
-import {CourseService} from '@/_services/course.service'
-import {InstructorCourseService} from '@/_services/instructor-course.service'
-const instructorCourseService = new InstructorCourseService()
-const courseService = new CourseService()
-const languageService = new LanguageService()
-const roleService = new RoleService()
-const personService = new PersonService()
+import {PersonService} from '@/_services/person.service';
+import moment from 'moment';
+import {RoleService} from '@/_services/role.service';
+import {LanguageService} from '@/_services/language.service';
+const languageService = new LanguageService();
+const roleService = new RoleService();
+const personService = new PersonService();
+import MaskedInput from 'vue-masked-input';
 
 export default {
     name: 'AddTeacher',
+    components: {
+        MaskedInput
+    },
     props: {
         user: {
             type: Object,
@@ -92,7 +79,6 @@ export default {
         }
     },
     data: () => ({
-        birthday: '1970-10-11',
         roles: [],
         languages: [],
         required: [
@@ -108,20 +94,9 @@ export default {
     mounted() {
         this.fetchRoles();
         this.fetchLanguages();
-        if (this.isEdit) {
-            const formattedDate = moment(this.user.birthday, 'DD.MM.YYYY').format('YYYY-MM-DD');
-            this.birthday =  formattedDate.includes('Invalid') ? '1970-10-11' : formattedDate;
-        } else {
-            this.user.birthday = '11.10.1970';
-        }
     },
     methods: {
         limitNumbers: limitNumbers,
-
-        onSelectDate() {
-            this.menu2 = false;
-            this.user.birthday = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY');
-        },
 
         fetchRoles() {
             roleService.listPageable(0).then(res => {
@@ -137,7 +112,6 @@ export default {
         submit() {
             if (this.$refs.form.validate()) {
                 this.user.roles = this.roles.filter(i => i.code === 'ROLE_INSTRUCTOR').map(i => i.id);
-                this.user.dob = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY');
                 this.user.schoolId = this.userProfile.schools[0].id;
                 if (this.isEdit) {
                     this.personEdit(this.user)
