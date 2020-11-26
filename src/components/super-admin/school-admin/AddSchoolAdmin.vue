@@ -31,26 +31,13 @@
                 <v-radio label="Мужчина" value="MALE"></v-radio>
                 <v-radio label="Женщина" value="FEMALE"></v-radio>
             </v-radio-group>
-            <v-menu
-                :close-on-content-click="false"
-                :nudge-right="40"
-                min-width="290px"
-                offset-y
-                transition="scale-transition"
-                v-model="menu2"
-            >
-                <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                        label="День рождения"
-                        readonly
-                        v-bind="attrs"
-                        v-model="schoolAdmin.dob"
-                        v-on="on"
-                    ></v-text-field>
-                </template>
-                <v-date-picker @input="onSelectDob" v-model="birthday"></v-date-picker>
-            </v-menu>
         </div>
+
+        <div class="input-mask date">
+            <label>Дата рождения</label>
+            <masked-input v-model="schoolAdmin.dob" mask="11.11.1111" placeholder="ДД.ММ.ГГГГ" />
+        </div>
+
         <div class="spacer">
             <v-text-field label="Email" v-model="schoolAdmin.email"></v-text-field>
             <v-text-field label="Номер телефона" v-model="schoolAdmin.phone"></v-text-field>
@@ -101,9 +88,13 @@ const roleService = new RoleService();
 const languageService = new LanguageService();
 const schoolService = new SchoolService();
 const personService = new PersonService();
+import MaskedInput from 'vue-masked-input'
 
 export default {
   name: 'AddSchoolAdmin',
+  components: {
+      MaskedInput
+  },
   props: {
     role: {
       type: String,
@@ -115,10 +106,9 @@ export default {
   data: () => ({
     schoolAdmin: {
       enabled: true,
-      dob: '11.02.1970',
+      dob: '',
       roles: [],
     },
-    birthday: '1970-02-11',
     required: [
       v => !!v || 'поле обязательно для заполнения'
     ],
@@ -180,11 +170,6 @@ export default {
             }
         }).catch(err => console.log(err))
     },
-
-      onSelectDob() {
-          this.menu2 = false;
-          this.schoolAdmin.dob = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY');
-      },
 
     fetchRoles () {
       roleService.listPageable(0).then(res => {
