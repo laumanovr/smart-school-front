@@ -108,26 +108,12 @@
 						<v-radio label="М" value="MALE"></v-radio>
 						<v-radio label="Ж" value="FEMALE"></v-radio>
 					</v-radio-group>
-					<v-menu
-						v-model="menu2"
-						:close-on-content-click="false"
-						:nudge-right="40"
-						min-width="290px"
-						offset-y
-						transition="scale-transition"
-					>
-						<template v-slot:activator="{ on, attrs }">
-							<v-text-field
-								v-model="studentObj.dateOfBirth"
-								v-bind="attrs"
-								v-on="on"
-								label="Дата рождения"
-								readonly
-							></v-text-field>
-						</template>
-						<v-date-picker v-model="birthday" @input="onSelectDOB"></v-date-picker>
-					</v-menu>
 				</div>
+
+                <div class="input-mask date">
+                    <label>Дата рождения</label>
+                    <masked-input v-model="studentObj.dateOfBirth" mask="11.11.1111" placeholder="ДД.ММ.ГГГГ" />
+                </div>
 
 				<div>
 					<v-select
@@ -291,6 +277,7 @@ import StudentCourseService from '@/_services/student-course.service';
 import InfoIcon from '@/components/icons/InfoIcon';
 import ScheduleWeekService from '@/_services/schedule-week.service';
 import TrashIcon from '@/components/icons/TrashIcon';
+import MaskedInput from 'vue-masked-input';
 
 export default {
 	components: {
@@ -305,7 +292,8 @@ export default {
 		SuperAdminSchoolHead,
 		SmartTable,
 		InfoIcon,
-        TrashIcon
+        TrashIcon,
+        MaskedInput
 	},
 
 	data() {
@@ -324,7 +312,7 @@ export default {
 				chronicleYearId: 1,
 				classId: 0,
 				comeBy: '',
-				dateOfBirth: '11.02.2000',
+				dateOfBirth: '',
 				email: '',
 				enabled: true,
 				gender: '',
@@ -376,7 +364,6 @@ export default {
 			isStudentEdit: false,
 			roles: [],
 			languages: [],
-			birthday: '2000-02-11',
 			menu2: false,
 			exportHeaders: [],
 			exportRows: [],
@@ -493,11 +480,6 @@ export default {
 
         formatDOB(date) {
             return moment(date, 'YYYY-MM-DD').format('DD.MM.YYYY');
-        },
-
-        onSelectDOB() {
-            this.menu2 = false;
-            this.studentObj.dateOfBirth = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY');
         },
 
 		selectAll() {
@@ -653,8 +635,6 @@ export default {
                 this.studentObj.surname = item.surname;
                 this.studentObj.middleName = item.middleName;
                 this.studentObj.dateOfBirth = res.dateOfBirth;
-                const formattedDate = moment(res.dateOfBirth, 'DD.MM.YYYY').format('YYYY-MM-DD');
-                this.birthday = formattedDate.includes('Invalid') ? '1996-10-11' : formattedDate;
                 this.studentObj.gender = item.gender === 0 ? 'MALE' : 'FEMALE';
 				this.studentObj.phone = res.phone ? res.phone.replace('+', '') : '';
                 this.studentObj.pin = res.pin;
@@ -692,7 +672,6 @@ export default {
             this.search.query = '';
 			this.studentObj.schoolId = this.userProfile.schools[0].id;
 			this.studentObj.chronicleYearId = this.userProfile.schools[0].chronicleId;
-			this.studentObj.dateOfBirth = moment(this.birthday, 'YYYY-MM-DD').format('DD.MM.YYYY');
 			this.studentObj.roles = this.roles.filter(i => i.code === 'ROLE_STUDENT').map(i => i.id);
 			const d = {
 				classId: this.studentObj.classId,
@@ -736,8 +715,8 @@ export default {
 						}
 					}).then(res => {
 						this.$toast.success('Успешно!');
-					}).catch(err => console.log(err))
-				}).catch(err => console.log(err));
+					}).catch(err => this.$toast.error(err))
+				}).catch(err => this.$toast.error(err));
 			} else
 				studentService.create(this.studentObj).then((res) => {
 					let studentId = parseInt(res.message);
