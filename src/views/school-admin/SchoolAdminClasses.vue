@@ -49,28 +49,43 @@
             <div class="form-head">
                 <span><h2>{{isEditClass ? 'Редактировать класс' : 'Добавить класс'}}</h2></span>
             </div>
+            <template v-if="!isEditClass">
+                <div>
+                    <v-select
+                        :rules="required"
+                        :items="classLevels"
+                        item-text="num"
+                        item-value="num"
+                        label="Класс"
+                        v-model="sendObj.classLevel"
+                    ></v-select>
+                </div>
+                <div>
+                    <v-select
+                        :rules="required"
+                        :items="classLabels"
+                        item-text="label"
+                        item-value="label"
+                        label="Буква"
+                        v-model="sendObj.classLabel"
+                    ></v-select>
+                </div>
+            </template>
 
-            <div>
-                <v-select
-                    :rules="required"
-                    :items="classLevels"
-                    item-text="num"
-                    item-value="num"
-                    label="Класс"
-                    v-model="sendObj.classLevel"
-                ></v-select>
-            </div>
+            <template v-if="isEditClass">
+                <div>
+                    <v-select
+                        :rules="required"
+                        :items="allSchoolClasses"
+                        item-text="classTitle"
+                        item-value="id"
+                        label="Класс"
+                        v-model="instrClassObj.classId"
+                        @change="onChangeClassData"
+                    />
+                </div>
+            </template>
 
-            <div>
-                <v-select
-                    :rules="required"
-                    :items="classLabels"
-                    item-text="label"
-                    item-value="label"
-                    label="Буква"
-                    v-model="sendObj.classLabel"
-                ></v-select>
-            </div>
             <div>
                 <v-select
                     :rules="required"
@@ -93,7 +108,6 @@
             </div>
             <div>
                 <v-autocomplete
-                    :rules="required"
                     :items="teachers"
                     item-text="instructorTitle"
                     item-value="instructorId"
@@ -211,7 +225,10 @@
         methods: {
             fetchSchoolClasses() {
                 SchoolClassService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
-                    this.allSchoolClasses = res;
+                    this.allSchoolClasses = res.map((klass) => {
+                        klass.classTitle = `${klass.classLevel} ${klass.classLabel}`;
+                        return klass;
+                    });
                 }).catch((err) => {
                     this.$toast.error(err);
                 })
@@ -264,8 +281,19 @@
                 this.sendObj.shiftId = this.allSchoolClasses.find((i) => i.id === item.classId).shiftId;
                 this.sendObj.id = item.classId;
                 this.instrClassObj.personId = item.personId;
+                this.instrClassObj.classId = item.classId;
+                this.instrClassObj.id = item.id;
                 this.isAddClassModal = true;
                 this.isEditClass = true;
+            },
+
+            onChangeClassData(classId) {
+                const selectedClass = this.allSchoolClasses.find((cl) => cl.id === classId);
+                this.sendObj.id = classId;
+                this.sendObj.languageId = selectedClass.languageId;
+                this.sendObj.shiftId = selectedClass.shiftId;
+                this.sendObj.classLabel = selectedClass.classLabel;
+                this.sendObj.classLevel = selectedClass.classLevel;
             },
 
             onDeleteClass (item) {
@@ -324,46 +352,63 @@
                     return;
                 }
                 this.sendObj.schoolId = this.userProfile.schools[0].id;
+                this.instrClassObj.chronicleId = this.userProfile.schools[0].chronicleId;
                 if (this.isEditClass) {
-                    SchoolClassService.update(this.sendObj).then(res => {
-                        return instructorClassService.getByClassId(this.sendObj.id);
-                    }).then(res => {
-                        let resource = [];
-                        this.instrClassObj.classId = this.sendObj.id;
-                        this.instrClassObj.chronicleId = this.userProfile.schools[0].chronicleId;
-                        if (res._embedded) {
-                            resource = res._embedded.instructorClassResourceList[0];
-                            this.instrClassObj.id = resource.id;
+                    SchoolClassService.update(this.sendObj).then((res) => {
+                        if (this.instrClassObj.id) {
                             instructorClassService.update(this.instrClassObj).then(res => {
                                 this.isAddClassModal = false;
                                 this.fetchAllInstrClasses();
                                 this.fetchSchoolClasses();
                                 this.$toast.success('Успешно');
-                            }).catch(err => console.log(err));
+                            }).catch((err) => {
+                                this.$toast.error(err);
+                            });
                         } else {
-                            instructorClassService.create(this.instrClassObj).then((res) => {
+                            instructorClassService.create(this.instrClassObj).then(res => {
                                 this.isAddClassModal = false;
                                 this.fetchAllInstrClasses();
                                 this.fetchSchoolClasses();
                                 this.$toast.success('Успешно');
-                            })
+                            }).catch((err) => {
+                                this.$toast.error(err);
+                            });
                         }
-                    }).catch(err => console.log(err));
-                } else
-                    SchoolClassService.create(this.sendObj).then((res) => {
-                        SchoolClassService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
-                            let klassId = res.find(klass => klass.classLabel === this.sendObj.classLabel && parseInt(klass.classLevel) === this.sendObj.classLevel).id
-                            this.instrClassObj.classId = klassId;
-                            instructorClassService.create(this.instrClassObj).then((res) => {
-                                this.isAddClassModal = false;
-                                this.fetchAllInstrClasses();
-                                this.fetchSchoolClasses();
-                                this.$toast.success('Успешно');
-                            })
-                        })
                     }).catch((err) => {
-                        console.log(err);
-                    })
+                        this.$toast.error(err);
+                    });
+                } else {
+                    const isExistClass = this.allSchoolClasses.find((cl) => cl.classLevel === this.sendObj.classLevel && cl.classLabel === this.sendObj.classLabel);
+                    if (isExistClass) {
+                        this.$toast.info('Такой класс уже существует!');
+                        return;
+                    }
+                    SchoolClassService.create(this.sendObj).then((res) => {
+                        if (this.instrClassObj.personId) {
+                            SchoolClassService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
+                                let klassId = res.find(klass => klass.classLabel === this.sendObj.classLabel && parseInt(klass.classLevel) === this.sendObj.classLevel).id
+                                this.instrClassObj.classId = klassId;
+                                instructorClassService.create(this.instrClassObj).then((res) => {
+                                    this.isAddClassModal = false;
+                                    this.fetchAllInstrClasses();
+                                    this.fetchSchoolClasses();
+                                    this.$toast.success('Успешно');
+                                }).catch((err) => {
+                                    this.$toast.error(err);
+                                });
+                            }).catch((err) => {
+                                this.$toast.error(err);
+                            });
+                        } else {
+                            this.isAddClassModal = false;
+                            this.fetchAllInstrClasses();
+                            this.fetchSchoolClasses();
+                            this.$toast.success('Успешно');
+                        }
+                    }).catch((err) => {
+                        this.$toast.error(err);
+                    });
+                }
             }
         }
     }
