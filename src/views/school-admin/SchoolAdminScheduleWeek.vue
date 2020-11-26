@@ -37,9 +37,9 @@
                         <QuadArrowIcon @click="scrollTable('right')"/>
                     </div>
                 </div>
-                <div class="print-btn" v-show="!classViewSchedule">
-                    <v-btn color="primary" @click="exportPdf">Экспорт</v-btn>
-                </div>
+                <!--<div class="print-btn" v-show="!classViewSchedule">-->
+                    <!--<v-btn color="primary" @click="exportPdf">Экспорт</v-btn>-->
+                <!--</div>-->
             </div>
             <h2 class="export-title">Недельное расписание школы {{school.name}}</h2>
 
