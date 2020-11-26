@@ -633,7 +633,7 @@ export default {
                 this.studentObj.classId = item.classId;
                 this.studentObj.name = item.name;
                 this.studentObj.surname = item.surname;
-                this.studentObj.middleName = item.middleName;
+                this.studentObj.middleName = res.middleName;
                 this.studentObj.dateOfBirth = res.dateOfBirth;
                 this.studentObj.gender = item.gender === 0 ? 'MALE' : 'FEMALE';
 				this.studentObj.phone = res.phone ? res.phone.replace('+', '') : '';
@@ -681,6 +681,7 @@ export default {
 				surname: this.studentObj.surname,
 				middleName: this.studentObj.middleName,
 				gender: this.studentObj.gender,
+                pin: this.studentObj.pin,
 				id: this.studentObj.id
 			}
 			if (this.isStudentEdit) {
