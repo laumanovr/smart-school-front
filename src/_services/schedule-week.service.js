@@ -6,7 +6,7 @@ export class ScheduleWeekService extends BaseApiService {
     }
 
     getAllBySchoolAndShift(schoolId, shiftId) {
-        const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/schedule/week/list/school/${schoolId}?shiftId=${shiftId}`;
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/schedule/week/list/school/${schoolId}/shift/${shiftId}`;
         return this.sendGetRequest(url);
     }
 
