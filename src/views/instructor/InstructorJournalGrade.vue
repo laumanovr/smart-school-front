@@ -351,11 +351,6 @@
             },
 
             setGradeMark(e, student, day, currentGrade) {
-                if (e.target.innerText.length &&
-                    e.target.innerText === this.inputValue &&
-                    this.selectedStudent.student.id === student.student.id) {
-                    return;
-                }
                 this.selectedStudent = student;
                 this.inputValue = e.target.innerText = e.target.innerText.trim().slice(0, 1);
                 this.inputValue = e.target.innerText = isNaN(this.inputValue) ? 'H' : this.inputValue;
