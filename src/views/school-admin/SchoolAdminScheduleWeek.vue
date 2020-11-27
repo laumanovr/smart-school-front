@@ -331,6 +331,14 @@
                     FRIDAY: 'Пятница',
                     SATURDAY: 'Суббота'
                 },
+                objNumDays: {
+                    '1': 'MONDAY',
+                    '2': 'TUESDAY',
+                    '3': 'WEDNESDAY',
+                    '4': 'THURSDAY',
+                    '5': 'FRIDAY',
+                    '6': 'SATURDAY',
+                },
                 days: [
                     {day: 'MONDAY', name: 'Понедельник'},
                     {day: 'TUESDAY', name: 'Вторник'},
@@ -427,12 +435,18 @@
 
             fetchScheduleData() {
                 ScheduleWeekService.getAllBySchoolAndShift(this.school.id, this.currentShiftId).then((res) => {
-                    this.allSchedules = res;
+                    this.allSchedules = res.map((schedule) => {
+                        schedule.classTitle = schedule.classLevel + schedule.classLabel;
+                        schedule.weekDay = this.objNumDays[schedule.weekDay];
+                        return schedule;
+                    });
                     this.showContent = true;
                     this.isLoading = false;
                     this.$nextTick(() => {
-                        this.showScrollArrows = this.$refs.scheduleTable.scrollWidth > this.$refs.scheduleTable.clientWidth;
-                        this.$refs.scheduleTable.addEventListener('scroll', this.horizontalScheduleScrollListener);
+                        setTimeout(() => {
+                            this.showScrollArrows = this.$refs.scheduleTable.scrollWidth > this.$refs.scheduleTable.clientWidth;
+                            this.$refs.scheduleTable.addEventListener('scroll', this.horizontalScheduleScrollListener);
+                        });
                     });
                 }).catch(err => {
                     this.$toast.error(err);
@@ -691,6 +705,9 @@
 </script>
 
 <style lang="scss">
+    body {
+        scroll-behavior: smooth;
+    }
     .school-admin-schedule {
         .shift-actions {
             display: flex;
