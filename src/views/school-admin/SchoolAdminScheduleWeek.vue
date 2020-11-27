@@ -37,8 +37,7 @@
                         <QuadArrowIcon @click="scrollTable('right')"/>
                     </div>
                 </div>
-                <!--<div class="print-btn" v-show="!classViewSchedule">-->
-                    <!--<v-btn color="primary" @click="exportPdf">Экспорт</v-btn>-->
+                <!--<div class="print-btn">-->
                 <!--</div>-->
             </div>
             <h2 class="export-title">Недельное расписание школы {{school.name}}</h2>
@@ -686,55 +685,6 @@
                 this.sendScheduleObj.courseTitle = instrCourseObj.courseTitle;
                 this.sendScheduleObj.courseTitleKG = instrCourseObj.courseTitleKG;
             },
-
-            exportPdf() {
-                this.$refs.schedule.style.width = this.setDisplaySize();
-                this.$refs.schedule.style.height = this.setDisplaySize();
-                const clonedData = this.$refs.schedule.cloneNode(true);
-                this.synchronizeCssStyles(this.$refs.schedule, clonedData, true);
-                clonedData.querySelector('.schedule-teacher-course').style.overflow = 'visible';
-                clonedData.querySelector('.export-title').style.display = 'block';
-                clonedData.querySelector('.other-actions').remove();
-                clonedData.style.margin = '0';
-                let win = window.open('', '');
-                win.document.body.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif';
-                win.document.body.innerHTML = (clonedData.outerHTML);
-                win.print();
-                win.onafterprint = window.navigator.appVersion.includes('Mac') ? () => win.close() : win.close();
-                this.$refs.schedule.style.width = 'auto';
-                this.$refs.schedule.style.height = 'auto';
-            },
-
-            synchronizeCssStyles(src, destination, recursively) {
-                destination.style.cssText = this.getComputedStyleCssText(src);
-                if (recursively) {
-                    const vSrcElements = src.getElementsByTagName('*');
-                    const vDstElements = destination.getElementsByTagName('*');
-                    for (let i = vSrcElements.length; i--;) {
-                        const vSrcElement = vSrcElements[i];
-                        const vDstElement = vDstElements[i];
-                        vDstElement.style.cssText = this.getComputedStyleCssText(vSrcElement);
-                    }
-                }
-            },
-
-            getComputedStyleCssText(element) {
-                const cssObject = window.getComputedStyle(element);
-                const cssAccumulator = [];
-                if (cssObject.cssText !== ''){
-                    return cssObject.cssText;
-                }
-                for (let prop in cssObject){
-                    if (typeof cssObject[prop] === 'string'){
-                        cssAccumulator.push(prop + ' : ' + cssObject[prop]);
-                    }
-                }
-                return cssAccumulator.join('; ');
-            },
-
-            setDisplaySize() {
-                return window.innerWidth <= 1366 ? '110vh' : '80vh';
-            }
 
         }
     }
