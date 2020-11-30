@@ -20,10 +20,6 @@ Vue.use(VueRouter);
 
 const routes = [
 	{
-		path: '/',
-        redirect: '/login'
-	},
-	{
 		path: '/login',
 		name: 'login',
 		component: Login
@@ -32,6 +28,48 @@ const routes = [
         path: '/oauth2/login/esia',
         name: 'loginEsia',
         component: loadComponent('login/LoginEsi')
+    },
+
+    // LANDING
+    {
+        path: '/',
+        name: 'home',
+        component: loadComponent('landing/MainPage')
+    },
+    {
+        path: '/about',
+        name: 'about',
+        component: loadComponent('landing/AboutProject')
+    },
+    {
+        path: '/support',
+        name: 'support',
+        component: loadComponent('landing/Support')
+    },
+    {
+        path: '/opportunity',
+        name: 'opportunity',
+        component: loadComponent('landing/Opportunities')
+    },
+    {
+        path: '/teacher-opportunity',
+        name: 'teacherOpportunity',
+        component: loadComponent('landing/TeacherOpportunity')
+    },
+    {
+        path: '/gos-opportunity',
+        name: 'gosOpportunity',
+        component: loadComponent('landing/GosOpportunity')
+    },
+    {
+        path: '/parent-opportunity',
+        name: 'parentOpportunity',
+        component: loadComponent('landing/ParentOpportunity')
+    },
+    {
+        path: '/student-opportunity',
+        name: 'studentOpportunity',
+        component: loadComponent('landing/StudentOpportunity')
     },
 
     // SUPER-ADMIN
