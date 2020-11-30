@@ -144,18 +144,6 @@
                 }
             },
 
-            countTotal(number) {
-                if (number[2].includes('8')) {
-                    return Math.ceil(number);
-                } else if (number > 0 && number < 1) {
-                    return 1;
-                } else if (number >= 1) {
-                    return Math.floor(number);
-                } else {
-                    return 0;
-                }
-            },
-
             countKnowledgeQuality() {
                 const totalGrades = this.classReport.totalFive + this.classReport.totalFour;
                 const result = (totalGrades / this.classReport.totalStudentsCount) * 100;
@@ -164,8 +152,8 @@
 
             countPerformance() {
                 const klass = this.classReport;
-                const totalGrades = klass.totalFive + klass.totalFour + klass.totalThree;
-                const result = (totalGrades / klass.totalStudentsCount) * 100;
+                const totalGoodStudents = klass.totalStudentsCount - klass.totalTwo;
+                const result = (totalGoodStudents / klass.totalStudentsCount) * 100;
                 return result.toFixed(1);
             },
 

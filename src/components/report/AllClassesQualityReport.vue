@@ -185,8 +185,8 @@
 
             countPerformance(klass) {
                 if (klass.totalStudentCount) {
-                    const totalGrades = klass.totalFive + klass.totalFour + klass.totalThree;
-                    const result = (totalGrades / klass.totalStudentCount) * 100;
+                    const totalGoodStudents = klass.totalStudentCount - klass.totalTwo;
+                    const result = (totalGoodStudents / klass.totalStudentCount) * 100;
                     return result.toFixed(1);
                 }
                 return 0;
