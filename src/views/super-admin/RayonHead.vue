@@ -12,6 +12,7 @@
                     :items="currentRegions"
                     item-text="title"
                     item-value="id"
+                    v-model="filterRegionId"
                     label="Регион"
                     @change="fetchRayonsByRegion"
                 />
@@ -123,6 +124,7 @@
                 mode: '',
                 regionId: '',
                 filterRayonId: '',
+                filterRegionId: '',
                 rayonHeads: [],
                 allRoles: [],
                 filteredRayons: []
@@ -140,7 +142,7 @@
         methods: {
             fetchAllRayonHeads() {
                 this.isLoading = true;
-                RayonHeadService.getAllRayonHeads(this.filterRayonId).then((res) => {
+                RayonHeadService.getAllRayonHeads(this.filterRegionId, this.filterRayonId).then((res) => {
                     this.rayonHeads = res;
                     this.isLoading = false;
                 }).catch((err) => {
