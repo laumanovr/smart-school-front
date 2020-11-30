@@ -5,8 +5,8 @@ export class RayonHeadService extends BaseApiService {
         super();
     }
 
-    getAllRayonHeads(rayonId='') {
-        const url = `${process.env.VUE_APP_BASE_URL}/v1/user-rayon/list?rayonId=${rayonId}`;
+    getAllRayonHeads(regionId='', rayonId='') {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/user-rayon/list?regionId=${regionId}&rayonId=${rayonId}`;
         return this.sendGetRequest(url);
     }
 
