@@ -19,6 +19,12 @@ const loadComponent = path => () => import(`@/views/${path}.vue`);
 Vue.use(VueRouter);
 
 const routes = [
+    //TEMP
+    {
+        path: '/',
+        redirect: '/login'
+    },
+    //TEMP
 	{
 		path: '/login',
 		name: 'login',
@@ -37,70 +43,70 @@ const routes = [
     },
 
     // LANDING
-    {
-        path: '/',
-        name: 'home',
-        component: loadComponent('landing/MainPage'),
-        meta: {
-            requireAuth: false
-        }
-    },
-    {
-        path: '/about',
-        name: 'about',
-        component: loadComponent('landing/AboutProject'),
-        meta: {
-            requireAuth: false
-        }
-    },
-    {
-        path: '/support',
-        name: 'support',
-        component: loadComponent('landing/Support'),
-        meta: {
-            requireAuth: false
-        }
-    },
-    {
-        path: '/opportunity',
-        name: 'opportunity',
-        component: loadComponent('landing/Opportunities'),
-        meta: {
-            requireAuth: false
-        }
-    },
-    {
-        path: '/teacher-opportunity',
-        name: 'teacherOpportunity',
-        component: loadComponent('landing/TeacherOpportunity'),
-        meta: {
-            requireAuth: false
-        }
-    },
-    {
-        path: '/gos-opportunity',
-        name: 'gosOpportunity',
-        component: loadComponent('landing/GosOpportunity'),
-        meta: {
-            requireAuth: false
-        }
-    },
-    {
-        path: '/parent-opportunity',
-        name: 'parentOpportunity',
-        component: loadComponent('landing/ParentOpportunity'),
-        meta: {
-            requireAuth: false
-        }
-    },
-    {
-        path: '/student-opportunity',
-        name: 'studentOpportunity',
-        component: loadComponent('landing/StudentOpportunity'),
-        meta: {
-            requireAuth: false
-        }
-    },
+    // {
+    //     path: '/',
+    //     name: 'home',
+    //     component: loadComponent('landing/MainPage'),
+    //     meta: {
+    //         requireAuth: false
+    //     }
+    // },
+    // {
+    //     path: '/about',
+    //     name: 'about',
+    //     component: loadComponent('landing/AboutProject'),
+    //     meta: {
+    //         requireAuth: false
+    //     }
+    // },
+    // {
+    //     path: '/support',
+    //     name: 'support',
+    //     component: loadComponent('landing/Support'),
+    //     meta: {
+    //         requireAuth: false
+    //     }
+    // },
+    // {
+    //     path: '/opportunity',
+    //     name: 'opportunity',
+    //     component: loadComponent('landing/Opportunities'),
+    //     meta: {
+    //         requireAuth: false
+    //     }
+    // },
+    // {
+    //     path: '/teacher-opportunity',
+    //     name: 'teacherOpportunity',
+    //     component: loadComponent('landing/TeacherOpportunity'),
+    //     meta: {
+    //         requireAuth: false
+    //     }
+    // },
+    // {
+    //     path: '/gos-opportunity',
+    //     name: 'gosOpportunity',
+    //     component: loadComponent('landing/GosOpportunity'),
+    //     meta: {
+    //         requireAuth: false
+    //     }
+    // },
+    // {
+    //     path: '/parent-opportunity',
+    //     name: 'parentOpportunity',
+    //     component: loadComponent('landing/ParentOpportunity'),
+    //     meta: {
+    //         requireAuth: false
+    //     }
+    // },
+    // {
+    //     path: '/student-opportunity',
+    //     name: 'studentOpportunity',
+    //     component: loadComponent('landing/StudentOpportunity'),
+    //     meta: {
+    //         requireAuth: false
+    //     }
+    // },
 
     // SUPER-ADMIN
 	{
