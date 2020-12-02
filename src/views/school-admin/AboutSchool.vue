@@ -188,10 +188,12 @@
             updateSchoolInfo() {
                 schoolService.update(this.schoolObj).then(() => {
                     this.$toast.success('Успешно');
-                    this.$store.dispatch('account/getProfile', {});
-                }).catch(err => console.log(err))
+                    this.$store.dispatch('account/getProfile', true);
+                }).catch((err) => {
+                    this.$toast.error(err);
+                })
             }
-        }
+        },
     }
 </script>
 

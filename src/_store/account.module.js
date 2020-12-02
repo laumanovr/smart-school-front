@@ -40,12 +40,14 @@ const actions = {
             commit('SET_ERROR', err);
         });
 	},
-	getProfile({commit, dispatch}) {
+	getProfile({commit, dispatch}, param) {
 		userService.getProfile().then((res) => {
             commit('SET_PROFILE', res);
             localStorage.setItem('profile', JSON.stringify(res));
             const role = roles.find(i => i.code === res.role[0].code);
-            router.push(role.url);
+            if (!param) {
+                router.push(role.url);
+            }
             if (res.role[0].code.includes('ROLE_SUPER_ADMIN')) {
                 dispatch('location/fetchRegions', {}, {root: true});
             }
