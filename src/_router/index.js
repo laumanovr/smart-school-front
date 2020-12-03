@@ -219,6 +219,14 @@ const routes = [
                 meta: {
                     requireAuth: true
                 }
+            },
+            {
+                name: 'superAdminVideoMaterial',
+                path: 'video-material',
+                component: loadComponent('super-admin/VideoMaterial'),
+                meta: {
+                    requireAuth: true
+                }
             }
 		],
 	},
@@ -326,6 +334,14 @@ const routes = [
                 meta: {
                     requireAuth: true
                 }
+            },
+            {
+                name: 'schoolAdminVideoMaterial',
+                path: 'video-material',
+                component: loadComponent('school-admin/SchoolAdminVideoMaterial'),
+                meta: {
+                    requireAuth: true
+                }
             }
 		],
 	},
@@ -398,6 +414,14 @@ const routes = [
                 name: 'instructorReport',
                 path: 'instructor-report',
                 component: loadComponent('instructor/InstructorReport'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
+                name: 'instructorVideoMaterial',
+                path: 'video-material',
+                component: loadComponent('instructor/InstructorVideoMaterial'),
                 meta: {
                     requireAuth: true
                 }
