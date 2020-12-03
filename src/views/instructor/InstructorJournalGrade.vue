@@ -426,9 +426,9 @@
 
             openSetGradeModal(student, date) {
                 const today = new Date();
-                const twoWeeksAgoDate = moment(today.setDate(today.getDate() - 14)).format('YYYY-MM-DD');
+                const monthAgoDate = moment(today.setDate(today.getDate() - 30)).format('YYYY-MM-DD');
                 const gradeDate = moment(date.day, 'DD.MM.YYYY').format('YYYY-MM-DD');
-                if (twoWeeksAgoDate > gradeDate) {
+                if (monthAgoDate > gradeDate) {
                     this.$toast.info('Слишком старые даты нельзя менять!');
                     return;
                 }
