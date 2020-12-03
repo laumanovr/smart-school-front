@@ -87,6 +87,7 @@
                 isLoading: false,
                 teacherSchedules: [],
                 shifts: [],
+                allShifts: [],
                 shiftTimes: [],
                 selectedShiftId: ''
             }
@@ -101,7 +102,7 @@
             fetchAllSchoolShifts() {
                 ShiftService.getAllBySchool(this.school.id).then((res) => {
                     if (res.length) {
-                        this.shifts = res;
+                        this.allShifts = res;
                         this.fetchInstructorSchedule();
                     } else {
                         this.isLoading = false;
@@ -121,9 +122,9 @@
                             (el['shiftId'] === obj['shiftId'])
                         )).map((shiftObj) => shiftObj.shiftId);
 
-                    this.shifts.forEach((item, i, selfArr) => {
-                        if (!instrUniqueShiftIds.includes(item.id)) {
-                            selfArr.splice(i, 1);
+                    this.allShifts.forEach((item) => {
+                        if (instrUniqueShiftIds.includes(item.id)) {
+                            this.shifts.push(item);
                         }
                     });
 
