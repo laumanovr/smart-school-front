@@ -482,21 +482,9 @@
                     extraMark: this.selectedExtraMark,
                     comment: ''
                 };
-                this.sendGradeDtoList.forEach((existGrade, index, selfArr) => {
-                    // DELETE FROM SEND ARRAY
-                    const isExist = existGrade.gradeDate === newGradeObj.gradeDate &&
-                                    existGrade.shiftTimeId === newGradeObj.shiftTimeId &&
-                                    existGrade.m2mStudentCourseId === newGradeObj.m2mStudentCourseId;
-                    if (isExist) {
-                        selfArr.splice(index, 1);
-                    }
-                });
-                this.sendGradeDtoList.push(newGradeObj);
+                this.deleteMarkFromSendArray(newGradeObj, true);
                 this.deleteMarkFromLocalStudentArr(newGradeObj, true);
                 this.$modal.hide('set-grade-modal');
-
-                console.log('sendGradeDtoList: ', this.sendGradeDtoList);
-                console.log('allStudentsList: ', this.studentGrades);
             },
 
             deleteGrade() {
@@ -516,6 +504,23 @@
                     this.deleteMarkFromLocalStudentArr(this.selectedGradeObj, false);
                     this.$modal.hide('set-grade-modal');
                 }
+                this.deleteMarkFromSendArray(this.selectedGradeObj, false);
+            },
+
+            deleteMarkFromSendArray(newGradeObj, addMode) {
+                // DELETE FROM SEND ARRAY
+                this.sendGradeDtoList.forEach((existGrade, index, selfArr) => {
+                    const isExist = existGrade.gradeDate === newGradeObj.gradeDate &&
+                        existGrade.shiftTimeId === newGradeObj.shiftTimeId &&
+                        existGrade.m2mStudentCourseId === newGradeObj.m2mStudentCourseId;
+                    if (isExist) {
+                        selfArr.splice(index, 1);
+                    }
+                });
+                if (addMode) {
+                    this.sendGradeDtoList.push(newGradeObj);
+                }
+                console.log('sendGradeDtoList: ', this.sendGradeDtoList);
             },
 
             deleteMarkFromLocalStudentArr(newGradeObj, addMode) {
@@ -535,6 +540,7 @@
                     }
                     return student;
                 });
+                console.log('allStudentsList: ', this.studentGrades);
             },
 
             filterGradesByMonth(nav, mainArrow) {
