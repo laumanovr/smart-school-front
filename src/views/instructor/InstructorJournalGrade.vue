@@ -19,24 +19,6 @@
                         @change="onChangeCourse"
                     ></v-select>
                 </div>
-                <div class="select-reason">
-                    <v-select
-                        :items="gradeReasons"
-                        item-text="title"
-                        item-value="id"
-                        label="Тип оценки"
-                        v-model="selectedReasonId"
-                    ></v-select>
-                </div>
-                <div class="select-topic">
-                    <v-select
-                        :items="topics"
-                        item-text="title"
-                        item-value="id"
-                        label="Тема"
-                        v-model="selectedTopicId"
-                    />
-                </div>
             </div>
 
             <div class="grade-tables" v-if="studentGrades.length" ref="gradeTables">
@@ -74,21 +56,16 @@
                     </thead>
                     <tbody>
                     <tr v-for="student in studentGrades" :key="student.student.id">
-                        <template v-for="day in currentMonthDays">
-                            <td
-                                v-if="getStudentMark(day, student.grades)"
-                                :contenteditable="true"
-                                @keyup="setGradeMark($event, student, day, getStudentMark(day, student.grades))"
-                            >
-                                {{ showCurrentMark(getStudentMark(day, student.grades)) }}
-                            </td>
-                            <td
-                                :class="{'disabled': !isAbleDate(day.day)}"
-                                :contenteditable="isAbleDate(day.day)"
-                                @keyup="setGradeMark($event, student, day)"
-                                v-else>
-                            </td>
-                        </template>
+                        <td
+                            v-for="day in currentMonthDays"
+                            @click="openSetGradeModal(student, day)"
+                            :class="{
+                                'disabled': !isAbleDate(day.day),
+                                'absent-95': getStudentGradeObj(day, student.grades).mark == '95'
+                            }"
+                        >
+                            {{ getStudentSpecificMark(day, student.grades) }}
+                        </td>
                     </tr>
                     </tbody>
                 </table>
@@ -97,6 +74,78 @@
                 <v-btn color="primary" @click="submitSaveGrades">Сохранить</v-btn>
             </div>
         </div>
+
+        <!--MODAL FOR SETTING GRADE-->
+        <modal name="set-grade-modal" class="grade-modal" width="355px" height="auto">
+            <div class="modal-container">
+                <template v-if="gradeMode == 'setGrade'">
+                <DeleteIcon class="delete-grade" @click="gradeMode='deleteGrade'" v-show="isDeletable"/>
+                <h4 class="header">{{selectedDate.day}}</h4>
+                <h4 class="header" v-if="selectedStudent.student">
+                    {{selectedStudent.student.surname + ' ' + selectedStudent.student.name}}
+                </h4>
+                <v-select
+                    class="v-select-item"
+                    :items="gradeReasons"
+                    item-text="title"
+                    item-value="id"
+                    label="Тип оценки"
+                    v-model="selectedReasonId"
+                />
+                <v-select
+                    class="v-select-item"
+                    :items="topics"
+                    item-text="title"
+                    item-value="id"
+                    label="Тема"
+                    v-model="selectedTopicId"
+                />
+                <div class="mark-grades">
+                    <v-radio-group v-model="selectedAbsentCode" @change="selectedMark=''; selectedExtraMark=''">
+                        <v-radio
+                            v-for="item in absents"
+                            :key="item.code"
+                            :label="item.title"
+                            :value="item.code"
+                            :class="{'absent95': item.code == 95}"
+                        />
+                    </v-radio-group>
+                    <div class="main-marks">
+                        <span>Оценка: </span>
+                        <span
+                            v-for="mark in [2, 3, 4, 5]"
+                            v-model="selectedMark"
+                            class="mark"
+                            :class="{'selected': mark == selectedMark}"
+                            @click="selectedMark=mark; selectedAbsentCode=''"
+                        >
+                            {{ mark }}
+                        </span>
+                    </div>
+                    <div class="extra-marks" v-show="selectedMark">
+                        <span>Доп.оценка: </span>
+                        <span
+                            v-for="mark in [2, 3, 4, 5]"
+                            v-model="selectedExtraMark"
+                            class="mark"
+                            :class="{'selected': mark == selectedExtraMark}"
+                            @click="selectedExtraMark=mark; selectedAbsentCode=''"
+                        >
+                            {{ mark }}
+                        </span>
+                    </div>
+                    <div class="btn-actions"><button @click="setSelectedGradeMark">Вставить</button></div>
+                </div>
+                </template>
+                <template v-if="gradeMode == 'deleteGrade'">
+                    <h4>Удалить?</h4>
+                    <div class="btn-actions">
+                        <v-btn color="primary" @click="gradeMode='setGrade'">Отмена</v-btn>
+                        <v-btn color="red" @click="deleteGrade">Удалить</v-btn>
+                    </div>
+                </template>
+            </div>
+        </modal>
 
         <!--Fixed-Grade-Table-Head-->
         <FixedGradeTableHead
@@ -121,13 +170,15 @@
     import {TopicService} from "@/_services/topic.service";
     const topicService = new TopicService();
     import FixedGradeTableHead from '@/components/table/FixedGradeTableHead';
+    import DeleteIcon from '@/components/icons/DeleteIcon';
 
     export default {
         components: {
             ClassSelectHeader,
             PreLoader,
             PlayArrowIcon,
-            FixedGradeTableHead
+            FixedGradeTableHead,
+            DeleteIcon
         },
 
         computed: {
@@ -144,6 +195,10 @@
 
         data() {
             return {
+                absents: [
+                    {title: 'Отсутствовал(-а) уважительно', code: '92'},
+                    {title: 'Отсутствовал(-а) неуважительно', code: '95'},
+                ],
                 langObj: {
                     RU: 'courseTitle',
                     KG: 'courseTitleKG',
@@ -198,11 +253,17 @@
                 allCourses: [],
                 topics: [],
                 selectedStudent: {},
+                selectedGradeObj: {},
+                selectedDate: '',
                 topicPage: 0,
-                inputValue: '',
                 showFixedTableHead: false,
+                isDeletable: false,
                 gradeTablesWidth: 0,
-                monthLabelWidth: 0
+                monthLabelWidth: 0,
+                selectedAbsentCode: '',
+                selectedMark: '',
+                selectedExtraMark: '',
+                gradeMode: 'setGrade'
             }
         },
 
@@ -342,73 +403,138 @@
                 return formattedGradeDate <= currentDate;
             },
 
-            getStudentMark(dayObj, studentGrades) {
-                return studentGrades.find(grade => grade.date === dayObj.day && grade.shiftTimeId === dayObj.shiftTimeId)
-            },
-
-            showCurrentMark(grade) {
-                return isNaN(grade.mark) || grade.mark.includes('95') || grade.mark.includes('92') ? 'Н' : grade.mark;
-            },
-
-            setGradeMark(e, student, day, currentGrade) {
-                this.selectedStudent = student;
-                this.inputValue = e.target.innerText = e.target.innerText.trim().slice(0, 1);
-                this.inputValue = e.target.innerText = isNaN(this.inputValue) ? 'H' : this.inputValue;
-                if (this.inputValue.length && !isNaN(this.inputValue)) {
-                    if (this.inputValue < 2) {
-                        this.inputValue = e.target.innerText = '2';
-                    } else if (this.inputValue > 5) {
-                        this.inputValue = e.target.innerText = '5';
+            getStudentSpecificMark(dayObj, studentGrades) {
+                const grade = studentGrades.find((i) => i.date === dayObj.day && i.shiftTimeId === dayObj.shiftTimeId);
+                if (grade) {
+                    if (grade.gradeType === 'ATTENDANCE') {
+                        return 'Н';
+                    } else {
+                        if (grade.extraMark) {
+                            return `${grade.mark}/${grade.extraMark}`;
+                        } else {
+                            return grade.mark;
+                        }
                     }
                 }
-                let newGradeObj = {
+                return '';
+            },
+
+            getStudentGradeObj(date, studentGrades) {
+                const grade = studentGrades.find((i) => i.date === date.day && i.shiftTimeId === date.shiftTimeId);
+                return grade ? grade : '';
+            },
+
+            openSetGradeModal(student, date) {
+                const today = new Date();
+                const twoWeeksAgoDate = moment(today.setDate(today.getDate() - 14)).format('YYYY-MM-DD');
+                const gradeDate = moment(date.day, 'DD.MM.YYYY').format('YYYY-MM-DD');
+                if (twoWeeksAgoDate > gradeDate) {
+                    this.$toast.info('Слишком старые даты нельзя менять!');
+                    return;
+                }
+                this.gradeMode = 'setGrade';
+                this.selectedStudent = student;
+                this.selectedDate = date;
+                this.selectedGradeObj = this.getStudentGradeObj(date, student.grades);
+                if (this.selectedGradeObj) {
+                    this.isDeletable = true;
+                    this.selectedReasonId = this.selectedGradeObj.reasonId;
+                    this.selectedTopicId = this.selectedGradeObj.topicId;
+                    if (this.selectedGradeObj.gradeType === 'GRADE') {
+                        this.selectedMark = this.selectedGradeObj.mark;
+                        this.selectedExtraMark = this.selectedGradeObj.extraMark;
+                        this.selectedAbsentCode = '';
+                    } else {
+                        this.selectedAbsentCode = this.selectedGradeObj.mark;
+                        this.selectedMark = '';
+                        this.selectedExtraMark = '';
+                    }
+                } else {
+                    this.isDeletable = false;
+                    this.selectedMark = '';
+                    this.selectedExtraMark = '';
+                    this.selectedAbsentCode = '';
+                }
+                this.$modal.show('set-grade-modal');
+            },
+
+            setSelectedGradeMark() {
+                if (!this.selectedReasonId || !this.selectedTopicId) {
+                    this.$toast.info('Выберите тип оценки и Тему!');
+                    return;
+                }
+                if (!this.selectedMark && !this.selectedAbsentCode) {
+                    this.$toast.info('Выберите оценку!');
+                    return;
+                }
+                const newGradeObj = {
                     classId: this.monthDataRequest.classId,
-                    gradeId: currentGrade ? currentGrade.gradeId : 0,
-                    m2mStudentCourseId: student.m2mStudentCourseId,
+                    gradeId: this.selectedGradeObj && this.selectedGradeObj.gradeId ? this.selectedGradeObj.gradeId : 0,
+                    m2mStudentCourseId: this.selectedStudent.m2mStudentCourseId,
                     instructorId: this.userProfile.personId,
-                    shiftTimeId: day.shiftTimeId,
-                    gradeDate: day.day,
-                    mark: !isNaN(this.inputValue) ? this.inputValue : 95,
-                    gradeType: !isNaN(this.inputValue) ? 'GRADE' : 'ATTENDANCE',
+                    shiftTimeId: this.selectedDate.shiftTimeId,
+                    gradeDate: this.selectedDate.day,
+                    date: this.selectedDate.day,
+                    mark: this.selectedMark ? this.selectedMark : this.selectedAbsentCode,
+                    gradeType: this.selectedMark ? 'GRADE' : 'ATTENDANCE',
                     reasonId: this.selectedReasonId,
                     topicId: this.selectedTopicId,
-                    comment: '',
-                    extraMark: ''
+                    extraMark: this.selectedExtraMark,
+                    comment: ''
                 };
-
                 this.sendGradeDtoList.forEach((existGrade, index, selfArr) => {
-                    // DELETE FROM LOCAL ARRAY
-                    let isExist = existGrade.gradeDate === newGradeObj.gradeDate &&
-                        existGrade.shiftTimeId === newGradeObj.shiftTimeId &&
-                        existGrade.m2mStudentCourseId === newGradeObj.m2mStudentCourseId;
+                    // DELETE FROM SEND ARRAY
+                    const isExist = existGrade.gradeDate === newGradeObj.gradeDate &&
+                                    existGrade.shiftTimeId === newGradeObj.shiftTimeId &&
+                                    existGrade.m2mStudentCourseId === newGradeObj.m2mStudentCourseId;
                     if (isExist) {
                         selfArr.splice(index, 1);
                     }
                 });
+                this.sendGradeDtoList.push(newGradeObj);
+                this.deleteMarkFromLocalStudentArr(newGradeObj, true);
+                this.$modal.hide('set-grade-modal');
 
-                if (this.inputValue.length) {
-                    this.sendGradeDtoList.push(newGradeObj);
-                } else {
-                    if (currentGrade) {
-                        // FOR DELETE FROM SERVER
-                        newGradeObj.gradeId = currentGrade.gradeId;
-                        newGradeObj.mark = 99;
-                        this.sendGradeDtoList.push(newGradeObj);
-                    }
-                }
-                this.setCaretToEnd(e.target);
-                console.log(this.sendGradeDtoList);
+                console.log('sendGradeDtoList: ', this.sendGradeDtoList);
+                console.log('allStudentsList: ', this.studentGrades);
             },
 
-            setCaretToEnd(target) {
-                const range = document.createRange();
-                const sel = window.getSelection();
-                range.selectNodeContents(target);
-                range.collapse(false);
-                sel.removeAllRanges();
-                sel.addRange(range);
-                target.focus();
-                range.detach();
+            deleteGrade() {
+                if (this.selectedGradeObj.gradeId) {
+                    this.isLoading = true;
+                    this.selectedGradeObj.mark = '99';
+                    GradeService.createWithArray([this.selectedGradeObj]).then(() => {
+                        this.deleteMarkFromLocalStudentArr(this.selectedGradeObj, false);
+                        this.$toast.success('Успешно удалено!');
+                        this.isLoading = false;
+                        this.$modal.hide('set-grade-modal');
+                    }).catch((err) => {
+                        this.$toast.error(err);
+                        this.isLoading = false;
+                    })
+                } else {
+                    this.deleteMarkFromLocalStudentArr(this.selectedGradeObj, false);
+                    this.$modal.hide('set-grade-modal');
+                }
+            },
+
+            deleteMarkFromLocalStudentArr(newGradeObj, addMode) {
+                // DELETE GRADE FROM EXIST STUDENT ARRAY
+                this.studentGrades = this.studentGrades.map((student) => {
+                    if (student.student.id === this.selectedStudent.student.id) {
+                        student.grades.forEach((existGrade, index, selfArr) => {
+                            const isExist = existGrade.date === newGradeObj.date &&
+                                            existGrade.shiftTimeId === newGradeObj.shiftTimeId;
+                            if (isExist) {
+                                selfArr.splice(index, 1);
+                            }
+                        });
+                        if (addMode) {
+                            student.grades.push(newGradeObj);
+                        }
+                    }
+                    return student;
+                });
             },
 
             filterGradesByMonth(nav, mainArrow) {
@@ -491,7 +617,7 @@
                 GradeService.createWithArray(this.sendGradeDtoList).then(() => {
                     this.sendGradeDtoList = [];
                     this.$toast.success('Успешно');
-                    this.isLoading = false;
+                    this.fetchStudentGrades();
                 }).catch((err) => {
                     this.$toast.error(err);
                     this.isLoading = false;
@@ -588,9 +714,13 @@
                     td {
                         padding: 0 15px;
                         outline: none;
-                        &:focus {
+                        cursor: pointer;
+                        &:hover {
                             background: #fafafa;
                             box-shadow: 0 0 20px 0 rgba(74, 39, 243, 0.51);
+                        }
+                        &.absent-95 {
+                            color: #fa1504;
                         }
                     }
                 }
@@ -603,6 +733,68 @@
             }
             .disabled {
                 background: #eaeaea;
+                pointer-events: none;
+            }
+        }
+
+        .grade-modal {
+            color: #045290;
+            .modal-container {
+                position: relative;
+            }
+            .delete-grade {
+                position: absolute;
+                top: 15px;
+                right: 15px;
+            }
+            .header {
+                color: #045290;
+                &:first-child{
+                    margin-bottom: 0;
+                }
+            }
+            .v-select-item {
+                margin: 0 auto;
+            }
+            .mark-grades {
+                width: 285px;
+                margin: 0 auto;
+                .main-marks, .extra-marks {
+                    margin-bottom: 15px;
+                    span {
+                        display: inline-block;
+                        &.mark {
+                            border: 1px solid;
+                            padding: 2px 10px;
+                            border-radius: 4px;
+                            margin: 0 5px;
+                            cursor: pointer;
+                            font-weight: bold;
+                        }
+                        &.selected {
+                            color: #fff;
+                            background: #00BCD4;
+                            border-color: #00BCD4;
+                            cursor: default;
+                        }
+                    }
+                }
+                .btn-actions {
+                    button {
+                        background: #60c964;
+                        color: #fff;
+                        border-radius: 4px;
+                        padding: 2px 8px;
+                    }
+                }
+            }
+            .theme--light.v-label {
+                color: #045290;
+            }
+            .absent95 {
+                .theme--light.v-label {
+                    color: #9C27B0;
+                }
             }
         }
     }
