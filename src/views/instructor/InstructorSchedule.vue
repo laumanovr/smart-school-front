@@ -128,8 +128,12 @@
                         }
                     });
 
-                    this.selectedShiftId = this.shifts[0].id;
-                    this.fetchShiftTimes(this.selectedShiftId);
+                    if (this.shifts.length) {
+                        this.selectedShiftId = this.shifts[0].id;
+                        this.fetchShiftTimes(this.selectedShiftId);
+                    } else {
+                        this.isLoading = false;
+                    }
                     console.log(this.shifts);
                 }).catch((err) => {
                     this.$toast.error(err);
