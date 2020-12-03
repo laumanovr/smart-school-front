@@ -124,6 +124,7 @@
         methods: {
             fetchStudentQuarterGrades() {
                 this.studentQuarterGrades = [];
+                this.sendQuarterGradeObj.students = [];
                 this.isLoading = true;
                 QuarterGradeService.getStudentsQuarterGrades(
                     this.requestObj.classId,
@@ -183,6 +184,13 @@
                     return;
                 }
                 let inputValue = e.target.innerText = e.target.innerText.trim().slice(0, 1);
+                if (inputValue.length) {
+                    if (inputValue < 2) {
+                        inputValue = e.target.innerText = '2';
+                    } else if (inputValue > 5) {
+                        inputValue = e.target.innerText = '5';
+                    }
+                }
 
                 const newQuarterGradeObj = {
                     quarterId: quarter.id,
@@ -213,6 +221,19 @@
                         this.sendQuarterGradeObj.students.push(newQuarterGradeObj);
                     }
                 }
+                this.setCaretToEnd(e.target);
+                console.log(this.sendQuarterGradeObj.students);
+            },
+
+            setCaretToEnd(target) {
+                const range = document.createRange();
+                const sel = window.getSelection();
+                range.selectNodeContents(target);
+                range.collapse(false);
+                sel.removeAllRanges();
+                sel.addRange(range);
+                target.focus();
+                range.detach();
             },
 
             showCourseName(courseObj) {
