@@ -1,6 +1,6 @@
 <template>
     <span class="delete-icon" @click="$emit('click')">
-        <img src="@/assets/images/icons/delete-icon.svg" alt="Удалить">
+        <img src="@/assets/images/icons/delete-icon.svg" title="Удалить">
     </span>
 </template>
 
