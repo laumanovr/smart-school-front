@@ -55,6 +55,21 @@ export default {
         //     route: '/super-admin/calendar'
         // },
         {
+            name: 'Академический год',
+            icon: 'library.svg',
+            route: '/super-admin/chronicle'
+        },
+        {
+            name: 'Типы оценок',
+            icon: 'journal.svg',
+            route: '/super-admin/grade-reason'
+        },
+        {
+            name: 'Видео инструкции',
+            icon: 'videocam.svg',
+            route: '/super-admin/video-material'
+        },
+        {
             name: 'Объявления',
             icon: 'announcement.svg',
             route: '/super-admin/announcements'
@@ -64,16 +79,6 @@ export default {
             icon: 'library.svg',
             route: '/super-admin/library'
         },
-        {
-            name: 'Академический год',
-            icon: 'library.svg',
-            route: '/super-admin/chronicle'
-        },
-        {
-            name: 'Типы оценок',
-            icon: 'journal.svg',
-            route: '/super-admin/grade-reason'
-        }
     ],
 
     schoolAdmin: [
@@ -121,6 +126,11 @@ export default {
             name: 'Отчеты',
             icon: 'report.svg',
             route: '/school-admin/admin-report'
+        },
+        {
+            name: 'Видео инструкции',
+            icon: 'videocam.svg',
+            route: '/school-admin/video-material'
         },
         {
             name: 'Объявления',
@@ -174,6 +184,11 @@ export default {
             name: 'Отчеты',
             icon: 'report.svg',
             route: '/instructor/instructor-report'
+        },
+        {
+            name: 'Видео инструкции',
+            icon: 'videocam.svg',
+            route: '/instructor/video-material'
         },
         {
             name: 'Сообщения',
