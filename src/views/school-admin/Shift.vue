@@ -236,10 +236,11 @@
             },
 
             getShiftTimesByShift(shiftId) {
+                this.shiftTimeList = [];
                 ShiftTimeService.getAllByShiftId(shiftId).then((res) => {
                     this.shiftTimeList = res.map((item) => {
-                        item.timeStart = new Date(moment(`1970-01-01 ${item.startTime.join(':')}`));
-                        item.timeEnd = new Date(moment(`1970-01-01 ${item.endTime.join(':')}`));
+                        item.timeStart = new Date(moment(`1970-01-01 ${item.startTime}`));
+                        item.timeEnd = new Date(moment(`1970-01-01 ${item.endTime}`));
                         return item;
                     }).sort((a, b) => a.name - b.name);
                 }).catch(err => this.$toast.error(err));
