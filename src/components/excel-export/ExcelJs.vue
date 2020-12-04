@@ -1,5 +1,5 @@
 <template>
-	<SmartBtn2 @onClick="onExportExcel">Экспорт <img alt="" src="../../assets/images/icons/export.svg">
+	<SmartBtn2 @onClick="onExportExcel">{{buttonTitle}} <img alt="" src="../../assets/images/icons/export.svg">
 		<v-dialog
 			max-width="550"
 			v-model="isExport"
@@ -19,6 +19,10 @@ export default {
 	name: "ExcelJs",
 	components: {DeletePopup, SmartBtn2},
 	props: {
+	    buttonTitle: {
+	        type: String,
+            default: 'Экспорт'
+        },
 		rows: {
 			type: Array,
 			default() {
