@@ -31,12 +31,12 @@
                 <!--<CourseMenu :is-grid="isGrid" @onChange="onMenuChange"></CourseMenu>-->
             <!--</template>-->
             <template v-slot:head>
-                <th>№</th>
-                <th>На русском</th>
-                <th>На кыргызском</th>
-                <th>На английском</th>
-                <th></th>
-                <th></th>
+                <th class="head">№</th>
+                <th class="head">На русском</th>
+                <th class="head">На кыргызском</th>
+                <th class="head">На английском</th>
+                <th class="head"></th>
+                <th class="head"></th>
             </template>
             <template slot="body" slot-scope="{item}">
                 <td>{{ item.pos }}</td>
@@ -189,14 +189,23 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
     .super-admin-courses {
         margin: 30px;
         .v-select-item {
             max-width: 190px;
         }
-    }
-    .course-menu-grid {
-        margin: 20px 30px;
+        th.head {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            background: #f2f2f2;
+        }
+        .course-menu-grid {
+            margin: 20px 30px;
+        }
+        .smart-table__body {
+            overflow: visible;
+        }
     }
 </style>
