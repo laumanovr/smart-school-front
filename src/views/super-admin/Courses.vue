@@ -2,22 +2,24 @@
     <div class="super-admin-courses">
         <PreLoader v-if="isLoading"/>
         <div class="select-filter-block">
-            <v-select
-                class="v-select-item"
-                :items="classTypes"
-                item-text="title"
-                item-value="type"
-                label="Классы"
-                v-model="courseFilter.classType"
-            />
-            <v-btn color="primary" @click="filterCourses">Фильтр</v-btn>
+            <div class="filter">
+                <v-select
+                    class="v-select-item"
+                    :items="classTypes"
+                    item-text="title"
+                    item-value="type"
+                    label="Классы"
+                    v-model="courseFilter.classType"
+                />
+                <v-btn color="primary" @click="filterCourses">Фильтр</v-btn>
+            </div>
+            <div class="search-add">
+                <SmartSearchInput @onTyping="onSearch"></SmartSearchInput>
+                <SmartButton @clicked="onAdd">Добавить +</SmartButton>
+            </div>
         </div>
         <SuperAdminSchoolHead>
             <template v-slot:title>Предметы</template>
-            <template v-slot:right>
-                <SmartSearchInput @onTyping="onSearch"></SmartSearchInput>
-                <SmartButton @clicked="onAdd">Добавить +</SmartButton>
-            </template>
         </SuperAdminSchoolHead>
         <SmartTable
             v-if="!isGrid"
@@ -206,6 +208,23 @@ export default {
         }
         .smart-table__body {
             overflow: visible;
+        }
+        .select-filter-block {
+            display: flex;
+            align-items: center;
+            width: 70%;
+            justify-content: space-between;
+            .filter {
+                display: flex;
+                align-items: center;
+            }
+            .search-add {
+                display: flex;
+                align-items: center;
+                .smart-input {
+                    margin-right: 15px;
+                }
+            }
         }
     }
 </style>
