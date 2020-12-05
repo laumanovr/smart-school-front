@@ -355,7 +355,8 @@ export default {
                 courseId: this.topic.courseId,
                 classId: this.currentClass.classId,
                 instructorId: this.userProfile.personId,
-                topicId: topic.id
+                topicId: topic.id,
+                attachmentList: assignment.attachmentList
             };
             this.isEditAssignment = true;
             this.showAssignmentModal = true;
