@@ -7,6 +7,25 @@
 			<div class="add-assignment__item">
 				<v-text-field v-model="assignment.title" :label="$t('topics.assignment')" :rules="required" outlined></v-text-field>
 			</div>
+            <div v-if="!isEdit">
+                <v-file-input
+                    v-model="assignment.files"
+                    chips show-size
+                    accept="*"
+                    label="Прикрепить файл"
+                />
+            </div>
+            <div v-if="isEdit && !assignment.attachmentList.length">
+                <v-file-input
+                    chips show-size
+                    accept="*"
+                    label="Прикрепить файл"
+                    @change="sendFile"
+                />
+            </div>
+            <div v-if="isEdit && assignment.attachmentList.length">
+                <v-text-field v-model="assignment.attachmentList[0].originalFilename" readonly label="Файл"/>
+            </div>
 			<div class="add-topic__item">
 				<v-textarea
 					v-model="assignment.description"
@@ -96,6 +115,7 @@ export default {
 			    this.$emit('loading', true);
                 this.assignment.chronicleId = this.userProfile.schools[0].chronicleId;
 				if (this.isEdit) {
+				    delete this.assignment.attachmentList;
 					assignmentService.edit(this.assignment).then(() => {
 						this.$toast.success(this.$t('successMessage'));
 						this.$emit('close');
@@ -115,7 +135,17 @@ export default {
                     })
 				}
 			}
-		}
+		},
+
+        sendFile(file) {
+            this.$emit('loading', true);
+            assignmentService.attachFile(this.assignment.id, file).then(() => {
+                this.$emit('loading', false);
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.$emit('loading', false);
+            })
+        }
 	}
 }
 </script>
