@@ -43,7 +43,7 @@ export default {
             width: calc(100% - 100px);
             margin-left: 100px;
             min-height: 88vh;
-            overflow-x: auto;
+            /*overflow-x: auto;*/
         }
         .super-admin-sidebar {
             /**/
