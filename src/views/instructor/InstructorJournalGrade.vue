@@ -48,7 +48,10 @@
                 <table class="grades bordered" ref="tableGrades">
                     <thead>
                     <tr>
-                        <th v-for="day in currentMonthDays" :class="{'disabled': !isAbleDate(day.day)}">
+                        <th
+                            v-for="day in currentMonthDays"
+                            :class="{'disabled': !isAbleDate(day.day), 'archived': day.archived}"
+                        >
                             {{ day.day.slice(0, 2) }}
                             <div class="lesson">Урок-{{ day.shiftTimeTitle }}</div>
                         </th>
@@ -61,7 +64,8 @@
                             @click="openSetGradeModal(student, day)"
                             :class="{
                                 'disabled': !isAbleDate(day.day),
-                                'absent-95': getStudentGradeObj(day, student.grades).mark == '95'
+                                'absent-95': getStudentGradeObj(day, student.grades).mark == '95',
+                                'archived': day.archived
                             }"
                         >
                             {{ getStudentSpecificMark(day, student.grades) }}
@@ -354,7 +358,24 @@
                     this.monthDataRequest.courseId,
                     this.gradeRequest
                 ).then((res) => {
-                    this.studentGrades = res.list;
+                    const allExistDays = this.currentMonthDays.map((item) => item.day);
+                    this.studentGrades = res.list.map((student) => {
+                        student.grades.reverse().map((gradeObj) => {
+                            if (!allExistDays.includes(gradeObj.date)) {
+                                gradeObj.archived = true;
+                                const isExist = this.currentMonthDays.some((i) => i.day === gradeObj.date);
+                                if (!isExist) {
+                                    this.currentMonthDays.unshift({
+                                        day: gradeObj.date,
+                                        archived: true,
+                                        shiftTimeId: gradeObj.shiftTimeId
+                                    });
+                                }
+                            }
+                            return gradeObj;
+                        });
+                        return student;
+                    });
                     this.isLoading = false;
                 }).catch((err) => {
                     this.isLoading = false;
@@ -740,6 +761,11 @@
             .disabled {
                 background: #eaeaea;
                 pointer-events: none;
+            }
+            .archived {
+                pointer-events: none;
+                background: #cef9ffe3;
+                opacity: 0.5;
             }
         }
 
