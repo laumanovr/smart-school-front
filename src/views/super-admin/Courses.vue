@@ -201,7 +201,7 @@ export default {
             position: -webkit-sticky;
             position: sticky;
             top: 0;
-            background: #f2f2f2;
+            background: #fff;
         }
         .course-menu-grid {
             margin: 20px 30px;
