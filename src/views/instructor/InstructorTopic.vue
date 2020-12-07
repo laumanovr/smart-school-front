@@ -350,7 +350,7 @@ export default {
             this.assignment = {
                 id: assignment.id,
                 title: assignment.title,
-                description: assignment.description,
+                description: assignment.description ? assignment.description : '',
                 deadline: assignment.deadline,
                 courseId: this.topic.courseId,
                 classId: this.currentClass.classId,
