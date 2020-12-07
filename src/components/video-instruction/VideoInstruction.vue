@@ -88,7 +88,7 @@
                     {title: 'Админ школы', code: 'ROLE_ADMIN'},
                     {title: 'Учитель', code: 'ROLE_INSTRUCTOR'},
                     {title: 'Родитель', code: 'ROLE_PARENT'},
-                    {title: 'Студент', code: 'ROLE_STUDENT'},
+                    {title: 'Ученик', code: 'ROLE_STUDENT'},
                 ],
                 materialObj: {
                     title: '',
