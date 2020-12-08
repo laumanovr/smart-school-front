@@ -1,5 +1,5 @@
 <template>
-    <div class="sticky-head">
+    <div class="sticky-head" :class="{'no-scroll': !showScrollArrows}">
         <div class="scroll-arrows" v-show="showScrollArrows">
             <QuadArrowIcon @click="$emit('scrollTable', 'left')" class="left"/>
             <QuadArrowIcon @click="$emit('scrollTable', 'right')"/>
@@ -76,5 +76,8 @@
         z-index: 20;
         background: #fff;
         border-radius: 5px 5px 0 0;
+        &.no-scroll {
+            background: none;
+        }
     }
 </style>
