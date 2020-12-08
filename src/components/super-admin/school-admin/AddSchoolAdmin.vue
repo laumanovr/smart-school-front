@@ -130,6 +130,11 @@ export default {
     this.fetchLanguages();
     this.fetchRoles();
     this.schoolAdmin = this.isEdit ? this.selectedAdmin : this.schoolAdmin;
+    if (this.isEdit && this.selectedAdmin.schoolId) {
+        schoolService.getById(this.selectedAdmin.schoolId).then((res) => {
+            this.schools.push(res);
+        });
+    }
   },
 
   methods: {
