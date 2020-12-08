@@ -37,10 +37,10 @@
                         <QuadArrowIcon @click="scrollTable('right')"/>
                     </div>
                 </div>
-                <!--<div class="print-btn">-->
-                <!--</div>-->
+                <div class="print-btn">
+                    <v-btn color="primary" @click="downloadPdf">Скачать(PDF)</v-btn>
+                </div>
             </div>
-            <h2 class="export-title">Недельное расписание школы {{school.name}}</h2>
 
             <div class="teacher-course-tables" v-if="!classViewSchedule" ref="teacherTable">
                 <table class="teachers">
@@ -293,6 +293,9 @@
     import * as moment from 'moment';
     import PreLoader from '@/components/preloader/PreLoader';
     import FixedScheduleTableHeader from '@/components/table/FixedScheduleTableHeader';
+    import pdfMake from 'pdfmake/build/pdfmake';
+    import pdfFonts from 'pdfmake/build/vfs_fonts';
+    pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
     export default {
         components: {
@@ -698,6 +701,211 @@
                 this.sendScheduleObj.courseCode = instrCourseObj.courseCode;
                 this.sendScheduleObj.courseTitle = instrCourseObj.courseTitle;
                 this.sendScheduleObj.courseTitleKG = instrCourseObj.courseTitleKG;
+            },
+
+            downloadPdf() {
+                if (this.classViewSchedule) {
+                    this.downloadClassSchedulePdf();
+                } else {
+                    this.downloadTeacherSchedulePdf();
+                }
+            },
+
+            downloadTeacherSchedulePdf() {
+                this.isLoading = true;
+                const width = this.shiftTimes.map((time) => 12);
+                const exportScheduleData = [];
+                this.allTeachers.forEach((teacher) => {
+                    const currentScheduleArr = [];
+                    currentScheduleArr.push({text: teacher.instructorTitle, style: 'general'});
+                    currentScheduleArr.push({text: teacher[this.langObj[this.currentLang]], style: 'general'});
+                    this.days.forEach((day) => {
+                        let daySchedules = [];
+                        this.shiftTimes.forEach((time) => {
+                            const schedules = this.getSpecificSchedule(day.day, time.id, teacher);
+                            const foundSchedule = schedules.length ? schedules[0].classTitle : '';
+                            daySchedules.push({
+                                text: foundSchedule,
+                                style: 'general',
+                                border: [false, false, true, false]
+                            });
+                        });
+                        currentScheduleArr.push([{
+                            table: {
+                                widths: width,
+                                body: [daySchedules]
+                            }
+                        }]);
+                    });
+                    exportScheduleData.push(currentScheduleArr);
+                });
+
+                const docDefinition = {
+                    header: [{text: `Недельное расписание школы ${this.school.name}`, style: 'headTitle'}],
+                    pageOrientation: 'landscape',
+                    pageSize: 'A3',
+                    permissions: {
+                        printing: 'highResolution',
+                        modifying: false,
+                        copying: false,
+                        annotating: true,
+                        fillingForms: true,
+                        contentAccessibility: true,
+                        documentAssembly: true
+                    },
+                    content: [{
+                        table: {
+                            headerRows: 2,
+                            widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+                            body: [
+                                [
+                                    '',
+                                    '',
+                                    {text: 'Понедельник', style: 'general'},
+                                    {text: 'Вторник', style: 'general'},
+                                    {text: 'Среда', style: 'general'},
+                                    {text: 'Четверг', style: 'general'},
+                                    {text: 'Пятница', style: 'general'},
+                                    {text: 'Суббота', style: 'general'}
+                                ],
+                                [
+                                    {text: 'Учитель', style: 'general'},
+                                    {text: 'Предмет', style: 'general'},
+                                    this.exportShiftTimes(12),
+                                    this.exportShiftTimes(12),
+                                    this.exportShiftTimes(12),
+                                    this.exportShiftTimes(12),
+                                    this.exportShiftTimes(12),
+                                    this.exportShiftTimes(12)
+                                ],
+                            ]
+                        }
+                    }],
+                    styles: {
+                        general: {
+                            fontSize: 7,
+                            alignment: 'center',
+                            margin: [0, 0, 0, 0]
+                        },
+                        headTitle: {
+                            alignment: 'center',
+                            bold: true,
+                            fontSize: 13,
+                            margin: [0, 10, 0, 0]
+                        },
+                    }
+                };
+                docDefinition.content[0].table.body = [...docDefinition.content[0].table.body, ...exportScheduleData];
+                setTimeout(() => {
+                    pdfMake.createPdf(docDefinition).download(`Расписание школы ${this.school.name}.pdf`);
+                    setTimeout(() => {
+                        this.isLoading = false;
+                    }, 50);
+                }, 100);
+            },
+
+            downloadClassSchedulePdf() {
+                this.isLoading = true;
+                const width = this.shiftTimes.map((time) => 16);
+                const exportScheduleData = [];
+                this.classes.forEach((klass) => {
+                    const currentScheduleArr = [];
+                    currentScheduleArr.push({text: klass.classLevel+klass.classLabel, style: 'general'});
+                    this.days.forEach((day) => {
+                        let daySchedules = [];
+                        this.shiftTimes.forEach((time) => {
+                            const schedule = this.getSpecificCourseSchedule(day.day, time.id, klass);
+                            const foundSchedule = schedule ? schedule[this.langObj[this.currentLang]].slice(0,3) : '';
+                            daySchedules.push({
+                                text: foundSchedule,
+                                style: 'general',
+                                border: [false, false, true, false]
+                            });
+                        });
+                        currentScheduleArr.push([{
+                            table: {
+                                widths: width,
+                                body: [daySchedules]
+                            }
+                        }]);
+                    });
+                    exportScheduleData.push(currentScheduleArr);
+                });
+
+                const docDefinition = {
+                    header: [{text: `Недельное расписание школы ${this.school.name}`, style: 'headTitle'}],
+                    pageOrientation: 'landscape',
+                    pageSize: 'A3',
+                    permissions: {
+                        printing: 'highResolution',
+                        modifying: false,
+                        copying: false,
+                        annotating: true,
+                        fillingForms: true,
+                        contentAccessibility: true,
+                        documentAssembly: true
+                    },
+                    content: [{
+                        table: {
+                            headerRows: 2,
+                            widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+                            body: [
+                                [
+                                    '',
+                                    {text: 'Понедельник', style: 'general'},
+                                    {text: 'Вторник', style: 'general'},
+                                    {text: 'Среда', style: 'general'},
+                                    {text: 'Четверг', style: 'general'},
+                                    {text: 'Пятница', style: 'general'},
+                                    {text: 'Суббота', style: 'general'}
+                                ],
+                                [
+                                    {text: 'Класс', style: 'general'},
+                                    this.exportShiftTimes(16),
+                                    this.exportShiftTimes(16),
+                                    this.exportShiftTimes(16),
+                                    this.exportShiftTimes(16),
+                                    this.exportShiftTimes(16),
+                                    this.exportShiftTimes(16)
+                                ],
+                            ]
+                        }
+                    }],
+                    styles: {
+                        general: {
+                            fontSize: 7,
+                            alignment: 'center',
+                            margin: [0, 0, 0, 0]
+                        },
+                        headTitle: {
+                            alignment: 'center',
+                            bold: true,
+                            fontSize: 13,
+                            margin: [0, 10, 0, 0]
+                        },
+                    }
+                };
+                docDefinition.content[0].table.body = [...docDefinition.content[0].table.body, ...exportScheduleData];
+                setTimeout(() => {
+                    pdfMake.createPdf(docDefinition).download(`Расписание(класс-вид) школы ${this.school.name}.pdf`);
+                    setTimeout(() => {
+                        this.isLoading = false;
+                    }, 50);
+                }, 100);
+            },
+
+            exportShiftTimes(num) {
+                const data = [];
+                const width = this.shiftTimes.map((time) => num);
+                this.shiftTimes.forEach((time) => {
+                    data.push({text: time.name, style: 'general', border: [false, false, true, false]});
+                });
+                return [{
+                    table: {
+                        widths: width,
+                        body: [data]
+                    },
+                }]
             },
 
         }
