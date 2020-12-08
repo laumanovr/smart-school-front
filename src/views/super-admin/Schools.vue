@@ -208,8 +208,25 @@ export default {
 
         onCLoseModal() {
             this.isAddSchool = false;
-            this.currentPage = 1;
-            this.fetchSchools(0);
+            if (this.isEdit) {
+                schoolService.getById(this.school.id).then((res) => {
+                    this.schools = this.schools.map((school) => {
+                        if (school.id === res.id) {
+                            for (let key in res) {
+                                if (res.hasOwnProperty(key) && school.hasOwnProperty(key)) {
+                                    school[key] = res[key];
+                                }
+                            }
+                        }
+                        return school;
+                    });
+                }).catch((err) => {
+                    this.$toast.error(err);
+                });
+            } else {
+                this.currentPage = 1;
+                this.fetchSchools(0);
+            }
         },
         onLeftClick () {
             this.currentPage--;
