@@ -32,45 +32,52 @@
                     <div class="switch-filter">
                         <v-switch label="Учитель/Класс" v-model="classViewSchedule"/>
                     </div>
-                    <div class="scroll-arrows" v-show="showScrollArrows">
-                        <QuadArrowIcon class="left" @click="scrollTable('left')"/>
-                        <QuadArrowIcon @click="scrollTable('right')"/>
-                    </div>
                 </div>
                 <div class="print-btn">
                     <v-btn color="primary" @click="downloadPdf">Скачать(PDF)</v-btn>
                 </div>
             </div>
 
+            <!--FIXED TABLE HEADER-->
+            <FixedScheduleTableHeader
+                ref="fixedTable"
+                :days="days"
+                :shiftTimes="shiftTimes"
+                :teacherLabelWidth="teacherLabelWidth"
+                :courseLabelWidth="courseLabelWidth"
+                :classViewSchedule="classViewSchedule"
+                :showScrollArrows="showScrollArrows"
+                @scrollTable="scrollTable"
+            />
             <div class="teacher-course-tables" v-if="!classViewSchedule" ref="teacherTable">
                 <table class="teachers">
-                    <thead>
-                    <tr>
-                        <th ref="teacherLabel">Учитель</th>
-                        <th ref="courseLabel">Предмет</th>
-                    </tr>
-                    </thead>
+                    <!--<thead>-->
+                    <!--<tr>-->
+                        <!--<th ref="teacherLabel">Учитель</th>-->
+                        <!--<th ref="courseLabel">Предмет</th>-->
+                    <!--</tr>-->
+                    <!--</thead>-->
                     <tbody>
                     <tr v-for="teacher in allTeachers" :key="teacher.id">
-                        <td class="teacher-name" :class="{'same': !teacher.teacherName}">
+                        <td class="teacher-name" :class="{'same': !teacher.teacherName}" ref="teacherLabel">
                             <span v-if="teacher.teacherName" :class="{'space': teacher.several}">{{teacher.teacherName}}</span>
                             <span class="empty" v-else>-</span>
                         </td>
-                        <td class="course-name">{{ teacher[langObj[currentLang]] }}</td>
+                        <td class="course-name" ref="courseLabel">{{ teacher[langObj[currentLang]] }}</td>
                     </tr>
                     </tbody>
                 </table>
                 <table class="schedule-teacher-course" ref="scheduleTable">
-                    <thead>
-                    <tr>
-                        <th v-for="day in days">
-                            <div class="day">{{ day.name }}</div>
-                            <div class="shiftTime">
-                                <span v-for="time in shiftTimes">{{ time.name }}</span>
-                            </div>
-                        </th>
-                    </tr>
-                    </thead>
+                    <!--<thead>-->
+                    <!--<tr>-->
+                        <!--<th v-for="day in days">-->
+                            <!--<div class="day">{{ day.name }}</div>-->
+                            <!--<div class="shiftTime">-->
+                                <!--<span v-for="time in shiftTimes">{{ time.name }}</span>-->
+                            <!--</div>-->
+                        <!--</th>-->
+                    <!--</tr>-->
+                    <!--</thead>-->
                     <tbody>
                     <tr v-for="teacher in allTeachers" :key="teacher.id">
                         <td class="days" v-for="day in days">
@@ -104,11 +111,11 @@
             <!--FILTERED SCHEDULE BY CLASSES-->
             <div class="class-schedule-tables teacher-course-tables" v-if="classViewSchedule" ref="classTable">
                 <table class="class-name-table">
-                    <thead>
-                    <tr>
-                        <th>Класс</th>
-                    </tr>
-                    </thead>
+                    <!--<thead>-->
+                    <!--<tr>-->
+                        <!--<th>Класс</th>-->
+                    <!--</tr>-->
+                    <!--</thead>-->
                     <tbody>
                     <tr v-for="klass in classes" :key="klass.id">
                         <td class="className teacher-name">
@@ -118,16 +125,16 @@
                     </tbody>
                 </table>
                 <table class="class-courses-table" ref="scheduleTable">
-                    <thead>
-                    <tr>
-                        <th v-for="day in days">
-                            <div class="day">{{ day.name }}</div>
-                            <div class="shiftTime">
-                                <span v-for="time in shiftTimes">{{ time.name }}</span>
-                            </div>
-                        </th>
-                    </tr>
-                    </thead>
+                    <!--<thead>-->
+                    <!--<tr>-->
+                        <!--<th v-for="day in days">-->
+                            <!--<div class="day">{{ day.name }}</div>-->
+                            <!--<div class="shiftTime">-->
+                                <!--<span v-for="time in shiftTimes">{{ time.name }}</span>-->
+                            <!--</div>-->
+                        <!--</th>-->
+                    <!--</tr>-->
+                    <!--</thead>-->
                     <tbody>
                     <tr v-for="klass in classes" :key="klass.id">
                         <td class="days" v-for="day in days">
@@ -263,20 +270,6 @@
                 </v-form>
             </div>
         </modal>
-
-        <!--FIXED TABLE HEADER-->
-        <FixedScheduleTableHeader
-            ref="fixedTable"
-            :days="days"
-            :shiftTimes="shiftTimes"
-            :fixedTableWidth="fixedTableWidth"
-            :teacherLabelWidth="teacherLabelWidth"
-            :courseLabelWidth="courseLabelWidth"
-            :classViewSchedule="classViewSchedule"
-            :showScrollArrows="showScrollArrows"
-            @scrollTable="scrollTable"
-            :class="{'show': showFixedHeader}"
-        />
     </div>
 </template>
 
@@ -366,7 +359,6 @@
                 shiftTimes: [],
                 allTeachers: [],
                 groupedSchedules: [],
-                fixedTableWidth: 0,
                 teacherLabelWidth: 0,
                 courseLabelWidth: 0,
                 selectedShiftId: 0
@@ -390,12 +382,7 @@
             this.getAllSchoolShifts();
         },
 
-        mounted() {
-            window.addEventListener('scroll', this.verticalScrollListener);
-        },
-
         beforeDestroy() {
-            window.removeEventListener('scroll', this.verticalScrollListener);
             if (this.$refs.scheduleTable) {
                 this.$refs.scheduleTable.removeEventListener('scroll', this.horizontalScheduleScrollListener);
             }
@@ -444,11 +431,15 @@
                         return schedule;
                     });
                     this.showContent = true;
-                    this.isLoading = false;
                     this.$nextTick(() => {
                         setTimeout(() => {
                             this.showScrollArrows = this.$refs.scheduleTable.scrollWidth > this.$refs.scheduleTable.clientWidth;
                             this.$refs.scheduleTable.addEventListener('scroll', this.horizontalScheduleScrollListener);
+                            this.isLoading = false;
+                            if (!this.classViewSchedule) {
+                                this.teacherLabelWidth = this.$refs.teacherLabel[0].offsetWidth;
+                                this.courseLabelWidth = this.$refs.courseLabel[0].offsetWidth;
+                            }
                         });
                     });
                 }).catch(err => {
@@ -491,41 +482,22 @@
             scrollTable(nav) {
                 this.manualScroll = false;
                 const scheduleTable = this.$refs.scheduleTable;
-                const fixedTableHeader = this.$refs.fixedTable.$el.querySelector('.fixed-header');
+                const fixedHeadTable = this.$refs.fixedTable.$refs.fixedHead;
                 if (nav === 'right') {
                     scheduleTable.scrollLeft = scheduleTable.scrollWidth - scheduleTable.clientWidth;
-                    fixedTableHeader.scrollLeft = scheduleTable.scrollWidth - scheduleTable.clientWidth;
+                    fixedHeadTable.scrollLeft = scheduleTable.scrollWidth - scheduleTable.clientWidth;
                 } else {
                     scheduleTable.scrollLeft = 0;
-                    fixedTableHeader.scrollLeft = 0;
+                    fixedHeadTable.scrollLeft = 0;
                 }
                 setTimeout(() => {
                     this.manualScroll = true;
                 }, 450)
             },
 
-            verticalScrollListener() {
-                if (this.mainTable()) {
-                    if (window.scrollY >= this.mainTable().offsetTop) {
-                        this.showFixedHeader = true;
-                        this.fixedTableWidth = this.mainTable().offsetWidth;
-                        if (this.$refs.teacherTable) {
-                            this.teacherLabelWidth = this.$refs.teacherLabel.offsetWidth;
-                            this.courseLabelWidth = this.$refs.courseLabel.offsetWidth;
-                        }
-                    } else {
-                        this.showFixedHeader = false;
-                    }
-                }
-            },
-
-            mainTable() {
-                return this.classViewSchedule ? this.$refs.classTable : this.$refs.teacherTable;
-            },
-
             horizontalScheduleScrollListener() {
                 if (this.manualScroll) {
-                    const fixedTableHeader = this.$refs.fixedTable.$el.querySelector('.fixed-header');
+                    const fixedTableHeader = this.$refs.fixedTable.$refs.fixedHead;
                     fixedTableHeader.scrollLeft = this.$refs.scheduleTable.scrollLeft;
                 }
             },
@@ -926,12 +898,6 @@
         }
         .schedule-content {
             margin: 27px;
-            &.fixed-table-header {
-                margin: 0 27px;
-                .scroll-arrows {
-                    margin: 0;
-                }
-            }
             .other-actions {
                 display: flex;
                 align-items: center;
@@ -964,6 +930,9 @@
                             border-left: 1px solid rgba(#707070, 0.8);
                             border-right: 1px solid rgba(#707070, 0.8);
                             font-size: 14px;
+                            &.className {
+                                min-width: 49px;
+                            }
                             &.teacher-name {
                                 text-align: center;
                                 span {
@@ -1070,6 +1039,7 @@
                 align-items: center;
                 justify-content: center;
                 margin-left: 70px;
+                padding-top: 10px;
                 .left {
                     transform: rotate(180deg) translateY(7px);
                 }
