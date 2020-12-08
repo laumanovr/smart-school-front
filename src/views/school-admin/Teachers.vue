@@ -308,7 +308,22 @@ export default {
         },
         onCloseModal() {
             this.isAddUser = false;
-            this.fetchInstructors()
+            if (this.isEdit) {
+                personService.getById(this.user.id).then((res) => {
+                    this.instructors = this.instructors.map((instructor) => {
+                        if (instructor.id === res.id) {
+                            for (let key in res) {
+                                if (res.hasOwnProperty(key) && instructor.hasOwnProperty(key)) {
+                                    instructor[key] = res[key];
+                                }
+                            }
+                        }
+                        return instructor;
+                    })
+                })
+            } else {
+                this.fetchInstructors();
+            }
         },
         downloadTemplate () {
             const a = document.createElement('a');
