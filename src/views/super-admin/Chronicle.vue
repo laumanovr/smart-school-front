@@ -6,7 +6,12 @@
                 <SmartButton @clicked="onAdd">Добавить + </SmartButton>
 			</template>
 		</SuperAdminSchoolHead>
-		<SmartTable :schools="chronicles">
+		<SmartTable
+            :schools="chronicles"
+            :total-elements="chronicles.length"
+            :totalPages="1"
+            :current-page="1"
+        >
 			<template v-slot:head>
 				<th>Год</th>
 				<th><img src="../../assets/images/icons/plus.svg" alt=""></th>
