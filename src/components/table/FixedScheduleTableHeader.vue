@@ -1,8 +1,5 @@
 <template>
-    <div class="fixed-table-header schedule-content"
-         :style="{width: fixedTableWidth+'px'}"
-         :class="{'no-arrow': !showScrollArrows}"
-    >
+    <div class="sticky-head">
         <div class="scroll-arrows" v-show="showScrollArrows">
             <QuadArrowIcon @click="$emit('scrollTable', 'left')" class="left"/>
             <QuadArrowIcon @click="$emit('scrollTable', 'right')"/>
@@ -16,7 +13,7 @@
                 </tr>
                 </thead>
             </table>
-            <table class="schedule-teacher-course fixed-header">
+            <table class="schedule-teacher-course" ref="fixedHead">
                 <thead>
                 <tr>
                     <th v-for="day in days">
@@ -37,7 +34,7 @@
                 </tr>
                 </thead>
             </table>
-            <table class="class-courses-table fixed-header">
+            <table class="class-courses-table" ref="fixedHead">
                 <thead>
                 <tr>
                     <th v-for="day in days">
@@ -73,21 +70,11 @@
 </script>
 
 <style lang="scss">
-    .fixed-table-header {
-        background: #fff;
-        position: fixed;
+    .sticky-head {
+        position: sticky;
         top: 0;
-        padding-top: 10px;
-        z-index: 997;
-        transform: translateY(-100px);
-        will-change: transform;
-        transition: transform 0.2s ease-out;
-        &.show {
-            transform: translateY(0);
-            transition: transform 0.2s ease-in;
-        }
-        &.no-arrow {
-            padding-top: 20px;
-        }
+        z-index: 20;
+        background: #fff;
+        border-radius: 5px 5px 0 0;
     }
 </style>
