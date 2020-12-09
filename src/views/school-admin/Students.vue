@@ -74,7 +74,7 @@
 			</template>
 
 			<template v-slot:body="{ item }">
-				<td><input v-model="item.checked" type="checkbox" @change="onSelect(item)"></td>
+				<td><input v-model="item.checked" type="checkbox" v-show="isSelectAll"></td>
 				<td>{{ item.index + 1 }}</td>
 				<td>{{ item.surname }} {{ item.name }}</td>
 				<td>{{ item.classTitle }}</td>
@@ -250,6 +250,21 @@
                 </v-form>
             </div>
         </modal>
+
+        <!--EXIST GRADE STUDENTS-->
+        <modal name="grade-exist-modal" class="grade-exist-modal" height="350px">
+            <div class="modal-container">
+                <h4>У этих учеников есть оценки, их вместе с оценками удалить?</h4>
+                <div class="btn-actions">
+                    <v-btn color="red" @click="deleteStudentGrades">Удалить</v-btn>
+                </div>
+                <div class="grade-students">
+                    <b v-for="student in existGradeStudents">
+                        {{ student.surname +' '+ student.name }}
+                    </b>
+                </div>
+            </div>
+        </modal>
 	</div>
 </template>
 
@@ -261,8 +276,6 @@ import SmartButton from '@/components/button/SmartButton';
 import SmartSearchInput from '@/components/input/SmartSearchInput';
 import SmartBtn2 from '@/components/button/SmartBtn2';
 import SmartSelect from '@/components/select/SmartSelect';
-import {InstructorClassService} from '@/_services/instructor-class.service';
-const instructorClassService = new InstructorClassService();
 import {StudentService} from '@/_services/student.service';
 const studentService = new StudentService();
 import moment from 'moment';
@@ -281,13 +294,12 @@ import DeletePopup from "@/components/delete-popup/DeletePopup";
 const fileImportService = new FileImportService();
 import SchoolClassService from '@/_services/school-class.service';
 import PreLoader from "@/components/preloader/PreLoader";
-import {InstructorCourseService} from '@/_services/instructor-course.service';
-const instructorCourseService = new InstructorCourseService();
 import StudentCourseService from '@/_services/student-course.service';
 import InfoIcon from '@/components/icons/InfoIcon';
 import ScheduleWeekService from '@/_services/schedule-week.service';
 import TrashIcon from '@/components/icons/TrashIcon';
 import MaskedInput from 'vue-masked-input';
+import GradeService from '@/_services/grade.service';
 
 export default {
 	components: {
@@ -408,7 +420,12 @@ export default {
                 schoolId: 0,
                 chronicleId: 0,
                 classId: 0
-            }
+            },
+            studentIds: {
+                longList: []
+            },
+            existGradeStudents: [],
+            deleteMassiveGradeIds: []
 		}
 	},
 
@@ -521,26 +538,58 @@ export default {
         },
 
 		massDelete() {
-			const ids = this.students.filter(i => i.checked).map(i => i.id);
-			this.isLoading = true;
-			studentService.massDelete(ids).then(res => {
-				this.$toast.success('Успешно!');
-				this.isSelectAll = false;
-				this.fetchStudents(true);
-				this.isMassDeleting = false;
-				this.isLoading = false
-			}).catch(err => {
-			    this.$toast.error(err);
-				this.isLoading = false
-			})
+            this.isLoading = true;
+            this.existGradeStudents = [];
+            this.deleteMassiveGradeIds = [];
+            this.studentIds.longList = this.students.filter(i => i.checked).map(i => i.id);
+            GradeService.checkStudentsGrade(this.studentIds).then((res) => {
+                if (res.length) {
+                    this.deleteMassiveGradeIds = res.map((grade) => grade.id);
+                    res.filter((obj, index, selfArr) =>
+                        index === selfArr.findIndex((el) =>
+                            (el['studentId'] === obj['studentId'])
+                        )).forEach((gradeStudent) => {
+                        this.students.forEach((student) => {
+                            if (gradeStudent.studentId === student.id) {
+                                this.existGradeStudents.push(student);
+                            }
+                        });
+                    });
+                    this.$modal.show('grade-exist-modal');
+                    this.isLoading = false;
+                    this.isMassDeleting = false;
+                } else {
+                    this.deleteMassiveStudents();
+                }
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.isLoading = false
+            });
 		},
 
-		onSelect(item) {
-			//  this.students = this.students.map(i => {
-			// 	if (i.id === item.id) i.checked = item.checked
-			//     return i
-			// })
-		},
+        deleteStudentGrades() {
+            this.isLoading = true;
+            GradeService.deleteStudentGrades({longList: this.deleteMassiveGradeIds}).then(() => {
+                this.deleteMassiveStudents();
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.isLoading = false
+            });
+        },
+
+        deleteMassiveStudents() {
+            studentService.massDelete(this.studentIds.longList).then(() => {
+                this.$toast.success('Успешно удалены!');
+                this.isSelectAll = false;
+                this.fetchStudents(true);
+                this.isMassDeleting = false;
+                this.isLoading = false;
+                this.$modal.hide('grade-exist-modal');
+            }).catch(err => {
+                this.$toast.error(err);
+                this.isLoading = false
+            })
+        },
 
 		showDetailInfo(studentId) {
             this.isLoading = true;
@@ -952,5 +1001,23 @@ export default {
 
 .top-th {
 	width: 60px;
+}
+
+.grade-exist-modal {
+    .modal-container {
+        height: 100%;
+        overflow-y: auto;
+        .grade-students {
+            text-align: center;
+            b {
+                display: block;
+                font-size: 18px;
+                padding: 3px 0;
+            }
+        }
+        .btn-actions {
+            margin: 20px 0;
+        }
+    }
 }
 </style>
