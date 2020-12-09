@@ -5,8 +5,8 @@ export class VideoMaterialService extends BaseApiService {
         super();
     }
 
-    getListByRole(roleCode) {
-        const url = `${process.env.VUE_APP_BASE_URL}/v1/video-instructor/role/${roleCode}`;
+    getListByRole(roleCode, deviceType='') {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/video-instructor/role/${roleCode}?device_type=${deviceType}`;
         return this.sendGetRequest(url);
     }
 
