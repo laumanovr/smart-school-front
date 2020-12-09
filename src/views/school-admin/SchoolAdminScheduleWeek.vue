@@ -433,12 +433,14 @@
                     this.showContent = true;
                     this.$nextTick(() => {
                         setTimeout(() => {
-                            this.showScrollArrows = this.$refs.scheduleTable.scrollWidth > this.$refs.scheduleTable.clientWidth;
-                            this.$refs.scheduleTable.addEventListener('scroll', this.horizontalScheduleScrollListener);
                             this.isLoading = false;
-                            if (!this.classViewSchedule) {
-                                this.teacherLabelWidth = this.$refs.teacherLabel[0].offsetWidth;
-                                this.courseLabelWidth = this.$refs.courseLabel[0].offsetWidth;
+                            if (this.$refs.scheduleTable) {
+                                this.$refs.scheduleTable.addEventListener('scroll', this.horizontalScheduleScrollListener);
+                                this.showScrollArrows = this.$refs.scheduleTable.scrollWidth > this.$refs.scheduleTable.clientWidth;
+                                if (!this.classViewSchedule) {
+                                    this.teacherLabelWidth = this.$refs.teacherLabel[0].offsetWidth;
+                                    this.courseLabelWidth = this.$refs.courseLabel[0].offsetWidth;
+                                }
                             }
                         });
                     });
