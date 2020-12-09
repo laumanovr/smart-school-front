@@ -19,6 +19,7 @@
                         {{ day.day.slice(0, 2) }}
                         <div class="lesson">Урок-{{ day.shiftTimeTitle }}</div>
                     </th>
+                    <th class="average"><span>-</span><span>x</span></th>
                 </tr>
                 </thead>
             </table>
@@ -51,7 +52,6 @@
 
 <style lang="scss">
     .fixed-grade-table-head {
-        background: #fff;
         position: fixed;
         top: 0;
         z-index: 997;
