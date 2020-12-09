@@ -55,6 +55,7 @@
                             {{ day.day.slice(0, 2) }}
                             <div class="lesson">Урок-{{ day.shiftTimeTitle }}</div>
                         </th>
+                        <th class="average"><span>-</span><span>x</span></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -70,6 +71,7 @@
                         >
                             {{ getStudentSpecificMark(day, student.grades) }}
                         </td>
+                        <td class="average">{{ student.avgGrade ? student.avgGrade.toFixed(1) : '' }}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -231,7 +233,8 @@
                         chronicleId: 0,
                         instructorId: 0,
                         from: '',
-                        to: ''
+                        to: '',
+                        quarterId: ''
                     }
                 },
                 monthDataRequest: {
@@ -272,6 +275,7 @@
         },
 
         created() {
+            this.gradeRequest.searchRequest.quarterId = this.school.quarterId;
             this.getInstructorCourses();
             window.addEventListener('scroll', this.scrollGradesListener);
         },
@@ -733,6 +737,20 @@
                     th {
                         color: #03A9F4;
                         padding: 0;
+                        &.average {
+                            span {
+                                &:first-child {
+                                    display: block;
+                                    height: 4px;
+                                    line-height: 4px;
+                                }
+                                &:last-child {
+                                    display: block;
+                                    height: 11px;
+                                    line-height: 11px;
+                                }
+                            }
+                        }
                         .lesson {
                             font-size: 11px;
                             color: rgba(74, 39, 243, 0.51);
@@ -748,6 +766,9 @@
                         }
                         &.absent-95 {
                             color: #fa1504;
+                        }
+                        &.average {
+                            pointer-events: none;
                         }
                     }
                 }
