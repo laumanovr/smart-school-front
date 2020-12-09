@@ -5,15 +5,27 @@
             <h3>{{ headTitle }}</h3>
         </div>
         <div class="actions" v-if="role == 'superAdmin'">
-            <v-select
-                class="v-select-item"
-                :items="roles"
-                item-text="title"
-                item-value="code"
-                label="Фильтр по ролям"
-                v-model="materialObj.roleCode"
-                @change="filterVideoMaterials"
-            />
+            <div class="select-filter-block">
+                <v-select
+                    class="v-select-item"
+                    :items="roles"
+                    item-text="title"
+                    item-value="code"
+                    label="Роль"
+                    v-model="materialObj.roleCode"
+                    @change="materialObj.videoMaterialType=''"
+                />
+                <v-select
+                    class="v-select-item"
+                    :items="deviceTypes"
+                    item-text="title"
+                    item-value="type"
+                    label="Категория"
+                    v-model="materialObj.videoMaterialType"
+                    clearable
+                />
+                <v-btn color="primary" @click="filterVideoMaterials">Фильтр</v-btn>
+            </div>
             <v-btn color="primary" @click="openMaterialModal('create', {})">Добавить</v-btn>
         </div>
 
@@ -43,6 +55,13 @@
                     <v-text-field label="Заголовок" v-model="materialObj.title" :rules="required"/>
                     <v-text-field label="Описание" v-model="materialObj.description"/>
                     <v-text-field label="Ссылка на YouTube" v-model="materialObj.url" :rules="required"/>
+                    <v-select
+                        :items="deviceTypes"
+                        item-text="title"
+                        item-value="type"
+                        label="Категория"
+                        v-model="materialObj.videoMaterialType"
+                    />
                 </v-form>
                 <div class="btn-actions">
                     <v-btn color="red" @click="closeMaterialModal">Отмена</v-btn>
@@ -94,10 +113,12 @@
                     title: '',
                     description: '',
                     url: '',
+                    videoMaterialType: '',
                     roleCode: ''
                 },
                 videoMaterials: [],
-                mode: ''
+                mode: '',
+                deviceTypes: [{title: 'Веб', type: 'WEB'}, {title: 'Мобилка', type: 'MOBILE'}]
             }
         },
         created() {
@@ -108,7 +129,7 @@
         methods: {
             filterVideoMaterials() {
                 this.isLoading = true;
-                VideoMaterialService.getListByRole(this.materialObj.roleCode).then((res) => {
+                VideoMaterialService.getListByRole(this.materialObj.roleCode, this.materialObj.videoMaterialType).then((res) => {
                     this.videoMaterials = res.reverse();
                     this.isLoading = false;
                 }).catch((err) => {
@@ -128,6 +149,7 @@
                     this.materialObj.description = material.description;
                     this.materialObj.url = material.url;
                     this.materialObj.roleCode = material.roleCode;
+                    this.materialObj.videoMaterialType = material.videoMaterialType;
                     this.materialObj.id = material.id;
                 }
                 this.$modal.show('material-modal');
