@@ -185,8 +185,8 @@
                 isEditClass: false,
                 classes: [],
                 classLevels: [
-                    {num: 1}, {num: 2}, {num: 3}, {num: 4}, {num: 5}, {num: 6}, {num: 7}, {num: 8}, {num: 9}, {num: 10},
-                    {num: 11},
+                    {num: 0}, {num: 1}, {num: 2}, {num: 3}, {num: 4}, {num: 5}, {num: 6}, {num: 7}, {num: 8}, {num: 9},
+                    {num: 10}, {num: 11},
                 ],
                 classLabels: [
                     {label: 'А'}, {label: 'Б'}, {label: 'В'}, {label: 'Г'}, {label: 'Д'}, {label: 'Е'}, {label: 'Ё'},
