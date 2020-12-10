@@ -10,6 +10,11 @@ export class StudentService extends BaseApiService {
         return this.sendGetRequest(url);
     }
 
+    getGeneratedCode(studentId) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/student/get-code/${studentId}`;
+        return this.sendGetRequest(url);
+    }
+
     getByClass(classId) {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/student/list/class/${classId}`;
         return this.sendGetRequest(url);
