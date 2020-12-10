@@ -125,6 +125,10 @@ export default {
             {
                 val: 'PRIVATE',
                 title: 'Частный'
+            },
+            {
+                val: 'MUNICIPALITY',
+                title: 'Муниципальный'
             }
         ],
         languages: [],
