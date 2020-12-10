@@ -192,6 +192,21 @@
                     label="Логин/Пароль родителя"
                     readonly outlined type="text"
                 />
+
+                <button
+                    class="generate-code"
+                    @click.prevent="generateStudentCode"
+                    v-show="!studentDetail.genCode"
+                >
+                    Сгенерировать код студента
+                </button>
+                <v-text-field
+                    label="Сгенерированный код"
+                    :value="studentDetail.genCode"
+                    readonly outlined
+                    v-show="studentDetail.genCode"
+                />
+
                 <div class="course-titles">
                     <div class="label">Предметы</div>
                     <span v-for="course in studentDetail.courses">
@@ -603,6 +618,17 @@ export default {
             })
 		},
 
+        generateStudentCode() {
+            this.isLoading = true;
+            studentService.getGeneratedCode(this.studentDetail.id).then((res) => {
+                this.studentDetail.genCode = res.studentCode;
+                this.isLoading = false;
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.isLoading = false;
+            })
+        },
+
         async getStudentCourses(studentId) {
             await StudentCourseService.getByStudentIdAndChronicle(studentId, this.school.chronicleId).then((res) => {
                 this.studentDetail.courses = res;
@@ -951,6 +977,7 @@ export default {
 }
 
 .course-titles {
+    margin-top: 18px;
     .label {
         font-size: 13px;
         color: #838080;
@@ -997,6 +1024,14 @@ export default {
 			}
 		}
 	}
+    .generate-code {
+        background: #00BCD4;
+        color: #fff;
+        padding: 0 5px;
+        border-radius: 5px;
+        width: 100%;
+        text-align: center;
+    }
 }
 
 .top-th {
