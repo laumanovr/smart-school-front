@@ -110,7 +110,8 @@
             exportName: '',
             schoolTypes: {
                 PUBLIC: 'Государственный',
-                PRIVATE: 'Частный'
+                PRIVATE: 'Частный',
+                MUNICIPALITY: 'Муниципальный'
             },
             lang: {
                 KG: 'КГ',
