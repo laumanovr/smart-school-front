@@ -36,7 +36,7 @@
             <div>
                 <v-select
                     :rules="required"
-                    :items="[{value: 'PRIVATE', text: 'Частная'}, {value: 'PUBLIC', text: 'Государственная'}]"
+                    :items="schoolTypes"
                     item-text="text"
                     item-value="value"
                     label="Тип организации"
@@ -124,8 +124,12 @@
                 },
                 allRegions: [],
                 allRayons: [],
-                schoolQuarters: []
-
+                schoolQuarters: [],
+                schoolTypes: [
+                    {value: 'PRIVATE', text: 'Частная'},
+                    {value: 'PUBLIC', text: 'Государственная'},
+                    {value: 'MUNICIPALITY', text: 'Муниципальный'}
+                ]
             }
         },
 
