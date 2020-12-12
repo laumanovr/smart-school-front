@@ -73,7 +73,7 @@
     .sticky-head {
         position: sticky;
         top: 0;
-        z-index: 20;
+        z-index: 5;
         background: #fff;
         border-radius: 5px 5px 0 0;
         &.no-scroll {
