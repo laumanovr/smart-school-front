@@ -42,15 +42,14 @@ export default {
         return {
             currentLang: '',
             languages: [
-                {title: 'РУ', code: 'RU'},
-                {title: 'КГ', code: 'KG'},
-                {title: 'EN', code: 'EN'},
+                {title: 'РУ', code: 'ru'},
+                {title: 'КГ', code: 'kg'},
             ]
         }
     },
     mounted() {
         const selectedLang = JSON.parse(window.localStorage.getItem('schoolLang'));
-        this.currentLang = selectedLang ? selectedLang : 'RU';
+        this.currentLang = selectedLang ? selectedLang : 'ru';
         this.$root.$i18n.locale = this.currentLang;
     },
     methods: {
