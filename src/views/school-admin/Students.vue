@@ -142,7 +142,7 @@
 				</div>
 
 				<div>
-					<v-text-field v-model="parentPersonObj.name" label="Имя родителя"></v-text-field>
+					<v-text-field v-model="parentPersonObj.name" label="Имя отца"></v-text-field>
 				</div>
 
 				<div>
@@ -182,16 +182,15 @@
 				<v-text-field :value="studentDetail.username" label="Логин/Пароль ученика" readonly outlined type="text"/>
 				<v-text-field :value="`${studentDetail.surname} ${studentDetail.name} ${studentDetail.middleName || ''}`" label="ФИО" readonly outlined type="text"/>
 				<v-text-field :value="studentDetail.phone" label="Телефон" readonly outlined type="text"/>
-				<v-text-field
-                    :value="studentDetail.parents.length ? studentDetail.parents[0].parentTitle : ''"
-				    label="Имя родителя"
-				    readonly outlined type="text"
-                />
-                <v-text-field
-                    :value="studentDetail.parents.length ? studentDetail.parents[0].parentUsername : ''"
-                    label="Логин/Пароль родителя"
-                    readonly outlined type="text"
-                />
+
+                <template v-if="studentDetail.parents.length">
+                    <v-text-field
+                        v-for="parent in studentDetail.parents"
+                        :value="parent.parentUsername+' / '+parent.parentTitle"
+                        :label="parent.parentType ? 'Мать' : 'Отец'"
+                        readonly outlined type="text"
+                    />
+                </template>
 
                 <button
                     class="generate-code"
