@@ -76,9 +76,6 @@
                     </tbody>
                 </table>
             </div>
-            <div class="btn-actions saveGrade" v-if="studentGrades.length">
-                <v-btn color="primary" @click="submitSaveGrades">Сохранить</v-btn>
-            </div>
         </div>
 
         <!--MODAL FOR SETTING GRADE-->
@@ -140,7 +137,9 @@
                             {{ mark }}
                         </span>
                     </div>
-                    <div class="btn-actions"><button @click="setSelectedGradeMark">Вставить</button></div>
+                    <div class="btn-actions">
+                        <button @click="setSelectedGradeMark">{{isDeletable ? 'Изменить' : 'Вставить'}}</button>
+                    </div>
                 </div>
                 </template>
                 <template v-if="gradeMode == 'deleteGrade'">
@@ -206,9 +205,9 @@
                     {title: 'Отсутствовал(-а) неуважительно', code: '95'},
                 ],
                 langObj: {
-                    RU: 'courseTitle',
-                    KG: 'courseTitleKG',
-                    EN: 'courseCode',
+                    ru: 'courseTitle',
+                    kg: 'courseTitleKG',
+                    en: 'courseCode',
                 },
                 numMonths: {
                     '01': 'Январь',
@@ -252,7 +251,6 @@
                 instructorCourses: [],
                 currentMonthDays: [],
                 studentGrades: [],
-                sendGradeDtoList: [],
                 gradeReasons: [],
                 gradeMonthFrom: new Date().getMonth(),
                 gradeMonthTo: new Date().getMonth() + 1,
@@ -270,7 +268,10 @@
                 selectedAbsentCode: '',
                 selectedMark: '',
                 selectedExtraMark: '',
-                gradeMode: 'setGrade'
+                gradeMode: 'setGrade',
+                isLastMonth: false,
+                isFirstMonth: false,
+                gradeYear: new Date().getFullYear(),
             }
         },
 
@@ -356,7 +357,6 @@
 
             fetchStudentGrades() {
                 this.studentGrades = [];
-                this.sendGradeDtoList = [];
                 GradeService.getByClassCourseInstructor(
                     this.monthDataRequest.classId,
                     this.monthDataRequest.courseId,
@@ -507,9 +507,8 @@
                     extraMark: this.selectedExtraMark,
                     comment: ''
                 };
-                this.deleteMarkFromSendArray(newGradeObj, true);
-                this.deleteMarkFromLocalStudentArr(newGradeObj, true);
                 this.$modal.hide('set-grade-modal');
+                this.submitSaveGrades([newGradeObj]);
             },
 
             deleteGrade() {
@@ -517,7 +516,7 @@
                     this.isLoading = true;
                     this.selectedGradeObj.mark = '99';
                     GradeService.createWithArray([this.selectedGradeObj]).then(() => {
-                        this.deleteMarkFromLocalStudentArr(this.selectedGradeObj, false);
+                        this.deleteMarkLocalStudentArr(this.selectedGradeObj);
                         this.$toast.success('Успешно удалено!');
                         this.isLoading = false;
                         this.$modal.hide('set-grade-modal');
@@ -525,32 +524,33 @@
                         this.$toast.error(err);
                         this.isLoading = false;
                     })
-                } else {
-                    this.deleteMarkFromLocalStudentArr(this.selectedGradeObj, false);
-                    this.$modal.hide('set-grade-modal');
                 }
-                this.deleteMarkFromSendArray(this.selectedGradeObj, false);
             },
 
-            deleteMarkFromSendArray(newGradeObj, addMode) {
-                // DELETE FROM SEND ARRAY
-                this.sendGradeDtoList.forEach((existGrade, index, selfArr) => {
-                    const isExist = existGrade.gradeDate === newGradeObj.gradeDate &&
-                        existGrade.shiftTimeId === newGradeObj.shiftTimeId &&
-                        existGrade.m2mStudentCourseId === newGradeObj.m2mStudentCourseId;
-                    if (isExist) {
-                        selfArr.splice(index, 1);
-                    }
+            addMarkToLocalStudentArr(newGradeObj) {
+                newGradeObj.studentId = this.selectedStudent.student.id;
+                newGradeObj.courseId = this.monthDataRequest.courseId;
+                newGradeObj.gradeDate = moment(newGradeObj.gradeDate, 'DD.MM.YYYY').format('YYYY-MM-DD');
+                GradeService.getStudentSpecificGrade(newGradeObj).then((res) => {
+                    newGradeObj.gradeId = res[0].id;
+                    newGradeObj.gradeDate = newGradeObj.date;
+                    this.studentGrades = this.studentGrades.map((student) => {
+                        if (student.student.id === this.selectedStudent.student.id) {
+                            student.grades.push(newGradeObj);
+                        }
+                        return student;
+                    });
+                    this.isLoading = false;
+                    this.$toast.success('Успешно');
+                    console.log('allStudentsList: ', this.studentGrades);
+                }).catch((err) => {
+                    this.isLoading = false;
+                    this.$toast.error(err);
                 });
-                if (addMode) {
-                    this.sendGradeDtoList.push(newGradeObj);
-                }
-                console.log('sendGradeDtoList: ', this.sendGradeDtoList);
             },
 
-            deleteMarkFromLocalStudentArr(newGradeObj, addMode) {
-                // DELETE GRADE FROM EXIST STUDENT ARRAY
-                this.studentGrades = this.studentGrades.map((student) => {
+            deleteMarkLocalStudentArr(newGradeObj) {
+                this.studentGrades.forEach((student) => {
                     if (student.student.id === this.selectedStudent.student.id) {
                         student.grades.forEach((existGrade, index, selfArr) => {
                             const isExist = existGrade.date === newGradeObj.date &&
@@ -559,11 +559,7 @@
                                 selfArr.splice(index, 1);
                             }
                         });
-                        if (addMode) {
-                            student.grades.push(newGradeObj);
-                        }
                     }
-                    return student;
                 });
                 console.log('allStudentsList: ', this.studentGrades);
             },
@@ -606,9 +602,11 @@
             async scrollNextMonth(mainArrow) {
                 if (mainArrow) {
                     this.isLoading = true;
-                    this.scheduleMonthNumber += 1;
-                    this.gradeMonthFrom += 1;
-                    this.gradeMonthTo += 1;
+                    this.isLastMonth = this.scheduleMonthNumber === 12;
+                    this.scheduleMonthNumber = this.isLastMonth ? 1 : this.scheduleMonthNumber + 1;
+                    this.gradeMonthFrom = this.isLastMonth ? 0 : this.gradeMonthFrom + 1;
+                    this.gradeMonthTo = this.isLastMonth ? 1 : this.gradeMonthTo + 1;
+                    this.gradeYear = this.isLastMonth ? this.gradeYear + 1 : this.gradeYear;
                     this.gradeRequest.searchRequest.from = this.getFirstDateOfMonth();
                     this.gradeRequest.searchRequest.to = this.getLastDateOfMonth();
                     await this.fetchCurrentMonthSchedule();
@@ -619,9 +617,11 @@
             async scrollPrevMonth(mainArrow) {
                 if (mainArrow) {
                     this.isLoading = true;
-                    this.scheduleMonthNumber -= 1;
-                    this.gradeMonthFrom -= 1;
-                    this.gradeMonthTo -= 1;
+                    this.isFirstMonth = this.scheduleMonthNumber === 1;
+                    this.scheduleMonthNumber = this.isFirstMonth ? 12 : this.scheduleMonthNumber - 1;
+                    this.gradeMonthFrom = this.isFirstMonth ? 11 : this.gradeMonthFrom - 1;
+                    this.gradeMonthTo = this.isFirstMonth ? 12 : this.gradeMonthTo - 1;
+                    this.gradeYear = this.isFirstMonth ? this.gradeYear - 1 : this.gradeYear;
                     this.gradeRequest.searchRequest.from = this.getFirstDateOfMonth();
                     this.gradeRequest.searchRequest.to = this.getLastDateOfMonth();
                     await this.fetchCurrentMonthSchedule();
@@ -630,25 +630,18 @@
             },
 
             getFirstDateOfMonth() {
-                const date = new Date();
-                return moment(new Date(date.getFullYear(), this.gradeMonthFrom, 1)).format('DD.MM.YYYY');
+                return moment(new Date(this.gradeYear, this.gradeMonthFrom, 1)).format('DD.MM.YYYY');
             },
 
             getLastDateOfMonth() {
-                const date = new Date();
-                return moment(new Date(date.getFullYear(), this.gradeMonthTo, 0)).format('DD.MM.YYYY');
+                return moment(new Date(this.gradeYear, this.gradeMonthTo, 0)).format('DD.MM.YYYY');
             },
 
-            submitSaveGrades() {
-                if (!this.sendGradeDtoList.length) {
-                    this.$toast.info('Сначала поставьте оценку');
-                    return;
-                }
+            submitSaveGrades(sendGradeArr) {
                 this.isLoading = true;
-                GradeService.createWithArray(this.sendGradeDtoList).then(() => {
-                    this.sendGradeDtoList = [];
-                    this.$toast.success('Успешно');
-                    this.fetchStudentGrades();
+                GradeService.createWithArray(sendGradeArr).then(() => {
+                    this.deleteMarkLocalStudentArr(sendGradeArr[0]);
+                    this.addMarkToLocalStudentArr(sendGradeArr[0]);
                 }).catch((err) => {
                     this.$toast.error(err);
                     this.isLoading = false;
@@ -774,11 +767,6 @@
                 }
             }
 
-            .saveGrade {
-                position: fixed;
-                bottom: 15px;
-                width: 100%;
-            }
             .disabled {
                 background: #eaeaea;
                 pointer-events: none;
