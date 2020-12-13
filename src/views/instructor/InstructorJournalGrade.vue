@@ -21,7 +21,7 @@
                 </div>
             </div>
 
-            <div class="selected-year">{{gradeYear}}</div>
+            <div class="selected-year" v-if="studentGrades.length">{{gradeYear}}</div>
 
             <div class="grade-tables" v-if="studentGrades.length" ref="gradeTables">
                 <table class="students bordered">
@@ -602,7 +602,7 @@
             },
 
             async scrollNextMonth(mainArrow) {
-                if (mainArrow) {
+                if (mainArrow && this.scheduleMonthNumber !== 5) {
                     this.isLoading = true;
                     this.isLastMonth = this.scheduleMonthNumber === 12;
                     this.scheduleMonthNumber = this.isLastMonth ? 1 : this.scheduleMonthNumber + 1;
@@ -617,7 +617,7 @@
             },
 
             async scrollPrevMonth(mainArrow) {
-                if (mainArrow) {
+                if (mainArrow && this.scheduleMonthNumber !== 9) {
                     this.isLoading = true;
                     this.isFirstMonth = this.scheduleMonthNumber === 1;
                     this.scheduleMonthNumber = this.isFirstMonth ? 12 : this.scheduleMonthNumber - 1;
