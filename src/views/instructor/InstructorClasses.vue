@@ -308,11 +308,13 @@
             },
 
             async scrollNextMonth(mainArrow) {
-                if (mainArrow) {
+                if (mainArrow && this.scheduleMonthNumber !== 5) {
                     this.isLoading = true;
-                    this.scheduleMonthNumber += 1;
-                    this.gradeMonthFrom += 1;
-                    this.gradeMonthTo += 1;
+                    this.isLastMonth = this.scheduleMonthNumber === 12;
+                    this.scheduleMonthNumber = this.isLastMonth ? 1 : this.scheduleMonthNumber + 1;
+                    this.gradeMonthFrom = this.isLastMonth ? 0 : this.gradeMonthFrom + 1;
+                    this.gradeMonthTo = this.isLastMonth ? 1 : this.gradeMonthTo + 1;
+                    this.gradeYear = this.isLastMonth ? this.gradeYear + 1 : this.gradeYear;
                     this.gradeRequest.searchRequest.from = this.getFirstDateOfMonth();
                     this.gradeRequest.searchRequest.to = this.getLastDateOfMonth();
                     await this.fetchCurrentMonthSchedule();
@@ -321,11 +323,13 @@
             },
 
             async scrollPrevMonth(mainArrow) {
-                if (mainArrow) {
+                if (mainArrow && this.scheduleMonthNumber !== 9) {
                     this.isLoading = true;
-                    this.scheduleMonthNumber -= 1;
-                    this.gradeMonthFrom -= 1;
-                    this.gradeMonthTo -= 1;
+                    this.isFirstMonth = this.scheduleMonthNumber === 1;
+                    this.scheduleMonthNumber = this.isFirstMonth ? 12 : this.scheduleMonthNumber - 1;
+                    this.gradeMonthFrom = this.isFirstMonth ? 11 : this.gradeMonthFrom - 1;
+                    this.gradeMonthTo = this.isFirstMonth ? 12 : this.gradeMonthTo - 1;
+                    this.gradeYear = this.isFirstMonth ? this.gradeYear - 1 : this.gradeYear;
                     this.gradeRequest.searchRequest.from = this.getFirstDateOfMonth();
                     this.gradeRequest.searchRequest.to = this.getLastDateOfMonth();
                     await this.fetchCurrentMonthSchedule();
