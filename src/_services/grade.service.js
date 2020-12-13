@@ -10,6 +10,12 @@ export class GradeService extends BaseApiService {
         return this.sendPostRequest(url, body);
     }
 
+    getStudentSpecificGrade(grade) {
+        const baseUrl = `${process.env.VUE_APP_BASE_URL}/v1/grade/student/${grade.studentId}/date/${grade.gradeDate}`;
+        const url = baseUrl + `?courseId=${grade.courseId}&shiftTimeId=${grade.shiftTimeId}`;
+        return this.sendGetRequest(url);
+    }
+
     createWithArray(body) {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/grade/create-massive-web`;
         return this.sendPostRequest(url, body);
