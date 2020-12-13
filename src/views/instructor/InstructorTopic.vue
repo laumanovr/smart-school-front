@@ -144,9 +144,9 @@ export default {
 	data() {
 		return {
             langObj: {
-                RU: 'courseTitle',
-                KG: 'courseTitleKG',
-                EN: 'courseCode',
+                ru: 'courseTitle',
+                kg: 'courseTitleKG',
+                en: 'courseCode',
             },
 			totalPages: 1,
 			totalElements: 0,
