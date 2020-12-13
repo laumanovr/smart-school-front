@@ -21,6 +21,8 @@
                 </div>
             </div>
 
+            <div class="selected-year">{{gradeYear}}</div>
+
             <div class="grade-tables" v-if="studentGrades.length" ref="gradeTables">
                 <table class="students bordered">
                     <thead>
@@ -667,6 +669,9 @@
                     max-width: 220px;
                     margin: 0 20px;
                 }
+            }
+            .selected-year {
+                color: #047cdc;
             }
             .grade-tables {
                 display: flex;
