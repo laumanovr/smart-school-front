@@ -159,9 +159,9 @@
         data() {
             return {
                 langObj: {
-                    RU: 'courseTitle',
-                    KG: 'courseTitleKG',
-                    EN: 'courseCode',
+                    ru: 'courseTitle',
+                    kg: 'courseTitleKG',
+                    en: 'courseCode',
                 },
                 required: [v => !!v || this.$t('required')],
                 isLoading: false,

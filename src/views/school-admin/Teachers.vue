@@ -164,9 +164,9 @@ export default {
     },
     data: () => ({
         langObj: {
-            RU: 'courseTitle',
-            KG: 'courseTitleKG',
-            EN: 'courseCode',
+            ru: 'courseTitle',
+            kg: 'courseTitleKG',
+            en: 'courseCode',
         },
         required: [v => !!v || 'Обязательное поле'],
         isAddUser: false,

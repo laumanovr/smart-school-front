@@ -335,9 +335,9 @@ export default {
 	data() {
 		return {
             langObj: {
-                RU: 'courseTitle',
-                KG: 'courseTitleKG',
-                EN: 'courseCode',
+                ru: 'courseTitle',
+                kg: 'courseTitleKG',
+                en: 'courseCode',
             },
 			isAddFile: false,
 			isMassDeleting: false,
