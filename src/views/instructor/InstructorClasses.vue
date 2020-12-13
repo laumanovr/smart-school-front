@@ -158,6 +158,9 @@
                 gradeMonthFrom: new Date().getMonth(),
                 gradeMonthTo: new Date().getMonth() + 1,
                 scheduleMonthNumber: new Date().getMonth() + 1,
+                isLastMonth: false,
+                isFirstMonth: false,
+                gradeYear: new Date().getFullYear(),
             }
         },
 
@@ -338,13 +341,11 @@
             },
 
             getFirstDateOfMonth() {
-                const date = new Date();
-                return moment(new Date(date.getFullYear(), this.gradeMonthFrom, 1)).format('DD.MM.YYYY');
+                return moment(new Date(this.gradeYear, this.gradeMonthFrom, 1)).format('DD.MM.YYYY');
             },
 
             getLastDateOfMonth() {
-                const date = new Date();
-                return moment(new Date(date.getFullYear(), this.gradeMonthTo, 0)).format('DD.MM.YYYY');
+                return moment(new Date(this.gradeYear, this.gradeMonthTo, 0)).format('DD.MM.YYYY');
             },
 
             getStudentSpecificMark(dayObj, studentGrades) {
