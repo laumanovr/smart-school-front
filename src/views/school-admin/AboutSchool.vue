@@ -152,6 +152,7 @@
         mounted() {
             this.schoolObj.languageId = this.school.languageId;
             this.schoolObj.chronicleYearId = this.school.chronicleId;
+            this.schoolObj.chronicleId = this.school.chronicleId;
             this.schoolObj.name = this.school.name;
             this.schoolObj.quarterId = this.school.quarterId;
             this.schoolObj.phone = this.school.phone;
@@ -190,9 +191,10 @@
             },
 
             updateSchoolInfo() {
+                this.userProfile.schools[0] = this.schoolObj;
                 schoolService.update(this.schoolObj).then(() => {
                     this.$toast.success('Успешно');
-                    this.$store.dispatch('account/getProfile', true);
+                    this.$store.dispatch('account/updateProfileData', this.userProfile);
                 }).catch((err) => {
                     this.$toast.error(err);
                 })
