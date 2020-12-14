@@ -139,6 +139,25 @@ table {
   }
 }
 
+.school-admin-school-head__item div.export-custom {
+  position: relative;
+  margin: 0;
+  .smart-btn-container {
+    background: none;
+    button {
+      border: 1px solid;
+    }
+  }
+  .export-custom-btn {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+  }
+}
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
