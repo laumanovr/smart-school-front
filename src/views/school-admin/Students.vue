@@ -1024,7 +1024,7 @@ export default {
 		}
 	}
     .generate-code {
-        background: #00BCD4;
+        background: #1976d2;
         color: #fff;
         padding: 0 5px;
         border-radius: 5px;
