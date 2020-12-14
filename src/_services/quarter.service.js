@@ -16,6 +16,11 @@ export class QuarterService extends BaseApiService {
         return this.sendPostRequest(url, {});
     }
 
+    checkQuarter(school) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/quarter/quarter-check?schoolId=${school.id}&chronicleId=${school.chronicleId}`;
+        return this.sendPostRequest(url, {});
+    }
+
     getBySchoolAndChronicle(school_id, chronicle_id){
         const url = `${process.env.VUE_APP_BASE_URL}/v1/quarter/list/school/${school_id}/chronicle/${chronicle_id}`;
         return this.sendGetRequest(url);
