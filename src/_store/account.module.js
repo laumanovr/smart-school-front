@@ -1,5 +1,9 @@
 import {userService} from '@/_services/user.service';
 import router from '@/_router';
+import {QuarterService} from '@/_services/quarter.service';
+const quarterService = new QuarterService();
+import {SchoolService} from '@/_services/school.service';
+const schoolService = new SchoolService();
 
 const user = JSON.parse(localStorage.getItem('user'));
 const profile = JSON.parse(localStorage.getItem('profile'));
@@ -39,27 +43,52 @@ const actions = {
             console.log(err);
             commit('SET_ERROR', err);
         });
-	},
-	getProfile({commit, dispatch}, param) {
-		userService.getProfile().then((res) => {
-            commit('SET_PROFILE', res);
-            localStorage.setItem('profile', JSON.stringify(res));
+    },
+
+    getProfile({commit, dispatch}) {
+        userService.getProfile().then((res) => {
+            dispatch('updateProfileData', res);
             const role = roles.find(i => i.code === res.role[0].code);
-            if (!param) {
-                router.push(role.url);
-            }
-            if (res.role[0].code.includes('ROLE_SUPER_ADMIN')) {
-                dispatch('location/fetchRegions', {}, {root: true});
-            }
-		}).catch((err) => {
+            router.push(role.url);
+            dispatch('checkSchoolQuarter', res);
+            dispatch('fetchRegions', res);
+        }).catch((err) => {
             console.log(err);
             commit('SET_ERROR', err);
         });
-	},
-	logout({commit}) {
-		userService.logout();
-		commit('REMOVE_USER');
-	}
+    },
+
+    checkSchoolQuarter({commit, dispatch}, user) {
+        if (user.role[0].code.includes('ROLE_ADMIN')) {
+            quarterService.checkQuarter(user.schools[0]).then((res) => {
+                if (res.success) {
+                    schoolService.getById(user.schools[0].id).then((school) => {
+                        user.schools[0] = school;
+                        dispatch('updateProfileData', user);
+                    });
+                }
+            }).catch((err) => {
+                console.log(err);
+                commit('SET_ERROR', err);
+            })
+        }
+    },
+
+    updateProfileData({commit}, res) {
+        commit('SET_PROFILE', res);
+        localStorage.setItem('profile', JSON.stringify(res));
+    },
+
+    fetchRegions({dispatch}, res) {
+        if (res.role[0].code.includes('ROLE_SUPER_ADMIN')) {
+            dispatch('location/fetchRegions', {}, {root: true});
+        }
+    },
+
+    logout({commit}) {
+        userService.logout();
+        commit('REMOVE_USER');
+    }
 };
 
 const mutations = {
