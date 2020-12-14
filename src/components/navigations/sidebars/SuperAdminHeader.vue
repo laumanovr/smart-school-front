@@ -51,14 +51,14 @@ export default {
         const selectedLang = JSON.parse(window.localStorage.getItem('schoolLang'));
 //        this.currentLang = selectedLang ? selectedLang : 'ru';
         if (selectedLang) {
-            if (selectedLang === 'kg') {
+            if (selectedLang === "kg") {
                 this.currentLang = selectedLang;
             } else {
-                this.currentLang = 'ru';
-                window.localStorage.setItem('schoolLang', 'ru');
+                this.currentLang = "ru";
+                window.localStorage.setItem('schoolLang', JSON.stringify("ru"));
             }
         } else {
-            this.currentLang = 'ru';
+            this.currentLang = "ru";
         }
         this.$root.$i18n.locale = this.currentLang;
     },
