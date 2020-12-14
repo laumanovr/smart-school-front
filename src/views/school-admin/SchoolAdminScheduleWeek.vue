@@ -359,6 +359,7 @@
                 shiftTimes: [],
                 allTeachers: [],
                 groupedSchedules: [],
+                allInstructorReserve: [],
                 teacherLabelWidth: 0,
                 courseLabelWidth: 0,
                 selectedShiftId: 0
@@ -419,6 +420,7 @@
                                 this.allTeachers.push(instrCourse);
                             })
                         });
+                        this.allInstructorReserve = JSON.parse(JSON.stringify(this.allTeachers));
                     }
                 })
             },
@@ -433,7 +435,6 @@
                     this.showContent = true;
                     this.$nextTick(() => {
                         setTimeout(() => {
-                            this.isLoading = false;
                             if (this.$refs.scheduleTable) {
                                 this.$refs.scheduleTable.addEventListener('scroll', this.horizontalScheduleScrollListener);
                                 this.showScrollArrows = this.$refs.scheduleTable.scrollWidth > this.$refs.scheduleTable.clientWidth;
@@ -442,7 +443,8 @@
                                     this.courseLabelWidth = this.$refs.courseLabel[0].offsetWidth;
                                 }
                             }
-                        });
+                            this.isLoading = false;
+                        }, 20);
                     });
                 }).catch(err => {
                     this.$toast.error(err);
@@ -505,6 +507,7 @@
             },
 
             openScheduleModal(mode, day, timeId, teacher, schedules) {
+                this.allTeachers = [];
                 this.mode = mode;
                 this.selectedShiftTime = this.shiftTimes.find((time) => time.id === timeId);
                 this.sendScheduleObj.chronicleId = this.school.chronicleId;
@@ -527,6 +530,11 @@
                     }
                 }
                 this.$modal.show('schedule-modal');
+                this.$nextTick(() => {
+                   setTimeout(() => {
+                       this.allTeachers = this.allInstructorReserve;
+                   }, 50);
+                });
             },
 
             editScheduleMode(schedule, showAddGroup) {
