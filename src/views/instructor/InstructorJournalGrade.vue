@@ -671,7 +671,7 @@
                 }
             }
             .selected-year {
-                color: #047cdc;
+                color: #1976d2;
             }
             .grade-tables {
                 display: flex;
