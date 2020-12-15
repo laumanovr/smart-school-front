@@ -507,6 +507,7 @@
             },
 
             openScheduleModal(mode, day, timeId, teacher, schedules) {
+                window.sessionStorage.setItem('scrollState', JSON.stringify(window.scrollY));
                 this.isLoading = true;
                 this.allTeachers = [];
                 this.mode = mode;
@@ -531,12 +532,13 @@
                     }
                 }
                 this.$modal.show('schedule-modal');
-                this.$nextTick(() => {
-                   setTimeout(() => {
-                       this.allTeachers = this.allInstructorReserve;
-                       this.isLoading = false;
-                   }, 50);
-                });
+                setTimeout(() => {
+                    this.allTeachers = this.allInstructorReserve;
+                    this.isLoading = false;
+                    this.$nextTick(() => {
+                        window.scrollTo(0, JSON.parse(window.sessionStorage.getItem('scrollState')));
+                    });
+                }, 50);
             },
 
             editScheduleMode(schedule, showAddGroup) {
