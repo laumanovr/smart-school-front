@@ -41,6 +41,11 @@ export class StudentService extends BaseApiService {
         return this.sendGetRequest(url);
     }
 
+    getAbsolutelyAll(data) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/student/list-interface`;
+        return this.sendPostRequest(url, data);
+    }
+
     _delete (id) {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/student/${id}`;
         return this.sendDeleteRequest(url);
