@@ -507,6 +507,7 @@
             },
 
             openScheduleModal(mode, day, timeId, teacher, schedules) {
+                this.isLoading = true;
                 this.allTeachers = [];
                 this.mode = mode;
                 this.selectedShiftTime = this.shiftTimes.find((time) => time.id === timeId);
@@ -533,6 +534,7 @@
                 this.$nextTick(() => {
                    setTimeout(() => {
                        this.allTeachers = this.allInstructorReserve;
+                       this.isLoading = false;
                    }, 50);
                 });
             },
