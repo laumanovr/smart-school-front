@@ -379,6 +379,7 @@
         },
 
         created() {
+            this.isLoading = true;
             this.getAllSchoolInstructors();
             this.getAllSchoolShifts();
         },
@@ -422,6 +423,9 @@
                         });
                         this.allInstructorReserve = JSON.parse(JSON.stringify(this.allTeachers));
                     }
+                }).catch(err => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
                 })
             },
 
@@ -458,8 +462,13 @@
                     if (res.length) {
                         this.selectedShiftId = res[0].id;
                         this.onSelectShift(this.selectedShiftId);
+                    } else {
+                        this.isLoading = false;
                     }
-                }).catch(err => this.$toast.error(err));
+                }).catch((err) => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                });
             },
 
             getAllSchoolClasses() {
