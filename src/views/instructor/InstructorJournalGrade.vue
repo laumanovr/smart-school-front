@@ -396,7 +396,7 @@
                     this.userProfile.personId,
                     this.monthDataRequest.courseId,
                     this.selectedClassLevel,
-                    this.school.quarterId,
+                    '',
                     100
                 ).then((res) => {
                     if (res._embedded) {
