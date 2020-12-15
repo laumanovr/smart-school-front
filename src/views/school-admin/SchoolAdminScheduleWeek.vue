@@ -508,37 +508,41 @@
 
             openScheduleModal(mode, day, timeId, teacher, schedules) {
                 window.sessionStorage.setItem('scrollState', JSON.stringify(window.scrollY));
-                this.isLoading = true;
                 this.allTeachers = [];
-                this.mode = mode;
-                this.selectedShiftTime = this.shiftTimes.find((time) => time.id === timeId);
-                this.sendScheduleObj.chronicleId = this.school.chronicleId;
-                this.sendScheduleObj.weekDay = day;
-                this.sendScheduleObj.shiftTimeId = timeId;
-                this.sendScheduleObj.instructorId = teacher.instructorId;
-                this.sendScheduleObj.courseId = teacher.courseId;
-                if (mode === 'create') {
-                    this.sendScheduleObj.classId = '';
-                    this.sendScheduleObj.grouped = false;
-                    this.sendScheduleObj.groupTitle = '';
-                } else {
-                    if (schedules.length > 1) {
-                        this.sendScheduleObj.groupTitle = schedules[0].groupTitle;
-                        this.sendScheduleObj.grouped = schedules[0].grouped;
-                        this.groupedSchedules = schedules;
-                        this.mode = 'groupedClasses';
-                    } else {
-                        this.editScheduleMode(schedules[0], true);
-                    }
-                }
-                this.$modal.show('schedule-modal');
-                setTimeout(() => {
-                    this.allTeachers = this.allInstructorReserve;
-                    this.isLoading = false;
+                this.isLoading = true;
+                this.$nextTick(() => {
+                    this.$modal.show('schedule-modal');
                     this.$nextTick(() => {
-                        window.scrollTo(0, JSON.parse(window.sessionStorage.getItem('scrollState')));
-                    });
-                }, 50);
+                        setTimeout(() => {
+                            this.mode = mode;
+                            this.allTeachers = this.allInstructorReserve;
+                            this.selectedShiftTime = this.shiftTimes.find((time) => time.id === timeId);
+                            this.sendScheduleObj.chronicleId = this.school.chronicleId;
+                            this.sendScheduleObj.weekDay = day;
+                            this.sendScheduleObj.shiftTimeId = timeId;
+                            this.sendScheduleObj.instructorId = teacher.instructorId;
+                            this.sendScheduleObj.courseId = teacher.courseId;
+                            if (mode === 'create') {
+                                this.sendScheduleObj.classId = '';
+                                this.sendScheduleObj.grouped = false;
+                                this.sendScheduleObj.groupTitle = '';
+                            } else {
+                                if (schedules.length > 1) {
+                                    this.sendScheduleObj.groupTitle = schedules[0].groupTitle;
+                                    this.sendScheduleObj.grouped = schedules[0].grouped;
+                                    this.groupedSchedules = schedules;
+                                    this.mode = 'groupedClasses';
+                                } else {
+                                    this.editScheduleMode(schedules[0], true);
+                                }
+                            }
+                            this.$nextTick(() => {
+                                window.scrollTo(0, JSON.parse(window.sessionStorage.getItem('scrollState')));
+                                this.isLoading = false
+                            });
+                        }, 40)
+                    })
+                })
             },
 
             editScheduleMode(schedule, showAddGroup) {
