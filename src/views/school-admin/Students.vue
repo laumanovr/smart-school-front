@@ -11,7 +11,7 @@
 				<SmartBtn2 @onClick="isAddFile = true">
 					Импорт <img alt="" src="../../assets/images/icons/import.svg" style="padding-bottom: 5px">
 				</SmartBtn2>
-                <div class="export-parent">
+                <div class="export-custom">
 				    <ExcelJs
                         ref="exportParent"
                         :buttonTitle="'Экспорт Родителей'"
@@ -19,7 +19,7 @@
                         :headers="exportParentHeaders"
                         :rows="exportParentRows"
                     />
-                    <span class="parent-btn" @click="exportStudentParents"></span>
+                    <span class="export-custom-btn" @click="exportStudentParents"></span>
                 </div>
 				<ExcelJs :file-name="exportName" :headers="exportHeaders" :rows="exportRows"></ExcelJs>
 				<SmartBtn2 @onClick="downloadTemplate">
@@ -952,25 +952,6 @@ export default {
                     }
                 }
             }
-        }
-    }
-
-    .school-admin-school-head__item div.export-parent {
-        position: relative;
-        margin: 0;
-        .smart-btn-container {
-            background: none;
-            button {
-                border: 1px solid;
-            }
-        }
-        .parent-btn {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            cursor: pointer;
         }
     }
 }
