@@ -3,6 +3,18 @@
         <PreLoader v-if="isLoading"/>
         <SuperAdminSchoolHead>
             <template v-slot:title>Ученики</template>
+            <template v-slot:right>
+                <div class="export-custom">
+                    <ExcelJs
+                        ref="exportStudents"
+                        :buttonTitle="'Экспорт Учеников'"
+                        :file-name="'Все ученики'"
+                        :headers="exportStudentHeaders"
+                        :rows="exportStudentRows"
+                    />
+                    <span class="export-custom-btn" @click="exportAllStudents"></span>
+                </div>
+            </template>
             <template v-slot:center>
                 <SmartSearchInput :searchObj="filterObj" :searchField="'query'"/>
                 <button class="search-btn" @click="searchStudentByFIO">Поиск</button>
@@ -76,7 +88,7 @@
                 <th>Ф.И.О</th>
                 <th>Пол</th>
                 <th>Класс</th>
-<!--                <th>Район</th>-->
+                <th>Район</th>
             </template>
 
             <template v-slot:body="{ item }">
@@ -84,7 +96,7 @@
                 <td>{{ item.lastName }} {{ item.firstName }}</td>
                 <td>{{ gender[item.gender] }}</td>
                 <td>{{ item.classTitle }}</td>
-<!--                <td>{{ item.schools[0] ? item.schools[0].rayonTitle : '' }}</td>-->
+                <td>{{ item.schools[0] ? item.schools[0].rayonTitle : '' }}</td>
             </template>
         </SmartTable>
     </div>
@@ -103,10 +115,20 @@ const rayonService = new RayonService();
 import {SchoolService} from '@/_services/school.service';
 const schoolService = new SchoolService();
 import TrashIcon from '@/components/icons/TrashIcon';
+import ExcelJs from "@/components/excel-export/ExcelJs";
+import moment from 'moment';
 
 export default {
     name: "Students",
-    components: {SmartSelect, SmartTable, SmartSearchInput, SuperAdminSchoolHead, PreLoader, TrashIcon},
+    components: {
+        SmartSelect,
+        SmartTable,
+        SmartSearchInput,
+        SuperAdminSchoolHead,
+        PreLoader,
+        TrashIcon,
+        ExcelJs
+    },
     data() {
         return {
             totalPages: 1,
@@ -129,6 +151,8 @@ export default {
             classes: [],
             filteredRayons: [],
             filteredSchools: [],
+            exportStudentHeaders: [],
+            exportStudentRows: [],
         }
     },
     computed: {
@@ -154,7 +178,7 @@ export default {
                 this.filterObj.regionId,
                 this.filterObj.rayonId,
                 this.filterObj.query
-            ).then(res => {
+            ).then((res) => {
                 this.pageSize = res.page.size;
                 this.totalElements = res.page.totalElements;
                 this.totalPages = res.page.totalPages;
@@ -163,6 +187,37 @@ export default {
                 }
                 this.isLoading = false;
             }).catch(err => console.log(err));
+        },
+
+        exportAllStudents() {
+            this.isLoading = true;
+            const filterObj = {
+                classId: '',
+                classLevel: this.filterObj.classLevel,
+                rayonId: this.filterObj.rayonId,
+                regionId: this.filterObj.regionId,
+                schoolId: this.filterObj.schoolId,
+            };
+            studentService.getAbsolutelyAll(filterObj).then((res) => {
+                if (res.length) {
+                    this.exportStudentHeaders = ['Школа', 'Район', 'ФИО', 'Класс', 'Дата Рождения', 'Пол'];
+                    this.exportStudentRows = res.map((i) => {
+                        return [
+                            i.schoolTitle,
+                            i.rayonTitle,
+                            i.surname+' '+i.name,
+                            i.classTitle,
+                            moment(i.dateOfBirth, 'YYYY-MM-DD').format('DD.MM.YYYY'),
+                            i.gender ? 'Ж' : 'М'
+                        ];
+                    });
+                    this.$refs.exportStudents.isExport = true;
+                }
+                this.isLoading = false;
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.isLoading = false;
+            });
         },
 
         onLeftClick() {
