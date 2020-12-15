@@ -381,7 +381,7 @@
             td.light-purple {
                 cursor: pointer;
                 &.active {
-                    background: #00BCD4;
+                    background: #1976d2;
                     color: #fff;
                     border: 1px solid;
                 }
