@@ -30,7 +30,7 @@
             <!--</div>-->
 
             <div>
-                <v-text-field  label="Email" v-model="schoolObj.email"></v-text-field>
+                <v-text-field label="Email" v-model="schoolObj.email" :rules="emailRules"/>
             </div>
 
             <div>
@@ -108,7 +108,8 @@
 
         data() {
             return {
-                required: [v => !!v || 'Input is required'],
+                required: [v => !!v || 'Обязательное поле'],
+                emailRules: [v => !v || /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'Email должен быть валидным'],
                 schoolObj: {
                     address: '',
                     avatar: '',
