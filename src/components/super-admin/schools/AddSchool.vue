@@ -12,7 +12,7 @@
             <v-text-field :rules="ruleName" label="Название" v-model="school.name"></v-text-field>
         </div>
         <div class="spacer">
-            <v-text-field label="Email" v-model="school.email"></v-text-field>
+            <v-text-field label="Email" v-model="school.email" :rules="emailRule"/>
             <v-text-field type="number" label="Номер телефона" v-model="school.phone"></v-text-field>
         </div>
         <div>
@@ -116,6 +116,10 @@ export default {
         }
     },
     data: () => ({
+        emailRule: [
+            v => !!v || 'Email обязательный',
+            v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'Email должен быть валидным'
+        ],
         school: {},
         schoolTypes: [
             {

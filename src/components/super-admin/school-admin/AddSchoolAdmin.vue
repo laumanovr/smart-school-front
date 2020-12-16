@@ -39,7 +39,7 @@
         </div>
 
         <div class="spacer">
-            <v-text-field label="Email" v-model="schoolAdmin.email"></v-text-field>
+            <v-text-field label="Email" v-model="schoolAdmin.email" :rules="emailRule"/>
             <v-text-field label="Номер телефона" v-model="schoolAdmin.phone"></v-text-field>
         </div>
         <div>
@@ -104,6 +104,10 @@ export default {
   },
 
   data: () => ({
+    emailRule: [
+        v => !!v || 'Email обязательный',
+        v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'Email должен быть валидным'
+    ],
     schoolAdmin: {
       enabled: true,
       dob: '',
