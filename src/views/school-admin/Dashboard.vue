@@ -194,6 +194,10 @@
             },
 
             getAnalytics() {
+                if (this.dateEnd < this.dateStart) {
+                    this.$toast.info('Дата окончания не может быть раньше чем начала!');
+                    return;
+                }
                 if (!this.trackObj.roleId) {
                     this.$toast.info('Выберите роль');
                     return;
