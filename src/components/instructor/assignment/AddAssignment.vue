@@ -53,7 +53,7 @@
 							readonly
 						></v-text-field>
 					</template>
-					<v-date-picker :min="todayDate" v-model="deadline" @input="onSelectDeadline"></v-date-picker>
+					<v-date-picker :min="assignment.topicDate" v-model="deadline" @input="onSelectDeadline"></v-date-picker>
 				</v-menu>
 			</div>
 			<div class="add-assignment__footer">
@@ -82,7 +82,6 @@ export default {
 			],
 			menu2: false,
 			deadline: moment().format('YYYY-MM-DD'),
-            todayDate: moment().format('YYYY-MM-DD'),
 		}
 	},
 	computed: {
@@ -103,6 +102,7 @@ export default {
 		} else {
 		    this.deadline = moment().format('YYYY-MM-DD');
         }
+        this.assignment.topicDate = moment(this.assignment.topicDate, 'DD.MM.YYYY').format('YYYY-MM-DD');
     },
 
 	methods: {
