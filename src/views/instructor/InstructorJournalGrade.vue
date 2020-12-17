@@ -452,10 +452,9 @@
             },
 
             openSetGradeModal(student, date) {
-                const today = new Date();
-                const monthAgoDate = moment(today.setDate(today.getDate() - 30)).format('YYYY-MM-DD');
+                const quarterStartDate = moment(this.school.quarterStart, 'DD.MM.YYYY').format('YYYY-MM-DD');
                 const gradeDate = moment(date.day, 'DD.MM.YYYY').format('YYYY-MM-DD');
-                if (monthAgoDate > gradeDate) {
+                if (gradeDate < quarterStartDate) {
                     this.$toast.info('Слишком старые даты нельзя менять!');
                     return;
                 }
