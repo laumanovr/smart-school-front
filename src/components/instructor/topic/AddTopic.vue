@@ -113,7 +113,7 @@ export default {
 
 		submit () {
 			if (this.$refs.form.validate()) {
-			    if (this.endDate > this.startDate) {
+			    if (this.endDate < this.startDate) {
 			        this.$toast.info('Дата окончания не может быть раньше чем начала!');
 			        return;
                 }
