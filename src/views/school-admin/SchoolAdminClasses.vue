@@ -185,7 +185,7 @@
                 isEditClass: false,
                 classes: [],
                 classLevels: [
-                    {num: 0}, {num: 1}, {num: 2}, {num: 3}, {num: 4}, {num: 5}, {num: 6}, {num: 7}, {num: 8}, {num: 9},
+                    {num: '0'}, {num: 1}, {num: 2}, {num: 3}, {num: 4}, {num: 5}, {num: 6}, {num: 7}, {num: 8}, {num: 9},
                     {num: 10}, {num: 11},
                 ],
                 classLabels: [
@@ -386,7 +386,7 @@
                     SchoolClassService.create(this.sendObj).then((res) => {
                         if (this.instrClassObj.personId) {
                             SchoolClassService.getAllBySchool(this.userProfile.schools[0].id).then((res) => {
-                                let klassId = res.find(klass => klass.classLabel === this.sendObj.classLabel && parseInt(klass.classLevel) === this.sendObj.classLevel).id
+                                let klassId = res.find(klass => klass.classLabel === this.sendObj.classLabel && parseInt(klass.classLevel) === parseInt(this.sendObj.classLevel)).id;
                                 this.instrClassObj.classId = klassId;
                                 instructorClassService.create(this.instrClassObj).then((res) => {
                                     this.isAddClassModal = false;
