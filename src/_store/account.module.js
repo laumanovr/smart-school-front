@@ -50,6 +50,7 @@ const actions = {
             dispatch('updateProfileData', res);
             const role = roles.find(i => i.code === res.role[0].code);
             router.push(role.url);
+            dispatch('fetchCurrentQuarterData', res);
             dispatch('checkSchoolQuarter', res);
             dispatch('fetchRegions', res);
         }).catch((err) => {
@@ -67,6 +68,20 @@ const actions = {
                         dispatch('updateProfileData', user);
                     });
                 }
+            }).catch((err) => {
+                console.log(err);
+                commit('SET_ERROR', err);
+            })
+        }
+    },
+
+    fetchCurrentQuarterData({commit, dispatch}, user) {
+	    if (user.role[0].code.includes('ROLE_INSTRUCTOR')) {
+	        quarterService.getById(user.schools[0].quarterId).then((res) => {
+                user.schools[0].quarterStart = res.startDate;
+                user.schools[0].quarterEnd = res.endDate;
+                user.schools[0].semester = res.semester;
+                dispatch('updateProfileData', user);
             }).catch((err) => {
                 console.log(err);
                 commit('SET_ERROR', err);
