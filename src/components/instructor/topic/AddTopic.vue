@@ -35,7 +35,7 @@
 							v-on="on"
 						></v-text-field>
 					</template>
-					<v-date-picker v-model="startDate" @input="onSelectTopicDate('menu2')"></v-date-picker>
+					<v-date-picker :min="todayDate" v-model="startDate" @input="onSelectTopicDate('menu2')"/>
 				</v-menu>
 				<v-menu
 					v-model="menu1"
@@ -55,7 +55,7 @@
 							v-on="on"
 						></v-text-field>
 					</template>
-					<v-date-picker v-model="endDate" @input="onSelectTopicDate('menu1')"></v-date-picker>
+					<v-date-picker :min="todayDate" v-model="endDate" @input="onSelectTopicDate('menu1')"/>
 				</v-menu>
 			</div>
 			<div class="add-topic__footer">
@@ -87,6 +87,7 @@ export default {
 			endDate: moment().format('YYYY-MM-DD'),
 			menu2: false,
 			menu1: false,
+            todayDate: moment().format('YYYY-MM-DD'),
 		}
 	},
 	computed: {
@@ -112,6 +113,10 @@ export default {
 
 		submit () {
 			if (this.$refs.form.validate()) {
+			    if (this.endDate > this.startDate) {
+			        this.$toast.info('Дата окончания не может быть раньше чем начала!');
+			        return;
+                }
 			    this.$emit('loading', true);
 				this.topic.parentId = null;
 				this.topic.personId = this.userProfile.personId;
