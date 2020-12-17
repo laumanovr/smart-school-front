@@ -339,7 +339,8 @@ export default {
 				topicId: topic.id,
                 courseId: this.topic.courseId,
                 classId: this.currentClass.classId,
-                instructorId: this.userProfile.personId
+                instructorId: this.userProfile.personId,
+                topicDate: topic.endDate
 			};
             this.isEditAssignment = false;
 			this.showAssignmentModal = true;
@@ -355,7 +356,8 @@ export default {
                 classId: this.currentClass.classId,
                 instructorId: this.userProfile.personId,
                 topicId: topic.id,
-                attachmentList: assignment.attachmentList
+                attachmentList: assignment.attachmentList,
+                topicDate: topic.endDate
             };
             this.isEditAssignment = true;
             this.showAssignmentModal = true;
