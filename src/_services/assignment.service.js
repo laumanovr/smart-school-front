@@ -11,7 +11,7 @@ export  class AssignmentService extends BaseApiService {
   }
 
   getByClassAndChronicle(classId, chronicleId) {
-      const url = `${process.env.VUE_APP_BASE_URL}/v1/assignment/list/class/${classId}/chronicle/${chronicleId}?size=50`;
+      const url = `${process.env.VUE_APP_BASE_URL}/v1/assignment/list/class/${classId}/chronicle/${chronicleId}?size=200`;
       return this.sendGetRequest(url);
   }
 
