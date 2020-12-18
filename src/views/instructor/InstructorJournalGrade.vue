@@ -455,7 +455,7 @@
                 const quarterStartDate = moment(this.school.quarterStart, 'DD.MM.YYYY').format('YYYY-MM-DD');
                 const gradeDate = moment(date.day, 'DD.MM.YYYY').format('YYYY-MM-DD');
                 if (gradeDate < quarterStartDate) {
-                    this.$toast.info('Слишком старые даты нельзя менять!');
+                    this.$toast.error('Вы не можете изменить предыдущую четверть!');
                     return;
                 }
                 this.gradeMode = 'setGrade';
