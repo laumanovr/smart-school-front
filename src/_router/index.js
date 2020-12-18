@@ -419,6 +419,14 @@ const routes = [
                 }
             },
             {
+                name: 'instructorAnnouncement',
+                path: 'announcement',
+                component: loadComponent('instructor/InstructorAnnouncement'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
                 name: 'instructorVideoMaterial',
                 path: 'video-material',
                 component: loadComponent('instructor/InstructorVideoMaterial'),
