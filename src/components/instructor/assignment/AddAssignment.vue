@@ -23,9 +23,12 @@
                     @change="sendFile"
                 />
             </div>
-            <div v-if="isEdit && assignment.attachmentList.length">
+
+            <div class="attach-file" v-if="isEdit && assignment.attachmentList.length">
                 <v-text-field v-model="assignment.attachmentList[0].originalFilename" readonly label="Файл"/>
+                <span class="download" @click="downloadFile">СКАЧАТЬ</span>
             </div>
+
 			<div class="add-topic__item">
 				<v-textarea
 					v-model="assignment.description"
@@ -68,6 +71,7 @@
 import moment from 'moment';
 import { AssignmentService } from '@/_services/assignment.service';
 const assignmentService = new AssignmentService();
+import FileService from '@/_services/file.service';
 
 export default {
 	name: 'AddAssignment',
@@ -146,6 +150,24 @@ export default {
                 this.$toast.error(err);
                 this.$emit('loading', false);
             })
+        },
+
+        downloadFile() {
+            this.$emit('loading', true);
+            const fileName = this.assignment.attachmentList[0].fileLocation;
+            FileService.downloadFile(fileName).then((res) => res.blob()).then((blob) => {
+                const link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = fileName.replace(' ', '');
+                document.body.appendChild(link);
+                link.click();
+                window.URL.revokeObjectURL(link.href);
+                link.remove();
+                this.$emit('loading', false);
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.$emit('loading', false);
+            })
         }
 	}
 }
@@ -184,5 +206,28 @@ export default {
 				}
 			}
 		}
+
+        .attach-file {
+            position: relative;
+            .download {
+                display: none;
+                position: absolute;
+                top: 15px;
+                left: 0;
+                right: 0;
+                text-align: center;
+                background: #80808054;
+                cursor: pointer;
+                color: #1111f7;
+            }
+            &:hover {
+                .download {
+                    display: block;
+                }
+                .v-text-field {
+                    opacity: 0.5;
+                }
+            }
+        }
 	}
 </style>
