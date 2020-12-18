@@ -186,6 +186,11 @@ export default {
             route: '/instructor/instructor-report'
         },
         {
+            name: 'Объявления',
+            icon: 'announcement.svg',
+            route: '/instructor/announcement'
+        },
+        {
             name: 'Видео инструкции',
             icon: 'videocam.svg',
             route: '/instructor/video-material'
