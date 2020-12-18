@@ -73,7 +73,7 @@
             </template>
 
             <template v-if="isEditClass">
-                <div>
+                <div v-if="existClassLabel">
                     <v-select
                         :rules="required"
                         :items="allSchoolClasses"
@@ -82,6 +82,24 @@
                         label="Класс"
                         v-model="instrClassObj.classId"
                         @change="onChangeClassData"
+                    />
+                </div>
+                <div v-if="!existClassLabel">
+                    <v-select
+                        :rules="required"
+                        :items="classLevels"
+                        item-text="num"
+                        item-value="num"
+                        label="Класс"
+                        v-model="sendObj.classLevel"
+                    />
+                    <v-select
+                        :rules="required"
+                        :items="classLabels"
+                        item-text="label"
+                        item-value="label"
+                        label="Буква"
+                        v-model="sendObj.classLabel"
                     />
                 </div>
             </template>
@@ -202,7 +220,8 @@
                 shifts: [],
                 allSchoolClasses: [],
                 totalPages: 1,
-                isLoading: false
+                isLoading: false,
+                existClassLabel: ''
             }
         },
 
@@ -274,8 +293,9 @@
             },
 
             editCLass (item) {
+                this.existClassLabel = item.classLabel;
                 this.sendObj.classLabel = item.classLabel;
-                this.sendObj.classLevel = item.classLevel;
+                this.sendObj.classLevel = item.classLevel ? item.classLevel : item.classLevel.toString();
                 this.sendObj.languageId = item.languageId;
                 this.sendObj.schoolId = item.schoolId;
                 this.sendObj.shiftId = this.allSchoolClasses.find((i) => i.id === item.classId).shiftId;
