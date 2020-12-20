@@ -1,6 +1,6 @@
 <template>
     <div class="super-admin-sidebar">
-        <div class="super-admin-header__logo" v-if="role == 'schoolAdmin' || role == 'instructor'">
+        <div class="super-admin-header__logo">
             <img :src="require('../../../assets/images/logo.svg')">
         </div>
         <div class="super-admin-sidebar__items">
@@ -31,7 +31,9 @@
             </template>
         </div>
         <div class="super-admin-sidebar__setting">
-            <img alt="" src="../../../assets/images/icons/setting.svg">
+            <router-link to="/user-settings">
+                <img alt="" src="../../../assets/images/icons/setting.svg">
+            </router-link>
         </div>
     </div>
 </template>
