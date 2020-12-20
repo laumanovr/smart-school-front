@@ -23,8 +23,9 @@
 	        <div><slot name="roleName"></slot></div>
         </span>
         <span><img src="../../../assets/images/user.svg" alt=""></span>
-        <span style="cursor: pointer">
-	        <img src="../../../assets/images/icons/chevron-down.svg" alt="">
+        <span class="menu-dropdown">
+	        <img src="../../../assets/images/icons/chevron-down.svg">
+            <router-link to="/user-settings" class="drop-down">Настройки</router-link>
         </span>
         <span class="divider"></span>
         <span style="cursor: pointer"><img src="../../../assets/images/icons/ring-bell.svg"></span>
@@ -152,6 +153,29 @@ export default {
         max-width: 55px;
         .v-input__slot:before {
             content: none;
+        }
+    }
+    .menu-dropdown {
+        position: relative;
+        cursor: pointer;
+        .drop-down {
+            display: none;
+            background: #fff;
+            position: absolute;
+            top: 24px;
+            z-index: 10;
+            left: -35px;
+            border: 1px solid #A6ACBE;
+            border-radius: 5px;
+            padding: 10px 5px;
+            color: #1976d2;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        &:hover {
+            .drop-down {
+                display: block;
+            }
         }
     }
   }
