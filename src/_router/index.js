@@ -42,6 +42,22 @@ const routes = [
         }
     },
 
+    // SETTINGS
+    {
+        path: '/user-settings',
+        component: loadComponent('settings/SettingsManage'),
+        children: [
+            {
+                path: '/',
+                name: 'changePassword',
+                component: loadComponent('settings/ChangePassword'),
+                meta: {
+                    requireAuth: true
+                }
+            }
+        ]
+    },
+
     // LANDING
     // {
     //     path: '/',
