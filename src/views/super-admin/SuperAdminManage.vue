@@ -29,16 +29,20 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-	.dashboard {
-	  background: #f8f8fb;
-
-	  &__container {
-	    display: flex;
-          height: calc(100vh - 76px);
-          &__body {
-              width: 100%;
-              overflow-y: auto;
-          }
-	  }
-	}
+    .dashboard {
+        background: #f8f8fb;
+        &__container {
+            display: flex;
+            &__body {
+                width: calc(100% - 100px);
+                margin-left: 100px;
+                min-height: 88vh;
+            }
+            .super-admin-sidebar {
+                position: fixed;
+                top: 0;
+                height: 100vh;
+            }
+        }
+    }
 </style>
