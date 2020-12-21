@@ -47,27 +47,46 @@ const actions = {
 
     getProfile({commit, dispatch}) {
         userService.getProfile().then((res) => {
-            dispatch('updateProfileData', res);
             const role = roles.find(i => i.code === res.role[0].code);
-            router.push(role.url);
-            dispatch('fetchCurrentQuarterData', res);
-            dispatch('checkSchoolQuarter', res);
-            dispatch('fetchRegions', res);
+            dispatch('updateProfileData', res);
+            dispatch('checkSchoolQuarter', {user: res, role: role});
+            dispatch('fetchCurrentQuarterData', {user: res, role: role});
+            dispatch('fetchRegions', {user: res, role: role});
         }).catch((err) => {
             console.log(err);
             commit('SET_ERROR', err);
         });
     },
 
-    checkSchoolQuarter({commit, dispatch}, user) {
-        if (user.role[0].code.includes('ROLE_ADMIN')) {
-            quarterService.checkQuarter(user.schools[0]).then((res) => {
-                if (res.success) {
-                    schoolService.getById(user.schools[0].id).then((school) => {
-                        user.schools[0] = school;
-                        dispatch('updateProfileData', user);
-                    });
-                }
+    checkSchoolQuarter({commit, dispatch}, data) {
+        if (data.role.code === 'ROLE_ADMIN') {
+            if (data.user.schools[0].quarterId) {
+                quarterService.checkQuarter(data.user.schools[0]).then((res) => {
+                    if (res.success) {
+                        schoolService.getById(data.user.schools[0].id).then((school) => {
+                            data.user.schools[0] = school;
+                            dispatch('updateProfileData', data.user);
+                        });
+                    }
+                    router.push(data.role.url);
+                }).catch((err) => {
+                    console.log(err);
+                    commit('SET_ERROR', err);
+                })
+            } else {
+                router.push({name: 'quarterInitCreate'});
+            }
+        }
+    },
+
+    fetchCurrentQuarterData({commit, dispatch}, data) {
+	    if (data.role.code === 'ROLE_INSTRUCTOR') {
+	        quarterService.getById(data.user.schools[0].quarterId).then((res) => {
+                data.user.schools[0].quarterStart = res.startDate;
+                data.user.schools[0].quarterEnd = res.endDate;
+                data.user.schools[0].semester = res.semester;
+                dispatch('updateProfileData', data.user);
+                router.push(data.role.url);
             }).catch((err) => {
                 console.log(err);
                 commit('SET_ERROR', err);
@@ -75,29 +94,18 @@ const actions = {
         }
     },
 
-    fetchCurrentQuarterData({commit, dispatch}, user) {
-	    if (user.role[0].code.includes('ROLE_INSTRUCTOR')) {
-	        quarterService.getById(user.schools[0].quarterId).then((res) => {
-                user.schools[0].quarterStart = res.startDate;
-                user.schools[0].quarterEnd = res.endDate;
-                user.schools[0].semester = res.semester;
-                dispatch('updateProfileData', user);
-            }).catch((err) => {
-                console.log(err);
-                commit('SET_ERROR', err);
-            })
+    fetchRegions({dispatch}, data) {
+	    if (data.role.code === 'ROLE_SUPER_ADMIN' || data.role.code === 'ROLE_RAYON_HEADER') {
+            router.push(data.role.url);
+            if (data.role.code === 'ROLE_SUPER_ADMIN') {
+                dispatch('location/fetchRegions', {}, {root: true});
+            }
         }
     },
 
     updateProfileData({commit}, res) {
         commit('SET_PROFILE', res);
         localStorage.setItem('profile', JSON.stringify(res));
-    },
-
-    fetchRegions({dispatch}, res) {
-        if (res.role[0].code.includes('ROLE_SUPER_ADMIN')) {
-            dispatch('location/fetchRegions', {}, {root: true});
-        }
     },
 
     logout({commit}) {
