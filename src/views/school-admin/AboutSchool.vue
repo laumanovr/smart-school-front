@@ -13,6 +13,10 @@
                 <v-text-field v-model="schoolObj.name" :rules="required" label="Полное название"></v-text-field>
             </div>
 
+            <div>
+                <v-text-field v-model="schoolObj.pin" :rules="required" label="Пин школы" type="number"></v-text-field>
+            </div>
+
                 <div>
                     <v-select
                         :rules="required"
@@ -25,9 +29,9 @@
                     </v-select>
                 </div>
 
-            <!--<div class="spacer">-->
-                <!--<v-text-field v-model="schoolObj.phone" label="Номер телефона"></v-text-field>-->
-            <!--</div>-->
+            <div class="spacer">
+                <v-text-field v-model="schoolObj.phone" label="Номер телефона" type="number"></v-text-field>
+            </div>
 
             <div>
                 <v-text-field label="Email" v-model="schoolObj.email" :rules="emailRules"/>
@@ -160,6 +164,7 @@
             this.schoolObj.email = this.school.email;
             this.schoolObj.schoolType = this.school.schoolType;
             this.schoolObj.rayonId = this.school.rayonId;
+            this.schoolObj.pin = this.school.pin;
             this.schoolObj.id = this.school.id;
         },
 
