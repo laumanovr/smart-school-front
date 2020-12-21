@@ -92,7 +92,7 @@
                 <v-select
                     class="v-select-item"
                     :items="gradeReasons"
-                    item-text="title"
+                    item-text="reasonTitle"
                     item-value="id"
                     label="Тип оценки"
                     v-model="selectedReasonId"
@@ -210,6 +210,10 @@
                     ru: 'courseTitle',
                     kg: 'courseTitleKG',
                     en: 'courseCode',
+                },
+                reasonLang: {
+                    ru: 'title',
+                    kg: 'titleKG',
                 },
                 numMonths: {
                     '01': 'Январь',
@@ -420,7 +424,10 @@
 
             fetchGradeReasons(adminCourseId) {
                 AdminGradeReasonService.getByAdminCourse(adminCourseId).then((res) => {
-                    this.gradeReasons = res;
+                    this.gradeReasons = res.map((item) => {
+                        item.reasonTitle = item[this.reasonLang[this.currentLang]];
+                        return item;
+                    });
                 })
             },
 
