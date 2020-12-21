@@ -15,8 +15,8 @@
                         <h3>Настройки</h3>
                     </div>
                     <div class="menu-selections">
-                        <div class="selection" :class="{'active': $route.name == 'changePassword'}">Смена пароля</div>
-                        <div class="selection">Смена ФИО</div>
+                        <router-link to="/user-settings" class="selection" :class="{'active': $route.name == 'changePassword'}">Смена пароля</router-link>
+                        <router-link :to="{name: 'userProfile'}" class="selection" :class="{'active': $route.name == 'userProfile'}">Профиль</router-link>
                     </div>
                     <div class="menu-content">
                         <router-view></router-view>
@@ -87,6 +87,7 @@
                 padding: 2px 8px;
                 border-radius: 4px;
                 cursor: pointer;
+                text-decoration: none;
                 &.active {
                     background: #1976d2;
                     color: #fff;
