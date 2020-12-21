@@ -54,6 +54,14 @@ const routes = [
                 meta: {
                     requireAuth: true
                 }
+            },
+            {
+                path: 'profile',
+                name: 'userProfile',
+                component: loadComponent('settings/Profile'),
+                meta: {
+                    requireAuth: true
+                }
             }
         ]
     },
