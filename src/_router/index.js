@@ -366,7 +366,17 @@ const routes = [
                 meta: {
                     requireAuth: true
                 }
-            }
+            },
+            {
+                name: 'quarterInitCreate',
+                path: 'quarter-init-create',
+                component: loadComponent('school-admin/school-preset/QuarterInitCreate')
+            },
+            {
+                name: 'setInitQuarter',
+                path: 'set-init-quarter',
+                component: loadComponent('school-admin/school-preset/SetInitQuarter')
+            },
 		],
 	},
 
