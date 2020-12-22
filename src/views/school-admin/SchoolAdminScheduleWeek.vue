@@ -26,7 +26,7 @@
             </template>
         </SuperAdminSchoolHead>
 
-        <div class="schedule-content" v-if="showContent && shiftTimes.length" ref="schedule">
+        <div class="schedule-content" v-if="shiftTimes.length" ref="schedule">
             <div class="other-actions">
                 <div class="main-btn">
                     <div class="switch-filter">
@@ -164,112 +164,6 @@
                 </table>
             </div>
         </div>
-
-        <!--TEACHER COURSE SCHEDULE MODAL CREATE EDIT DELETE-->
-        <modal name="schedule-modal" width="440px" height="auto">
-            <div class="modal-container">
-                <div class="lesson-day">{{objDay[sendScheduleObj.weekDay]}} - {{'Урок ' + selectedShiftTime.name}}</div>
-                <v-form ref="scheduleForm">
-                    <template v-if="mode == 'create' || mode == 'edit'">
-                        <h4>{{mode == 'create' ? 'Добавить расписание' : 'Редактировать расписание' }}</h4>
-                        <div class="delete-schedule" v-if="mode == 'edit'">
-                            <DeleteIcon @click="removeSchedule" />
-                        </div>
-                        <div class="content">
-                            <v-select
-                                :items="classes"
-                                :rules="required"
-                                :item-text="getFullClassTitle"
-                                item-value="id"
-                                label="Выбрать класс"
-                                v-model="sendScheduleObj.classId"
-                            ></v-select>
-
-                            <div class="with-group">
-                                <v-switch label="Группа" v-model="sendScheduleObj.grouped"/>
-                                <template v-if="sendScheduleObj.grouped">
-                                    <v-text-field :rules="required" label="Название" v-model="sendScheduleObj.groupTitle"/>
-                                </template>
-                                <div
-                                    class="add-group-class"
-                                    v-if="sendScheduleObj.grouped && originGrouped && mode == 'edit' && showAddGroup"
-                                    @click="addGroupScheduleMode"
-                                >
-                                    Добавить класс к группе
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-
-                    <template v-if="mode == 'addGroupClass'">
-                        <h4>Добавить класс к группе: {{sendScheduleObj.groupTitle}}</h4>
-                        <div class="content">
-                            <v-select
-                                :items="classes"
-                                :rules="required"
-                                :item-text="getFullClassTitle"
-                                item-value="id"
-                                label="Выбрать класс"
-                                v-model="sendScheduleObj.classId"
-                            ></v-select>
-                        </div>
-                    </template>
-
-                    <template v-if="mode == 'groupedClasses'">
-                        <div class="content">
-                            <div class="group-info">Группа: {{groupedSchedules[0].groupTitle}}</div>
-                            <div class="group-info">Классы:</div>
-                            <div class="groups">
-                                <div
-                                    class="group"
-                                    v-for="schedule in groupedSchedules"
-                                    :key="schedule.id"
-                                    @click="editScheduleMode(schedule, false)"
-                                >
-                                    {{schedule.classTitle}}
-                                </div>
-                            </div>
-                            <div class="btn-actions">
-                                <v-btn color="primary" @click="addGroupScheduleMode">
-                                    Добавить еще класс к этой группе
-                                </v-btn>
-                            </div>
-                        </div>
-                    </template>
-
-                    <div class="btn-actions" v-if="mode != 'groupedClasses'">
-                        <v-btn color="red" @click="closeModal">Отмена</v-btn>
-                        <v-btn color="green" @click="submit">Сохранить</v-btn>
-                    </div>
-                </v-form>
-            </div>
-        </modal>
-
-        <!--CLASS VIEW SCHEDULE MODAL-->
-        <modal name="class-view-schedule-modal" width="450px">
-            <div class="modal-container">
-                <div class="lesson-day">{{objDay[sendScheduleObj.weekDay]}} - {{'Урок ' + selectedShiftTime.name}}</div>
-                <h4>{{mode == 'create' ? 'Добавить предмет' : 'Редактировать' }}</h4>
-                <div class="delete-schedule" v-if="mode == 'edit'">
-                    <DeleteIcon @click="removeSchedule" />
-                </div>
-                <v-form ref="scheduleForm">
-                    <v-autocomplete
-                        :items="allTeachers"
-                        :rules="required"
-                        :item-text="getTeacherAndCourseName"
-                        item-value="id"
-                        label="Предмет"
-                        v-model="sendScheduleObj.instrCourseId"
-                        @change="onSelectScheduleCourse"
-                    />
-                    <div class="btn-actions">
-                        <v-btn color="red" @click="closeClassViewModal">Отмена</v-btn>
-                        <v-btn color="green" @click="submit" :disabled="!sendScheduleObj.instrCourseId">Сохранить</v-btn>
-                    </div>
-                </v-form>
-            </div>
-        </modal>
     </div>
 </template>
 
@@ -286,6 +180,7 @@
     import * as moment from 'moment';
     import PreLoader from '@/components/preloader/PreLoader';
     import FixedScheduleTableHeader from '@/components/table/FixedScheduleTableHeader';
+    import TeacherScheduleModal from '@/components/schedule/TeacherScheduleModal';
     import pdfMake from 'pdfmake/build/pdfmake';
     import pdfFonts from 'pdfmake/build/vfs_fonts';
     pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -346,7 +241,6 @@
                 mode: '',
                 classViewSchedule: false,
                 showAddGroup: false,
-                showContent: false,
                 originGrouped: false,
                 showFixedHeader: false,
                 showScrollArrows: true,
@@ -359,7 +253,6 @@
                 shiftTimes: [],
                 allTeachers: [],
                 groupedSchedules: [],
-                allInstructorReserve: [],
                 teacherLabelWidth: 0,
                 courseLabelWidth: 0,
                 selectedShiftId: 0
@@ -394,18 +287,9 @@
             async onSelectShift(shiftId) {
                 this.isLoading = true;
                 this.currentShiftId = shiftId;
-                this.showContent = false;
                 await this.getAllSchoolClasses();
                 await this.getShiftTimesByShiftId();
                 await this.fetchScheduleData();
-            },
-
-            getTeacherAndCourseName(teacher) {
-                return teacher[this.langObj[this.currentLang]] + ' - ' + teacher.instructorTitle;
-            },
-
-            getFullClassTitle(klass) {
-                return klass.classLevel + klass.classLabel;
             },
 
             getAllSchoolInstructors() {
@@ -421,7 +305,6 @@
                                 this.allTeachers.push(instrCourse);
                             })
                         });
-                        this.allInstructorReserve = JSON.parse(JSON.stringify(this.allTeachers));
                     }
                 }).catch(err => {
                     this.$toast.error(err);
@@ -430,13 +313,13 @@
             },
 
             fetchScheduleData() {
+                this.allSchedules = [];
                 ScheduleWeekService.getAllBySchoolAndShift(this.school.id, this.currentShiftId).then((res) => {
                     this.allSchedules = res.map((schedule) => {
                         schedule.classTitle = schedule.classLevel + schedule.classLabel;
                         schedule.weekDay = this.objNumDays[schedule.weekDay];
                         return schedule;
                     });
-                    this.showContent = true;
                     this.$nextTick(() => {
                         setTimeout(() => {
                             if (this.$refs.scheduleTable) {
@@ -473,7 +356,10 @@
 
             getAllSchoolClasses() {
                 SchoolClassService.getAllBySchool(this.school.id).then((res) => {
-                    this.classes = res;
+                    this.classes = res.map((klass) => {
+                        klass.classTitle = klass.classLevel + klass.classLabel;
+                        return klass;
+                    });
                 }).catch(err => this.$toast.error(err));
             },
 
@@ -516,42 +402,58 @@
             },
 
             openScheduleModal(mode, day, timeId, teacher, schedules) {
-                window.sessionStorage.setItem('scrollState', JSON.stringify(window.scrollY));
-                this.allTeachers = [];
-                this.isLoading = true;
+                this.mode = mode;
+                this.selectedShiftTime = this.shiftTimes.find((time) => time.id === timeId);
+                this.sendScheduleObj.chronicleId = this.school.chronicleId;
+                this.sendScheduleObj.weekDay = day;
+                this.sendScheduleObj.shiftTimeId = timeId;
+                this.sendScheduleObj.instructorId = teacher.instructorId;
+                this.sendScheduleObj.courseId = teacher.courseId;
+                if (mode === 'create') {
+                    this.sendScheduleObj.classId = '';
+                    this.sendScheduleObj.grouped = false;
+                    this.sendScheduleObj.groupTitle = '';
+                } else {
+                    if (schedules.length > 1) {
+                        this.sendScheduleObj.groupTitle = schedules[0].groupTitle;
+                        this.sendScheduleObj.grouped = schedules[0].grouped;
+                        this.groupedSchedules = schedules;
+                        this.mode = 'groupedClasses';
+                    } else {
+                        this.editScheduleMode(schedules[0], true);
+                    }
+                }
                 this.$nextTick(() => {
-                    this.$modal.show('schedule-modal');
-                    this.$nextTick(() => {
-                        setTimeout(() => {
-                            this.mode = mode;
-                            this.allTeachers = this.allInstructorReserve;
-                            this.selectedShiftTime = this.shiftTimes.find((time) => time.id === timeId);
-                            this.sendScheduleObj.chronicleId = this.school.chronicleId;
-                            this.sendScheduleObj.weekDay = day;
-                            this.sendScheduleObj.shiftTimeId = timeId;
-                            this.sendScheduleObj.instructorId = teacher.instructorId;
-                            this.sendScheduleObj.courseId = teacher.courseId;
-                            if (mode === 'create') {
-                                this.sendScheduleObj.classId = '';
-                                this.sendScheduleObj.grouped = false;
-                                this.sendScheduleObj.groupTitle = '';
-                            } else {
-                                if (schedules.length > 1) {
-                                    this.sendScheduleObj.groupTitle = schedules[0].groupTitle;
-                                    this.sendScheduleObj.grouped = schedules[0].grouped;
-                                    this.groupedSchedules = schedules;
-                                    this.mode = 'groupedClasses';
-                                } else {
-                                    this.editScheduleMode(schedules[0], true);
-                                }
-                            }
-                            this.$nextTick(() => {
-                                window.scrollTo(0, JSON.parse(window.sessionStorage.getItem('scrollState')));
-                                this.isLoading = false
-                            });
-                        }, 40)
-                    })
+                    setTimeout(() => {
+                        this.$modal.show(
+                            TeacherScheduleModal,
+                            {
+                                mode: this.mode,
+                                objDay: this.objDay,
+                                sendScheduleObj: this.sendScheduleObj,
+                                selectedShiftTime: this.selectedShiftTime,
+                                classes: this.classes,
+                                groupedSchedules: this.groupedSchedules,
+                                originGrouped: this.originGrouped,
+                                showAddGroup: this.showAddGroup,
+                                classViewSchedule: this.classViewSchedule
+                            },
+                            {height: 'auto', width: '440px', clickToClose: false},
+                            {'before-close': this.onScheduleModalAction}
+                        )
+                    }, 30)
                 })
+            },
+
+            onScheduleModalAction(event) {
+                if (event.params) {
+                    this.mode = event.params.mode;
+                    if (event.params.type === 'save') {
+                        this.submit();
+                    } else {
+                        this.removeSchedule(event.params.scheduleId);
+                    }
+                }
             },
 
             editScheduleMode(schedule, showAddGroup) {
@@ -569,23 +471,12 @@
                 this.originGrouped = schedule.grouped;
             },
 
-            addGroupScheduleMode() {
-                this.mode = 'addGroupClass';
-                this.sendScheduleObj.classId = '';
-            },
-
-            closeModal() {
-                this.$modal.hide('schedule-modal');
-            },
-
             submit() {
-                if (this.$refs.scheduleForm.validate()) {
-                    const createModes = ['create', 'addGroupClass'];
-                    if (createModes.includes(this.mode)) {
-                        this.submitCreateSchedule();
-                    } else {
-                        this.submitUpdateSchedule();
-                    }
+                const createModes = ['create', 'addGroupClass'];
+                if (createModes.includes(this.mode)) {
+                    this.submitCreateSchedule();
+                } else {
+                    this.submitUpdateSchedule();
                 }
             },
 
@@ -599,13 +490,19 @@
                     scheduleObj.courseTitle = res.courseTitle;
                     scheduleObj.courseTitleKG = res.courseTitleKG;
                     this.allSchedules.push(scheduleObj);
-                    this.closeModal();
-                    this.closeClassViewModal();
-                    this.$toast.success('Успешно добавлено!');
                     this.isLoading = false;
-                }).catch(err => {
-                    this.$toast.error(err);
+                    this.$nextTick(() => {
+                        setTimeout(() => {
+                            this.$toast.success('Успешно добавлено!');
+                        }, 30);
+                    });
+                }).catch((err) => {
                     this.isLoading = false;
+                    this.$nextTick(() => {
+                        setTimeout(() => {
+                            this.$toast.error(err);
+                        }, 30);
+                    });
                 })
             },
 
@@ -629,31 +526,43 @@
                         }
                         return schedule;
                     });
-                    this.closeModal();
-                    this.closeClassViewModal();
-                    this.$toast.success('Успешно обновлено!');
                     this.isLoading = false;
-                }).catch(err => {
-                    this.$toast.error(err);
+                    this.$nextTick(() => {
+                        setTimeout(() => {
+                            this.$toast.success('Успешно обновлено!');
+                        }, 30);
+                    });
+                }).catch((err) => {
                     this.isLoading = false;
+                    this.$nextTick(() => {
+                        setTimeout(() => {
+                            this.$toast.error(err);
+                        }, 30);
+                    });
                 })
             },
 
-            removeSchedule() {
+            removeSchedule(scheduleId) {
                 this.isLoading = true;
-                ScheduleWeekService.deleteSchedule(this.sendScheduleObj.id).then(() => {
+                ScheduleWeekService.deleteSchedule(scheduleId).then(() => {
                     this.allSchedules.forEach((schedule, i, selfArr) => {
                         if (schedule.id === this.sendScheduleObj.id) {
                             selfArr.splice(i, 1);
                         }
                     });
-                    this.closeModal();
-                    this.closeClassViewModal();
-                    this.$toast.success('Успешно удалено!');
                     this.isLoading = false;
-                }).catch(err => {
-                    this.$toast.error(err);
+                    this.$nextTick(() => {
+                        setTimeout(() => {
+                            this.$toast.success('Успешно удалено!');
+                        }, 30);
+                    });
+                }).catch((err) => {
                     this.isLoading = false;
+                    this.$nextTick(() => {
+                        setTimeout(() => {
+                            this.$toast.error(err);
+                        }, 30);
+                    });
                 })
             },
 
@@ -686,20 +595,23 @@
                     );
                     this.sendScheduleObj.instrCourseId = instrCours ? instrCours.id : '';
                 }
-                this.$modal.show('class-view-schedule-modal');
-            },
-
-            closeClassViewModal() {
-                this.$modal.hide('class-view-schedule-modal');
-            },
-
-            onSelectScheduleCourse(instrCourseId) {
-                const instrCourseObj = this.allTeachers.find((instrCourse) => instrCourse.id === instrCourseId);
-                this.sendScheduleObj.instructorId = instrCourseObj.instructorId;
-                this.sendScheduleObj.courseId = instrCourseObj.courseId;
-                this.sendScheduleObj.courseCode = instrCourseObj.courseCode;
-                this.sendScheduleObj.courseTitle = instrCourseObj.courseTitle;
-                this.sendScheduleObj.courseTitleKG = instrCourseObj.courseTitleKG;
+                this.$nextTick(() => {
+                    setTimeout(() => {
+                        this.$modal.show(
+                            TeacherScheduleModal,
+                            {
+                                mode: this.mode,
+                                objDay: this.objDay,
+                                sendScheduleObj: this.sendScheduleObj,
+                                selectedShiftTime: this.selectedShiftTime,
+                                allTeachers: this.allTeachers,
+                                classViewSchedule: this.classViewSchedule
+                            },
+                            {height: 'auto', width: '450px', clickToClose: false},
+                            {'before-close': this.onScheduleModalAction}
+                        );
+                    }, 30);
+                });
             },
 
             downloadPdf() {
@@ -1073,45 +985,45 @@
             }
         }
 
-        .modal-container {
-            .lesson-day {
-                text-align: center;
-                font-weight: bold;
-            }
-            .delete-schedule {
-                transform: translateY(-20px);
-                text-align: right;
-            }
-            .add-group-class {
-                border: 1px solid;
-                display: inline-block;
-                color: #045ea5;
-                padding: 1px 5px;
-                border-radius: 5px;
-                cursor: pointer;
-                transform: translateY(-15px);
-                background: #f8f8f8;
-            }
-            .groups {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin: 15px 0 20px;
-                .group {
-                    color: #fff;
-                    font-size: 16px;
-                    padding: 2px 5px;
-                    border-radius: 5px;
-                    margin-right: 15px;
-                    background: #2196F3;
-                    cursor: pointer;
-                }
-            }
-            .group-info {
-                text-align: center;
-                font-size: 18px;
-            }
-        }
+        /*<!--.modal-container {-->*/
+            /*<!--.lesson-day {-->*/
+                /*<!--text-align: center;-->*/
+                /*<!--font-weight: bold;-->*/
+            /*<!--}-->*/
+            /*<!--.delete-schedule {-->*/
+                /*<!--transform: translateY(-20px);-->*/
+                /*<!--text-align: right;-->*/
+            /*<!--}-->*/
+            /*<!--.add-group-class {-->*/
+                /*<!--border: 1px solid;-->*/
+                /*<!--display: inline-block;-->*/
+                /*<!--color: #045ea5;-->*/
+                /*<!--padding: 1px 5px;-->*/
+                /*<!--border-radius: 5px;-->*/
+                /*<!--cursor: pointer;-->*/
+                /*<!--transform: translateY(-15px);-->*/
+                /*<!--background: #f8f8f8;-->*/
+            /*<!--}-->*/
+            /*<!--.groups {-->*/
+                /*<!--display: flex;-->*/
+                /*<!--align-items: center;-->*/
+                /*<!--justify-content: center;-->*/
+                /*<!--margin: 15px 0 20px;-->*/
+                /*<!--.group {-->*/
+                    /*<!--color: #fff;-->*/
+                    /*<!--font-size: 16px;-->*/
+                    /*<!--padding: 2px 5px;-->*/
+                    /*<!--border-radius: 5px;-->*/
+                    /*<!--margin-right: 15px;-->*/
+                    /*<!--background: #2196F3;-->*/
+                    /*<!--cursor: pointer;-->*/
+                /*<!--}-->*/
+            /*<!--}-->*/
+            /*<!--.group-info {-->*/
+                /*<!--text-align: center;-->*/
+                /*<!--font-size: 18px;-->*/
+            /*<!--}-->*/
+        /*<!--}-->*/
         .export-title {
             display: none;
             text-align: center;
