@@ -157,12 +157,25 @@
 				</div>
 			</v-form>
 		</v-dialog>
-		<v-dialog
-			v-model="isDeleting"
-			max-width="450"
-		>
-			<DeletePopup @accept="deleteStudent" @cancel="isDeleting = false"></DeletePopup>
+
+		<v-dialog v-model="isDeleting" max-width="450">
+            <div class="modal-container">
+                <h4>Укажите причину удаления</h4>
+                <v-select
+                    :items="deleteReasons"
+                    label="Причина"
+                    item-text="title"
+                    item-value="value"
+                    v-model="deleteStudentObj.reason"
+                />
+                <v-text-field label="Комментарий" v-model="deleteStudentObj.comment"/>
+                <div class="btn-actions">
+                    <v-btn color="primary" @click="isDeleting=false">Отмена</v-btn>
+                    <v-btn color="red" @click="deleteStudent">Удалить</v-btn>
+                </div>
+            </div>
 		</v-dialog>
+
 		<v-dialog
 			v-model="isMassDeleting"
 			max-width="450"
@@ -439,7 +452,22 @@ export default {
                 longList: []
             },
             existGradeStudents: [],
-            deleteMassiveGradeIds: []
+            deleteMassiveGradeIds: [],
+            deleteReasons: [
+                {title: 'В другом городе', value: 'CITY'},
+                {title: 'В деревне', value: 'VILLAGE'},
+                {title: 'В области', value: 'REGION'},
+                {title: 'За границей', value: 'ABROAD'},
+                {title: 'В архиве', value: 'ARCHIVE'},
+                {title: 'Работает', value: 'WORK'},
+                {title: 'Другое', value: 'OTHER'},
+            ],
+            deleteStudentObj: {
+                chronicleId: 0,
+                comment: '',
+                quarterId: 0,
+                reason: ''
+            }
 		}
 	},
 
@@ -705,11 +733,17 @@ export default {
 
 		onDeleteStudent(item) {
 			this.studentObj = item;
-			this.isDeleting = true
+			this.isDeleting = true;
+			this.deleteStudentObj.chronicleId = this.userProfile.schools[0].chronicleId;
+			this.deleteStudentObj.quarterId = this.userProfile.schools[0].quarterId;
 		},
 
 		deleteStudent() {
-			studentService._delete(this.studentObj.id).then(res => {
+            if (!this.deleteStudentObj.reason) {
+                this.$toast.info('Выберите причину!');
+                return;
+            }
+			studentService._delete(this.studentObj.id, this.deleteStudentObj).then(() => {
 				this.isDeleting = false;
 				this.$toast.success('Успешно');
 				this.fetchStudents(true)
