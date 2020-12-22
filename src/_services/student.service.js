@@ -46,9 +46,9 @@ export class StudentService extends BaseApiService {
         return this.sendPostRequest(url, data);
     }
 
-    _delete (id) {
+    _delete(id, data) {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/student/${id}`;
-        return this.sendDeleteRequest(url);
+        return this.sendDeleteRequest(url, data);
     }
 
     massDelete (ids) {
