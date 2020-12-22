@@ -37,7 +37,8 @@
                         />
                     </div>
                 </div>
-                <DeleteIcon class="delete" @click="deleteShiftTime(shtime)" />
+                <DeleteIcon class="delete" @click="deleteShiftTime(shtime)" v-if="!shtime.archived"/>
+                <span v-if="shtime.archived" class="reserved">привязан</span>
             </div>
         </div>
 
@@ -153,6 +154,10 @@
             .delete {
                 transform: translate(-10px, 10px);
                 margin-left: 5px;
+            }
+            .reserved {
+                transform: translateY(8px);
+                font-size: 11px;
             }
         }
     }
