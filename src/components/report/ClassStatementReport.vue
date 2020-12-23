@@ -302,11 +302,10 @@
             },
 
             countPerformance(subject) {
-                const totalFives = this.totalGrades[0].total.find(item => item.courseId === subject.courseId).totalMarks;
-                const totalFours = this.totalGrades[1].total.find(item => item.courseId === subject.courseId).totalMarks;
-                const totalThrees = this.totalGrades[2].total.find(item => item.courseId === subject.courseId).totalMarks;
-                const totalPercent = ((totalFives + totalFours + totalThrees) / this.studentStatements.length) * 100;
-                return totalPercent.toFixed(1);
+                const totalTwos = this.totalGrades[3].total.find(item => item.courseId === subject.courseId).totalMarks;
+                const totalGoodSubjectStudents = this.studentStatements.length - totalTwos;
+                const result = (totalGoodSubjectStudents / this.studentStatements.length) * 100;
+                return result.toFixed(1);
             },
 
             checkSubjectLength(subject) {
