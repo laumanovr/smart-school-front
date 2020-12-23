@@ -29,6 +29,11 @@ export class AnalyticsService extends BaseApiService {
         return this.sendGetRequest(url);
     }
 
+    getClassPerformance(classId, quarterId) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/analytic/class-performance?classId=${classId}&quarterId=${quarterId}`;
+        return this.sendGetRequest(url);
+    }
+
     // CLASS-MOVE-ACTIVITY
     createClassActivity(data) {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/class-move-history/create`;
