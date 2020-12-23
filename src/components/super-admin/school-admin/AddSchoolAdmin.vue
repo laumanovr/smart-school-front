@@ -40,7 +40,7 @@
 
         <div class="spacer">
             <v-text-field label="Email" v-model="schoolAdmin.email" :rules="emailRule"/>
-            <v-text-field label="Номер телефона" v-model="schoolAdmin.phone"></v-text-field>
+            <v-text-field label="Номер телефона" v-model="schoolAdmin.phone" type="number"/>
         </div>
         <div>
             <v-text-field label="Адрес" v-model="schoolAdmin.address"></v-text-field>

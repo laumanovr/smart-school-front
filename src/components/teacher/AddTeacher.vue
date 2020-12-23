@@ -44,7 +44,7 @@
                 </div>
 
                 <div class="spacer">
-                    <v-text-field label="Номер телефона" v-model="user.phone"></v-text-field>
+                    <v-text-field label="Номер телефона" v-model="user.phone" type="number"/>
                 </div>
 
                 <div class="form-footer">
