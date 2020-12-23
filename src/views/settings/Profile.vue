@@ -2,7 +2,7 @@
     <div class="change-profile">
         <PreLoader v-if="isLoading"/>
         <h4>Данные профиля</h4>
-        <v-form class="profile-form" ref="profileForm">
+        <v-form class="profile-form" ref="profileForm" v-if="isSuperAdminOrRayonHead">
             <v-text-field
                 class="name"
                 label="Имя"
@@ -18,6 +18,34 @@
                 <v-btn color="green" @click="submitProfile">Сохранить</v-btn>
             </div>
         </v-form>
+
+        <!--PERSON PROFILE-->
+        <v-form class="profile-form" ref="profileForm" v-if="!isSuperAdminOrRayonHead">
+            <v-text-field
+                class="name"
+                label="Имя"
+                v-model="person.name"
+                :rules="required"
+            />
+            <v-text-field
+                label="Фамилия"
+                v-model="person.surname"
+                :rules="required"
+            />
+            <v-text-field
+                label="Отчество"
+                v-model="person.middleName"
+                :rules="required"
+            />
+            <v-text-field
+                label="Телефон"
+                v-model="person.phone"
+                type="number"
+            />
+            <div class="btn-actions">
+                <v-btn color="green" @click="submitProfile">Сохранить</v-btn>
+            </div>
+        </v-form>
     </div>
 </template>
 
@@ -26,6 +54,8 @@
     const roleService = new RoleService();
     import {userService} from '@/_services/user.service';
     import PreLoader from '@/components/preloader/PreLoader';
+    import {PersonService} from '@/_services/person.service';
+    const personService = new PersonService();
 
     export default {
         components: {
@@ -41,6 +71,19 @@
                     roles: [],
                     surname: ''
                 },
+                person: {
+                    enabled: true,
+                    id: 0,
+                    name: '',
+                    surname: '',
+                    middleName: '',
+                    phone: '',
+                    dob: '',
+                    gender: '',
+                    languageId: 0,
+                    roles: [],
+                    schoolId: 0
+                },
                 allRoles: [],
                 isLoading: false,
             }
@@ -51,21 +94,36 @@
             },
             school() {
                 return this.userProfile.schools ? this.userProfile.schools[0] : '';
+            },
+            isSuperAdminOrRayonHead() {
+                const role = this.userProfile.role[0].code;
+                return role === 'ROLE_SUPER_ADMIN' || role === 'ROLE_RAYON_HEADER';
             }
         },
         created() {
             this.isLoading = true;
             this.fetchAllRoles();
-            this.user.id = this.userProfile.user.id;
-            this.user.name = this.userProfile.user.firstName;
-            this.user.surname = this.userProfile.user.lastName;
-            this.user.languageId = this.school ? this.school.languageId : '';
+            this.checkUserRole();
         },
         methods: {
-            fetchAllRoles() {
-                if (!this.allRoles.length) {
-                    roleService.listPageable().then((res) => {
-                        this.allRoles = res;
+            checkUserRole() {
+                if (this.isSuperAdminOrRayonHead) {
+                    this.user.id = this.userProfile.user.id;
+                    this.user.name = this.userProfile.user.firstName;
+                    this.user.surname = this.userProfile.user.lastName;
+                    this.user.languageId = this.school ? this.school.languageId : '';
+                    this.isLoading = false;
+                } else {
+                    personService.getById(this.userProfile.personId).then((res) => {
+                        this.person.id = res.id;
+                        this.person.name = res.firstName;
+                        this.person.surname = res.lastName;
+                        this.person.middleName = res.middleName;
+                        this.person.phone = res.phone;
+                        this.person.dob = res.dateOfBirth;
+                        this.person.gender = res.gender;
+                        this.person.schoolId = this.school.id;
+                        this.person.languageId = this.school.languageId;
                         this.isLoading = false;
                     }).catch((err) => {
                         this.$toast.error(err);
@@ -74,20 +132,44 @@
                 }
             },
 
+            fetchAllRoles() {
+                roleService.listPageable().then((res) => {
+                    this.allRoles = res;
+                }).catch((err) => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                });
+            },
+
             submitProfile() {
                 if (this.$refs.profileForm.validate()) {
                     this.isLoading = true;
-                    this.user.roles = this.allRoles.filter(i => i.code === this.userProfile.role[0].code).map(i => i.id);
-                    userService.updateUser(this.user).then(() => {
-                        this.userProfile.user.firstName = this.user.name;
-                        this.userProfile.user.lastName = this.user.surname;
-                        this.$store.dispatch('account/updateProfileData', this.userProfile);
-                        this.isLoading = false;
-                        this.$toast.success('Успешно изменено!');
-                    }).catch((err) => {
-                        this.isLoading = false;
-                        this.$toast.error(err);
-                    })
+                    const role = this.allRoles.filter(i => i.code === this.userProfile.role[0].code).map(i => i.id);
+                    if (this.isSuperAdminOrRayonHead) {
+                        this.user.roles = role;
+                        userService.updateUser(this.user).then(() => {
+                            this.userProfile.user.firstName = this.user.name;
+                            this.userProfile.user.lastName = this.user.surname;
+                            this.$store.dispatch('account/updateProfileData', this.userProfile);
+                            this.isLoading = false;
+                            this.$toast.success('Успешно изменено!');
+                        }).catch((err) => {
+                            this.$toast.error(err);
+                            this.isLoading = false;
+                        })
+                    } else {
+                        this.person.roles = role;
+                        personService.edit(this.person).then(() => {
+                            this.userProfile.user.firstName = this.person.name;
+                            this.userProfile.user.lastName = this.person.surname;
+                            this.$store.dispatch('account/updateProfileData', this.userProfile);
+                            this.isLoading = false;
+                            this.$toast.success('Успешно изменено!');
+                        }).catch((err) => {
+                            this.$toast.error(err);
+                            this.isLoading = false;
+                        })
+                    }
                 }
             }
         }
