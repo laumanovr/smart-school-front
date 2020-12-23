@@ -65,7 +65,7 @@
             v-model="isAddUser"
             width="546"
         >
-            <AddTeacher :is-edit="isEdit" :user="user" @close="onCloseModal"></AddTeacher>
+            <AddTeacher :is-edit="isEdit" :user="user" @close="onCloseModal" @hide="isAddUser=false"/>
         </v-dialog>
         <v-dialog v-if="isAddFile" v-model="isAddFile" width="546" id="add-file">
             <ImportFile ref="importFile" :type="'teachers'" @submit="onSubmit"/>
@@ -343,7 +343,9 @@ export default {
                     phone: res.phone,
                     courseId: item.courseId,
                     pin: res.pin,
-                    dob: res.dateOfBirth
+                    dob: res.dateOfBirth,
+                    userId: res.userId,
+                    username: item.username
                 };
                 this.isAddUser = true;
                 this.isEdit = true;
