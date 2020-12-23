@@ -100,9 +100,9 @@
 				</div>
 
 				<div>
-					<v-text-field v-model="studentObj.name" :rules="required" label="Имя"></v-text-field>
-					<v-text-field v-model="studentObj.surname" :rules="required" label="Фамилия"></v-text-field>
-					<v-text-field v-model="studentObj.middleName" :rules="required" label="Отчество"></v-text-field>
+					<v-text-field v-model="studentObj.name" :rules="firstLastNameRule" label="Имя"></v-text-field>
+					<v-text-field v-model="studentObj.surname" :rules="firstLastNameRule" label="Фамилия"></v-text-field>
+					<v-text-field v-model="studentObj.middleName" :rules="firstLastNameRule" label="Отчество"></v-text-field>
                     <v-text-field
                         label="ПИН/ИНН"
                         v-model="studentObj.pin"
@@ -352,6 +352,10 @@ export default {
                 kg: 'courseTitleKG',
                 en: 'courseCode',
             },
+            firstLastNameRule: [
+                v => !!v || 'Обязательное поле',
+                v => !/\d/.test(v) || 'Должно быть без цифр'
+            ],
 			isAddFile: false,
 			isMassDeleting: false,
 			isSelectAll: false,
