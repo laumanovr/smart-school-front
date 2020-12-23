@@ -57,7 +57,7 @@
                     </thead>
                     <tbody>
                     <tr v-for="(item, i) in classPerformances" :key="i">
-                        <td>{{ item.courseTitle }}</td>
+                        <td>{{ item[langObj[currentLang]] }}</td>
                         <td class="avg-grade">{{ item.averageGrade.toFixed(1) }}</td>
                     </tr>
                     </tbody>
