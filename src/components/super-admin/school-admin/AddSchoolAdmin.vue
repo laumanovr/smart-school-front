@@ -8,13 +8,13 @@
             </button>
         </div>
         <div>
-            <v-text-field :rules="required" label="Имя" v-model="schoolAdmin.name"></v-text-field>
+            <v-text-field :rules="firstLastNameRule" label="Имя" v-model="schoolAdmin.name"></v-text-field>
         </div>
         <div>
-            <v-text-field :rules="required" label="Фамилия" v-model="schoolAdmin.surname"></v-text-field>
+            <v-text-field :rules="firstLastNameRule" label="Фамилия" v-model="schoolAdmin.surname"></v-text-field>
         </div>
         <div>
-            <v-text-field label="Отчество" v-model="schoolAdmin.middleName"></v-text-field>
+            <v-text-field :rules="middleNameRule" label="Отчество" v-model="schoolAdmin.middleName"></v-text-field>
         </div>
         <div>
             <v-text-field
@@ -108,14 +108,21 @@ export default {
         v => !!v || 'Email обязательный',
         v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'Email должен быть валидным'
     ],
+    required: [
+        v => !!v || 'поле обязательно для заполнения'
+    ],
+    firstLastNameRule: [
+        v => !!v || 'Обязательное поле',
+        v => !/\d/.test(v) || 'Должно быть без цифр'
+    ],
+    middleNameRule: [
+        v => !/\d/.test(v) || 'Должно быть без цифр'
+    ],
     schoolAdmin: {
       enabled: true,
       dob: '',
       roles: [],
     },
-    required: [
-      v => !!v || 'поле обязательно для заполнения'
-    ],
     menu2: false,
     schools: [],
     languages: [],
