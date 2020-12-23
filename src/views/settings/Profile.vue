@@ -119,7 +119,7 @@
                         this.person.name = res.firstName;
                         this.person.surname = res.lastName;
                         this.person.middleName = res.middleName;
-                        this.person.phone = res.phone;
+                        this.person.phone = res.phone ? res.phone.replace('+','') : '';
                         this.person.dob = res.dateOfBirth;
                         this.person.gender = res.gender;
                         this.person.schoolId = this.school.id;
