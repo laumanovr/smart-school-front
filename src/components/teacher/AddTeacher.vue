@@ -9,13 +9,13 @@
             </button>
         </div>
         <div>
-            <v-text-field :rules="required" label="Имя" v-model="user.name"></v-text-field>
+            <v-text-field :rules="firstLastNameRule" label="Имя" v-model="user.name"></v-text-field>
         </div>
         <div>
-            <v-text-field :rules="required" label="Фамилия" v-model="user.surname"></v-text-field>
+            <v-text-field :rules="firstLastNameRule" label="Фамилия" v-model="user.surname"></v-text-field>
         </div>
         <div>
-            <v-text-field label="Отчество" v-model="user.middleName"></v-text-field>
+            <v-text-field :rules="middleNameRule" label="Отчество" v-model="user.middleName"></v-text-field>
         </div>
         <div>
             <v-text-field
@@ -79,11 +79,18 @@ export default {
         }
     },
     data: () => ({
-        roles: [],
-        languages: [],
         required: [
             v => !!v || 'Input is required'
         ],
+        firstLastNameRule: [
+            v => !!v || 'Обязательное поле',
+            v => !/\d/.test(v) || 'Должно быть без цифр'
+        ],
+        middleNameRule: [
+            v => !/\d/.test(v) || 'Должно быть без цифр'
+        ],
+        roles: [],
+        languages: [],
         menu2: false,
     }),
     computed: {
