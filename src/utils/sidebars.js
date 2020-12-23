@@ -145,11 +145,11 @@ export default {
     ],
 
     instructor: [
-        // {
-        //     name: 'Аналитика',
-        //     icon: 'chart.svg',
-        //     route: '/instructor'
-        // },
+        {
+            name: 'Аналитика',
+            icon: 'chart.svg',
+            route: '/instructor'
+        },
         {
             name: 'Журнал',
             icon: 'journal.svg',
