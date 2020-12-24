@@ -555,7 +555,7 @@ export default {
 
         exportStudentParents() {
             this.isLoading = true;
-            studentParentService.getStudentParentList(this.school.id).then((res) => {
+            studentParentService.getStudentParentList(this.school.id, this.selectedClassId).then((res) => {
                 this.exportParentHeaders = ['ФИО Родителя', 'Логин/Пароль Родителя', 'ФИО студента'];
                 this.exportParentRows = res.map((item) => {
                     return [item.parentTitle, item.parentUsername, item.studentTitle];
