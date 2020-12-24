@@ -100,12 +100,34 @@
                 <v-btn class="print-btn" color="primary" @click="exportPdf">Экспорт</v-btn>
             </div>
         </div>
+
+        <div class="deleted-students" v-if="classDeletedStudents.length">
+            <h3>Выбывшие ученики {{selectedClassTitle}}</h3>
+            <table class="table bordered">
+                <thead>
+                <tr>
+                    <th class="num">№</th>
+                    <th>Ф.И.О</th>
+                    <th class="reason">Причина</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(student, i) in classDeletedStudents" :key="i">
+                    <td class="num">{{ i + 1 }}</td>
+                    <td>{{ student.studentTitle }}</td>
+                    <td class="reason">{{ reasonObj[student.reason] }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
 
 <script>
     import PreLoader from '@/components/preloader/PreLoader';
     import AnalyticsService from '@/_services/analytics.service';
+    import {StudentService} from "@/_services/student.service";
+    const studentService = new StudentService();
 
     export default {
         components: {
@@ -135,12 +157,22 @@
                     leaveWorkCount: 0,
                     chronicleId: 0
                 },
+                reasonObj: {
+                    '0': 'В другом городе',
+                    '1': 'В деревне',
+                    '2': 'В области',
+                    '4': 'За границей',
+                    '5': 'В архиве',
+                    '6': 'Работает',
+                    '7': 'Другое'
+                },
                 showTable: false,
                 isLoading: false,
                 selectedClassTitle: '',
                 selectedChronicleYear: '',
                 selectedQuarterTitle: '',
-                mode: ''
+                mode: '',
+                classDeletedStudents: []
             }
         },
         computed: {
@@ -156,6 +188,20 @@
                 this.selectedQuarterTitle = this.schoolQuarters.find(quat => quat.id === quatId).semester;
                 this.selectedChronicleYear = this.allChronicleYears.find((item) => item.id === this.school.chronicleId).selectorTitle;
                 this.showTable = false;
+                this.classDeletedStudents = [];
+            },
+
+            fetchDeletedStudents() {
+                studentService.getDeletedClassStudents(
+                    this.classActivityObj.classId,
+                    this.classActivityObj.quarterId,
+                    this.school.chronicleId
+                ).then((res) => {
+                    this.classDeletedStudents = res;
+                }).catch((err) => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                });
             },
 
             findClassActivityReport() {
@@ -163,6 +209,7 @@
                     const klass = this.instrClasses.find(i => i.classId === this.classActivityObj.classId);
                     this.selectedClassTitle = `${klass.classLevel} ${klass.classLabel}`;
                     this.clearClassData();
+                    this.fetchDeletedStudents();
                     this.isLoading = true;
                     this.showTable = false;
                     AnalyticsService.getClassActivityList(
@@ -328,6 +375,8 @@
         .btn-actions {
             width: 1190px;
             margin: 0 auto;
+            border-bottom: 1px solid #bfbfbf;
+            padding-bottom: 15px;
             .save-btn {
                 width: 60%;
                 text-align: right;
@@ -349,6 +398,28 @@
             }
             .v-btn__content {
                 font-size: 12px;
+            }
+        }
+
+        .deleted-students {
+            margin-top: 25px;
+            h3 {
+                margin-bottom: 10px;
+            }
+            table {
+                width: auto;
+                td,th {
+                    padding: 0;
+                    height: 40px;
+                }
+                td {
+                    padding: 0 10px;
+                }
+                .num {
+                    width: 40px;
+                }
+                .reason {
+                }
             }
         }
     }
