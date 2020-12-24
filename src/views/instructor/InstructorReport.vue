@@ -32,6 +32,13 @@
                 :schoolQuarters="schoolQuarters"
             />
         </template>
+        <template v-if="reportType == 'attendance'">
+            <ClassAttendanceReport
+                :allChronicleYears="allChronicleYears"
+                :classes="instrClasses"
+                :schoolQuarters="schoolQuarters"
+            />
+        </template>
     </div>
 </template>
 
@@ -39,6 +46,7 @@
     import ClassQualityKnowledgeReport from '@/components/report/ClassQualityKnowledgeReport';
     import StudentActivityReport from '@/components/report/StudentActivityReport';
     import ClassStatementReport from '@/components/report/ClassStatementReport';
+    import ClassAttendanceReport from '@/components/report/ClassAttendanceReport';
     import {InstructorClassService} from '@/_services/instructor-class.service';
     const instructorClassService = new InstructorClassService();
     import {ChronicleService} from '@/_services/chronicle.service';
@@ -50,7 +58,8 @@
         components: {
             ClassQualityKnowledgeReport,
             StudentActivityReport,
-            ClassStatementReport
+            ClassStatementReport,
+            ClassAttendanceReport
         },
         data() {
             return {
@@ -61,7 +70,8 @@
                 reportTypes: [
                     {title: 'Отчет по движению', type: 'activity'},
                     {title: 'Отчет по качеству знаний', type: 'performance'},
-                    {title: 'Ведомость успеваемости', type: 'statement'}
+                    {title: 'Ведомость успеваемости', type: 'statement'},
+                    {title: 'Отчет посещаемости', type: 'attendance'}
                 ]
             }
         },
