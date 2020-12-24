@@ -46,6 +46,11 @@ export class StudentService extends BaseApiService {
         return this.sendPostRequest(url, data);
     }
 
+    getDeletedClassStudents(classId, quarterId, chronicleId) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/student-move/list/class/${classId}?quarterId=${quarterId}&chronicleId=${chronicleId}`;
+        return this.sendGetRequest(url);
+    }
+
     _delete(id, data) {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/student/${id}`;
         return this.sendDeleteRequest(url, data);
