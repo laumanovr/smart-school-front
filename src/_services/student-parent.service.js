@@ -5,8 +5,8 @@ export class StudentParentService extends BaseApiService {
         super();
     }
 
-    getStudentParentList(schoolId) {
-        const url = `${process.env.VUE_APP_BASE_URL}/v1/student-parent/list?schoolId=${schoolId}`;
+    getStudentParentList(schoolId, classId='') {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/student-parent/list?schoolId=${schoolId}&classId=${classId}`;
         return this.sendGetRequest(url);
     }
 
