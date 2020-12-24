@@ -165,7 +165,7 @@ export default {
             }
             this.isLoading = true;
 	        AnalyticsService.getClassPerformance(this.selectedClassId, this.selectedQuarterId).then((res) => {
-                this.classPerformances = res;
+                this.classPerformances = res.filter((item) => item.courseTitle);
                 this.isLoading = false;
             }).catch((err) => {
 	            this.$toast.error(err);
