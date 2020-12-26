@@ -172,6 +172,14 @@ const routes = [
                     requireAuth: true
                 }
             },
+            {
+                name: 'director',
+                path: 'director',
+                component: loadComponent('super-admin/Director'),
+                meta: {
+                    requireAuth: true
+                }
+            },
 			{
 				name: 'superAdminInstructors',
 				path: 'instructors',
@@ -379,6 +387,89 @@ const routes = [
             },
 		],
 	},
+
+    // DIRECTOR
+    {
+        path: '/director',
+        component: loadComponent('director/DirectorManage'),
+        beforeEnter: (to, from, next) => {
+            $user.checkDirector(next);
+        },
+        children: [
+            {
+                name: 'directorDashboard',
+                path: '/',
+                component: loadComponent('director/DirectorDashboard'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
+                name: 'directorAboutSchool',
+                path: 'about-school',
+                component: loadComponent('director/DirectorAboutSchool'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
+                name: 'directorTeachers',
+                path: 'teachers',
+                component: loadComponent('director/DirectorTeachers'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
+                name: 'directorCourses',
+                path: 'courses',
+                component: loadComponent('director/DirectorCourses'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
+                name: 'directorClasses',
+                path: 'classes',
+                component: loadComponent('director/DirectorClasses'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
+                name: 'directorStudents',
+                path: 'students',
+                component: loadComponent('director/DirectorStudents'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
+                name: 'directorScheduleWeek',
+                path: 'schedule-week',
+                component: loadComponent('director/DirectorScheduleWeek'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
+                name: 'directorShifts',
+                path: 'shifts',
+                component: loadComponent('director/DirectorShift'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
+                name: 'directorReport',
+                path: 'director-report',
+                component: loadComponent('director/DirectorReport'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+        ],
+    },
 
     // INSTRUCTOR
 	{
