@@ -18,6 +18,11 @@ export default {
                     route: '#'
                 },
                 {
+                    name: 'Директор',
+                    icon: 'teachers.svg',
+                    route: '/super-admin/director'
+                },
+                {
                     name: 'Администратор',
                     icon: 'teachers.svg',
                     route: '/super-admin/school-admin'
@@ -141,6 +146,49 @@ export default {
             name: 'Библиотека',
             icon: 'library.svg',
             route: '/school-admin/library'
+        },
+    ],
+
+    director: [
+        {
+            name: 'Аналитика',
+            icon: 'chart.svg',
+            route: '/director'
+        },
+        {
+            name: 'О школе',
+            icon: 'schools.svg',
+            route: '/director/about-school'
+        },
+        {
+            name: 'Учителя',
+            icon: 'teachers.svg',
+            route: '/director/teachers'
+        },
+        {
+            name: 'Предметы',
+            icon: 'courses.svg',
+            route: '/director/courses'
+        },
+        {
+            name: 'Классы',
+            icon: 'courses.svg',
+            route: '/director/classes'
+        },
+        {
+            name: 'Ученики',
+            icon: 'students.svg',
+            route: '/director/students'
+        },
+        {
+            name: 'Расписание',
+            icon: 'schedule.svg',
+            route: '/director/schedule-week'
+        },
+        {
+            name: 'Отчеты',
+            icon: 'report.svg',
+            route: '/director/director-report'
         },
     ],
 
