@@ -44,7 +44,8 @@
                     'ROLE_SUPER_ADMIN': 'superAdmin',
                     'ROLE_ADMIN': 'schoolAdmin',
                     'ROLE_INSTRUCTOR': 'instructor',
-                    'ROLE_RAYON_HEADER': 'rayonHead'
+                    'ROLE_RAYON_HEADER': 'rayonHead',
+                    'ROLE_DIRECTOR': 'director'
                 }
             }
         },
