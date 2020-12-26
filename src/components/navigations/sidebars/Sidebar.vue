@@ -126,7 +126,7 @@ export default {
         transition: max-height 0.3s ease-out;
         will-change: max-height;
         &.expanded {
-            max-height: 310px;
+            max-height: 365px;
             transition: max-height 0.3s ease-in;
             background: #282552;
         }
