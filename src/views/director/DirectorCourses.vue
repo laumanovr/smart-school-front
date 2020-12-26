@@ -23,9 +23,9 @@
             <template v-slot:body="{ item }">
                 <td v-if="item.disable"><input :disabled="item.disable" type="checkbox"></td>
                 <td v-else></td>
-                <td>{{ item.title }}</td>
-                <td>{{ item.courseTitleKG }}</td>
-                <td>{{ item.code }}</td>
+                <td :class="{'added': item.disable}">{{ item.title }}</td>
+                <td :class="{'added': item.disable}">{{ item.courseTitleKG }}</td>
+                <td :class="{'added': item.disable}">{{ item.code }}</td>
             </template>
         </SmartTable>
     </div>
@@ -114,6 +114,13 @@ export default {
 <style lang="scss" scoped>
 .school-admin-courses {
     margin-bottom: 50px;
+    .smart-table__table tr td {
+        &.added {
+            background: #6279ffb3;
+            color: #fff;
+            font-weight: bold;
+        }
+    }
 }
 
 .top-th {
