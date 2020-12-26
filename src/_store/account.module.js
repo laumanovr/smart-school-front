@@ -24,6 +24,10 @@ const roles = [
     {
         code: 'ROLE_RAYON_HEADER',
         url: '/rayon-head'
+    },
+    {
+        code: 'ROLE_DIRECTOR',
+        url: '/director'
     }
 ];
 
@@ -59,7 +63,7 @@ const actions = {
     },
 
     checkSchoolQuarter({commit, dispatch}, data) {
-        if (data.role.code === 'ROLE_ADMIN') {
+        if (data.role.code === 'ROLE_ADMIN' || data.role.code === 'ROLE_DIRECTOR') {
             if (data.user.schools[0].quarterId) {
                 quarterService.checkQuarter(data.user.schools[0]).then((res) => {
                     if (res.success) {
