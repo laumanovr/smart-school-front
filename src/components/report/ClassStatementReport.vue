@@ -426,10 +426,10 @@
                     text-align: center;
                     white-space: nowrap;
                     &.long-name {
-                        width: 76px;
-                        min-width: 76px;
+                        width: 84px;
+                        min-width: 84px;
                         white-space: pre-line;
-                        word-break: break-all;
+                        word-break: break-word;
                         transform: rotate(90deg) translateX(-20px);
                     }
                 }
@@ -438,8 +438,8 @@
                     min-width: 55px;
                     max-width: 55px;
                     &.long-name {
-                        width: 76px;
-                        min-width: 76px;
+                        width: 84px;
+                        min-width: 84px;
                     }
                 }
             }
