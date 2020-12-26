@@ -30,4 +30,9 @@ export  class PersonService extends BaseApiService {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/person/${personId}`;
         return this.sendDeleteRequest(url);
     }
+
+    listPersonByRole(role) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/person/list-interface?roleCode=${role}`;
+        return this.sendGetRequest(url);
+    }
 }
