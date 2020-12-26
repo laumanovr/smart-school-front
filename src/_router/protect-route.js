@@ -28,14 +28,6 @@ export default {
 		}
 	},
 
-	checkParent(next) {
-		if (this.isExistRole('ROLE_PARENT')) {
-			next()
-		} else {
-			next('/login')
-		}
-	},
-
 	checkRayonHead(next) {
 		if (this.isExistRole('ROLE_RAYON_HEADER')) {
 			next()
@@ -43,6 +35,22 @@ export default {
 			next('/login')
 		}
 	},
+
+    checkDirector(next) {
+        if (this.isExistRole('ROLE_DIRECTOR')) {
+            next()
+        } else {
+            next('/login')
+        }
+    },
+
+    checkParent(next) {
+        if (this.isExistRole('ROLE_PARENT')) {
+            next()
+        } else {
+            next('/login')
+        }
+    },
 
 	checkStudent(next) {
 		if (this.isExistRole('ROLE_STUDENT')) {
