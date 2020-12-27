@@ -985,45 +985,6 @@
             }
         }
 
-        /*<!--.modal-container {-->*/
-            /*<!--.lesson-day {-->*/
-                /*<!--text-align: center;-->*/
-                /*<!--font-weight: bold;-->*/
-            /*<!--}-->*/
-            /*<!--.delete-schedule {-->*/
-                /*<!--transform: translateY(-20px);-->*/
-                /*<!--text-align: right;-->*/
-            /*<!--}-->*/
-            /*<!--.add-group-class {-->*/
-                /*<!--border: 1px solid;-->*/
-                /*<!--display: inline-block;-->*/
-                /*<!--color: #045ea5;-->*/
-                /*<!--padding: 1px 5px;-->*/
-                /*<!--border-radius: 5px;-->*/
-                /*<!--cursor: pointer;-->*/
-                /*<!--transform: translateY(-15px);-->*/
-                /*<!--background: #f8f8f8;-->*/
-            /*<!--}-->*/
-            /*<!--.groups {-->*/
-                /*<!--display: flex;-->*/
-                /*<!--align-items: center;-->*/
-                /*<!--justify-content: center;-->*/
-                /*<!--margin: 15px 0 20px;-->*/
-                /*<!--.group {-->*/
-                    /*<!--color: #fff;-->*/
-                    /*<!--font-size: 16px;-->*/
-                    /*<!--padding: 2px 5px;-->*/
-                    /*<!--border-radius: 5px;-->*/
-                    /*<!--margin-right: 15px;-->*/
-                    /*<!--background: #2196F3;-->*/
-                    /*<!--cursor: pointer;-->*/
-                /*<!--}-->*/
-            /*<!--}-->*/
-            /*<!--.group-info {-->*/
-                /*<!--text-align: center;-->*/
-                /*<!--font-size: 18px;-->*/
-            /*<!--}-->*/
-        /*<!--}-->*/
         .export-title {
             display: none;
             text-align: center;
