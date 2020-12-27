@@ -21,7 +21,10 @@
                 </div>
             </div>
 
-            <div class="selected-year" v-if="studentGrades.length">{{gradeYear}}</div>
+            <div class="other" v-if="studentGrades.length">
+                <div class="selected-year">{{gradeYear}}</div>
+                <button class="export" @click="exportGradesPdf">Экспорт</button>
+            </div>
 
             <div class="grade-tables" v-if="studentGrades.length" ref="gradeTables">
                 <table class="students bordered">
@@ -178,6 +181,9 @@
     const topicService = new TopicService();
     import FixedGradeTableHead from '@/components/table/FixedGradeTableHead';
     import DeleteIcon from '@/components/icons/DeleteIcon';
+    import pdfMake from 'pdfmake/build/pdfmake';
+    import pdfFonts from 'pdfmake/build/vfs_fonts';
+    pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
     export default {
         components: {
@@ -265,6 +271,8 @@
                 topics: [],
                 selectedStudent: {},
                 selectedGradeObj: {},
+                selectedClassObj: {},
+                selectedCourseObj: {},
                 selectedDate: '',
                 topicPage: 0,
                 showFixedTableHead: false,
@@ -339,6 +347,7 @@
                     return;
                 }
                 this.isLoading = true;
+                this.selectedClassObj = klass;
                 this.selectedClassLevel = klass.classLevel;
                 this.monthDataRequest.classId = klass.classId;
                 this.monthDataRequest.instructorId = this.userProfile.personId;
@@ -363,6 +372,7 @@
 
             fetchStudentGrades() {
                 this.studentGrades = [];
+                this.selectedCourseObj = this.instructorCourses.find(i => i.courseId === this.monthDataRequest.courseId);
                 GradeService.getByClassCourseInstructor(
                     this.monthDataRequest.classId,
                     this.monthDataRequest.courseId,
@@ -656,6 +666,81 @@
                 })
             },
 
+            exportGradesPdf() {
+                this.isLoading = true;
+                this.$nextTick(() => {
+                    setTimeout(() => {
+                        const currentClass = this.selectedClassObj.classLevel + this.selectedClassObj.classLabel;
+                        const month = this.numMonths[this.currentMonthDays[0].day.slice(3, 5)];
+                        const firstDay = this.currentMonthDays[0].day.slice(0, 2);
+                        const lastDay = this.currentMonthDays[this.currentMonthDays.length - 1].day.slice(0, 2);
+                        const widths = ['auto', ...this.currentMonthDays.map((i) => 22)];
+                        const exportHeaders = [{text: `${month} ${firstDay}-${lastDay}`, style: 'general'}];
+                        const exportRowsData = [];
+                        this.currentMonthDays.forEach((date) => {
+                            exportHeaders.push({text: date.day.slice(0, 2), style: 'general'});
+                        });
+                        this.studentGrades.forEach((student) => {
+                            const studentArr = [{text: `${student.student.surname} ${student.student.name}`, style: 'general'}];
+                            this.currentMonthDays.forEach((dateObj) => {
+                                const mark = this.getStudentSpecificMark(dateObj, student.grades);
+                                studentArr.push({text: mark, style: 'general'});
+                            });
+                            exportRowsData.push(studentArr)
+                        });
+                        const docDefinition = {
+                            header: [{
+                                text: `Оценки ${currentClass} класс, ${this.selectedCourseObj.courseTitle}, школа ${this.school.name}`,
+                                style: 'headTitle'
+                            }],
+                            pageOrientation: 'landscape',
+                            pageSize: 'A4',
+                            permissions: {
+                                printing: 'highResolution',
+                                modifying: false,
+                                copying: false,
+                                annotating: true,
+                                fillingForms: true,
+                                contentAccessibility: true,
+                                documentAssembly: true
+                            },
+                            content: [{
+                                columns: [
+                                    { width: '*', text: '' },
+                                    {
+                                        width: 'auto',
+                                        table: {
+                                            headerRows: 1,
+                                            widths: widths,
+                                            body: [exportHeaders, ...exportRowsData],
+                                            alignment: 'center'
+                                        }
+                                    },
+                                    { width: '*', text: '' },
+                                ]
+                            }],
+                            styles: {
+                                general: {
+                                    fontSize: 11,
+                                    alignment: 'center',
+                                    margin: [0, 0, 0, 0]
+                                },
+                                headTitle: {
+                                    alignment: 'center',
+                                    bold: true,
+                                    fontSize: 13,
+                                    margin: [0, 10, 0, 0]
+                                },
+                            }
+                        };
+                        pdfMake.createPdf(docDefinition).download(`Оценки ${currentClass} класс, школа ${this.school.name}.pdf`);
+                        setTimeout(() => {
+                            this.isLoading = false;
+                        }, 50);
+                    });
+                });
+            },
+
         }
     }
 </script>
@@ -676,8 +761,21 @@
                     margin: 0 20px;
                 }
             }
-            .selected-year {
-                color: #1976d2;
+            .other {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 10px;
+                .selected-year {
+                    color: #1976d2;
+                }
+                button.export {
+                    background: #1976d2;
+                    color: #fff;
+                    padding: 0 8px;
+                    border-radius: 4px;
+                    outline: none;
+                }
             }
             .grade-tables {
                 display: flex;
