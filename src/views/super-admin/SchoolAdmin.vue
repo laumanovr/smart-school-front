@@ -81,7 +81,7 @@
             width="546"
         >
             <template v-if="isAddAdmin">
-                <AddSchoolAdmin :selectedAdmin="selectedPerson" @close="onCloseModal"></AddSchoolAdmin>
+                <AddSchoolAdmin :selectedAdmin="selectedPerson" @close="onCloseModal" @hide="isAddAdmin=false"/>
             </template>
         </v-dialog>
 
@@ -273,7 +273,9 @@ export default {
                     address: res.address,
                     schoolId: res.schools[0],
                     pin: res.pin,
-                    languageId: res.languageId
+                    languageId: res.languageId,
+                    userId: res.userId,
+                    username: user.username
                 };
                 this.isAddAdmin = true;
                 this.isLoading = false;
