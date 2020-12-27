@@ -19,7 +19,6 @@ import SuperAdminHeader from '@/components/navigations/sidebars/SuperAdminHeader
 import Sidebar from '@/components/navigations/sidebars/Sidebar';
 
 export default {
-  name: 'SchoolAdminManage',
   components: { Sidebar, SuperAdminHeader },
   computed: {
     userProfile () {
