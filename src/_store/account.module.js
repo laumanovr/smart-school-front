@@ -28,6 +28,10 @@ const roles = [
     {
         code: 'ROLE_DIRECTOR',
         url: '/director'
+    },
+    {
+        code: 'ROLE_MIN_EDUCATION',
+        url: '/min-education'
     }
 ];
 
@@ -99,7 +103,8 @@ const actions = {
     },
 
     fetchRegions({dispatch}, data) {
-	    if (data.role.code === 'ROLE_SUPER_ADMIN' || data.role.code === 'ROLE_RAYON_HEADER') {
+	    const role = data.role.code;
+	    if (role === 'ROLE_SUPER_ADMIN' || role === 'ROLE_RAYON_HEADER' || role === 'ROLE_MIN_EDUCATION') {
             router.push(data.role.url);
             if (data.role.code === 'ROLE_SUPER_ADMIN') {
                 dispatch('location/fetchRegions', {}, {root: true});
