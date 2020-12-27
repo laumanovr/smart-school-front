@@ -79,6 +79,11 @@ export default {
             icon: 'library.svg',
             route: '/super-admin/library'
         },
+        {
+            name: 'Чат',
+            icon: 'message.svg',
+            route: '/super-admin/chat'
+        }
     ],
 
     minEducation: [
@@ -210,6 +215,11 @@ export default {
             route: '/school-admin/announcements'
         },
         {
+            name: 'Чат',
+            icon: 'message.svg',
+            route: '/school-admin/chat'
+        },
+        {
             name: 'Библиотека',
             icon: 'library.svg',
             route: '/school-admin/library'
@@ -311,9 +321,9 @@ export default {
             route: '/instructor/video-material'
         },
         {
-            name: 'Сообщения',
+            name: 'Чат',
             icon: 'message.svg',
-            route: '/instructor/message'
+            route: '/instructor/chat'
         },
     ],
 
