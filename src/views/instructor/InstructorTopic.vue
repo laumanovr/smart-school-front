@@ -23,6 +23,7 @@
                         @change="onChangeCourse"
 					></v-select>
 					<SmartButton @clicked="onAddTopic">{{ $t('add_topic') }}</SmartButton>
+                    <ExcelJs :rows="exportRows" :headers="exportHeaders" :file-name="exportName" v-if="topics.length"/>
 				</template>
 				<template v-slot:head>
 					<th></th>
@@ -134,13 +135,22 @@ const assignmentService = new AssignmentService();
 const topicService = new TopicService();
 import PreLoader from "@/components/preloader/PreLoader";
 import ScheduleWeekService from '@/_services/schedule-week.service';
+import ExcelJs from "@/components/excel-export/ExcelJs";
 
 export default {
 	name: "InstructorTopic",
 	components: {
 		AddAssignment,
         PreLoader,
-		DeletePopup, AddTopic, SmartSelect, SmartButton, SmartSearchInput, SmartTable, ClassSelectHeader},
+		DeletePopup,
+        AddTopic,
+        SmartSelect,
+        SmartButton,
+        SmartSearchInput,
+        SmartTable,
+        ClassSelectHeader,
+        ExcelJs
+    },
 	data() {
 		return {
             langObj: {
@@ -168,7 +178,10 @@ export default {
 			assignment: {},
 			currentClass: {},
             isLoading: false,
-            showHW: false
+            showHW: false,
+            exportHeaders: [],
+            exportRows: [],
+            exportName: ''
 		}
 	},
 	computed: {
@@ -275,10 +288,23 @@ export default {
                 }
                 this.showHW = true;
                 this.isLoading = false;
+                this.prepareTopicExport();
             }).catch((err) => {
                 this.$toast.error(err);
                 this.isLoading = false;
             });
+        },
+
+        prepareTopicExport() {
+            this.exportName = `Темы и ДЗ, ${this.currentClass.classLevel}-класса`;
+            this.exportHeaders = ['Дата', 'Тема', 'Домашнее задание'];
+            this.exportRows = this.topics.map((topic) => {
+               return [`${topic.startDate}-${topic.endDate}`, topic.title, this.exportAssignments(topic.assignments)];
+            });
+        },
+
+        exportAssignments(assignments) {
+            return assignments.map((item) => item.title).join(', ');
         },
 
         showCourseName(courseObj) {
@@ -393,7 +419,7 @@ export default {
 		margin: 20px 0;
 
 		.smart-btn {
-			margin: 0 10px;
+			margin: 0 30px 0 10px;
 		}
 	}
 
