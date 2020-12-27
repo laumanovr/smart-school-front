@@ -106,7 +106,7 @@ const actions = {
 	    const role = data.role.code;
 	    if (role === 'ROLE_SUPER_ADMIN' || role === 'ROLE_RAYON_HEADER' || role === 'ROLE_MIN_EDUCATION') {
             router.push(data.role.url);
-            if (data.role.code === 'ROLE_SUPER_ADMIN') {
+            if (role === 'ROLE_SUPER_ADMIN' || role === 'ROLE_MIN_EDUCATION') {
                 dispatch('location/fetchRegions', {}, {root: true});
             }
         }
