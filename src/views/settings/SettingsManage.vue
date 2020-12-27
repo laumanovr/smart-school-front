@@ -10,7 +10,7 @@
         <div class="settings-manage__container">
             <Sidebar :role="roleObj[userProfile.role[0].code]"/>
             <div class="settings-manage__body">
-                <div class="settings-manage__main">
+                <div class="settings-manage__main" v-if="userProfile.role[0].code !== 'ROLE_MIN_EDUCATION'">
                     <div class="header-title">
                         <h3>Настройки</h3>
                     </div>
@@ -45,7 +45,8 @@
                     'ROLE_ADMIN': 'schoolAdmin',
                     'ROLE_INSTRUCTOR': 'instructor',
                     'ROLE_RAYON_HEADER': 'rayonHead',
-                    'ROLE_DIRECTOR': 'director'
+                    'ROLE_DIRECTOR': 'director',
+                    'ROLE_MIN_EDUCATION': 'minEducation'
                 }
             }
         },
