@@ -44,6 +44,14 @@ export default {
         }
     },
 
+    checkMinEducation(next) {
+        if (this.isExistRole('ROLE_MIN_EDUCATION')) {
+            next()
+        } else {
+            next('/login')
+        }
+    },
+
     checkParent(next) {
         if (this.isExistRole('ROLE_PARENT')) {
             next()
