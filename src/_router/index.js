@@ -259,6 +259,14 @@ const routes = [
                 meta: {
                     requireAuth: true
                 }
+            },
+            {
+                name: 'superAdminChat',
+                path: 'chat',
+                component: loadComponent('super-admin/SuperAdminChat'),
+                meta: {
+                    requireAuth: true
+                }
             }
 		],
 	},
@@ -483,6 +491,14 @@ const routes = [
                 }
             },
             {
+                name: 'schoolAdminChat',
+                path: 'chat',
+                component: loadComponent('school-admin/SchoolAdminChat'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
                 name: 'quarterInitCreate',
                 path: 'quarter-init-create',
                 component: loadComponent('school-admin/school-preset/QuarterInitCreate')
@@ -667,13 +683,12 @@ const routes = [
                 }
             },
             {
-                name: 'instructorMessage',
-                path: 'message',
-                component: SuperAdminEmpty,
+                name: 'instructorChat',
+                path: 'chat',
+                component: loadComponent('instructor/InstructorChat'),
                 meta: {
                     requireAuth: true
                 }
-                // Временно
             },
         ],
     },
