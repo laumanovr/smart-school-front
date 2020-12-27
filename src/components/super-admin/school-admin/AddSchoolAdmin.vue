@@ -1,80 +1,103 @@
 <template>
-    <v-form @submit.prevent="submit" ref="form">
-        <div class="form-head">
-            <span>{{isEdit ? 'Редактировать' : 'Добавить администратора' }}</span>
-            <img alt="" src="../../../assets/images/profile-icon.svg">
-            <button class="profile-edit">
-                <img src="../../../assets/images/icons/edit.svg">
-            </button>
-        </div>
-        <div>
-            <v-text-field :rules="firstLastNameRule" label="Имя" v-model="schoolAdmin.name"></v-text-field>
-        </div>
-        <div>
-            <v-text-field :rules="firstLastNameRule" label="Фамилия" v-model="schoolAdmin.surname"></v-text-field>
-        </div>
-        <div>
-            <v-text-field :rules="middleNameRule" label="Отчество" v-model="schoolAdmin.middleName"></v-text-field>
-        </div>
-        <div>
-            <v-text-field
-                label="ПИН/ИНН"
-                v-model="schoolAdmin.pin"
-                type="number"
-                counter="14"
-                :rules="required"
-                @input="limitNumbers(schoolAdmin, 'pin', 14)"
-            />
-        </div>
-        <div>
-            <v-radio-group :mandatory="false" :rules="required" row v-model="schoolAdmin.gender">
-                <v-radio label="Мужчина" value="MALE"></v-radio>
-                <v-radio label="Женщина" value="FEMALE"></v-radio>
-            </v-radio-group>
-        </div>
+    <div class="add-edit-modal">
+        <PreLoader v-if="isLoading"/>
+        <template v-if="mainMode == 'main'">
+            <v-form @submit.prevent="submit" ref="form">
+                <div class="reset-pass" v-if="isEdit" @click="resetPassword('confirm')">Сбросить пароль</div>
+                <div class="form-head">
+                    <span>{{isEdit ? 'Редактировать' : 'Добавить администратора' }}</span>
+                    <img alt="" src="../../../assets/images/profile-icon.svg">
+                    <button class="profile-edit">
+                        <img src="../../../assets/images/icons/edit.svg">
+                    </button>
+                </div>
+                <div>
+                    <v-text-field :rules="firstLastNameRule" label="Имя" v-model="schoolAdmin.name"></v-text-field>
+                </div>
+                <div>
+                    <v-text-field :rules="firstLastNameRule" label="Фамилия" v-model="schoolAdmin.surname"></v-text-field>
+                </div>
+                <div>
+                    <v-text-field :rules="middleNameRule" label="Отчество" v-model="schoolAdmin.middleName"></v-text-field>
+                </div>
+                <div>
+                    <v-text-field
+                        label="ПИН/ИНН"
+                        v-model="schoolAdmin.pin"
+                        type="number"
+                        counter="14"
+                        :rules="required"
+                        @input="limitNumbers(schoolAdmin, 'pin', 14)"
+                    />
+                </div>
+                <div>
+                    <v-radio-group :mandatory="false" :rules="required" row v-model="schoolAdmin.gender">
+                        <v-radio label="Мужчина" value="MALE"></v-radio>
+                        <v-radio label="Женщина" value="FEMALE"></v-radio>
+                    </v-radio-group>
+                </div>
 
-        <div class="input-mask date">
-            <label>Дата рождения</label>
-            <masked-input v-model="schoolAdmin.dob" mask="11.11.1111" placeholder="ДД.ММ.ГГГГ" />
-        </div>
+                <div class="input-mask date">
+                    <label>Дата рождения</label>
+                    <masked-input v-model="schoolAdmin.dob" mask="11.11.1111" placeholder="ДД.ММ.ГГГГ" />
+                </div>
 
-        <div class="spacer">
-            <v-text-field label="Email" v-model="schoolAdmin.email" :rules="emailRule"/>
-            <v-text-field label="Номер телефона" v-model="schoolAdmin.phone" type="number"/>
-        </div>
-        <div>
-            <v-text-field label="Адрес" v-model="schoolAdmin.address"></v-text-field>
-        </div>
-        <div>
-            <v-select
-                :items="schools"
-                :rules="required"
-                item-text="name"
-                item-value="id"
-                label="Школа"
-                v-model="schoolAdmin.schoolId"
-                @click="addScrollListenerSchoolSelect"
-                @change="removeSchoolSelectScrollListener"
-            ></v-select>
-        </div>
+                <div class="spacer">
+                    <v-text-field label="Email" v-model="schoolAdmin.email" :rules="emailRule"/>
+                    <v-text-field label="Номер телефона" v-model="schoolAdmin.phone" type="number"/>
+                </div>
+                <div>
+                    <v-text-field label="Адрес" v-model="schoolAdmin.address"></v-text-field>
+                </div>
+                <div>
+                    <v-select
+                        :items="schools"
+                        :rules="required"
+                        item-text="name"
+                        item-value="id"
+                        label="Школа"
+                        v-model="schoolAdmin.schoolId"
+                        @click="addScrollListenerSchoolSelect"
+                        @change="removeSchoolSelectScrollListener"
+                    ></v-select>
+                </div>
 
-        <div>
-            <v-select
-                :items="languages"
-                :rules="required"
-                item-text="name"
-                item-value="id"
-                label="Язык"
-                v-model="schoolAdmin.languageId"
-            ></v-select>
+                <div>
+                    <v-select
+                        :items="languages"
+                        :rules="required"
+                        item-text="name"
+                        item-value="id"
+                        label="Язык"
+                        v-model="schoolAdmin.languageId"
+                    ></v-select>
+                </div>
+                <div class="form-footer">
+                    <div class="btn-actions">
+                        <v-btn color="red" @click="$emit('close')">Отменить</v-btn>
+                        <v-btn color="green" type="submit">Сохранить</v-btn>
+                    </div>
+                </div>
+            </v-form>
+        </template>
+
+        <!--RESET PASSWORD-->
+        <div class="modal-container" v-if="mainMode == 'reset'">
+            <template v-if="resetPassMode == 'confirm'">
+                <h4>Сбросить пароль этого админа?</h4>
+                <div class="btn-actions">
+                    <v-btn color="red" @click="$emit('hide')">Отмена</v-btn>
+                    <v-btn color="green" @click="resetPassword('submit')">Сбросить</v-btn>
+                </div>
+            </template>
+            <template v-if="resetPassMode == 'success'">
+                <h4>Пароль успешно сброшен <br> на такой же как логин!</h4>
+                <div class="btn-actions">
+                    <v-btn color="primary" @click="$emit('hide')">Закрыть</v-btn>
+                </div>
+            </template>
         </div>
-        <div class="form-footer">
-            <div class="btn-actions">
-                <v-btn color="red" @click="$emit('close')">Отменить</v-btn>
-                <v-btn color="green" type="submit">Сохранить</v-btn>
-            </div>
-        </div>
-    </v-form>
+    </div>
 </template>
 
 <script>
@@ -88,12 +111,15 @@ const roleService = new RoleService();
 const languageService = new LanguageService();
 const schoolService = new SchoolService();
 const personService = new PersonService();
+import {userService} from '@/_services/user.service';
 import MaskedInput from 'vue-masked-input';
+import PreLoader from '@/components/preloader/PreLoader';
 
 export default {
   name: 'AddSchoolAdmin',
   components: {
-      MaskedInput
+      MaskedInput,
+      PreLoader
   },
   props: {
     role: {
@@ -127,7 +153,17 @@ export default {
     schools: [],
     languages: [],
     roles: [],
-    page: 0
+    page: 0,
+    mainMode: 'main',
+    resetUser: {
+        enabled: true,
+        languageId: 0,
+        name: '',
+        password: '',
+        roles: [],
+        surname: ''
+    },
+    resetPassMode: '',
   }),
 
   computed: {
@@ -219,6 +255,27 @@ export default {
             })
         }
       }
+    },
+    resetPassword(mode) {
+        if (mode === 'submit') {
+            this.isLoading = true;
+            userService.updateUser(this.resetUser).then(() => {
+                this.resetPassMode = 'success';
+                this.isLoading = false;
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.isLoading = false;
+            });
+        } else {
+            this.mainMode = 'reset';
+            this.resetPassMode = mode;
+            this.resetUser.id = this.schoolAdmin.userId;
+            this.resetUser.surname = this.schoolAdmin.surname;
+            this.resetUser.name = this.schoolAdmin.name;
+            this.resetUser.languageId = this.schoolAdmin.languageId;
+            this.resetUser.password = this.schoolAdmin.username;
+            this.resetUser.roles = this.roles.filter(i => i.code === 'ROLE_ADMIN').map(i => i.id);
+        }
     }
   }
 }
@@ -261,5 +318,13 @@ export default {
             }
         }
     }
+}
+.reset-pass {
+    background: #eee;
+    display: inline-block;
+    padding: 2px 5px;
+    border-radius: 5px;
+    color: #656565;
+    cursor: pointer;
 }
 </style>
