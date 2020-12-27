@@ -263,6 +263,113 @@ const routes = [
 		],
 	},
 
+    // MIN-EDUCATION
+    {
+        path: '/min-education',
+        component: loadComponent('min-education/MinEducationManage'),
+        beforeEnter: (to, from, next) => {
+            $user.checkMinEducation(next);
+        },
+        children: [
+            {
+                path: '/',
+                name: 'minEducationDashboard',
+                component: loadComponent('min-education/Dashboard'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
+                name: 'minEducationSchools',
+                path: 'schools',
+                component: loadComponent('min-education/Schools'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
+                name: 'minEducationAdmin',
+                path: 'school-admin',
+                component: loadComponent('min-education/SchoolAdmin'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
+                name: 'minEducationRayonHead',
+                path: 'rayon-head',
+                component: loadComponent('min-education/RayonHead'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
+                name: 'minEducationDirector',
+                path: 'director',
+                component: loadComponent('min-education/Director'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
+                name: 'minEducationSuperAdminInstructors',
+                path: 'instructors',
+                component: loadComponent('min-education/Instructor'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
+                name: 'minEducationSuperAdminStudents',
+                path: 'students',
+                component: loadComponent('min-education/Students'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
+                name: 'minEducationSuperAdminCourses',
+                path: 'courses',
+                component: loadComponent('min-education/Courses'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
+                name: 'minEducationSuperAdminRayon',
+                path: 'rayon',
+                component: loadComponent('min-education/Rayon'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
+                name: 'minEducationSuperAdminChronicle',
+                path: 'chronicle',
+                component: loadComponent('min-education/Chronicle'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
+                name: 'minEducationSuperAdminGradeReason',
+                path: 'grade-reason',
+                component: loadComponent('min-education/AdminGradeReason'),
+                meta: {
+                    requireAuth: true
+                }
+            },
+            {
+                name: 'minEducationSuperAdminVideoMaterial',
+                path: 'video-material',
+                component: loadComponent('min-education/VideoMaterial'),
+                meta: {
+                    requireAuth: true
+                }
+            }
+        ],
+    },
+
     // SCHOOL-ADMIN
 	{
 		path: '/school-admin',
