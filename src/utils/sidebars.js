@@ -54,11 +54,6 @@ export default {
             icon: 'country.svg',
             route: '/super-admin/rayon'
         },
-        // {
-        //     name: 'Календарь',
-        //     icon: 'calendar.svg',
-        //     route: '/super-admin/calendar'
-        // },
         {
             name: 'Академический год',
             icon: 'library.svg',
@@ -83,6 +78,78 @@ export default {
             name: 'Библиотека',
             icon: 'library.svg',
             route: '/super-admin/library'
+        },
+    ],
+
+    minEducation: [
+        {
+            name: 'Аналитика',
+            icon: 'chart.svg',
+            route: '/min-education'
+        },
+        {
+            name: 'Школы',
+            icon: 'schools.svg',
+            route: '/min-education/schools'
+        },
+        {
+            users: [
+                {
+                    name: 'Пользователи',
+                    icon: 'teachers.svg',
+                    route: '#'
+                },
+                {
+                    name: 'Директор',
+                    icon: 'teachers.svg',
+                    route: '/min-education/director'
+                },
+                {
+                    name: 'Администратор',
+                    icon: 'teachers.svg',
+                    route: '/min-education/school-admin'
+                },
+                {
+                    name: 'Районо',
+                    icon: 'teachers.svg',
+                    route: '/min-education/rayon-head'
+                },
+                {
+                    name: 'Учителя',
+                    icon: 'teachers.svg',
+                    route: '/min-education/instructors'
+                },
+                {
+                    name: 'Ученики',
+                    icon: 'students.svg',
+                    route: '/min-education/students'
+                },
+            ]
+        },
+        {
+            name: 'Предметы',
+            icon: 'courses.svg',
+            route: '/min-education/courses'
+        },
+        {
+            name: 'Районы',
+            icon: 'country.svg',
+            route: '/min-education/rayon'
+        },
+        {
+            name: 'Академический год',
+            icon: 'library.svg',
+            route: '/min-education/chronicle'
+        },
+        {
+            name: 'Типы оценок',
+            icon: 'journal.svg',
+            route: '/min-education/grade-reason'
+        },
+        {
+            name: 'Видео инструкции',
+            icon: 'videocam.svg',
+            route: '/min-education/video-material'
         },
     ],
 
