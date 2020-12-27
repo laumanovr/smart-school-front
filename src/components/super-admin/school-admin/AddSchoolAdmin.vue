@@ -155,6 +155,7 @@ export default {
     roles: [],
     page: 0,
     mainMode: 'main',
+    isLoading: false,
     resetUser: {
         enabled: true,
         languageId: 0,
