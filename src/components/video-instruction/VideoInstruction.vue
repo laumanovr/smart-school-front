@@ -122,7 +122,7 @@
             }
         },
         created() {
-            this.materialObj.roleCode = this.role === 'superAdmin' ? this.roles[0].code : this.role;
+            this.materialObj.roleCode = this.role === 'superAdmin' || this.role === 'minEducation' ? this.roles[0].code : this.role;
             this.isLoading = true;
             this.filterVideoMaterials();
         },
