@@ -66,8 +66,9 @@ export default {
     methods: {
         ...mapActions('account', [ 'login', 'logout' ]),
         systemLogout() {
-            this.logout();
             this.$router.push('/login');
+            this.logout();
+            window.location.reload();
         },
 
         changeLang(lang) {
