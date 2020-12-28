@@ -75,15 +75,15 @@ export default {
             route: '/super-admin/announcements'
         },
         {
+            name: 'Чат',
+            icon: 'message.svg',
+            route: '/super-admin/chat'
+        },
+        {
             name: 'Библиотека',
             icon: 'library.svg',
             route: '/super-admin/library'
         },
-        {
-            name: 'Чат',
-            icon: 'message.svg',
-            route: '/super-admin/chat'
-        }
     ],
 
     minEducation: [
