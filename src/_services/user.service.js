@@ -13,6 +13,7 @@ export const userService = {
 	logout () {
 		localStorage.removeItem('user');
 		localStorage.removeItem('profile');
+		window.location.reload();
 	},
 
 	getProfile () {
