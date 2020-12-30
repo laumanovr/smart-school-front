@@ -16,7 +16,7 @@
                 </div>
             </template>
             <template v-slot:center>
-                <SmartSearchInput :searchObj="filterObj" :searchField="'query'"/>
+                <SmartSearchInput :searchObj="filterObj.searchRequest" :searchField="'query'"/>
                 <button class="search-btn" @click="searchStudentByFIO">Поиск</button>
             </template>
         </SuperAdminSchoolHead>
@@ -38,10 +38,10 @@
                                 item-text="title"
                                 item-value="id"
                                 label="Регион"
-                                v-model="filterObj.regionId"
+                                v-model="filterObj.searchRequest.regionId"
                                 @change="fetchRayonsByRegion"
                             />
-                            <TrashIcon @click="filterObj.regionId=''" v-show="filterObj.regionId"/>
+                            <TrashIcon @click="filterObj.searchRequest.regionId=''" v-show="filterObj.searchRequest.regionId"/>
                         </div>
                         <div class="select-clear-block">
                             <v-select
@@ -49,10 +49,10 @@
                                 item-text="title"
                                 item-value="id"
                                 label="Район"
-                                v-model="filterObj.rayonId"
+                                v-model="filterObj.searchRequest.rayonId"
                                 @change="onSelectRayon"
                             />
-                            <TrashIcon @click="filterObj.rayonId=''" v-show="filterObj.rayonId"/>
+                            <TrashIcon @click="filterObj.searchRequest.rayonId=''" v-show="filterObj.searchRequest.rayonId"/>
                         </div>
                         <div class="select-clear-block">
                             <v-select
@@ -60,12 +60,12 @@
                                 item-text="name"
                                 item-value="id"
                                 label="Школа"
-                                v-model="filterObj.schoolId"
+                                v-model="filterObj.searchRequest.schoolId"
                                 :menu-props="{contentClass: 'schoolSelect'}"
                                 @click="addScrollListenerSchoolSelect"
                                 @blur="removeSchoolSelectScrollListener"
                             />
-                            <TrashIcon @click="filterObj.schoolId=''" v-show="filterObj.schoolId"/>
+                            <TrashIcon @click="filterObj.searchRequest.schoolId=''" v-show="filterObj.searchRequest.schoolId"/>
                         </div>
                         <div class="select-clear-block">
                             <v-select
@@ -73,9 +73,9 @@
                                 item-text="classLevel"
                                 item-value="classLevel"
                                 label="Класс"
-                                v-model="filterObj.classLevel"
+                                v-model="filterObj.searchRequest.classLevel"
                             />
-                            <TrashIcon @click="filterObj.classLevel=''" v-show="filterObj.classLevel"/>
+                            <TrashIcon @click="filterObj.searchRequest.classLevel=''" v-show="filterObj.searchRequest.classLevel"/>
                         </div>
                     </div>
                     <div class="btn-filter">
@@ -88,15 +88,17 @@
                 <th>Ф.И.О</th>
                 <th>Пол</th>
                 <th>Класс</th>
+                <th>Дата рождения</th>
                 <th>Район</th>
             </template>
 
             <template v-slot:body="{ item }">
-                <td>{{ item.schools[0] ? item.schools[0].name : '' }}</td>
-                <td>{{ item.lastName }} {{ item.firstName }}</td>
+                <td>{{ item.schoolTitle }}</td>
+                <td>{{ item.surname }} {{ item.name }}</td>
                 <td>{{ gender[item.gender] }}</td>
                 <td>{{ item.classTitle }}</td>
-                <td>{{ item.schools[0] ? item.schools[0].rayonTitle : '' }}</td>
+                <td>{{ formatDOB(item.dateOfBirth) }}</td>
+                <td>{{ item.rayonTitle }}</td>
             </template>
         </SmartTable>
     </div>
@@ -137,16 +139,22 @@ export default {
             pageSize: 20,
             currentPage: 1,
             gender: {
-                FEMALE: 'Ж',
-                MALE: 'М'
+                '1': 'Ж',
+                '0': 'М'
             },
             isLoading: false,
             filterObj: {
-                schoolId: '',
-                classLevel: '',
-                regionId: '',
-                rayonId: '',
-                query: ''
+                pageRequest: {
+                    limit: 10,
+                    offset: 0
+                },
+                searchRequest: {
+                    classLevel: '',
+                    query: '',
+                    rayonId: '',
+                    regionId: '',
+                    schoolId: ''
+                }
             },
             classes: [],
             filteredRayons: [],
@@ -168,46 +176,34 @@ export default {
         ];
     },
     methods: {
-        fetchStudents(page) {
+        fetchStudents() {
             this.isLoading = true;
-            this.students = [];
-            studentService.list(
-                page,
-                this.filterObj.schoolId,
-                this.filterObj.classLevel,
-                this.filterObj.regionId,
-                this.filterObj.rayonId,
-                this.filterObj.query
-            ).then((res) => {
-                this.pageSize = res.page.size;
-                this.totalElements = res.page.totalElements;
-                this.totalPages = res.page.totalPages;
-                if (res._embedded) {
-                    this.students = res._embedded.studentResourceList.sort((a, b) => a.schools[0].id - b.schools[0].id);
-                }
+            studentService.getAllStudents(this.filterObj).then((res) => {
+                this.pageSize = this.filterObj.pageRequest.limit;
+                this.totalElements = res.totalCount;
+                this.totalPages = Math.ceil(res.totalCount / this.filterObj.pageRequest.limit);
+                this.students = res.list;
                 this.isLoading = false;
-            }).catch(err => console.log(err));
+            }).catch((err) =>  {
+                this.$toast.error(err);
+                this.isLoading = false;
+            });
         },
 
         exportAllStudents() {
             this.isLoading = true;
-            const filterObj = {
-                classId: '',
-                classLevel: this.filterObj.classLevel,
-                rayonId: this.filterObj.rayonId,
-                regionId: this.filterObj.regionId,
-                schoolId: this.filterObj.schoolId,
-            };
-            studentService.getAbsolutelyAll(filterObj).then((res) => {
-                if (res.length) {
+            this.filterObj.pageRequest.offset = 0;
+            this.filterObj.pageRequest.limit = this.totalElements;
+            studentService.getAllStudents(this.filterObj).then((res) => {
+                if (res.list.length) {
                     this.exportStudentHeaders = ['Школа', 'Район', 'ФИО', 'Класс', 'Дата Рождения', 'Пол'];
-                    this.exportStudentRows = res.map((i) => {
+                    this.exportStudentRows = res.list.map((i) => {
                         return [
                             i.schoolTitle,
                             i.rayonTitle,
                             i.surname+' '+i.name,
                             i.classTitle,
-                            moment(i.dateOfBirth, 'YYYY-MM-DD').format('DD.MM.YYYY'),
+                            this.formatDOB(i.dateOfBirth),
                             i.gender ? 'Ж' : 'М'
                         ];
                     });
@@ -220,25 +216,32 @@ export default {
             });
         },
 
+        formatDOB(date) {
+            return moment(date, 'YYYY-MM-DD').format('DD.MM.YYYY');
+        },
+
         onLeftClick() {
             this.currentPage--;
-            this.fetchStudents(this.currentPage - 1);
+            this.filterObj.pageRequest.offset = this.currentPage - 1;
+            this.fetchStudents();
         },
 
         onRightClick() {
             this.currentPage++;
-            this.fetchStudents(this.currentPage - 1);
+            this.filterObj.pageRequest.offset = this.currentPage - 1;
+            this.fetchStudents();
         },
 
         filterStudents() {
-            this.filterObj.query = '';
             this.currentPage = 1;
-            this.fetchStudents(0);
+            this.filterObj.searchRequest.query = '';
+            this.filterObj.pageRequest.offset = this.currentPage - 1;
+            this.fetchStudents();
         },
 
         fetchRayonsByRegion(regionId) {
-            this.filterObj.schoolId = '';
-            this.filterObj.rayonId = '';
+            this.filterObj.searchRequest.schoolId = '';
+            this.filterObj.searchRequest.rayonId = '';
             this.filteredSchools = [];
             rayonService.listByRegion(regionId).then((res) => {
                 this.filteredRayons = res;
@@ -247,7 +250,7 @@ export default {
 
         onSelectRayon() {
             this.filteredSchools = [];
-            this.filterObj.schoolId = '';
+            this.filterObj.searchRequest.schoolId = '';
             this.schoolPage = 0;
             this.fetchSchoolsByRayon();
         },
@@ -255,8 +258,8 @@ export default {
         fetchSchoolsByRayon() {
             schoolService.listPageable(
                 this.schoolPage,
-                this.filterObj.regionId,
-                this.filterObj.rayonId
+                this.filterObj.searchRequest.regionId,
+                this.filterObj.searchRequest.rayonId
             ).then((res) => {
                 if (res._embedded) {
                     res._embedded.schoolResourceList.forEach((school) => {
@@ -269,10 +272,10 @@ export default {
         },
 
         searchStudentByFIO() {
-            this.filterObj.schoolId = '';
-            this.filterObj.classLevel = '';
-            this.filterObj.regionId = '';
-            this.filterObj.rayonId = '';
+            this.filterObj.searchRequest.schoolId = '';
+            this.filterObj.searchRequest.classLevel = '';
+            this.filterObj.searchRequest.regionId = '';
+            this.filterObj.searchRequest.rayonId = '';
             this.currentPage = 1;
             this.fetchStudents(0);
         },
