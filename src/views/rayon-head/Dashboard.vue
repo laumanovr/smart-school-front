@@ -1,25 +1,6 @@
 <template>
     <div class="dashboard__body">
         <PreLoader v-if="isLoading"/>
-        <!--<div>-->
-        <!--<img src="../../assets/images/temporary/students.svg" alt="">-->
-        <!--<img src="../../assets/images/temporary/teachers-avg.svg" alt="">-->
-        <!--<img src="../../assets/images/temporary/attendance.svg" alt="">-->
-        <!--<img src="../../assets/images/temporary/homework.svg" alt="">-->
-        <!--</div>-->
-        <!--<div>-->
-        <!--<div>-->
-        <!--<div>-->
-        <!--<img src="../../assets/images/temporary/teacher-active.svg" alt="">-->
-        <!--</div>-->
-        <!--<div>-->
-        <!--<img src="../../assets/images/temporary/lesson-lost.svg" alt="">-->
-        <!--<img src="../../assets/images/temporary/lesson-hours.svg" alt="">-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--<img src="../../assets/images/temporary/std-avg.svg" alt="">-->
-        <!--<img src="../../assets/images/temporary/school-perf.svg" alt="">-->
-        <!--</div>-->
 
         <div class="header-title">
             <h3>Аналитика</h3>
@@ -77,17 +58,13 @@
                 v-model="trackObj.roleId"
             />
             <div class="school-select">
-                <v-autocomplete
+                <v-select
                     :items="schools"
                     item-text="name"
                     item-value="id"
                     label="Школа"
                     v-model="trackObj.schoolId"
                     clearable
-                    hide-no-data
-                    :loading="schoolLoader"
-                    :search-input.sync="searchSchool"
-                    @change="onSelectSchool"
                 />
             </div>
             <v-btn color="primary" @click="getAnalytics">Показать</v-btn>
@@ -136,7 +113,6 @@
             TrashIcon,
             PreLoader
         },
-
         data() {
             return {
                 required: [v => !!v || this.$t('required')],
@@ -149,26 +125,32 @@
                 showPickerStart: false,
                 showPickerEnd: false,
                 isLoading: false,
-                typingTimer: null,
-                isTimerBlock: false,
-                schoolLoader: false,
+//                typingTimer: null,
+//                isTimerBlock: false,
+//                schoolLoader: false,
                 dateStart: '',
                 dateEnd: moment().format('YYYY-MM-DD'),
                 currentRole: '',
-                searchSchool: '',
+//                searchSchool: '',
                 roles: [],
                 schools: [],
                 analyticsData: []
             }
         },
-
+        computed: {
+            userProfile () {
+                return this.$store.state.account.profile;
+            },
+            headRayonId() {
+                return this.userProfile.rayons ? this.userProfile.rayons[0] : 0;
+            }
+        },
         async created() {
             this.isLoading = true;
             this.setPreviousMonth();
             await this.fetchAllRoles();
             await this.fetchAllSchools();
         },
-
         methods: {
             setPreviousMonth() {
                 const dateMonthAgo = new Date().setMonth(new Date().getMonth() - 1);
@@ -190,8 +172,8 @@
                 })
             },
 
-            fetchAllSchools(searchQuery = '') {
-                schoolService.listPageable(0, '', '', searchQuery).then((res) => {
+            fetchAllSchools() {
+                schoolService.listPageable(0, '', this.headRayonId).then((res) => {
                     if (res._embedded) {
                         this.schools = res._embedded.schoolResourceList;
                     }
@@ -268,28 +250,7 @@
                     this.isLoading = false;
                 })
             },
-
-            onSelectSchool() {
-                this.isTimerBlock = true;
-                setTimeout(() => {
-                    this.isTimerBlock = false;
-                }, 3000)
-            },
         },
-
-        watch: {
-            searchSchool(inputValue) {
-                clearTimeout(this.typingTimer);
-                this.typingTimer = null;
-
-                if (!this.isTimerBlock) {
-                    this.schoolLoader = true;
-                    this.typingTimer = setTimeout(() => {
-                        this.fetchAllSchools(inputValue);
-                    }, 900);
-                }
-            }
-        }
     }
 </script>
 
