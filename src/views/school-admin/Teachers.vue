@@ -340,7 +340,7 @@ export default {
                     surname: res.lastName,
                     middleName: res.middleName,
                     gender: res.gender,
-                    phone: res.phone,
+                    phone: res.phone ? res.phone.replace('+', '') : '',
                     courseId: item.courseId,
                     pin: res.pin,
                     dob: res.dateOfBirth,
