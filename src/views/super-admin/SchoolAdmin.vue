@@ -269,7 +269,7 @@ export default {
                     dob: res.dateOfBirth,
                     gender: res.gender,
                     email: res.email,
-                    phone: res.phone,
+                    phone: res.phone ? res.phone.replace('+', '') : '',
                     address: res.address,
                     schoolId: res.schools[0],
                     pin: res.pin,
