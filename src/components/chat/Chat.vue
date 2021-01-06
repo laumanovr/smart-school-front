@@ -143,7 +143,6 @@
 
     .inbox_people {
         background: #fbfbfb none repeat scroll 0 0;
-        float: left;
         overflow: hidden;
         width: 40%;
         border-right: 1px solid #c4c4c4;
@@ -154,6 +153,7 @@
         border-radius: 4px;
         clear: both;
         overflow: hidden;
+        display: flex;
     }
 
     .top_spac {
@@ -243,7 +243,7 @@
     }
 
     .inbox_chat {
-        height: 550px;
+        height: 75vh;
         overflow-y: auto;
     }
 
@@ -285,7 +285,6 @@
     }
 
     .mesgs {
-        float: left;
         padding: 30px 15px 0 25px;
         width: 60%;
         background: #fff;
@@ -350,7 +349,7 @@
     }
 
     .msg_history {
-        height: 516px;
+        height: 70vh;
         overflow-y: auto;
     }
 </style>
