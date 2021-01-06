@@ -141,8 +141,12 @@
 					<v-text-field v-model="studentObj.phone" label="Номер телефона" type="number"></v-text-field>
 				</div>
 
-				<div>
-					<v-text-field v-model="parentPersonObj.name" label="Имя отца"></v-text-field>
+				<div class="parent">
+                    <template v-if="!isStudentEdit">
+                        <span :class="{'active': parentPersonObj.gender == 'FEMALE'}" @click="setParentGender('FEMALE')">Мать</span>
+                        <span :class="{'active': parentPersonObj.gender == 'MALE'}" @click="setParentGender('MALE')">Отец</span>
+                    </template>
+					<v-text-field v-model="parentPersonObj.name" label="Имя Родителя"></v-text-field>
 				</div>
 
 				<div>
@@ -396,7 +400,7 @@ export default {
 				dob: '05.05.1980',
 				email: '',
 				enabled: true,
-				gender: 'MALE',
+				gender: 'FEMALE',
 				job: '',
 				jobPlace: '',
 				languageId: 0,
@@ -763,6 +767,7 @@ export default {
 			this.studentObj = {};
             this.parentPersonObj.name = '';
             this.parentPersonObj.phone = '';
+            this.parentPersonObj.gender = 'FEMALE';
 		},
 
 		onEditStudent(item) {
@@ -777,10 +782,14 @@ export default {
                 this.studentObj.gender = item.gender === 0 ? 'MALE' : 'FEMALE';
 				this.studentObj.phone = res.phone ? res.phone.replace('+', '') : '';
                 this.studentObj.pin = res.pin;
-                this.parentPersonObj.name = res.parents && res.parents.length ? res.parents[0].parentTitle : '';
                 this.isAddStudentModal = true;
                 this.isStudentEdit = true;
                 this.isLoading = false;
+                if (res.parents.length) {
+                    this.parentPersonObj.name = res.parents[0].parentTitle.trim();
+                    this.parentPersonObj.gender = res.parents[0].parentType ? 'FEMALE' : 'MALE';
+                    this.parentPersonObj.phone = res.parents[0].parentPhone ? res.parents[0].parentPhone.replace('+', '') : '';
+                }
             }).catch(err => {
                 this.isLoading = false;
                 this.$toast.error(err);
@@ -803,6 +812,10 @@ export default {
                 this.filterClasses.unshift({id: 0, classTitle: 'Показать все'});
 			})
 		},
+
+        setParentGender(gender) {
+            this.parentPersonObj.gender = gender;
+        },
 
 		submitStudent() {
 		    if (!this.$refs.studentForm.validate()) {
@@ -842,13 +855,13 @@ export default {
 						return studentParentService.getByStudent(this.studentObj.id)
 					}).then(res => {
 						if (res._embedded) {
-							this.parentPersonObj.id = res._embedded.studentParentResourceList[0].parentId
+							this.parentPersonObj.id = res._embedded.studentParentResourceList[0].parentId;
 							return personService.edit(this.parentPersonObj)
 						} else {
 							return personService.create(this.parentPersonObj).then(res => {
 								const studentParent = {
 									personId: parseInt(res.message),
-									parentalType: 'FATHER',
+									parentalType: this.parentPersonObj.gender === 'MALE' ? 'FATHER' : 'MOTHER',
 									studentId: this.studentClassObj.studentId
 								};
 								return studentParentService.create(studentParent)
@@ -879,7 +892,7 @@ export default {
 					personService.create(this.parentPersonObj).then((res) => {
 						const studentParent = {
 							personId: parseInt(res.message),
-							parentalType: 'FATHER',
+							parentalType: this.parentPersonObj.gender === 'MALE' ? 'FATHER' : 'MOTHER',
 							studentId: this.studentClassObj.studentId
 						};
 						studentParentService.create(studentParent).then((res) => {
@@ -1023,7 +1036,7 @@ export default {
 
 		.profile-edit {
 			background: #FFFFFF;
-			box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
+			box-shadow: 0 4px 4px rgba(0, 0, 0, 0.08);
 			width: 24px;
 			height: 24px;
 			border-radius: 50%;
@@ -1049,6 +1062,21 @@ export default {
         border-radius: 5px;
         width: 100%;
         text-align: center;
+    }
+    .parent {
+        span {
+            border: 1px solid #7d7d7d;
+            font-size: 14px;
+            padding: 2px 5px;
+            border-radius: 4px;
+            margin-right: 3px;
+            cursor: pointer;
+            &.active {
+                background: #1976d2;
+                color: #fff;
+                cursor: default;
+            }
+        }
     }
 }
 
