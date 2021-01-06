@@ -140,7 +140,7 @@
                     v-model="selectedQuarterId"
                 />
                 <div class="btn-actions">
-                    <v-btn color="red">Отмена</v-btn>
+                    <v-btn color="red" @click="toggleExportModal">Отмена</v-btn>
                     <v-btn color="green" @click="filterAndExportTopicsHw">Экспорт</v-btn>
                 </div>
             </div>
