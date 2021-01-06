@@ -23,7 +23,18 @@
                         @change="onChangeCourse"
 					></v-select>
 					<SmartButton @clicked="onAddTopic">{{ $t('add_topic') }}</SmartButton>
-                    <ExcelJs :rows="exportRows" :headers="exportHeaders" :file-name="exportName" v-if="topics.length"/>
+                    <div class="school-admin-school-head__item">
+                        <div class="export-custom" v-if="topics.length">
+                            <ExcelJs
+                                ref="topicExport"
+                                :buttonTitle="'Экспорт Тем и ДЗ'"
+                                :file-name="exportName"
+                                :headers="exportHeaders"
+                                :rows="exportRows"
+                            />
+                            <span class="export-custom-btn" @click="toggleExportModal"></span>
+                        </div>
+                    </div>
 				</template>
 				<template v-slot:head>
 					<th></th>
@@ -117,6 +128,23 @@
 		>
 			<DeletePopup @cancel="isAssignmentDelete = false" @accept="deleteAssignment"></DeletePopup>
 		</v-dialog>
+
+        <modal name="export-modal" width="450px" height="auto">
+            <div class="modal-container">
+                <h4>Выберите четверть</h4>
+                <v-select
+                    :items="quarters"
+                    item-text="semester"
+                    item-value="id"
+                    label="Четверть"
+                    v-model="selectedQuarterId"
+                />
+                <div class="btn-actions">
+                    <v-btn color="red">Отмена</v-btn>
+                    <v-btn color="green" @click="filterAndExportTopicsHw">Экспорт</v-btn>
+                </div>
+            </div>
+        </modal>
 	</div>
 </template>
 
@@ -136,6 +164,8 @@ const topicService = new TopicService();
 import PreLoader from "@/components/preloader/PreLoader";
 import ScheduleWeekService from '@/_services/schedule-week.service';
 import ExcelJs from "@/components/excel-export/ExcelJs";
+import {QuarterService} from '@/_services/quarter.service';
+const quarterService = new QuarterService();
 
 export default {
 	name: "InstructorTopic",
@@ -181,7 +211,10 @@ export default {
             showHW: false,
             exportHeaders: [],
             exportRows: [],
-            exportName: ''
+            quarters: [],
+            exportTopics: [],
+            exportName: '',
+            selectedQuarterId: ''
 		}
 	},
 	computed: {
@@ -199,9 +232,16 @@ export default {
     created() {
         this.isLoading = true;
 	    this.fetchInstructorCourses();
+	    this.getSchoolQuarters();
     },
 
 	methods: {
+	    getSchoolQuarters() {
+	        quarterService.getBySchoolAndChronicle(this.school.id, this.school.chronicleId).then((res) => {
+	            this.quarters = res.sort((a, b) => a.semester - b.semester);
+            });
+        },
+
         fetchInstructorCourses() {
             ScheduleWeekService.getByInstructor(this.userProfile.personId).then((res) => {
                 if (res.length) {
@@ -288,22 +328,51 @@ export default {
                 }
                 this.showHW = true;
                 this.isLoading = false;
-                this.prepareTopicExport();
             }).catch((err) => {
                 this.$toast.error(err);
                 this.isLoading = false;
             });
         },
 
-        prepareTopicExport() {
-            this.exportName = `Темы и ДЗ, ${this.currentClass.classLevel}-класса`;
-            this.exportHeaders = ['Дата', 'Тема', 'Домашнее задание'];
-            this.exportRows = this.topics.map((topic) => {
-               return [`${topic.startDate}-${topic.endDate}`, topic.title, this.exportAssignments(topic.assignments)];
-            });
+        toggleExportModal() {
+            this.$modal.toggle('export-modal')
         },
 
-        exportAssignments(assignments) {
+        filterAndExportTopicsHw() {
+            if (this.selectedQuarterId) {
+                this.isLoading = true;
+                topicService.getByInstructor(
+                    0,
+                    this.userProfile.personId,
+                    this.topic.courseId,
+                    this.topic.classLevel,
+                    this.selectedQuarterId,
+                    500
+                ).then((res) => {
+                    if (res._embedded) {
+                        this.exportTopics = res._embedded.topicResourceList;
+                        this.exportName = `Темы и ДЗ, ${this.currentClass.classLevel}-класса`;
+                        this.exportHeaders = ['Дата', 'Тема', 'Домашние задания'];
+                        this.exportRows = this.exportTopics.map((topic) => {
+                            return [`${topic.startDate}-${topic.endDate}`, topic.title, this.prepareAssignments(topic.assignments)];
+                        });
+                        this.$refs.topicExport.isExport = true;
+                        this.$nextTick(() => {
+                           setTimeout(() => {
+                               this.isLoading = false;
+                               this.toggleExportModal();
+                               this.$refs.topicExport.exportExcel();
+                           });
+                        });
+                    } else {
+                        this.$toast.info('Ничего не найдено!');
+                        this.isLoading = false;
+                    }
+                })
+            }
+        },
+
+        prepareAssignments(assignments) {
             return assignments.map((item) => item.title).join(', ');
         },
 
