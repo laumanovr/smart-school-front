@@ -169,3 +169,13 @@ input::-webkit-inner-spin-button {
 input[type=number] {
   -moz-appearance: textfield;
 }
+
+.select-chat-users {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 15px;
+  .v-select-item {
+    max-width: 160px;
+  }
+}
