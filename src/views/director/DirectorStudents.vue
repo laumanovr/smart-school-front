@@ -195,7 +195,8 @@
 
                 <template v-if="studentDetail.parents.length">
                     <v-text-field
-                        v-for="parent in studentDetail.parents"
+                        v-for="(parent, i) in studentDetail.parents"
+                        :key="i"
                         :value="parent.parentUsername+' / '+parent.parentTitle"
                         :label="parent.parentType ? 'Мать' : 'Отец'"
                         readonly outlined type="text"
