@@ -4,7 +4,7 @@
         <SuperAdminSchoolHead>
             <template v-slot:title>Учителя</template>
             <template v-slot:center>
-                <SmartSearchInput :searchObj="search" :searchField="'query'"/>
+                <SmartSearchInput :searchObj="search" :searchField="'query'" @onEnter="searchTeacherByFIO"/>
                 <button class="search-btn" @click="searchTeacherByFIO">Поиск</button>
             </template>
             <template v-slot:right>
