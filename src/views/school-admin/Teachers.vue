@@ -55,7 +55,7 @@
                 <td class="instr-courses">{{ translateCourses(item.courses) }}</td>
                 <td>{{ item.username }}</td>
                 <td @click="editUser(item)" class="actions"><img alt="" src="../../assets/images/icons/pen.svg"></td>
-                <td><CourseIcon @click="addCourseModal(item)"/></td>
+                <td><CourseIcon @click="addCourseModal(item.id, false)"/></td>
                 <td><TrashIcon @click="deleteTeacher(item, true)"/></td>
             </template>
         </SmartTable>
@@ -72,7 +72,7 @@
         </v-dialog>
 
         <!--ADD COURSE MODAL-->
-        <modal name="add-course-modal" width="700px" height="auto">
+        <modal name="add-course-modal" width="700px" height="auto" :clickToClose="false">
             <div class="modal-container">
                 <div class="course-content">
                     <div class="added">
@@ -98,7 +98,7 @@
                             </v-select>
                         </div>
                         <div class="btn-actions">
-                            <v-btn color="red" @click="$modal.hide('add-course-modal')">Отмена</v-btn>
+                            <v-btn color="red" @click="$modal.hide('add-course-modal')" v-if="!initialAddCourse">Отмена</v-btn>
                             <v-btn color="green" @click="submitAddTeacherCourse">Сохранить</v-btn>
                         </div>
                         </v-form>
@@ -196,7 +196,8 @@ export default {
         deleteTeacherId: '',
         search: {
             query: ''
-        }
+        },
+        initialAddCourse: false
     }),
     computed: {
         userProfile() {
@@ -306,7 +307,7 @@ export default {
             this.isEdit = false;
             this.user = {};
         },
-        onCloseModal() {
+        onCloseModal(instructorId) {
             this.isAddUser = false;
             if (this.isEdit) {
                 personService.getById(this.user.id).then((res) => {
@@ -322,7 +323,7 @@ export default {
                     })
                 })
             } else {
-                this.fetchInstructors();
+                this.addCourseModal(instructorId, true);
             }
         },
         downloadTemplate () {
@@ -392,12 +393,13 @@ export default {
             this.fetchInstructors(this.currentPage - 1);
         },
 
-        addCourseModal(instructor) {
+        addCourseModal(instructorId, bool) {
+            this.initialAddCourse = bool;
             this.isLoading = true;
             this.addTeacherCourse.courseId = '';
-            this.addTeacherCourse.personId = instructor.id;
+            this.addTeacherCourse.personId = instructorId;
             this.schoolCourses = this.allSchoolCourses;
-            instructorCourseService.listByInstructor(instructor.id).then((res) => {
+            instructorCourseService.listByInstructor(instructorId).then((res) => {
                 this.teacherCourses = res._embedded ? res._embedded.instructorCourseResourceList : [];
                 if (this.teacherCourses.length) {
                     this.teacherCourses = this.teacherCourses.map((course) => {
