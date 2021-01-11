@@ -62,8 +62,8 @@
                 this.$refs.chat.selectedRole = role;
                 this.$refs.chat.recipientUserId = '';
                 this.$refs.chat.users = [];
-                this.$refs.chat.allReserveUsers = [];
                 this.$refs.chat.messages = [];
+                this.$refs.chat.allReserveUsers = [];
                 if (role === 'teacher') {
                     this.$refs.chat.fetchUsers(this.selectedTab);
                 }
