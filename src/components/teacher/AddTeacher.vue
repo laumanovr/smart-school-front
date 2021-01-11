@@ -168,9 +168,9 @@
                 }
             },
             personCreate(data) {
-                personService.create(data).then(res => {
+                personService.create(data).then((res) => {
                     this.$toast.success('Успешно создано!');
-                    this.$emit('close');
+                    this.$emit('close', res.message);
                 }).catch(err => this.$toast.error(err));
             },
             personEdit(data) {
