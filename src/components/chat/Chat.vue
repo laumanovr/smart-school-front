@@ -16,8 +16,7 @@
                                     placeholder="Поиск"
                                     v-model="searchQuery"
                                     @keyup.enter="searchUser"
-                                    :disabled="!users.length"
-                                >
+                                />
                             </div>
                         </div>
                     </div>
@@ -59,8 +58,13 @@
                     </div>
                     <div class="type_msg">
                         <div class="input_msg_write" v-if="recipientUserId">
-                            <input type="text" v-model="inputValue" @keyup.enter="sendMessage" class="write_msg"
-                                   placeholder="Написать сообщение"/>
+                            <input
+                                type="text"
+                                v-model="inputValue"
+                                @keyup.enter="sendMessage"
+                                class="write_msg"
+                                placeholder="Написать сообщение"
+                            />
                             <button class="msg_send_btn" type="button" @click.prevent="sendMessage">
                                 <img src="@/assets/images/icons/send-icon.svg">
                             </button>
@@ -192,7 +196,7 @@
                     this.isLoading = true;
                     this.fetchSchoolTeachers();
                 } else if (this.selectedRole === 'student' || this.selectedRole === 'parent') {
-                    this.users = this.allReserveUsers.filter((user) => user.fullName.includes(this.searchQuery));
+                    this.users = this.allReserveUsers.filter((user) => user.fullName.toLocaleLowerCase().includes(this.searchQuery.toLocaleLowerCase()));
                 }
             },
 
