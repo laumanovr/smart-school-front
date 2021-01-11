@@ -232,6 +232,11 @@
                 });
             },
 
+            playSound() {
+                const sound = new Audio(require("@/assets/notify-sound.mp3"));
+                sound.play();
+            },
+
             onEventHistoryMessages() {
                 WebSocketService.eventEmitter.on('oldMessages', (res) => {
                     this.messages = res.messages.reverse().map((msg) => {
@@ -248,6 +253,7 @@
                     message.sentDateTime = this.getCurrentTime();
                     this.messages.push(message);
                     this.scrollToBottom();
+                    this.playSound();
                 });
             },
 
