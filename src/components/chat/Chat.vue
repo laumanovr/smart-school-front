@@ -1,6 +1,7 @@
 <template>
     <div class="chat-container">
-        <h3 class=" text-center">Сообщения</h3>
+        <PreLoader v-if="isLoading"/>
+        <h3 class="text-center">Сообщения</h3>
         <div class="messaging">
             <div class="inbox_msg">
                 <div class="inbox_people">
@@ -10,89 +11,54 @@
                         </div>
                         <div class="srch_bar">
                             <div class="stylish-input-group">
-                                <input type="text" class="search-bar" placeholder="Поиск">
-                                <span class="input-group-addon">
-                                    <button type="button"> <i class="fa fa-search" aria-hidden="true"></i></button>
-                                </span>
+                                <input
+                                    class="search-bar"
+                                    placeholder="Поиск"
+                                    v-model="searchQuery"
+                                    @keyup.enter="searchUser"
+                                    :disabled="!users.length"
+                                >
                             </div>
                         </div>
                     </div>
                     <div class="inbox_chat">
-                        <div class="chat_list active_chat">
+                        <div class="chat_list"
+                             v-for="user in users"
+                             :key="user.id"
+                             :class="{'active_chat': recipientUserId == user.userId}"
+                             @click="onSelectUser(user)"
+                        >
                             <div class="chat_people">
-                                <div class="chat_img"><img src="https://ptetutorials.com/images/user-profile.png"></div>
+                                <div class="chat_img"><img src="@/assets/images/icons/profile-icon.svg"></div>
                                 <div class="chat_ib">
-                                    <h5>Иван Иванов <span class="chat_date">Dec 25</span></h5>
-                                    <p>Добрый день, как ваши дела?.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="chat_list">
-                            <div class="chat_people">
-                                <div class="chat_img"><img src="https://ptetutorials.com/images/user-profile.png"></div>
-                                <div class="chat_ib">
-                                    <h5>Эльдияр Кененсаров <span class="chat_date">Dec 25</span></h5>
-                                    <p>Добрый день, как ваши дела?.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="chat_list">
-                            <div class="chat_people">
-                                <div class="chat_img"><img src="https://ptetutorials.com/images/user-profile.png"></div>
-                                <div class="chat_ib">
-                                    <h5>Айбек Баратов <span class="chat_date">Dec 25</span></h5>
-                                    <p>Добрый день, как ваши дела?.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="chat_list">
-                            <div class="chat_people">
-                                <div class="chat_img"><img src="https://ptetutorials.com/images/user-profile.png"
-                                                           alt="sunil"></div>
-                                <div class="chat_ib">
-                                    <h5>Аселя Мухтарова <span class="chat_date">Dec 25</span></h5>
-                                    <p>Добрый день, как ваши дела?.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="chat_list">
-                            <div class="chat_people">
-                                <div class="chat_img"><img src="https://ptetutorials.com/images/user-profile.png"
-                                                           alt="sunil"></div>
-                                <div class="chat_ib">
-                                    <h5>Айгуль Урматова <span class="chat_date">Dec 25</span></h5>
-                                    <p>Добрый день, как ваши дела?.</p>
+                                    <h5>{{ user.fullName }} <span class="chat_date">...</span></h5>
+                                    <p>...</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="mesgs">
-                    <div class="msg_history">
-                        <div class="incoming_msg">
-                            <div class="incoming_msg_img"><img src="https://ptetutorials.com/images/user-profile.png"
-                                                               alt="sunil"></div>
-                            <div class="received_msg">
-                                <div class="received_withd_msg">
-                                    <p>Тестирую отправку сообщения</p>
-                                    <span class="time_date"> 11:01 AM</span></div>
+                    <div class="msg_history" ref="msgHistory">
+                        <template v-for="message in messages">
+                            <div class="outgoing_msg" v-if="message.authorId == userProfile.user.id">
+                                <div class="sent_msg">
+                                    <p>{{ message.contents }}</p>
+                                    <span class="time_date">{{ message.sentDateTime }}</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="outgoing_msg">
-                            <div class="sent_msg">
-                                <p>Вижу твои сообщения дошли</p>
-                                <span class="time_date"> 11:01 AM</span></div>
-                        </div>
-
-                        <div class="outgoing_msg" v-for="msg in messages">
-                            <div class="sent_msg">
-                                <p>{{ msg }}</p>
-                                <span class="time_date">{{ getCurrentTime() }}</span>
+                            <div class="incoming_msg" v-else>
+                                <div class="received_msg">
+                                    <div class="received_withd_msg">
+                                        <p>{{ message.contents }}</p>
+                                        <span class="time_date">{{ message.sentDateTime }}</span>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        </template>
                     </div>
                     <div class="type_msg">
-                        <div class="input_msg_write">
+                        <div class="input_msg_write" v-if="recipientUserId">
                             <input type="text" v-model="inputValue" @keyup.enter="sendMessage" class="write_msg"
                                    placeholder="Написать сообщение"/>
                             <button class="msg_send_btn" type="button" @click.prevent="sendMessage">
@@ -108,25 +74,188 @@
 
 <script>
     import moment from 'moment';
+    import WebSocketService from '@/_services/websocket.service';
+    import PreLoader from '@/components/preloader/PreLoader';
+    import InstructorService from '@/_services/instructor.service';
+    import {StudentService} from '@/_services/student.service';
+    const studentService = new StudentService();
+    import {PersonService} from '@/_services/person.service';
+    const personService = new PersonService();
+    import {StudentParentService} from '@/_services/student-parent.service';
+    const studentParentService = new StudentParentService();
 
     export default {
+        components: {
+            PreLoader
+        },
         data() {
             return {
+                userObj: {
+                    teacher: 'fetchSchoolTeachers',
+                    student: 'fetchSchoolStudents',
+                    admin: 'fetchSchoolAdmin',
+                    parent: 'fetchSchoolParents'
+                },
+                recipientUserId: '',
                 inputValue: '',
-                messages: []
+                messages: [],
+                users: [],
+                allReserveUsers: [],
+                searchQuery: '',
+                selectedRole: '',
+                isLoading: false
             }
         },
+        computed: {
+            userProfile () {
+                return this.$store.state.account.profile;
+            },
+            school() {
+                return this.userProfile.schools ? this.userProfile.schools[0] : '';
+            }
+        },
+        mounted() {
+            this.onEventHistoryMessages();
+            this.onEventNewMessage();
+            this.onEventError();
+        },
+        beforeDestroy() {
+            WebSocketService.disconnectSocket();
+        },
         methods: {
+            fetchUsers(role, classId) {
+                this.searchQuery = '';
+                this.isLoading = true;
+                this.selectedRole = role;
+                this[this.userObj[role]](classId);
+            },
+
+            fetchSchoolAdmin() {
+                personService.listSchoolAdmins('','', this.school ? this.school.id : '').then((res) => {
+                    this.users = res.map((admin) => {
+                        admin.fullName = admin.surname+' '+admin.name;
+                        return admin;
+                    });
+                    this.isLoading = false;
+                }).catch((err) => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                });
+            },
+
+            fetchSchoolTeachers() {
+                this.users = [];
+                InstructorService.list(0, this.school.id, '', '', this.searchQuery).then((res) => {
+                    if (res._embedded) {
+                        this.users = res._embedded.instructorResourceList.map((teacher) => {
+                            teacher.fullName = teacher.lastName+' '+teacher.firstName;
+                            return teacher;
+                        }).filter((teacher) => teacher.userId !== this.userProfile.user.id);
+                    }
+                    this.isLoading = false;
+                }).catch((err) => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                });
+            },
+
+            fetchSchoolStudents(classId) {
+                studentService.getByClass(classId).then((res) => {
+                    this.users = res.map((student) => {
+                        student.fullName = student.surname+' '+student.name;
+                        return student;
+                    });
+                    this.allReserveUsers = JSON.parse(JSON.stringify(this.users));
+                    this.isLoading = false;
+                }).catch((err) => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                });
+            },
+
+            fetchSchoolParents(classId) {
+                studentParentService.getStudentParentList(this.school.id, classId).then((res) => {
+                    this.users = res.map((parent) => {
+                        parent.fullName = parent.parentTitle;
+                        return parent;
+                    });
+                    this.allReserveUsers = JSON.parse(JSON.stringify(this.users));
+                    this.isLoading = false;
+                }).catch((err) => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                });
+            },
+
+            searchUser() {
+                if (this.selectedRole === 'teacher') {
+                    this.isLoading = true;
+                    this.fetchSchoolTeachers();
+                } else if (this.selectedRole === 'student' || this.selectedRole === 'parent') {
+                    this.users = this.allReserveUsers.filter((user) => user.fullName.includes(this.searchQuery));
+                }
+            },
+
+            onSelectUser(selectedUser) {
+                this.messages = [];
+                this.recipientUserId = selectedUser.userId;
+                this.openSocketConnection(this.recipientUserId);
+            },
+
+            openSocketConnection(recipientUserId) {
+                const usersChannel = {userIdOne: this.userProfile.user.id, userIdTwo: recipientUserId};
+                WebSocketService.initChannelConnection(usersChannel);
+            },
+
             sendMessage() {
+                this.inputValue = this.inputValue.trim();
                 if (this.inputValue.length) {
-                    this.messages.push(this.inputValue);
+                    const messageObj = {
+                        authorId: this.userProfile.user.id,
+                        recipientId: this.recipientUserId,
+                        contents: this.inputValue
+                    };
+                    WebSocketService.sendMsgData(JSON.stringify(messageObj));
                     this.inputValue = '';
                 }
             },
 
             getCurrentTime() {
                 return moment().format('hh:mm');
-            }
+            },
+
+            scrollToBottom() {
+                this.$nextTick(() => {
+                    setTimeout(() => {
+                        this.$refs.msgHistory.scrollTop = this.$refs.msgHistory.scrollHeight;
+                    });
+                });
+            },
+
+            onEventHistoryMessages() {
+                WebSocketService.eventEmitter.on('oldMessages', (res) => {
+                    this.messages = res.messages.reverse().map((msg) => {
+                        msg.sentDateTime = msg.sentDate;
+                        return msg;
+                    });
+                    this.scrollToBottom();
+                });
+            },
+
+            onEventNewMessage() {
+                WebSocketService.eventEmitter.on('newMessage', (res) => {
+                    const message = JSON.parse(res.message.body);
+                    message.sentDateTime = this.getCurrentTime();
+                    this.messages.push(message);
+                    this.scrollToBottom();
+                });
+            },
+
+            onEventError() {
+                WebSocketService.eventEmitter.on('onError', (err) => {
+                    this.$toast.error(err);
+                });
+            },
         }
     }
 </script>
@@ -161,20 +290,21 @@
     }
 
     .recent_heading {
-        float: left;
-        width: 40%;
+        width: 35%;
     }
 
     .srch_bar {
         display: inline-block;
         text-align: right;
-        width: 60%;
+        width: 65%;
     }
 
     .headind_srch {
-        padding: 10px 29px 10px 20px;
+        padding: 10px 15px 10px 15px;
         overflow: hidden;
         border-bottom: 1px solid #c4c4c4;
+        display: flex;
+        align-items: center;
     }
 
     .recent_heading h4 {
@@ -184,11 +314,11 @@
     }
 
     .srch_bar input {
-        border: 1px solid #cdcdcd;
-        border-width: 0 0 1px 0;
-        width: 80%;
+        border-bottom: 1px solid #cdcdcd;
+        width: 100%;
         padding: 2px 0 4px 6px;
         background: none;
+        outline: none;
     }
 
     .srch_bar .input-group-addon button {
@@ -221,12 +351,10 @@
     }
 
     .chat_img {
-        float: left;
         width: 11%;
     }
 
     .chat_ib {
-        float: left;
         padding: 0 0 0 15px;
         width: 88%;
     }
@@ -234,12 +362,15 @@
     .chat_people {
         overflow: hidden;
         clear: both;
+        display: flex;
+        align-items: center;
     }
 
     .chat_list {
         border-bottom: 1px solid #c4c4c4;
         margin: 0;
         padding: 18px 16px 10px;
+        cursor: pointer;
     }
 
     .inbox_chat {
@@ -248,7 +379,10 @@
     }
 
     .active_chat {
-        background: #ebebeb;
+        background: #0097bf;
+        .chat_ib h5 {
+            color: #fff;
+        }
     }
 
     .incoming_msg_img {
@@ -266,7 +400,7 @@
     .received_withd_msg p {
         background: #ebebeb none repeat scroll 0 0;
         border-radius: 3px;
-        color: #646464;
+        color: #000;
         font-size: 14px;
         margin: 0;
         padding: 5px 10px 5px 12px;
@@ -281,7 +415,7 @@
     }
 
     .received_withd_msg {
-        width: 57%;
+        width: 50%;
     }
 
     .mesgs {
@@ -307,7 +441,7 @@
 
     .sent_msg {
         float: right;
-        width: 46%;
+        width: 50%;
     }
 
     .input_msg_write input {
