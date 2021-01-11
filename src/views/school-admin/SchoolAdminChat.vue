@@ -60,6 +60,7 @@
                 this.selectedClassId = '';
                 this.selectedTab = role;
                 this.$refs.chat.users = [];
+                this.$refs.chat.allReserveUsers = [];
                 this.$refs.chat.recipientUserId = '';
                 if (role === 'teacher') {
                     this.$refs.chat.fetchUsers(this.selectedTab);
