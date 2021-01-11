@@ -179,3 +179,13 @@ input[type=number] {
     max-width: 160px;
   }
 }
+
+.pin-field {
+  .input-mask {
+    margin-bottom: 0;
+  }
+  .pin-error {
+    color: #f90707;
+    font-size: 12px;
+  }
+}
