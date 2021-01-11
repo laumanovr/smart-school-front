@@ -57,11 +57,13 @@
         },
         methods: {
             showUsers(role) {
-                this.selectedClassId = '';
                 this.selectedTab = role;
+                this.selectedClassId = '';
+                this.$refs.chat.selectedRole = role;
+                this.$refs.chat.recipientUserId = '';
                 this.$refs.chat.users = [];
                 this.$refs.chat.allReserveUsers = [];
-                this.$refs.chat.recipientUserId = '';
+                this.$refs.chat.messages = [];
                 if (role === 'teacher') {
                     this.$refs.chat.fetchUsers(this.selectedTab);
                 }
