@@ -11,7 +11,7 @@ export class ChatService extends BaseApiService {
     }
 
     getExistingMessages(channelId) {
-        const url = `${process.env.VUE_APP_BASE_URL}/rest/private-chat/chat-status/${channelId}/0?size=100`;
+        const url = `${process.env.VUE_APP_BASE_URL}/rest/private-chat/chat-status/${channelId}/0?size=30`;
         return this.sendGetRequest(url);
     }
 }
