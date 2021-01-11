@@ -237,7 +237,7 @@
 		</v-dialog>
 
 		<!--DELETE COURSE MODAL-->
-        <modal name="course-modal" width="500px" height="420px" class="add-course-modal">
+        <modal name="course-modal" width="600px" height="420px" class="add-course-modal">
             <div class="modal-container">
                 <h4>Отвязать предмет</h4>
                 <div>
