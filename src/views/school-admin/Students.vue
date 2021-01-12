@@ -856,8 +856,9 @@ export default {
 				middleName: this.studentObj.middleName,
 				gender: this.studentObj.gender,
                 pin: this.studentObj.pin,
+                phone: this.studentObj.phone,
 				id: this.studentObj.id
-			}
+			};
 			if (this.isStudentEdit) {
 				studentService.edit(d).then(res => {
 					this.isAddStudentModal = false
