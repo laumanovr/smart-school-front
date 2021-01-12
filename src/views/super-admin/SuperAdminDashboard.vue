@@ -44,7 +44,7 @@
                             v-bind="attrs"
                             v-on="on"/>
                     </template>
-                    <v-date-picker locale="ru-RU" v-model="dateStart" @input="onSelectTrackDate('showPickerStart')"></v-date-picker>
+                    <v-date-picker :max="dateEnd" locale="ru-RU" v-model="dateStart" @input="onSelectTrackDate('showPickerStart')"></v-date-picker>
                 </v-menu>
             </div>
             <div class="date-picker">
@@ -65,7 +65,7 @@
                             v-bind="attrs"
                             v-on="on"/>
                     </template>
-                    <v-date-picker locale="ru-RU" v-model="dateEnd" @input="onSelectTrackDate('showPickerEnd')"></v-date-picker>
+                    <v-date-picker :max="dateEnd" locale="ru-RU" v-model="dateEnd" @input="onSelectTrackDate('showPickerEnd')"></v-date-picker>
                 </v-menu>
             </div>
             <v-select
@@ -163,10 +163,8 @@
         },
 
         async created() {
-            this.isLoading = true;
             this.setPreviousMonth();
             await this.fetchAllRoles();
-            await this.fetchAllSchools();
         },
 
         methods: {
@@ -277,7 +275,10 @@
             searchSchool(inputValue) {
                 clearTimeout(this.typingTimer);
                 this.typingTimer = null;
-
+                if (!inputValue) {
+                    this.schools = [];
+                    return;
+                }
                 if (!this.isTimerBlock) {
                     this.schoolLoader = true;
                     this.typingTimer = setTimeout(() => {
