@@ -21,15 +21,21 @@
                 <div>
                     <v-text-field :rules="middleNameRule" label="Отчество" v-model="user.middleName"></v-text-field>
                 </div>
-                <div>
-                    <v-text-field
-                        label="ПИН/ИНН"
-                        v-model="user.pin"
-                        type="number"
-                        counter="14"
-                        :rules="required"
-                        @input="limitNumbers(user, 'pin', 14)"
-                    />
+                <div class="pin-field">
+                    <div class="input-mask">
+                        <label>ПИН/ИНН</label>
+                        <masked-input
+                            v-model="user.pin"
+                            mask="1.11.11.1111.11111"
+                            placeholder="0.00.00.0000.00000"
+                            @blur.native="checkPin"
+                        />
+                    </div>
+                    <div class="pin-error" v-if="!validFirstNum">1-ая цифра должна быть 1 или 2</div>
+                    <div class="pin-error" v-if="!validDatePin">
+                        со 2-ой по 9-ый должны быть валидными,
+                        а последние 5 цифр произвольные
+                    </div>
                 </div>
                 <div>
                     <v-radio-group :mandatory="false" :rules="required" row v-model="user.gender">
@@ -129,6 +135,8 @@
                 surname: ''
             },
             resetPassMode: '',
+            validFirstNum: true,
+            validDatePin: true
         }),
         computed: {
             userProfile() {
@@ -156,14 +164,26 @@
                 }).catch(err => console.log(err))
             },
 
+            checkPin() {
+                this.validFirstNum = this.user.pin[0] === '1' || this.user.pin[0] === '2';
+                this.validDatePin = moment(this.user.pin.slice(2, 12), 'DD.MM.YYYY', true).isValid() && this.user.pin.slice(13).split('_').length === 1;
+                if (this.validDatePin) {
+                    this.user.dob = this.user.pin.slice(2, 12);
+                }
+            },
+
             submit() {
+                this.checkPin();
                 if (this.$refs.form.validate()) {
-                    this.user.roles = this.roles.filter(i => i.code === 'ROLE_INSTRUCTOR').map(i => i.id);
-                    this.user.schoolId = this.userProfile.schools[0].id;
-                    if (this.isEdit) {
-                        this.personEdit(this.user)
-                    } else {
-                        this.personCreate(this.user)
+                    if (this.validFirstNum && this.validDatePin) {
+                        this.user.pin = this.user.pin.replaceAll('.', '');
+                        this.user.roles = this.roles.filter(i => i.code === 'ROLE_INSTRUCTOR').map(i => i.id);
+                        this.user.schoolId = this.userProfile.schools[0].id;
+                        if (this.isEdit) {
+                            this.personEdit(this.user);
+                        } else {
+                            this.personCreate(this.user);
+                        }
                     }
                 }
             },
