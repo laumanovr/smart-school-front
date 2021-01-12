@@ -35,6 +35,7 @@
                                     v-on="on"/>
                             </template>
                             <v-date-picker
+                                locale="ru-RU"
                                 v-model="quarter.dateStart"
                                 @input="onSelectQuarterDate(quarter, 'showPickerFrom')"
                             ></v-date-picker>
@@ -59,6 +60,7 @@
                                     v-on="on"/>
                             </template>
                             <v-date-picker
+                                locale="ru-RU"
                                 v-model="quarter.dateEnd"
                                 @input="onSelectQuarterDate(quarter, 'showPickerTo')"
                             ></v-date-picker>

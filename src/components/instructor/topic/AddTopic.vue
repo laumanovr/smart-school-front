@@ -35,7 +35,7 @@
 							v-on="on"
 						></v-text-field>
 					</template>
-					<v-date-picker v-model="startDate" @input="onSelectTopicDate('menu2')"/>
+					<v-date-picker locale="ru-RU" v-model="startDate" @input="onSelectTopicDate('menu2')"/>
 				</v-menu>
 				<v-menu
 					v-model="menu1"
@@ -55,7 +55,7 @@
 							v-on="on"
 						></v-text-field>
 					</template>
-					<v-date-picker v-model="endDate" @input="onSelectTopicDate('menu1')"/>
+					<v-date-picker locale="ru-RU" v-model="endDate" @input="onSelectTopicDate('menu1')"/>
 				</v-menu>
 			</div>
 			<div class="add-topic__footer">

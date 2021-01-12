@@ -51,7 +51,7 @@
                             v-bind="attrs"
                             v-on="on"/>
                     </template>
-                    <v-date-picker v-model="dateStart" @input="onSelectTrackDate('showPickerStart')"></v-date-picker>
+                    <v-date-picker locale="ru-RU" v-model="dateStart" @input="onSelectTrackDate('showPickerStart')"></v-date-picker>
                 </v-menu>
             </div>
             <div class="date-picker">
@@ -72,7 +72,7 @@
                             v-bind="attrs"
                             v-on="on"/>
                     </template>
-                    <v-date-picker v-model="dateEnd" @input="onSelectTrackDate('showPickerEnd')"></v-date-picker>
+                    <v-date-picker locale="ru-RU" v-model="dateEnd" @input="onSelectTrackDate('showPickerEnd')"></v-date-picker>
                 </v-menu>
             </div>
             <v-select

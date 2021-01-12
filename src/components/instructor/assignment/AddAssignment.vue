@@ -56,7 +56,7 @@
 							readonly
 						></v-text-field>
 					</template>
-					<v-date-picker :min="assignment.topicDate" v-model="deadline" @input="onSelectDeadline"></v-date-picker>
+					<v-date-picker locale="ru-RU" :min="assignment.topicDate" v-model="deadline" @input="onSelectDeadline"></v-date-picker>
 				</v-menu>
 			</div>
 			<div class="add-assignment__footer">
