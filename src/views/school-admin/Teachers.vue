@@ -323,7 +323,9 @@ export default {
                     })
                 })
             } else {
-                this.addCourseModal(instructorId, true);
+                if (instructorId) {
+                    this.addCourseModal(instructorId, true);
+                }
             }
         },
         downloadTemplate () {
