@@ -103,14 +103,23 @@
 					<v-text-field v-model="studentObj.name" :rules="firstLastNameRule" label="Имя"></v-text-field>
 					<v-text-field v-model="studentObj.surname" :rules="firstLastNameRule" label="Фамилия"></v-text-field>
 					<v-text-field v-model="studentObj.middleName" :rules="firstLastNameRule" label="Отчество"></v-text-field>
-                    <v-text-field
-                        label="ПИН/ИНН"
-                        v-model="studentObj.pin"
-                        type="number"
-                        counter="14"
-                        :rules="required"
-                        @input="limitNumbers(studentObj, 'pin', 14)"
-                    />
+
+                    <div class="pin-field">
+                        <div class="input-mask">
+                            <label>ПИН/ИНН</label>
+                            <masked-input
+                                v-model="studentObj.pin"
+                                mask="1.11.11.1111.11111"
+                                placeholder="0.00.00.0000.00000"
+                                @blur.native="checkPin"
+                            />
+                        </div>
+                        <div class="pin-error" v-if="!validFirstNum">1-ая цифра должна быть 1 или 2</div>
+                        <div class="pin-error" v-if="!validDatePin">
+                            со 2-ой по 9-ый должны быть валидными,
+                            а последние 5 цифр произвольные
+                        </div>
+                    </div>
 				</div>
 
 				<div>
@@ -476,7 +485,9 @@ export default {
                 comment: '',
                 quarterId: 0,
                 reason: ''
-            }
+            },
+            validFirstNum: true,
+            validDatePin: true
 		}
 	},
 
@@ -818,12 +829,22 @@ export default {
             this.parentPersonObj.gender = gender;
         },
 
+        checkPin() {
+            this.validFirstNum = this.studentObj.pin[0] === '1' || this.studentObj.pin[0] === '2';
+            this.validDatePin = moment(this.studentObj.pin.slice(2, 12), 'DD.MM.YYYY', true).isValid() && this.studentObj.pin.slice(13).split('_').length === 1;
+            if (this.validDatePin) {
+                this.studentObj.dateOfBirth = this.studentObj.pin.slice(2, 12);
+            }
+        },
+
 		submitStudent() {
-		    if (!this.$refs.studentForm.validate()) {
+            this.checkPin();
+		    if (!this.$refs.studentForm.validate() || !this.validFirstNum || !this.validDatePin) {
 		        return;
             }
             this.isLoading = true;
             this.search.query = '';
+            this.studentObj.pin = this.studentObj.pin.replaceAll('.', '');
 			this.studentObj.schoolId = this.userProfile.schools[0].id;
 			this.studentObj.chronicleYearId = this.userProfile.schools[0].chronicleId;
 			this.studentObj.roles = this.roles.filter(i => i.code === 'ROLE_STUDENT').map(i => i.id);
