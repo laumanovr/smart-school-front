@@ -151,7 +151,7 @@
 				</div>
 
 				<div class="parent">
-                    <template v-if="!isStudentEdit">
+                    <template v-if="!studentObj.parents.length">
                         <span :class="{'active': parentPersonObj.gender == 'FEMALE'}" @click="setParentGender('FEMALE')">Мать</span>
                         <span :class="{'active': parentPersonObj.gender == 'MALE'}" @click="setParentGender('MALE')">Отец</span>
                     </template>
@@ -776,7 +776,7 @@ export default {
 		onAddStudent() {
 			this.isAddStudentModal = true;
 			this.isStudentEdit = false;
-			this.studentObj = {};
+			this.studentObj = {parents: []};
             this.parentPersonObj.name = '';
             this.parentPersonObj.phone = '';
             this.parentPersonObj.gender = 'FEMALE';
@@ -797,10 +797,15 @@ export default {
                 this.isAddStudentModal = true;
                 this.isStudentEdit = true;
                 this.isLoading = false;
+                this.studentObj.parents = res.parents;
                 if (res.parents.length) {
                     this.parentPersonObj.name = res.parents[0].parentTitle.trim();
                     this.parentPersonObj.gender = res.parents[0].parentType ? 'FEMALE' : 'MALE';
                     this.parentPersonObj.phone = res.parents[0].parentPhone ? res.parents[0].parentPhone.replace('+', '') : '';
+                } else {
+                    this.parentPersonObj.name = '';
+                    this.parentPersonObj.gender = 'FEMALE';
+                    this.parentPersonObj.phone = '';
                 }
             }).catch(err => {
                 this.isLoading = false;
