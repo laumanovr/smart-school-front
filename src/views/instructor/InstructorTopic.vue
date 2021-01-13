@@ -50,10 +50,14 @@
 					<td>{{ item.startDate }} - {{ item.endDate }}</td>
 					<td>{{ item.title }}</td>
 					<td>
-						<div class="instructor-topic__assignment" v-if="showHW">
+						<div class="instructor-topic__assignment">
 							<div class="instructor-topic__assignment__content">
 								<ul>
-									<li class="instructor-topic__assignment__list" v-for="assignment in item.assignments" :key="assignment.id">
+									<li
+                                        class="instructor-topic__assignment__list"
+                                        v-for="assignment in filterAssignments(item.assignments)"
+                                        :key="assignment.assigmentId"
+                                    >
 										<div class="instructor-topic__assignment__item">
 											{{ assignment.title }}
 										</div>
@@ -199,6 +203,7 @@ export default {
             allCourses: [],
 			topic: {
                 classLevel: '',
+                classId: '',
                 courseId: '',
                 quarterId: ''
             },
@@ -208,7 +213,6 @@ export default {
 			assignment: {},
 			currentClass: {},
             isLoading: false,
-            showHW: false,
             exportHeaders: [],
             exportRows: [],
             quarters: [],
@@ -258,7 +262,7 @@ export default {
                 return;
             }
             this.currentClass = selectedClass;
-            this.topic.classLevel = selectedClass.classLevel;
+            this.topic.classId = selectedClass.classId;
             this.filterCourses(selectedClass);
         },
 
@@ -289,49 +293,45 @@ export default {
 			    page,
                 this.userProfile.personId,
                 this.topic.courseId,
-                this.topic.classLevel,
+                this.currentClass.classLevel,
             ).then((res) => {
 				this.totalPages = res.page.totalPages;
 				this.totalElements = res.page.totalElements;
 				this.currentPage = res.page.number + 1;
 				if (res._embedded) {
                     this.topics = res._embedded.topicResourceList.map((topic, i) => ({...topic, index: i + 1}));
-                    this.fetchAssignments();
-                } else {
-                    this.isLoading = false;
                 }
+                this.fetchClassUniqueTopics();
 			}).catch((err) => {
 			    this.$toast.error(err);
 			    this.isLoading = false;
             })
 		},
 
-        fetchAssignments() {
-            this.showHW = false;
-            assignmentService.getByClassAndChronicle(
-                this.currentClass.classId,
-                this.school.chronicleId
+        fetchClassUniqueTopics() {
+            topicService.getByInstructor(
+                0,
+                this.userProfile.personId,
+                this.topic.courseId,
+                '',
+                '',
+                15,
+                this.currentClass.classId
             ).then((res) => {
                 if (res._embedded) {
-                    const foundAssignments = res._embedded.assignmentResourceList.filter((assign) =>
-                        assign.courseId === this.topic.courseId
-                    );
-                    this.topics = this.topics.map((topic) => {
-                        topic.assignments = [];
-                        foundAssignments.forEach((assign) => {
-                            if (topic.id === assign.topicId) {
-                                topic.assignments.push(assign);
-                            }
-                        });
-                        return topic;
-                    });
+                    this.topics = [...this.topics, ...res._embedded.topicResourceList].map((topic, i) => ({...topic, index: i + 1}));
                 }
-                this.showHW = true;
                 this.isLoading = false;
             }).catch((err) => {
                 this.$toast.error(err);
                 this.isLoading = false;
-            });
+            })
+        },
+
+        filterAssignments(assignments) {
+	        if (assignments) {
+                return assignments.filter((assign) => assign.classId === this.currentClass.classId);
+            }
         },
 
         toggleExportModal() {
@@ -345,7 +345,7 @@ export default {
                     0,
                     this.userProfile.personId,
                     this.topic.courseId,
-                    this.topic.classLevel,
+                    this.currentClass.classLevel,
                     this.selectedQuarterId,
                     500
                 ).then((res) => {
@@ -391,6 +391,7 @@ export default {
             this.topic.description = '';
             this.topic.startDate = '';
             this.topic.endDate = '';
+            this.topic.classLevel = '';
             this.isEdit = false;
             this.showModal = true;
         },
@@ -398,6 +399,7 @@ export default {
         onTopicEdit (topic) {
             this.topic.id = topic.id;
             this.topic.classLevel = topic.classLevel;
+            this.topic.classId = topic.classId;
             this.topic.courseId = topic.courseId;
             this.topic.quarterId = topic.quarterId;
             this.topic.title = topic.title;
@@ -442,20 +444,24 @@ export default {
 		},
 
         onAssignmentEdit(assignment, topic) {
-            this.assignment = {
-                id: assignment.id,
-                title: assignment.title,
-                description: assignment.description ? assignment.description : '',
-                deadline: assignment.deadline,
-                courseId: this.topic.courseId,
-                classId: this.currentClass.classId,
-                instructorId: this.userProfile.personId,
-                topicId: topic.id,
-                attachmentList: assignment.attachmentList,
-                topicDate: topic.endDate
-            };
-            this.isEditAssignment = true;
-            this.showAssignmentModal = true;
+	        assignmentService.getById(assignment.assigmentId).then((res) => {
+                this.assignment = {
+                    id: assignment.assigmentId,
+                    title: res.title,
+                    description: res.description ? res.description : '',
+                    deadline: res.deadline,
+                    courseId: res.courseId,
+                    classId: res.classId,
+                    instructorId: this.userProfile.personId,
+                    topicId: res.topicId,
+                    attachmentList: res.attachmentList,
+                    topicDate: topic.endDate
+                };
+                this.isEditAssignment = true;
+                this.showAssignmentModal = true;
+            }).catch((err) => {
+	            this.$toast.error(err);
+            });
         },
 
         onAssignmentDelete (assignment, item) {
@@ -464,7 +470,7 @@ export default {
         },
 
 		deleteAssignment() {
-			assignmentService._delete(this.assignment.id).then(() => {
+			assignmentService._delete(this.assignment.assigmentId).then(() => {
 				this.$toast.success(this.$t('successMessage'));
 				this.isAssignmentDelete = false;
                 this.fetchTopics();
