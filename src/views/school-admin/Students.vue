@@ -156,6 +156,8 @@
                         <span :class="{'active': parentPersonObj.gender == 'MALE'}" @click="setParentGender('MALE')">Отец</span>
                     </template>
 					<v-text-field v-model="parentPersonObj.name" label="Имя Родителя" :rules="required"/>
+					<v-text-field v-model="parentPersonObj.surname" label="Фамилия Родителя" :rules="required"/>
+					<v-text-field v-model="parentPersonObj.middleName" label="Отчество Родителя" :rules="required"/>
 				</div>
 
 				<div>
@@ -413,7 +415,7 @@ export default {
 				gender: 'FEMALE',
 				job: '',
 				jobPlace: '',
-				languageId: 0,
+				languageId: '',
 				middleName: '',
 				name: '',
 				password: '',
@@ -425,7 +427,7 @@ export default {
 			students: [],
             allStudents: [],
 			classes: [],
-			required: [v => !!v || 'Input is required'],
+			required: [v => !!v || 'Обязательное поле'],
 			isAddStudentModal: false,
 			isStudentEdit: false,
 			roles: [],
@@ -776,6 +778,8 @@ export default {
 			this.isStudentEdit = false;
 			this.studentObj = {parents: []};
             this.parentPersonObj.name = '';
+            this.parentPersonObj.surname = '';
+            this.parentPersonObj.middleName = '';
             this.parentPersonObj.phone = '';
             this.parentPersonObj.gender = 'FEMALE';
 		},
@@ -797,11 +801,15 @@ export default {
                 this.isLoading = false;
                 this.studentObj.parents = res.parents;
                 if (res.parents.length) {
-                    this.parentPersonObj.name = res.parents[0].parentTitle.trim();
+                    const titles = res.parents[0].parentTitle.trim().split(' ');
+                    this.parentPersonObj.name = titles[0];
+                    this.parentPersonObj.surname = titles[1];
                     this.parentPersonObj.gender = res.parents[0].parentType ? 'FEMALE' : 'MALE';
                     this.parentPersonObj.phone = res.parents[0].parentPhone ? res.parents[0].parentPhone.replace('+', '') : '';
                 } else {
                     this.parentPersonObj.name = '';
+                    this.parentPersonObj.surname = '';
+                    this.parentPersonObj.middleName = '';
                     this.parentPersonObj.gender = 'FEMALE';
                     this.parentPersonObj.phone = '';
                 }
