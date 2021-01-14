@@ -802,8 +802,8 @@ export default {
                 this.studentObj.parents = res.parents;
                 if (res.parents.length) {
                     const titles = res.parents[0].parentTitle.trim().split(' ');
-                    this.parentPersonObj.name = titles[0];
-                    this.parentPersonObj.surname = titles[1];
+                    this.parentPersonObj.surname = titles[0];
+                    this.parentPersonObj.name = titles[1];
                     this.parentPersonObj.gender = res.parents[0].parentType ? 'FEMALE' : 'MALE';
                     this.parentPersonObj.phone = res.parents[0].parentPhone ? res.parents[0].parentPhone.replace('+', '') : '';
                 } else {
