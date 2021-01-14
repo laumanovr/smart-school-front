@@ -574,7 +574,7 @@ export default {
             studentParentService.getStudentParentList(this.school.id, this.selectedClassId).then((res) => {
                 this.exportParentHeaders = ['ФИО Родителя', 'Логин/Пароль Родителя', 'ФИО студента'];
                 this.exportParentRows = res.map((item) => {
-                    return [item.parentTitle, item.parentUsername, item.studentTitle];
+                    return [`${item.parentTitle+' '+item.parentMiddleName}`, item.parentUsername, item.studentTitle];
                 });
                 this.$refs.exportParent.isExport = true;
                 this.isLoading = false;
@@ -801,9 +801,9 @@ export default {
                 this.isLoading = false;
                 this.studentObj.parents = res.parents;
                 if (res.parents.length) {
-                    const titles = res.parents[0].parentTitle.trim().split(' ');
-                    this.parentPersonObj.surname = titles[0];
-                    this.parentPersonObj.name = titles[1];
+                    this.parentPersonObj.surname = res.parents[0].parentLastName;
+                    this.parentPersonObj.name = res.parents[0].parentFirstName;
+                    this.parentPersonObj.middleName = res.parents[0].parentMiddleName;
                     this.parentPersonObj.gender = res.parents[0].parentType ? 'FEMALE' : 'MALE';
                     this.parentPersonObj.phone = res.parents[0].parentPhone ? res.parents[0].parentPhone.replace('+', '') : '';
                 } else {
