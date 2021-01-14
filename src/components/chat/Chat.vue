@@ -231,7 +231,9 @@
             scrollToBottom() {
                 this.$nextTick(() => {
                     setTimeout(() => {
-                        this.$refs.msgHistory.scrollTop = this.$refs.msgHistory.scrollHeight;
+                        if (this.$refs.msgHistory) {
+                            this.$refs.msgHistory.scrollTop = this.$refs.msgHistory.scrollHeight;
+                        }
                     });
                 });
             },
