@@ -415,6 +415,19 @@
                 ).then((res) => {
                     if (res._embedded) {
                         this.topics = res._embedded.topicResourceList;
+                        topicService.getByInstructor(
+                            this.topicPage,
+                            this.userProfile.personId,
+                            this.monthDataRequest.courseId,
+                            '',
+                            '',
+                            100,
+                            this.selectedClassObj.classId
+                        ).then((res) => {
+                            if (res._embedded) {
+                                this.topics = [...this.topics, ...res._embedded.topicResourceList];
+                            }
+                        })
                     }
                 })
             },
