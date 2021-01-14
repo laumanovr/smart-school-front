@@ -419,7 +419,6 @@ export default {
 				password: '',
 				phone: '',
 				roles: [],
-				schoolId: 0,
 				surname: '',
 				username: ''
 			},
@@ -506,7 +505,6 @@ export default {
 	created() {
 		this.studentObj.languageId = this.school.languageId;
 		this.parentPersonObj.languageId = this.school.languageId;
-		this.parentPersonObj.schoolId = this.school.id;
 		this.studentObj.chronicleYearId = this.school.chronicleId;
 		this.studentClassObj.chronicleId = this.school.chronicleId;
 		this.refreshClass.schoolId = this.school.id;
