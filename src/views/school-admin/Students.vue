@@ -763,6 +763,7 @@ export default {
                 this.$toast.info('Выберите причину!');
                 return;
             }
+            this.isLoading = true;
 			studentService._delete(this.studentObj.id, this.deleteStudentObj).then(() => {
 				this.isDeleting = false;
 				this.$toast.success('Успешно');
