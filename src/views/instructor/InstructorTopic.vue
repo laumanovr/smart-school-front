@@ -335,7 +335,7 @@ export default {
                 this.currentClass.classId
             ).then((res) => {
                 if (res._embedded) {
-                    this.topics = [...this.topics, ...res._embedded.topicResourceList].map((topic, i) => ({...topic, index: i + 1}));
+                    this.topics = [...res._embedded.topicResourceList, ...this.topics].map((topic, i) => ({...topic, index: i + 1}));
                 }
                 this.isLoading = false;
             }).catch((err) => {

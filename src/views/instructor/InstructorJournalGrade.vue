@@ -426,7 +426,7 @@
                         this.selectedClassObj.classId
                     ).then((res) => {
                         if (res._embedded) {
-                            this.topics = [...this.topics, ...res._embedded.topicResourceList];
+                            this.topics = [...res._embedded.topicResourceList, ...this.topics];
                         }
                     })
                 })
