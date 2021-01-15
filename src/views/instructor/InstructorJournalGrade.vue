@@ -410,7 +410,7 @@
                     this.userProfile.personId,
                     this.monthDataRequest.courseId,
                     this.selectedClassLevel,
-                    '',
+                    this.school.quarterId,
                     100
                 ).then((res) => {
                     if (res._embedded) {
@@ -421,7 +421,7 @@
                         this.userProfile.personId,
                         this.monthDataRequest.courseId,
                         '',
-                        '',
+                        this.school.quarterId,
                         100,
                         this.selectedClassObj.classId
                     ).then((res) => {
