@@ -38,6 +38,7 @@
 				</template>
 				<template v-slot:head>
 					<th></th>
+                    <th>Четверть</th>
 					<th>Дата</th>
 					<th>Тема Урока</th>
 					<th>Домашнее Задание</th>
@@ -47,6 +48,7 @@
 
 				<template v-slot:body="{ item }">
 					<td>{{ (currentPage - 1) * 10 + item.index }}</td>
+                    <td>{{ showTopicQuarter(item.quarterId) + '-четв.' }}</td>
 					<td>{{ item.startDate }} - {{ item.endDate }}</td>
 					<td>{{ item.title }}</td>
 					<td>
@@ -61,7 +63,7 @@
 										<div class="instructor-topic__assignment__item">
 											{{ assignment.title }}
 										</div>
-										<div class="instructor-topic__assignment__action">
+										<div class="instructor-topic__assignment__action" v-if="currentQuarterTopic(item.quarterId)">
 											<img @click="onAssignmentEdit(assignment, item)" alt="" class="clickable-icons" src="../../assets/images/icons/pen.svg">
 											<img @click="onAssignmentDelete(assignment, item)" alt="" class="clickable-icons" src="../../assets/images/icons/trash.svg">
 										</div>
@@ -76,13 +78,19 @@
 									</span>
 								</div>
 							</div>
-							<div class="instructor-topic__assignment__add" @click="onAddAssignment(item)">
+							<div class="instructor-topic__assignment__add" @click="onAddAssignment(item)" v-if="currentQuarterTopic(item.quarterId)">
 								<img src="../../assets/images/icons/plus.svg" alt="">
 							</div>
 						</div>
 					</td>
-					<td><img @click="onTopicEdit(item)" alt="" class="clickable-icons" src="../../assets/images/icons/pen.svg"></td>
-					<td><img @click="onTopicDelete(item)" alt="" class="clickable-icons" src="../../assets/images/icons/trash.svg"></td>
+                    <template v-if="currentQuarterTopic(item.quarterId)">
+					    <td><img @click="onTopicEdit(item)" alt="" class="clickable-icons" src="../../assets/images/icons/pen.svg"></td>
+					    <td><img @click="onTopicDelete(item)" alt="" class="clickable-icons" src="../../assets/images/icons/trash.svg"></td>
+                    </template>
+                    <template v-else>
+                        <td></td>
+                        <td></td>
+                    </template>
 				</template>
 			</SmartTable>
 		</div>
@@ -223,7 +231,7 @@ export default {
 	},
 	computed: {
 		userProfile() {
-			return this.$store.state.account.profile
+			return this.$store.state.account.profile;
 		},
         school() {
             return this.userProfile.schools[0]
@@ -253,6 +261,14 @@ export default {
                     this.allCourses = res;
                 }
             })
+        },
+
+        showTopicQuarter(quarterId) {
+            return this.quarters.find((item) => item.id === quarterId).semester;
+        },
+
+        currentQuarterTopic(quarterId) {
+	        return this.school.quarterId === quarterId;
         },
 
         onClassSelect(selectedClass) {
