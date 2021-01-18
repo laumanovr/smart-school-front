@@ -100,7 +100,7 @@
                     label="Тип оценки"
                     v-model="selectedReasonId"
                 />
-                <v-select
+                <v-autocomplete
                     class="v-select-item"
                     :items="topics"
                     item-text="title"
