@@ -422,7 +422,7 @@
                         this.monthDataRequest.courseId,
                         '',
                         this.school.quarterId,
-                        100,
+                        200,
                         this.selectedClassObj.classId
                     ).then((res) => {
                         if (res._embedded) {
