@@ -317,21 +317,21 @@ export default {
 				if (res._embedded) {
                     this.topics = res._embedded.topicResourceList.map((topic, i) => ({...topic, index: i + 1}));
                 }
-                this.fetchClassUniqueTopics();
+                this.fetchClassUniqueTopics(page);
 			}).catch((err) => {
 			    this.$toast.error(err);
 			    this.isLoading = false;
             })
 		},
 
-        fetchClassUniqueTopics() {
+        fetchClassUniqueTopics(page) {
             topicService.getByInstructor(
-                0,
+                page,
                 this.userProfile.personId,
                 this.topic.courseId,
                 '',
                 '',
-                20,
+                15,
                 this.currentClass.classId
             ).then((res) => {
                 this.totalPages = res.page.totalPages;
