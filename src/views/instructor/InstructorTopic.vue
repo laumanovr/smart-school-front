@@ -63,9 +63,9 @@
 										<div class="instructor-topic__assignment__item">
 											{{ assignment.title }}
 										</div>
-										<div class="instructor-topic__assignment__action" v-if="currentQuarterTopic(item.quarterId)">
-											<img @click="onAssignmentEdit(assignment, item)" alt="" class="clickable-icons" src="../../assets/images/icons/pen.svg">
-											<img @click="onAssignmentDelete(assignment, item)" alt="" class="clickable-icons" src="../../assets/images/icons/trash.svg">
+										<div class="instructor-topic__assignment__action" v-if="currentQuarterTopic(item.startDate)">
+											<img @click="onAssignmentEdit(assignment, item)" class="clickable-icons" src="../../assets/images/icons/pen.svg">
+											<img @click="onAssignmentDelete(assignment, item)" class="clickable-icons" src="../../assets/images/icons/trash.svg">
 										</div>
 									</li>
 								</ul>
@@ -78,19 +78,23 @@
 									</span>
 								</div>
 							</div>
-							<div class="instructor-topic__assignment__add" @click="onAddAssignment(item)" v-if="currentQuarterTopic(item.quarterId)">
+							<div class="instructor-topic__assignment__add" @click="onAddAssignment(item)" v-if="currentQuarterTopic(item.startDate)">
 								<img src="../../assets/images/icons/plus.svg" alt="">
 							</div>
 						</div>
 					</td>
-                    <template v-if="currentQuarterTopic(item.quarterId)">
-					    <td><img @click="onTopicEdit(item)" alt="" class="clickable-icons" src="../../assets/images/icons/pen.svg"></td>
-					    <td><img @click="onTopicDelete(item)" alt="" class="clickable-icons" src="../../assets/images/icons/trash.svg"></td>
+                    <template>
+                        <td><img @click="onTopicEdit(item)" alt="" class="clickable-icons" src="../../assets/images/icons/pen.svg"></td>
+                        <td><img @click="onTopicDelete(item)" alt="" class="clickable-icons" src="../../assets/images/icons/trash.svg"></td>
                     </template>
-                    <template v-else>
-                        <td></td>
-                        <td></td>
-                    </template>
+                    <!--<template v-if="currentQuarterTopic(item.startDate)">-->
+					    <!--<td><img @click="onTopicEdit(item)" alt="" class="clickable-icons" src="../../assets/images/icons/pen.svg"></td>-->
+					    <!--<td><img @click="onTopicDelete(item)" alt="" class="clickable-icons" src="../../assets/images/icons/trash.svg"></td>-->
+                    <!--</template>-->
+                    <!--<template v-else>-->
+                        <!--<td></td>-->
+                        <!--<td></td>-->
+                    <!--</template>-->
 				</template>
 			</SmartTable>
 		</div>
@@ -179,6 +183,7 @@ import ScheduleWeekService from '@/_services/schedule-week.service';
 import ExcelJs from "@/components/excel-export/ExcelJs";
 import {QuarterService} from '@/_services/quarter.service';
 const quarterService = new QuarterService();
+import moment from 'moment';
 
 export default {
 	name: "InstructorTopic",
@@ -268,8 +273,10 @@ export default {
             return this.quarters.find((item) => item.id === quarterId).semester;
         },
 
-        currentQuarterTopic(quarterId) {
-	        return this.school.quarterId === quarterId;
+        currentQuarterTopic(topicStartDate) {
+	        const startDate = moment(topicStartDate, 'DD.MM.YYYY').format('YYYY-MM-DD');
+	        const schoolQuarterStart = moment(this.school.quarterStart, 'DD.MM.YYYY').format('YYYY-MM-DD');
+	        return startDate >= schoolQuarterStart;
         },
 
         onClassSelect(selectedClass) {
