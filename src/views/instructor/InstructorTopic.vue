@@ -104,6 +104,7 @@
 			<AddTopic
                 :is-edit="isEdit"
                 :topic="topic"
+                :schoolQuarters="quarters"
                 @close="showModal=false"
                 @fetch="fetchTopics(0)"
                 @loading="showLoader"
@@ -310,10 +311,9 @@ export default {
                 this.userProfile.personId,
                 this.topic.courseId,
                 this.currentClass.classLevel,
+                '',
+                30
             ).then((res) => {
-				this.totalPages = res.page.totalPages;
-				this.totalElements = res.page.totalElements;
-				this.currentPage = res.page.number + 1;
 				if (res._embedded) {
                     this.topics = res._embedded.topicResourceList.map((topic, i) => ({...topic, index: i + 1}));
                 }
@@ -331,9 +331,12 @@ export default {
                 this.topic.courseId,
                 '',
                 '',
-                15,
+                20,
                 this.currentClass.classId
             ).then((res) => {
+                this.totalPages = res.page.totalPages;
+                this.totalElements = res.page.totalElements;
+                this.currentPage = res.page.number + 1;
                 if (res._embedded) {
                     this.topics = [...res._embedded.topicResourceList, ...this.topics].map((topic, i) => ({...topic, index: i + 1}));
                 }
