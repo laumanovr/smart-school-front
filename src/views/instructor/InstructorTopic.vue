@@ -22,7 +22,7 @@
                         v-model="topic.courseId"
                         @change="onChangeCourse"
 					></v-select>
-					<SmartButton @clicked="onAddTopic">{{ $t('add_topic') }}</SmartButton>
+					<SmartButton @clicked="onAddTopic" v-if="topic.courseId">{{ $t('add_topic') }}</SmartButton>
                     <div class="school-admin-school-head__item">
                         <div class="export-custom" v-if="topics.length">
                             <ExcelJs
