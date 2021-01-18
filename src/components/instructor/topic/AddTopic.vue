@@ -75,7 +75,8 @@ export default {
 	name: "AddTopic",
 	props: {
 		isEdit: { type: Boolean, default: false },
-		topic: { type: Object, default: () => {} }
+		topic: { type: Object, default: () => {} },
+        schoolQuarters: {type: Array}
 	},
 	data () {
 		return {
@@ -87,6 +88,7 @@ export default {
 			endDate: moment().format('YYYY-MM-DD'),
 			menu2: false,
 			menu1: false,
+            selectedDateQuarterId: ''
 		}
 	},
 	computed: {
@@ -110,7 +112,16 @@ export default {
             this[picker] = false;
         },
 
+        findQuarterByDate() {
+            this.schoolQuarters.forEach((quarter) => {
+                if (this.startDate >= quarter.startDate && this.startDate <= quarter.endDate) {
+                    this.selectedDateQuarterId = quarter.id;
+                }
+            });
+        },
+
 		submit () {
+            this.findQuarterByDate();
 			if (this.$refs.form.validate()) {
 			    if (this.endDate < this.startDate) {
 			        this.$toast.error('Дата окончания не может быть раньше чем начала!');
@@ -120,7 +131,7 @@ export default {
 				this.topic.parentId = null;
 				this.topic.personId = this.userProfile.personId;
 				this.topic.archived = false;
-                this.topic.quarterId = this.userProfile.schools[0].quarterId;
+                this.topic.quarterId = this.selectedDateQuarterId;
 
 				if (this.isEdit) {
 					topicService.edit(this.topic).then(() => {
