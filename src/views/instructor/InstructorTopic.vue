@@ -232,7 +232,8 @@ export default {
             quarters: [],
             exportTopics: [],
             exportName: '',
-            selectedQuarterId: ''
+            selectedQuarterId: '',
+            lastElemNum: 0
 		}
 	},
 	computed: {
@@ -321,6 +322,8 @@ export default {
                 '',
                 30
             ).then((res) => {
+                this.totalElements = res.page.totalElements;
+                this.totalPages = res.page.totalPages;
 				if (res._embedded) {
                     this.topics = res._embedded.topicResourceList.map((topic, i) => ({...topic, index: i + 1}));
                 }
@@ -341,8 +344,8 @@ export default {
                 15,
                 this.currentClass.classId
             ).then((res) => {
-                this.totalPages = res.page.totalPages;
-                this.totalElements = res.page.totalElements;
+                this.totalPages += res.page.totalPages;
+                this.totalElements += res.page.totalElements;
                 this.currentPage = res.page.number + 1;
                 if (res._embedded) {
                     this.topics = [...res._embedded.topicResourceList, ...this.topics].map((topic, i) => ({...topic, index: i + 1}));
