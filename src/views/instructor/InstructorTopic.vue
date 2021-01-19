@@ -47,7 +47,7 @@
 				</template>
 
 				<template v-slot:body="{ item }">
-					<td>{{ (currentPage - 1) * 10 + item.index }}</td>
+					<td>{{ item.index }}</td>
                     <td>{{ showTopicQuarter(item.quarterId) + '-четв.' }}</td>
 					<td>{{ item.startDate }} - {{ item.endDate }}</td>
 					<td>{{ item.title }}</td>
@@ -233,7 +233,7 @@ export default {
             exportTopics: [],
             exportName: '',
             selectedQuarterId: '',
-            lastElemNum: 0
+            totalElemNum: 0
 		}
 	},
 	computed: {
@@ -311,7 +311,10 @@ export default {
             this.fetchTopics();
         },
 
-		fetchTopics(page = 0) {
+		fetchTopics(page = 0, nav) {
+	        if (nav === 'left' && page) {
+                this.totalElemNum -= this.topics.length;
+            }
 		    this.isLoading = true;
             this.topics = [];
 			topicService.getByInstructor(
@@ -327,14 +330,14 @@ export default {
 				if (res._embedded) {
                     this.topics = res._embedded.topicResourceList.map((topic, i) => ({...topic, index: i + 1}));
                 }
-                this.fetchClassUniqueTopics(page);
+                this.fetchClassUniqueTopics(page, nav);
 			}).catch((err) => {
 			    this.$toast.error(err);
 			    this.isLoading = false;
             })
 		},
 
-        fetchClassUniqueTopics(page) {
+        fetchClassUniqueTopics(page, nav) {
             topicService.getByInstructor(
                 page,
                 this.userProfile.personId,
@@ -347,8 +350,15 @@ export default {
                 this.totalPages += res.page.totalPages;
                 this.totalElements += res.page.totalElements;
                 this.currentPage = res.page.number + 1;
+                if (!res.page.number) {
+                    this.totalElemNum = 0;
+                }
                 if (res._embedded) {
-                    this.topics = [...res._embedded.topicResourceList, ...this.topics].map((topic, i) => ({...topic, index: i + 1}));
+                    const mergedTopics = [...res._embedded.topicResourceList, ...this.topics];
+                    if (nav === 'left' && res.page.number) {
+                        this.totalElemNum -= mergedTopics.length;
+                    }
+                    this.topics = mergedTopics.map((topic, i) => ({...topic, index: this.totalElemNum += 1}));
                 }
                 this.isLoading = false;
             }).catch((err) => {
@@ -411,7 +421,7 @@ export default {
 
         onPageChange(nav) {
             nav === 'left' ? this.currentPage -= 1 : this.currentPage += 1;
-            this.fetchTopics(this.currentPage - 1);
+            this.fetchTopics(this.currentPage - 1, nav);
         },
 
 //      TOPICS
