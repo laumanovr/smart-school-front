@@ -19,7 +19,10 @@
                 <thead>
                     <tr>
                         <th>Урок</th>
-                        <th v-for="day in days" :key="day.day">{{ day.name }}</th>
+                        <th v-for="day in days" :key="day.day">
+                            <div>{{ day.name }}</div>
+                            <div>{{ day.date }}</div>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,6 +52,7 @@
     import ShiftService from '@/_services/shift.service';
     import ShiftTimeService from '@/_services/shift-time.service';
     import PreLoader from "@/components/preloader/PreLoader";
+    import moment from 'moment';
 
     export default {
         components: {
@@ -95,10 +99,19 @@
 
         created() {
             this.isLoading = true;
+            this.setCurrentDates();
             this.fetchAllSchoolShifts();
         },
 
         methods: {
+            setCurrentDates() {
+                const date = new Date();
+                this.days.map((item) => {
+                    item.date = moment(new Date(date.setDate(date.getDate()-date.getDay()+item.day))).format('DD.MM.YYYY');
+                    return item;
+                });
+            },
+
             fetchAllSchoolShifts() {
                 ShiftService.getAllBySchool(this.school.id).then((res) => {
                     if (res.length) {
@@ -134,7 +147,6 @@
                     } else {
                         this.isLoading = false;
                     }
-                    console.log(this.shifts);
                 }).catch((err) => {
                     this.$toast.error(err);
                     this.isLoading = false;
