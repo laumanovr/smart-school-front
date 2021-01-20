@@ -25,9 +25,9 @@ export  class SchoolService extends BaseApiService {
         return this.sendPostRequest(url, data);
     }
 
-    listPageable(page, regionId='', rayonId='', query='') {
+    listPageable(page, regionId='', rayonId='', query='', size='') {
         const baseUrl = `${process.env.VUE_APP_BASE_URL}/v1/school/pageable/list`;
-        const url = baseUrl + `?page=${page}&regionId=${regionId}&rayonId=${rayonId}&query=${query}`;
+        const url = baseUrl + `?page=${page}&regionId=${regionId}&rayonId=${rayonId}&query=${query}&size=${size}`;
         return this.sendGetRequest(url);
     }
 }
