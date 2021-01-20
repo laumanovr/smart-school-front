@@ -16,7 +16,7 @@
                 </div>
             </template>
             <template v-slot:center>
-                <SmartSearchInput :searchObj="filterObj.searchRequest" :searchField="'query'"/>
+                <SmartSearchInput :searchObj="filterObj.searchRequest" :searchField="'query'" @onEnter="searchStudentByFIO"/>
                 <button class="search-btn" @click="searchStudentByFIO">Поиск</button>
             </template>
         </SuperAdminSchoolHead>

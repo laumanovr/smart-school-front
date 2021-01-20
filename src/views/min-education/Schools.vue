@@ -5,7 +5,7 @@
             <template v-slot:title>Школы</template>
             <template v-slot:center>
                 <!--<SmartButton @clicked="onAddSchool">Добавить Школу +</SmartButton>-->
-                <SmartSearchInput :searchObj="filterObj" :searchField="'query'"/>
+                <SmartSearchInput :searchObj="filterObj" :searchField="'query'" @onEnter="searchSchool"/>
                 <button class="search-btn" @click="searchSchool">Поиск</button>
             </template>
             <template v-slot:right>
