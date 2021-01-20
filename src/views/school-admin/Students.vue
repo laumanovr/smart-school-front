@@ -90,7 +90,7 @@
 			</template>
 		</SmartTable>
 		<v-dialog v-if="isAddStudentModal" id="add-form" v-model="isAddStudentModal" width="546">
-			<v-form ref="studentForm" @submit.prevent="submitStudent">
+			<v-form ref="studentForm" @submit.prevent="checkIsStudentExist">
 				<div class="form-head">
 					<span><h2>{{isStudentEdit ? 'Редактировать ученика' : 'Добавить ученика'}}</h2></span>
 					<img alt="" src="../../assets/images/profile-icon.svg">
@@ -849,11 +849,26 @@ export default {
             }
         },
 
-		submitStudent() {
+        checkIsStudentExist() {
             this.checkPin();
-		    if (!this.$refs.studentForm.validate() || !this.validFirstNum || !this.validDatePin) {
-		        return;
+            if (!this.$refs.studentForm.validate() || !this.validFirstNum || !this.validDatePin) {
+                return;
             }
+            this.isLoading = true;
+            studentService.getByPin(this.studentObj.pin.replaceAll('.', '')).then((res) => {
+                if (Object.values(res).length) {
+                    this.$toast.error('Ученик с таким ПИНом уже существует!');
+                    this.isLoading = false;
+                } else {
+                    this.submitStudent();
+                }
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.isLoading = false;
+            })
+        },
+
+		submitStudent() {
             this.isLoading = true;
             this.search.query = '';
             this.studentObj.pin = this.studentObj.pin.replaceAll('.', '');
