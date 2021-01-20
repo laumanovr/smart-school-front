@@ -437,8 +437,8 @@ export default {
 
         onTopicEdit (topic) {
             this.topic.id = topic.id;
-            this.topic.classLevel = topic.classLevel;
-            this.topic.classId = topic.classId;
+            this.topic.classLevel = '';
+            this.topic.classId = topic.classId ? topic.classId : this.currentClass.classId;
             this.topic.courseId = topic.courseId;
             this.topic.quarterId = topic.quarterId;
             this.topic.title = topic.title;
