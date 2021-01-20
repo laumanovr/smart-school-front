@@ -390,24 +390,34 @@ export default {
                 ).then((res) => {
                     if (res._embedded) {
                         this.exportTopics = res._embedded.topicResourceList;
-                        this.exportName = `Темы и ДЗ, ${this.currentClass.classLevel}-класса`;
-                        this.exportHeaders = ['Дата', 'Тема', 'Домашние задания'];
+                    }
+                    this.exportName = `Темы и ДЗ, ${this.currentClass.classLevel}${this.currentClass.classLabel}-класса`;
+                    this.exportHeaders = ['Дата', 'Тема', 'Домашние задания'];
+                    topicService.getByInstructor(
+                        0,
+                        this.userProfile.personId,
+                        this.topic.courseId,
+                        '',
+                        this.selectedQuarterId,
+                        500,
+                        this.currentClass.classId
+                    ).then((res) => {
+                        if (res._embedded) {
+                            this.exportTopics = [...res._embedded.topicResourceList, ...this.exportTopics];
+                        }
                         this.exportRows = this.exportTopics.map((topic) => {
                             return [`${topic.startDate}-${topic.endDate}`, topic.title, this.prepareAssignments(topic.assignments)];
                         });
                         this.$refs.topicExport.isExport = true;
                         this.$nextTick(() => {
-                           setTimeout(() => {
-                               this.isLoading = false;
-                               this.toggleExportModal();
-                               this.$refs.topicExport.exportExcel();
-                           });
+                            setTimeout(() => {
+                                this.isLoading = false;
+                                this.toggleExportModal();
+                                this.$refs.topicExport.exportExcel();
+                            });
                         });
-                    } else {
-                        this.$toast.info('Ничего не найдено!');
-                        this.isLoading = false;
-                    }
-                })
+                    });
+                });
             }
         },
 
