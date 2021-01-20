@@ -58,13 +58,17 @@
                 v-model="trackObj.roleId"
             />
             <div class="school-select">
-                <v-select
+                <v-autocomplete
                     :items="schools"
                     item-text="name"
                     item-value="id"
                     label="Школа"
                     v-model="trackObj.schoolId"
                     clearable
+                    hide-no-data
+                    :loading="schoolLoader"
+                    :search-input.sync="searchSchool"
+                    @change="onSelectSchool"
                 />
             </div>
             <v-btn color="primary" @click="getAnalytics">Показать</v-btn>
@@ -125,13 +129,13 @@
                 showPickerStart: false,
                 showPickerEnd: false,
                 isLoading: false,
-//                typingTimer: null,
-//                isTimerBlock: false,
-//                schoolLoader: false,
+                typingTimer: null,
+                isTimerBlock: false,
+                schoolLoader: false,
                 dateStart: '',
                 dateEnd: moment().format('YYYY-MM-DD'),
                 currentRole: '',
-//                searchSchool: '',
+                searchSchool: '',
                 roles: [],
                 schools: [],
                 analyticsData: []
@@ -172,8 +176,8 @@
                 })
             },
 
-            fetchAllSchools() {
-                schoolService.listPageable(0, '', this.headRayonId).then((res) => {
+            fetchAllSchools(searchQuery = '') {
+                schoolService.listPageable(0, '', this.headRayonId, searchQuery).then((res) => {
                     if (res._embedded) {
                         this.schools = res._embedded.schoolResourceList;
                     }
@@ -250,7 +254,31 @@
                     this.isLoading = false;
                 })
             },
+
+            onSelectSchool() {
+                this.isTimerBlock = true;
+                setTimeout(() => {
+                    this.isTimerBlock = false;
+                }, 3000)
+            },
         },
+
+        watch: {
+            searchSchool(inputValue) {
+                clearTimeout(this.typingTimer);
+                this.typingTimer = null;
+                if (!inputValue) {
+                    this.schools = [];
+                    return;
+                }
+                if (!this.isTimerBlock) {
+                    this.schoolLoader = true;
+                    this.typingTimer = setTimeout(() => {
+                        this.fetchAllSchools(inputValue);
+                    }, 900);
+                }
+            }
+        }
     }
 </script>
 
