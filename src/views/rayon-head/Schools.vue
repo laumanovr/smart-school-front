@@ -4,12 +4,19 @@
         <SuperAdminSchoolHead>
             <template v-slot:title>Школы</template>
             <!--<template v-slot:center>-->
-                <!--<SmartButton @clicked="onAddSchool">Добавить Школу +</SmartButton>-->
-                <!--<SmartSearchInput :searchObj="filterObj" :searchField="'query'"/>-->
                 <!--<button class="search-btn" @click="searchSchool">Поиск</button>-->
             <!--</template>-->
             <template v-slot:right>
-                <ExcelJs :rows="exportRows" :headers="exportHeaders" :file-name="exportName"></ExcelJs>
+                <div class="export-custom">
+                    <ExcelJs
+                        ref="exportSchool"
+                        :buttonTitle="'Экспорт всех школ'"
+                        :file-name="exportName"
+                        :headers="exportHeaders"
+                        :rows="exportRows"
+                    />
+                    <span class="export-custom-btn" @click="exportAllSchools"></span>
+                </div>
             </template>
         </SuperAdminSchoolHead>
         <SmartTable
@@ -161,14 +168,24 @@
                             return i
                         })
                     } else this.schools = [];
-                    this.exportHeaders = ['Название', 'Электронная Почта', 'Номер телефона', 'Тип Школы', 'Язык', 'Район']
-                    this.exportRows = this.schools.map(i => {
-                        return [i.name, i.email, i.phone, this.schoolTypes[i.schoolType], this.lang[i.language], i.rayonTitle];
-                    });
-                    this.exportName = 'Умная школа: Школы';
                     this.isLoading = false;
                 }).catch(err => {
-                    console.log(err);
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                })
+            },
+
+            exportAllSchools() {
+                this.isLoading = true;
+                schoolService.listPageable(0, '', this.headRayonId, '', this.totalElements).then((res) => {
+                    this.exportHeaders = ['Название', 'Электронная Почта', 'Номер телефона', 'Тип Школы', 'Язык', 'Район'];
+                    this.exportRows = res._embedded.schoolResourceList.map((i) => {
+                        return [i.name, i.email, i.phone, this.schoolTypes[i.schoolType], this.lang[i.language], i.rayonTitle];
+                    });
+                    this.exportName = 'Умная школа: Все Школы';
+                    this.$refs.exportSchool.isExport = true;
+                    this.isLoading = false;
+                }).catch(err => {
                     this.$toast.error(err);
                     this.isLoading = false;
                 })
