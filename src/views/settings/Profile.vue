@@ -37,11 +37,15 @@
                 v-model="person.middleName"
                 :rules="required"
             />
-            <v-text-field
-                label="Телефон"
-                v-model="person.phone"
-                type="number"
-            />
+            <div class="input-mask">
+                <label>Телефон</label>
+                <masked-input
+                    v-model="person.phone"
+                    mask="\+\996 (111) 111111"
+                    placeholder="Телефон"
+                    @input="phoneRawVal = arguments[1]"
+                />
+            </div>
             <div class="btn-actions">
                 <v-btn color="green" @click="submitProfile">Сохранить</v-btn>
             </div>
@@ -56,10 +60,12 @@
     import PreLoader from '@/components/preloader/PreLoader';
     import {PersonService} from '@/_services/person.service';
     const personService = new PersonService();
+    import MaskedInput from 'vue-masked-input';
 
     export default {
         components: {
-            PreLoader
+            PreLoader,
+            MaskedInput
         },
         data() {
             return {
@@ -86,6 +92,7 @@
                 },
                 allRoles: [],
                 isLoading: false,
+                phoneRawVal: ''
             }
         },
         computed: {
@@ -159,6 +166,7 @@
                         })
                     } else {
                         this.person.roles = role;
+                        this.person.phone = this.phoneRawVal.replaceAll('_','');
                         personService.edit(this.person).then(() => {
                             this.userProfile.user.firstName = this.person.name;
                             this.userProfile.user.lastName = this.person.surname;
