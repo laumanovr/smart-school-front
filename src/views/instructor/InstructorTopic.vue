@@ -344,7 +344,7 @@ export default {
                 this.topic.courseId,
                 '',
                 '',
-                15,
+                30,
                 this.currentClass.classId
             ).then((res) => {
                 this.totalPages += res.page.totalPages;
