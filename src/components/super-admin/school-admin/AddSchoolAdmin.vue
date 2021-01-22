@@ -52,9 +52,9 @@
                     <v-text-field label="Email" v-model="schoolAdmin.email" :rules="emailRule"/>
                     <v-text-field label="Номер телефона" v-model="schoolAdmin.phone" type="number"/>
                 </div>
-                <div>
-                    <v-text-field label="Адрес" v-model="schoolAdmin.address"></v-text-field>
-                </div>
+                <!--<div>-->
+                    <!--<v-text-field label="Адрес" v-model="schoolAdmin.address"></v-text-field>-->
+                <!--</div>-->
                 <div>
                     <v-select
                         :items="schools"
@@ -68,16 +68,16 @@
                     ></v-select>
                 </div>
 
-                <div>
-                    <v-select
-                        :items="languages"
-                        :rules="required"
-                        item-text="name"
-                        item-value="id"
-                        label="Язык"
-                        v-model="schoolAdmin.languageId"
-                    ></v-select>
-                </div>
+                <!--<div>-->
+                    <!--<v-select-->
+                        <!--:items="languages"-->
+                        <!--:rules="required"-->
+                        <!--item-text="name"-->
+                        <!--item-value="id"-->
+                        <!--label="Язык"-->
+                        <!--v-model="schoolAdmin.languageId"-->
+                    <!--&gt;</v-select>-->
+                <!--</div>-->
                 <div class="form-footer">
                     <div class="btn-actions">
                         <v-btn color="red" @click="$emit('close')">Отменить</v-btn>
@@ -262,21 +262,26 @@ export default {
         this.checkPin();
         if (this.$refs.form.validate()) {
             if (this.validFirstNum && this.validDatePin) {
+                this.isLoading = true;
                 this.schoolAdmin.pin = this.schoolAdmin.pin.replaceAll('.', '');
                 this.schoolAdmin.roles = this.roles.filter(i => i.code === this.role).map(i => i.id);
                 if (this.isEdit) {
                     personService.edit(this.schoolAdmin).then(() => {
                         this.$toast.success('Успешно обновлено!');
-                        this.$emit('close')
+                        this.$emit('close');
+                        this.isLoading = false;
                     }).catch((err) => {
                         this.$toast.error(err);
+                        this.isLoading = false;
                     })
                 } else {
                     personService.create(this.schoolAdmin).then(() => {
                         this.$toast.success('Успешно создано!');
-                        this.$emit('close')
+                        this.$emit('close');
+                        this.isLoading = false;
                     }).catch((err) => {
                         this.$toast.error(err);
+                        this.isLoading = false;
                     })
                 }
             }
