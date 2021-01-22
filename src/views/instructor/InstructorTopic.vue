@@ -271,7 +271,10 @@ export default {
         },
 
         showTopicQuarter(quarterId) {
-            return this.quarters.find((item) => item.id === quarterId).semester;
+	        if (quarterId) {
+                return this.quarters.find((item) => item.id === quarterId).semester;
+            }
+            return '';
         },
 
         currentQuarterTopic(topicStartDate) {
