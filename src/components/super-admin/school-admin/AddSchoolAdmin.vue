@@ -20,7 +20,7 @@
                 <div>
                     <v-text-field :rules="middleNameRule" label="Отчество" v-model="schoolAdmin.middleName"></v-text-field>
                 </div>
-                <div class="pin-field">
+                <div class="pin-field" v-if="showPinField">
                     <div class="input-mask">
                         <label>ПИН/ИНН</label>
                         <masked-input
@@ -172,7 +172,8 @@ export default {
     },
     resetPassMode: '',
     validFirstNum: true,
-    validDatePin: true
+    validDatePin: true,
+    showPinField: false
   }),
 
   computed: {
@@ -191,6 +192,11 @@ export default {
             this.schools.push(res);
         });
     }
+    this.$nextTick(() => {
+        setTimeout(() => {
+            this.showPinField = true;
+        });
+    });
   },
 
   methods: {
