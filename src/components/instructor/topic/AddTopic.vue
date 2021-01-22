@@ -35,7 +35,7 @@
 							v-on="on"
 						></v-text-field>
 					</template>
-					<v-date-picker locale="ru-RU" v-model="startDate" @input="onSelectTopicDate('menu2')"/>
+					<v-date-picker :min="schoolQuarterStart" locale="ru-RU" v-model="startDate" @input="onSelectTopicDate('menu2')"/>
 				</v-menu>
 				<v-menu
 					v-model="menu1"
@@ -55,7 +55,7 @@
 							v-on="on"
 						></v-text-field>
 					</template>
-					<v-date-picker locale="ru-RU" v-model="endDate" @input="onSelectTopicDate('menu1')"/>
+					<v-date-picker :min="schoolQuarterStart" locale="ru-RU" v-model="endDate" @input="onSelectTopicDate('menu1')"/>
 				</v-menu>
 			</div>
 			<div class="add-topic__footer">
@@ -93,8 +93,14 @@ export default {
 	},
 	computed: {
 		userProfile() {
-			return this.$store.state.account.profile
+			return this.$store.state.account.profile;
 		},
+        school() {
+		    return this.userProfile.schools[0];
+        },
+        schoolQuarterStart() {
+		    return moment(this.school.quarterStart, 'DD.MM.YYYY').format('YYYY-MM-DD');
+        }
 	},
 	mounted() {
 		if (this.isEdit) {
@@ -131,7 +137,7 @@ export default {
 				this.topic.parentId = null;
 				this.topic.personId = this.userProfile.personId;
 				this.topic.archived = false;
-                this.topic.quarterId = this.selectedDateQuarterId;
+                this.topic.quarterId = this.selectedDateQuarterId ? this.selectedDateQuarterId : this.school.quarterId;
 
 				if (this.isEdit) {
 					topicService.edit(this.topic).then(() => {
