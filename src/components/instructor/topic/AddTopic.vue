@@ -16,6 +16,13 @@
 				></v-textarea>
 			</div>
 
+            <div class="parallel-checkbox" v-if="!isEdit">
+                <label for="checkbox">
+                    <input id="checkbox" type="checkbox" @change="addForParallels">
+                    <span>Создать для всей параллели</span>
+                </label>
+            </div>
+
 			<div class="add-topic__item">
 				<v-menu
 					v-model="menu2"
@@ -33,6 +40,7 @@
 							readonly
 							v-bind="attrs"
 							v-on="on"
+                            :rules="required"
 						></v-text-field>
 					</template>
 					<v-date-picker :min="schoolQuarterStart" locale="ru-RU" v-model="startDate" @input="onSelectTopicDate('menu2')"/>
@@ -53,6 +61,7 @@
 							readonly
 							v-bind="attrs"
 							v-on="on"
+                            :rules="required"
 						></v-text-field>
 					</template>
 					<v-date-picker :min="schoolQuarterStart" locale="ru-RU" v-model="endDate" @input="onSelectTopicDate('menu1')"/>
@@ -76,7 +85,8 @@ export default {
 	props: {
 		isEdit: { type: Boolean, default: false },
 		topic: { type: Object, default: () => {} },
-        schoolQuarters: {type: Array}
+        schoolQuarters: {type: Array},
+        selectedClass: Object
 	},
 	data () {
 		return {
@@ -106,11 +116,8 @@ export default {
 		if (this.isEdit) {
 			this.startDate = moment(this.topic.startDate, 'DD.MM.YYYY').format('YYYY-MM-DD');
 			this.endDate = moment(this.topic.endDate, 'DD.MM.YYYY').format('YYYY-MM-DD');
-		} else {
-            this.topic.startDate = moment().format('DD.MM.YYYY');
-            this.topic.endDate = moment().format('DD.MM.YYYY');
-        }
-	},
+		}
+    },
 	methods: {
         onSelectTopicDate(picker) {
             this.topic.startDate = moment(this.startDate, 'YYYY-MM-DD').format('DD.MM.YYYY');
@@ -134,7 +141,6 @@ export default {
 			        return;
                 }
 			    this.$emit('loading', true);
-				this.topic.parentId = null;
 				this.topic.personId = this.userProfile.personId;
 				this.topic.archived = false;
                 this.topic.quarterId = this.selectedDateQuarterId ? this.selectedDateQuarterId : this.school.quarterId;
@@ -159,7 +165,17 @@ export default {
                     })
 				}
 			}
-		}
+		},
+
+        addForParallels(e) {
+            if (e.currentTarget.checked) {
+                this.topic.classId = '';
+                this.topic.classLevel = this.selectedClass.classLevel;
+            } else {
+                this.topic.classLevel = '';
+                this.topic.classId = this.selectedClass.classId;
+            }
+        }
 	}
 }
 </script>
@@ -197,5 +213,22 @@ export default {
 				}
 			}
 		}
+        .parallel-checkbox {
+            margin: -8px 0 20px 0;
+            label {
+                border: 1px solid #aba9a9;
+                padding: 3px 5px;
+                border-radius: 4px;
+                cursor: pointer;
+                input {
+                    transform: translateY(1px);
+                }
+                span {
+                    margin-left: 5px;
+                    color: #454545;
+                    font-size: 14px;
+                }
+            }
+        }
 	}
 </style>
