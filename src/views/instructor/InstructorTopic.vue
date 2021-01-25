@@ -109,6 +109,7 @@
                 :is-edit="isEdit"
                 :topic="topic"
                 :schoolQuarters="quarters"
+                :selectedClass="currentClass"
                 @close="showModal=false"
                 @fetch="fetchTopics(0)"
                 @loading="showLoader"
@@ -450,8 +451,8 @@ export default {
 
         onTopicEdit (topic) {
             this.topic.id = topic.id;
-            this.topic.classLevel = '';
-            this.topic.classId = topic.classId ? topic.classId : this.currentClass.classId;
+            this.topic.classLevel = topic.classLevel ? topic.classLevel : '';
+            this.topic.classId = topic.classId ? topic.classId : '';
             this.topic.courseId = topic.courseId;
             this.topic.quarterId = topic.quarterId;
             this.topic.title = topic.title;
