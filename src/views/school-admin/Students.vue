@@ -854,6 +854,10 @@ export default {
             if (!this.$refs.studentForm.validate() || !this.validFirstNum || !this.validDatePin) {
                 return;
             }
+            if (this.isStudentEdit) {
+                this.submitStudent();
+                return;
+            }
             this.isLoading = true;
             studentService.getByPin(this.studentObj.pin.replaceAll('.', '')).then((res) => {
                 if (Object.values(res).length) {
