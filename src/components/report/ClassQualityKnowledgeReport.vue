@@ -9,11 +9,11 @@
             <v-select
                 :items="instrClasses"
                 item-text="classTitle"
-                item-value="classId"
                 label="Класс"
                 :rules="required"
-                v-model="reportObj.classId"
                 class="v-select-item"
+                v-model="reportObj.classObj"
+                :return-object="true"
             />
             <v-select
                 :items="schoolQuarters"
@@ -22,7 +22,7 @@
                 label="Четверть"
                 :rules="required"
                 v-model="reportObj.quarterId"
-                class="v-select-item"
+                class="v-select-item quarter"
                 @change="setDataTitle"
             />
             <v-btn color="primary" @click="fetchQualityKnowledgeReport">Сгенерировать</v-btn>
@@ -85,7 +85,7 @@
             return {
                 required: [v => !!v || this.$t('required')],
                 reportObj: {
-                    classId: '',
+                    classObj: '',
                     quarterId: '',
                 },
                 showTable: false,
@@ -121,11 +121,12 @@
                         this.school.id,
                         this.school.chronicleId,
                         this.reportObj.quarterId,
-                        this.reportObj.classId
+                        this.reportObj.classObj.classId,
+                        this.reportObj.classObj.courseId
                     ).then((res) => {
                         if (res.length) {
-                            this.classReport = res.find((klass) => klass.classId === this.reportObj.classId);
-                            AnalyticsService.getTotalStudentsCount(this.school.id, this.reportObj.classId).then((res) => {
+                            this.classReport = res.find((klass) => klass.classId === this.reportObj.classObj.classId);
+                            AnalyticsService.getTotalStudentsCount(this.school.id, this.reportObj.classObj.classId).then((res) => {
                                 this.classReport.totalStudentsCount = res[0].totalStudentCount;
                                 this.showTable = true;
                                 this.isLoading = false;
@@ -217,9 +218,8 @@
             }
         }
         .v-select-item {
-            max-width: 160px;
-            &.year {
-                max-width: 175px;
+            &.quarter {
+                max-width: 160px;
             }
         }
         .report-content {
