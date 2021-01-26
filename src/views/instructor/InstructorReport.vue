@@ -13,7 +13,7 @@
         </div>
         <template v-if="reportType == 'performance'">
             <ClassQualityKnowledgeReport
-                :instrClasses="instrClasses"
+                :instrClasses="teachClasses"
                 :allChronicleYears="allChronicleYears"
                 :schoolQuarters="schoolQuarters"
             />
@@ -53,6 +53,7 @@
     const chronicleService = new ChronicleService();
     import {QuarterService} from '@/_services/quarter.service';
     const quarterService = new QuarterService();
+    import ScheduleWeekService from '@/_services/schedule-week.service';
 
     export default {
         components: {
@@ -63,8 +64,14 @@
         },
         data() {
             return {
+                langObj: {
+                    ru: 'courseTitle',
+                    kg: 'courseTitleKG',
+                    en: 'courseCode',
+                },
                 reportType: '',
                 instrClasses: [],
+                teachClasses: [],
                 allChronicleYears: [],
                 schoolQuarters: [],
                 reportTypes: [
@@ -81,6 +88,9 @@
             },
             school() {
                 return this.userProfile.schools[0];
+            },
+            currentLang() {
+                return this.$root.$i18n.locale;
             }
         },
         created() {
@@ -97,6 +107,19 @@
                             return klass;
                         });
                     }
+                    this.getInstrTeachClasses();
+                }).catch((err) => {
+                    this.$toast.error(err);
+                })
+            },
+
+            getInstrTeachClasses() {
+                ScheduleWeekService.getByInstructor(this.userProfile.personId).then((res) => {
+                    this.teachClasses = res.map((item) => {
+                        item.classTitle = `${item.classLevel}${item.classLabel} - ` + item[this.langObj[this.currentLang]];
+                        return item;
+                    }).sort((a, b) => a.classLevel - b.classLevel);
+                    this.teachClasses = [...this.instrClasses, ...this.teachClasses];
                 }).catch((err) => {
                     this.$toast.error(err);
                 })
