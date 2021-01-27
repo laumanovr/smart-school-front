@@ -18,7 +18,7 @@
 
             <div class="parallel-checkbox" v-if="!isEdit">
                 <label for="checkbox">
-                    <input id="checkbox" type="checkbox" @change="addForParallels">
+                    <input id="checkbox" type="checkbox" v-model="isForParallels">
                     <span>Создать для всей параллели</span>
                 </label>
             </div>
@@ -86,19 +86,20 @@ export default {
 		isEdit: { type: Boolean, default: false },
 		topic: { type: Object, default: () => {} },
         schoolQuarters: {type: Array},
-        selectedClass: Object
+        selectedClass: Object,
+        allTeachClasses: Array
 	},
 	data () {
 		return {
 			required: [
 				v => !!v || this.$t('required')
 			],
-			classLevels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
 			startDate: moment().format('YYYY-MM-DD'),
 			endDate: moment().format('YYYY-MM-DD'),
 			menu2: false,
 			menu1: false,
-            selectedDateQuarterId: ''
+            selectedDateQuarterId: '',
+            isForParallels: false
 		}
 	},
 	computed: {
@@ -133,49 +134,69 @@ export default {
             });
         },
 
-		submit () {
+        submit() {
             this.findQuarterByDate();
-			if (this.$refs.form.validate()) {
-			    if (this.endDate < this.startDate) {
-			        this.$toast.error('Дата окончания не может быть раньше чем начала!');
-			        return;
+            if (this.$refs.form.validate()) {
+                if (this.endDate < this.startDate) {
+                    this.$toast.error('Дата окончания не может быть раньше чем начала!');
+                    return;
                 }
-			    this.$emit('loading', true);
-				this.topic.personId = this.userProfile.personId;
-				this.topic.archived = false;
+                this.$emit('loading', true);
+                this.topic.personId = this.userProfile.personId;
+                this.topic.archived = false;
                 this.topic.quarterId = this.selectedDateQuarterId ? this.selectedDateQuarterId : this.school.quarterId;
-
-				if (this.isEdit) {
-					topicService.edit(this.topic).then(() => {
-						this.$toast.success(this.$t('successMessage'));
-						this.$emit('fetch');
-						this.$emit('close');
-					}).catch((err) => {
-					    this.$toast.error(err);
-                        this.$emit('loading', false);
-                    })
-				} else {
-					topicService.create(this.topic).then(() => {
-						this.$toast.success(this.$t('successMessage'));
-						this.$emit('fetch');
-						this.$emit('close');
-					}).catch((err) => {
+                if (this.isEdit) {
+                    topicService.edit(this.topic).then(() => {
+                        this.$toast.success(this.$t('successMessage'));
+                        this.$emit('fetch');
+                        this.$emit('close');
+                    }).catch((err) => {
                         this.$toast.error(err);
                         this.$emit('loading', false);
                     })
-				}
-			}
-		},
-
-        addForParallels(e) {
-            if (e.currentTarget.checked) {
-                this.topic.classId = '';
-                this.topic.classLevel = this.selectedClass.classLevel;
-            } else {
-                this.topic.classLevel = '';
-                this.topic.classId = this.selectedClass.classId;
+                } else {
+                    if (this.isForParallels) {
+                        const classIds = [
+                            ...new Set(this.allTeachClasses
+                            .filter((klass) => klass.classLevel === this.selectedClass.classLevel)
+                            .map((classObj) => classObj.classId))
+                        ];
+                        const topicsArr = classIds.map((classId) => {
+                            this.topic.classId = classId;
+                            return new Promise((resolve, reject) => {
+                                topicService.create(this.topic).then((res) => {
+                                    resolve(res);
+                                }).catch((err) => {
+                                    reject(err);
+                                });
+                            });
+                        });
+                        Promise.all(topicsArr).then(() => {
+                            this.$toast.success(this.$t('successMessage'));
+                            this.$emit('fetch');
+                            this.$emit('close');
+                        }).catch((err) => {
+                            this.$toast.error(err);
+                            this.$emit('loading', false);
+                        });
+                    } else {
+                        this.createOneTopic(this.topic);
+                    }
+                }
             }
-        }
+        },
+
+        createOneTopic(topic) {
+            topicService.create(topic).then(() => {
+                this.$toast.success(this.$t('successMessage'));
+                this.$emit('fetch');
+                this.$emit('close');
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.$emit('loading', false);
+            })
+        },
+
 	}
 }
 </script>
