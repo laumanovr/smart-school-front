@@ -110,6 +110,7 @@
                 :topic="topic"
                 :schoolQuarters="quarters"
                 :selectedClass="currentClass"
+                :allTeachClasses="allCourses"
                 @close="showModal=false"
                 @fetch="fetchTopics(0)"
                 @loading="showLoader"
