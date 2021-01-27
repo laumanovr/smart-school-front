@@ -363,7 +363,11 @@ export default {
                     if (nav === 'left' && res.page.number) {
                         this.totalElemNum -= mergedTopics.length;
                     }
-                    this.topics = mergedTopics.map((topic, i) => ({...topic, index: this.totalElemNum += 1}));
+                    this.topics = mergedTopics.sort((a, b) => {
+                        const aStartDate = moment(a.startDate, 'DD.MM.YYYY').format('YYYY-MM-DD');
+                        const bStartDate = moment(b.startDate, 'DD.MM.YYYY').format('YYYY-MM-DD');
+                        return new Date(bStartDate) - new Date(aStartDate);
+                    }).map((topic, i) => ({...topic, index: this.totalElemNum += 1}));
                 }
                 this.isLoading = false;
             }).catch((err) => {
