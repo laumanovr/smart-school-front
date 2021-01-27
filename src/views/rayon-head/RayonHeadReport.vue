@@ -2,12 +2,15 @@
     <div class="rayon-head-container">
         <div class="header-title">
             <h3>Отчеты</h3>
-            <v-select
+            <v-autocomplete
                 class="v-select-item school"
                 placeholder="Школа"
                 :items="rayonSchools"
                 item-text="name"
                 :return-object="true"
+                hide-no-data
+                :loading="schoolLoader"
+                :search-input.sync="searchSchool"
                 @change="getSchoolData"
             />
             <v-select
@@ -65,6 +68,9 @@
         },
         data() {
             return {
+                typingTimer: null,
+                schoolLoader: false,
+                searchSchool: '',
                 reportType: '',
                 showSelectReport: false,
                 selectedSchool: {},
@@ -100,11 +106,13 @@
                 })
             },
 
-            getRayonSchools() {
-                schoolService.listPageable(0, '', this.headRayonId).then((res) => {
+            getRayonSchools(searchQuery='') {
+                this.rayonSchools = [];
+                schoolService.listPageable(0, '', this.headRayonId, searchQuery).then((res) => {
                     if (res._embedded) {
                         this.rayonSchools = res._embedded.schoolResourceList;
                     }
+                    this.schoolLoader = false;
                 }).catch((err) => {
                     this.$toast.error(err);
                 })
@@ -137,6 +145,17 @@
                     this.$toast.error(err);
                 })
             },
+        },
+
+        watch: {
+            searchSchool(inputValue) {
+                clearTimeout(this.typingTimer);
+                this.typingTimer = null;
+                this.schoolLoader = true;
+                this.typingTimer = setTimeout(() => {
+                    this.getRayonSchools(inputValue || '');
+                }, 1000);
+            }
         }
     }
 </script>
