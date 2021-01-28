@@ -8,6 +8,7 @@
                 :items="rayonSchools"
                 item-text="name"
                 :return-object="true"
+                clearable
                 hide-no-data
                 :loading="schoolLoader"
                 :search-input.sync="searchSchool"
@@ -69,6 +70,7 @@
         data() {
             return {
                 typingTimer: null,
+                isTimerBlocked: false,
                 schoolLoader: false,
                 searchSchool: '',
                 reportType: '',
@@ -119,11 +121,17 @@
             },
 
             getSchoolData(school) {
-                this.selectedSchool = school;
-                this.getSchoolQuarters();
-                this.getSchoolAllClasses();
-                this.reportType = '';
-                this.showSelectReport = true;
+                if (school) {
+                    this.isTimerBlocked = true;
+                    this.selectedSchool = school;
+                    this.getSchoolQuarters();
+                    this.getSchoolAllClasses();
+                    this.reportType = '';
+                    this.showSelectReport = true;
+                    setTimeout(() => {
+                        this.isTimerBlocked = false;
+                    }, 2000);
+                }
             },
 
             getSchoolQuarters() {
@@ -151,10 +159,12 @@
             searchSchool(inputValue) {
                 clearTimeout(this.typingTimer);
                 this.typingTimer = null;
-                this.schoolLoader = true;
-                this.typingTimer = setTimeout(() => {
-                    this.getRayonSchools(inputValue || '');
-                }, 1000);
+                if (!this.isTimerBlocked) {
+                    this.schoolLoader = true;
+                    this.typingTimer = setTimeout(() => {
+                        this.getRayonSchools(inputValue || '');
+                    }, 1000);
+                }
             }
         }
     }
