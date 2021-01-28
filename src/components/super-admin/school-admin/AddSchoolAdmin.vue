@@ -56,16 +56,19 @@
                     <!--<v-text-field label="Адрес" v-model="schoolAdmin.address"></v-text-field>-->
                 <!--</div>-->
                 <div>
-                    <v-select
+                    <v-autocomplete
                         :items="schools"
                         :rules="required"
                         item-text="name"
                         item-value="id"
                         label="Школа"
                         v-model="schoolAdmin.schoolId"
-                        @click="addScrollListenerSchoolSelect"
-                        @change="removeSchoolSelectScrollListener"
-                    ></v-select>
+                        clearable
+                        hide-no-data
+                        :loading="schoolLoader"
+                        :search-input.sync="searchSchool"
+                        @change="onSelectSchool"
+                    />
                 </div>
 
                 <!--<div>-->
@@ -173,7 +176,11 @@ export default {
     resetPassMode: '',
     validFirstNum: true,
     validDatePin: true,
-    showPinField: false
+    showPinField: false,
+    typingTimer: null,
+    isTimerBlocked: false,
+    schoolLoader: false,
+    searchSchool: '',
   }),
 
   computed: {
@@ -210,40 +217,22 @@ export default {
         }
     },
 
-    addScrollListenerSchoolSelect() {
-        this.$nextTick(() => {
-            const schoolSelect = document.querySelector('.v-menu__content');
-            schoolSelect.addEventListener('scroll', this.innerSelectScrollListener);
-        })
+    onSelectSchool() {
+        this.isTimerBlocked = true;
+        setTimeout(() => {
+            this.isTimerBlocked = false;
+        }, 2000);
     },
 
-    innerSelectScrollListener() {
-        const schoolSelect = document.querySelector('.v-menu__content');
-        let almostEndOfScroll = (schoolSelect.scrollHeight - schoolSelect.clientHeight) - 100;
-        if (schoolSelect.scrollTop >= almostEndOfScroll) {
-            this.page++;
-            this.fetchSchools();
-        }
-    },
-
-    removeSchoolSelectScrollListener() {
-        const schoolSelect = document.querySelector('.v-menu__content');
-        if (schoolSelect) {
-            schoolSelect.removeEventListener('scroll', this.innerSelectScrollListener);
-        }
-    },
-
-    fetchSchools() {
-        // TODO: need to get schools with region
-        schoolService.listPageable(this.page).then((res) => {
+    fetchSchools(searchQuery='') {
+        schoolService.listPageable(this.page, '', '', searchQuery).then((res) => {
             if (res._embedded) {
-                res._embedded.schoolResourceList.forEach((school) => {
-                    this.schools.push(school)
-                });
-            } else {
-                this.removeSchoolSelectScrollListener();
+                this.schools = res._embedded.schoolResourceList;
             }
-        }).catch(err => console.log(err))
+            this.schoolLoader = false;
+        }).catch((err) => {
+            this.$toast.error(err);
+        });
     },
 
     fetchRoles () {
@@ -308,6 +297,19 @@ export default {
             this.resetUser.roles = this.roles.filter(i => i.code === 'ROLE_ADMIN').map(i => i.id);
         }
     }
+  },
+
+  watch: {
+      searchSchool(inputValue) {
+          clearTimeout(this.typingTimer);
+          this.typingTimer = null;
+          if (!this.isTimerBlocked) {
+              this.schoolLoader = true;
+              this.typingTimer = setTimeout(() => {
+                  this.fetchSchools(inputValue || '');
+              }, 1000);
+          }
+      }
   }
 }
 </script>
