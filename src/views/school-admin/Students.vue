@@ -773,7 +773,7 @@ export default {
 				this.fetchStudents(true)
 			}).catch(err => {
 				this.$toast.error(err);
-				this.isDeleting = false
+                this.isLoading = false;
 			})
 		},
 
