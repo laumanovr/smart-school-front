@@ -102,7 +102,7 @@
 				<div>
 					<v-text-field v-model="studentObj.name" :rules="firstLastNameRule" label="Имя"></v-text-field>
 					<v-text-field v-model="studentObj.surname" :rules="firstLastNameRule" label="Фамилия"></v-text-field>
-					<v-text-field v-model="studentObj.middleName" :rules="firstLastNameRule" label="Отчество"></v-text-field>
+					<v-text-field v-model="studentObj.middleName" :rules="middleNameRule" label="Отчество"></v-text-field>
 
                     <div class="pin-field">
                         <div class="input-mask">
@@ -370,6 +370,9 @@ export default {
             },
             firstLastNameRule: [
                 v => !!v || 'Обязательное поле',
+                v => !/\d/.test(v) || 'Должно быть без цифр'
+            ],
+            middleNameRule: [
                 v => !/\d/.test(v) || 'Должно быть без цифр'
             ],
 			isAddFile: false,
