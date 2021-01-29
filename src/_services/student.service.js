@@ -65,4 +65,19 @@ export class StudentService extends BaseApiService {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/student/mass-delete`;
         return this.sendDeleteRequest(url, ids);
     }
+
+    activate(studentId) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/student/activate/${studentId}`;
+        return this.sendPostRequest(url, {});
+    }
+
+    changeSchool(studentSchoolId, body) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/student-school/edit/${studentSchoolId}`;
+        return this.sendPostRequest(url, body);
+    }
+
+    studentClassCreate(body) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/student-class/create`;
+        return this.sendPostRequest(url, body);
+    }
 }
