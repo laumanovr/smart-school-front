@@ -80,6 +80,11 @@ export default {
             route: '/super-admin/chat'
         },
         {
+            name: 'Поиск людей',
+            icon: 'students.svg',
+            route: '/super-admin/search-user'
+        },
+        {
             name: 'Библиотека',
             icon: 'library.svg',
             route: '/super-admin/library'
