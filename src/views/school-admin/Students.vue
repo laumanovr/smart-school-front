@@ -863,7 +863,7 @@ export default {
             }
             this.isLoading = true;
             studentService.getByPin(this.studentObj.pin.replaceAll('.', '')).then((res) => {
-                if (Object.values(res).length) {
+                if (res.studentDetailDTO) {
                     this.$toast.error('Ученик с таким ПИНом уже существует!');
                     this.isLoading = false;
                 } else {
