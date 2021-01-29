@@ -39,5 +39,14 @@ export const userService = {
             body: JSON.stringify(body)
         };
         return fetch(`${process.env.VUE_APP_BASE_URL}/v1/users/edit/${body.id}`, options).then(handleResponse);
+    },
+
+    searchUser(body) {
+        const options = {
+            method: 'POST',
+            headers: {...authHeader(), 'Content-Type': 'application/json'},
+            body: JSON.stringify(body)
+        };
+        return fetch(`${process.env.VUE_APP_BASE_URL}/v1/users/search`, options).then(handleResponse);
     }
 };
