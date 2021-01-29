@@ -267,6 +267,14 @@ const routes = [
                 meta: {
                     requireAuth: true
                 }
+            },
+            {
+                name: 'superAdminSearchUser',
+                path: 'search-user',
+                component: loadComponent('super-admin/SearchUser'),
+                meta: {
+                    requireAuth: true
+                }
             }
 		],
 	},
