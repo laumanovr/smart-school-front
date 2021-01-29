@@ -378,7 +378,8 @@ export default {
 
         filterAssignments(assignments) {
 	        if (assignments) {
-                return assignments.filter((assign) => assign.classId === this.currentClass.classId);
+                const filteredHws = assignments.filter((assign) => assign.classId === this.currentClass.classId);
+                return filteredHws.length ? filteredHws : assignments;
             }
         },
 
