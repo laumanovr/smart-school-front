@@ -6,6 +6,7 @@
             :headTitle="$t('quarter_grade')"
             :showClass="true"
             @classSelected="onSelectKlass"
+            @allClasses="fetchInstructorCourses"
         />
 
         <v-select
@@ -118,7 +119,6 @@
             this.sendQuarterGradeObj.instructorId = this.userProfile.personId;
             this.sendQuarterGradeObj.chronicleId = this.school.chronicleId;
             this.fetchSchoolQuarters();
-            this.fetchInstructorCourses();
         },
 
         methods: {
@@ -248,15 +248,9 @@
                 })
             },
 
-            fetchInstructorCourses() {
-                ScheduleWeekService.getByInstructor(this.userProfile.personId).then((res) => {
-                    if (res.length) {
-                        this.instructorCourses = res;
-                        this.allCourses = res;
-                    }
-                }).catch((err) => {
-                    this.$toast.error(err);
-                })
+            fetchInstructorCourses(allClasses) {
+                this.instructorCourses = allClasses;
+                this.allCourses = allClasses;
             },
 
             submitQuarterGrades() {
