@@ -5,6 +5,7 @@
             :headTitle="'Журнал'"
             :showClass="true"
             @classSelected="onChangeClass"
+            @allClasses="getInstructorCourses"
         />
 
         <div class="grade-content">
@@ -291,7 +292,6 @@
 
         created() {
             this.gradeRequest.searchRequest.quarterId = this.school.quarterId;
-            this.getInstructorCourses();
             window.addEventListener('scroll', this.scrollGradesListener);
         },
 
@@ -318,13 +318,9 @@
                 return courseObj[this.langObj[this.currentLang]];
             },
 
-            getInstructorCourses() {
-                ScheduleWeekService.getByInstructor(this.userProfile.personId).then((res) => {
-                    if (res.length) {
-                        this.instructorCourses = res;
-                        this.allCourses = res;
-                    }
-                })
+            getInstructorCourses(allClasses) {
+                this.instructorCourses = allClasses;
+                this.allCourses = allClasses;
             },
 
             filterCourses(selectedClass) {
