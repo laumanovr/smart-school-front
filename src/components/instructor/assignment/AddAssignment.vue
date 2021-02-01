@@ -4,9 +4,16 @@
 			{{ isEdit ? $t('topics.editAssignment') : $t('topics.addAssignment') }}
 		</div>
 		<v-form ref="form" @submit.prevent="submit">
-			<div class="add-assignment__item">
-				<v-text-field v-model="assignment.title" :label="$t('topics.assignment')" :rules="required" outlined></v-text-field>
-			</div>
+            <div class="add-topic__item">
+                <v-textarea
+                    v-model="assignment.description"
+                    :label="$t('common.description')"
+                    name="input-7-4"
+                    :rules="required"
+                    outlined
+                ></v-textarea>
+            </div>
+
             <div v-if="!isEdit">
                 <v-file-input
                     v-model="assignment.files"
@@ -29,14 +36,6 @@
                 <span class="download" @click="downloadFile">СКАЧАТЬ</span>
             </div>
 
-			<div class="add-topic__item">
-				<v-textarea
-					v-model="assignment.description"
-					:label="$t('common.description')"
-					name="input-7-4"
-					outlined
-				></v-textarea>
-			</div>
 			<div class="add-topic__item">
 				<v-menu
 					v-model="menu2"
@@ -101,12 +100,13 @@ export default {
 	},
 
 	mounted () {
+        this.assignment.topicDate = moment(this.assignment.topicDate, 'DD.MM.YYYY').format('YYYY-MM-DD');
 		if (this.isEdit) {
 			this.deadline = moment(this.assignment.deadline, 'DD.MM.YYYY').format('YYYY-MM-DD')
 		} else {
-		    this.deadline = moment().format('YYYY-MM-DD');
+		    this.deadline = this.assignment.topicDate;
+            this.onSelectDeadline();
         }
-        this.assignment.topicDate = moment(this.assignment.topicDate, 'DD.MM.YYYY').format('YYYY-MM-DD');
     },
 
 	methods: {
