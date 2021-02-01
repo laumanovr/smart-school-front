@@ -1,7 +1,12 @@
 <template>
 	<div class="instructor-topic">
         <PreLoader v-if="isLoading"/>
-		<ClassSelectHeader @classSelected="onClassSelect" :headTitle="$t('topics.title')" :showClass="true"/>
+		<ClassSelectHeader
+            @classSelected="onClassSelect"
+            :headTitle="$t('topics.title')"
+            :showClass="true"
+            @allClasses="fetchInstructorCourses"
+        />
 
 		<div class="instructor-topic__body">
 			<SmartTable
@@ -252,7 +257,6 @@ export default {
 
     created() {
         this.isLoading = true;
-	    this.fetchInstructorCourses();
 	    this.getSchoolQuarters();
     },
 
@@ -263,13 +267,9 @@ export default {
             });
         },
 
-        fetchInstructorCourses() {
-            ScheduleWeekService.getByInstructor(this.userProfile.personId).then((res) => {
-                if (res.length) {
-                    this.instructorCourses = res;
-                    this.allCourses = res;
-                }
-            })
+        fetchInstructorCourses(allClasses) {
+            this.instructorCourses = allClasses;
+            this.allCourses = allClasses;
         },
 
         showTopicQuarter(quarterId) {
