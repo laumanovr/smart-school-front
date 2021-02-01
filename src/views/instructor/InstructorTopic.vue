@@ -61,7 +61,7 @@
                                         :key="assignment.assigmentId"
                                     >
 										<div class="instructor-topic__assignment__item">
-											{{ assignment.title }}
+											{{ assignment.description ? assignment.description : assignment.title }}
 										</div>
 										<div class="instructor-topic__assignment__action" v-if="currentQuarterTopic(item.startDate)">
 											<img @click="onAssignmentEdit(assignment, item)" class="clickable-icons" src="../../assets/images/icons/pen.svg">
@@ -507,7 +507,7 @@ export default {
                 this.assignment = {
                     id: assignment.assigmentId,
                     title: res.title,
-                    description: res.description ? res.description : '',
+                    description: res.description ? res.description : res.title,
                     deadline: res.deadline,
                     courseId: res.courseId,
                     classId: res.classId,
