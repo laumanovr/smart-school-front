@@ -18,7 +18,15 @@
                         label="Предмет"
                         v-model="monthDataRequest.courseId"
                         @change="onChangeCourse"
-                    ></v-select>
+                    />
+                    <v-autocomplete
+                        class="v-select-item"
+                        :items="topics"
+                        item-text="title"
+                        item-value="id"
+                        label="Тема"
+                        v-model="selectedTopicId"
+                    />
                 </div>
             </div>
 
@@ -93,6 +101,12 @@
                 <h4 class="header" v-if="selectedStudent.student">
                     {{selectedStudent.student.surname + ' ' + selectedStudent.student.name}}
                 </h4>
+                <v-text-field
+                    label="Тема"
+                    :value="getSelectedTopicTitle()"
+                    class="selected-theme v-select-item"
+                    readonly
+                />
                 <v-select
                     class="v-select-item"
                     :items="gradeReasons"
@@ -100,14 +114,6 @@
                     item-value="id"
                     label="Тип оценки"
                     v-model="selectedReasonId"
-                />
-                <v-autocomplete
-                    class="v-select-item"
-                    :items="topics"
-                    item-text="title"
-                    item-value="id"
-                    label="Тема"
-                    v-model="selectedTopicId"
                 />
                 <div class="mark-grades">
                     <v-radio-group v-model="selectedAbsentCode" @change="selectedMark=''; selectedExtraMark=''">
@@ -318,6 +324,11 @@
                 return courseObj[this.langObj[this.currentLang]];
             },
 
+            getSelectedTopicTitle() {
+                const selectedTopic = this.topics.find((topic) => topic.id === this.selectedTopicId);
+                return selectedTopic ? selectedTopic.title : '';
+            },
+
             getInstructorCourses(allClasses) {
                 this.instructorCourses = allClasses;
                 this.allCourses = allClasses;
@@ -424,6 +435,7 @@
                         if (res._embedded) {
                             this.topics = [...res._embedded.topicResourceList, ...this.topics];
                         }
+                        this.selectedTopicId = this.topics.length ? this.topics[0].id : '';
                     })
                 })
             },
@@ -511,12 +523,16 @@
             },
 
             setSelectedGradeMark() {
-                if (!this.selectedReasonId || !this.selectedTopicId) {
-                    this.$toast.info('Выберите тип оценки и Тему!');
+                if (!this.selectedTopicId) {
+                    this.$toast.info('Задайте тему!');
+                    return;
+                }
+                if (!this.selectedReasonId) {
+                    this.$toast.info('Выберите тип оценки!');
                     return;
                 }
                 if (!this.selectedMark && !this.selectedAbsentCode) {
-                    this.$toast.info('Выберите оценку!');
+                    this.$toast.info('Поставьте оценку!');
                     return;
                 }
                 const newGradeObj = {
@@ -762,12 +778,12 @@
                 display: flex;
                 align-items: center;
                 margin: 20px 0;
-                .select-course, .select-topic {
-                    max-width: 220px;
-                }
-                .select-reason {
-                    max-width: 220px;
-                    margin: 0 20px;
+                .select-course {
+                    display: flex;
+                    align-items: center;
+                    .v-select-item {
+                        margin-left: 15px;
+                    }
                 }
             }
             .other {
@@ -915,6 +931,10 @@
             .v-select-item {
                 margin: 0 auto;
             }
+            .selected-theme {
+                pointer-events: none;
+                opacity: 0.5;
+            }
             .mark-grades {
                 width: 285px;
                 margin: 0 auto;
@@ -952,7 +972,7 @@
             }
             .absent95 {
                 .theme--light.v-label {
-                    color: #9C27B0;
+                    color: #f30404;
                 }
             }
         }
