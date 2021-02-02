@@ -222,9 +222,11 @@
                         this.requestObj.quarterId,
                         this.requestObj.classId
                     ).then((res) => {
-                        if (res.length && res[0].courses.length) {
-                            this.studentStatements = res;
-                            this.classAllSubjects = res[0].courses.sort((a, b) => b.grades.length - a.grades.length);
+                        if (res.length && res.some((student) => student.courses.length)) {
+                            this.studentStatements = res.filter((student) => {
+                                return student.courses.length && student.courses.some((course) => course.grades.length);
+                            });
+                            this.classAllSubjects = res.find((student) => student.courses.length).courses.sort((a, b) => b.grades.length - a.grades.length);
                             this.countTotalGrades();
                             this.countExcellentStudents();
                             this.showTable = true;
