@@ -44,7 +44,7 @@ export default {
                         (el['classId'] === obj['classId'])
                     )).sort((a, b) => a.classLevel - b.classLevel);
 				this.onClassClick(this.classes[0]);
-				this.$emit('allClasses', this.classes);
+				this.$emit('allClasses', res);
 			});
 		}
 	},
