@@ -297,12 +297,7 @@ export default {
         },
 
         filterCourses(selectedClass) {
-            this.instructorCourses = this.allCourses.filter((course) =>
-                course.classId === selectedClass.classId
-            ).filter((obj, index, selfArr) =>
-                index === selfArr.findIndex((el) =>
-                    (el['courseId'] === obj['courseId'])
-                ));
+            this.instructorCourses = this.allCourses.filter((course) => course.classId === selectedClass.classId);
             this.topic.courseId = this.instructorCourses.length ? this.instructorCourses[0].courseId : 0;
             if (this.topic.courseId) {
                 this.fetchTopics();
