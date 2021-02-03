@@ -76,15 +76,17 @@
                 <th>Ф.И.О</th>
                 <th>Пол</th>
                 <th>Класс</th>
+                <th>Дата рождения</th>
                 <th>Район</th>
             </template>
 
             <template v-slot:body="{ item }">
-                <td>{{ item.schools[0] ? item.schools[0].name : '' }}</td>
-                <td>{{ item.lastName }} {{ item.firstName }}</td>
+                <td>{{ item.schoolTitle }}</td>
+                <td>{{ item.surname +' '+ item.name }}</td>
                 <td>{{ gender[item.gender] }}</td>
                 <td>{{ item.classTitle }}</td>
-                <td>{{ item.schools[0] ? item.schools[0].rayonTitle : '' }}</td>
+                <td>{{ formatDOB(item.dateOfBirth) }}</td>
+                <td>{{ item.rayonTitle }}</td>
             </template>
         </SmartTable>
     </div>
@@ -103,6 +105,7 @@
     import {SchoolService} from '@/_services/school.service';
     const schoolService = new SchoolService();
     import TrashIcon from '@/components/icons/TrashIcon';
+    import moment from 'moment';
 
     export default {
         name: "Students",
@@ -115,16 +118,22 @@
                 pageSize: 20,
                 currentPage: 1,
                 gender: {
-                    FEMALE: 'Ж',
-                    MALE: 'М'
+                    '1': 'Ж',
+                    '0': 'М'
                 },
                 isLoading: false,
                 filterObj: {
-                    schoolId: '',
-                    classLevel: '',
-                    regionId: '',
-                    rayonId: '',
-                    query: ''
+                    pageRequest: {
+                        limit: 10,
+                        offset: 0
+                    },
+                    searchRequest: {
+                        classLevel: '',
+                        query: '',
+                        rayonId: '',
+                        regionId: '',
+                        schoolId: ''
+                    }
                 },
                 classes: [],
                 filteredRayons: [],
@@ -147,36 +156,35 @@
             ];
         },
         methods: {
-            fetchStudents(page) {
-                this.filterObj.rayonId = this.headRayonId;
+            fetchStudents() {
+                this.filterObj.searchRequest.rayonId = this.headRayonId;
                 this.isLoading = true;
                 this.students = [];
-                studentService.list(
-                    page,
-                    this.filterObj.schoolId,
-                    this.filterObj.classLevel,
-                    this.filterObj.regionId,
-                    this.filterObj.rayonId,
-                    this.filterObj.query
-                ).then(res => {
-                    this.pageSize = res.page.size;
-                    this.totalElements = res.page.totalElements;
-                    this.totalPages = res.page.totalPages;
-                    if (res._embedded) {
-                        this.students = res._embedded.studentResourceList.sort((a, b) => a.schools[0].id - b.schools[0].id);
-                    }
+                studentService.getAllStudents(this.filterObj).then(res => {
+                    this.pageSize = this.filterObj.pageRequest.limit;
+                    this.totalElements = res.totalCount;
+                    this.totalPages = Math.ceil(res.totalCount / this.filterObj.pageRequest.limit);
+                    this.students = res.list;
                     this.isLoading = false;
-                }).catch(err => console.log(err));
+                }).catch((err) => {
+                    this.$toast.error(err);
+                });
+            },
+
+            formatDOB(date) {
+                return moment(date, 'YYYY-MM-DD').format('DD.MM.YYYY');
             },
 
             onLeftClick() {
                 this.currentPage--;
-                this.fetchStudents(this.currentPage - 1);
+                this.filterObj.pageRequest.offset = this.currentPage - 1;
+                this.fetchStudents();
             },
 
             onRightClick() {
                 this.currentPage++;
-                this.fetchStudents(this.currentPage - 1);
+                this.filterObj.pageRequest.offset = this.currentPage - 1;
+                this.fetchStudents();
             },
 
 //            filterStudents() {
