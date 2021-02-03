@@ -30,4 +30,10 @@ export  class TopicService extends BaseApiService {
 		const url = baseUrl + `?courseId=${courseId}&page=${page}&classLevel=${classLevel}&quarterId=${quarterId}&size=${size}&classId=${classId}&sort=startDate,desc`;
 		return this.sendGetRequest(url);
 	}
+
+	getInstructorTopicInterface(instrId, courseId, quarterId='', classId='', classLevel='',) {
+        const baseUrl = `${process.env.VUE_APP_BASE_URL}/v1/topic/list-interface/instructor/${instrId}`;
+        const url = baseUrl + `?courseId=${courseId}&quarterId=${quarterId}&classId=${classId}&classLevel=${classLevel}`;
+        return this.sendGetRequest(url);
+    }
 }
