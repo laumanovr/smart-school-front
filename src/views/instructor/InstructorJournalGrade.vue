@@ -407,31 +407,17 @@
 
             fetchInstructorTopics() {
                 this.topics = [];
-                topicService.getByInstructor(
-                    this.topicPage,
+                topicService.getInstructorTopicInterface(
                     this.userProfile.personId,
                     this.monthDataRequest.courseId,
-                    this.selectedClassLevel,
                     this.school.quarterId,
-                    100
+                    this.selectedClassObj.classId,
+                    this.selectedClassLevel
                 ).then((res) => {
-                    if (res._embedded) {
-                        this.topics = res._embedded.topicResourceList;
-                    }
-                    topicService.getByInstructor(
-                        this.topicPage,
-                        this.userProfile.personId,
-                        this.monthDataRequest.courseId,
-                        '',
-                        this.school.quarterId,
-                        200,
-                        this.selectedClassObj.classId
-                    ).then((res) => {
-                        if (res._embedded) {
-                            this.topics = [...res._embedded.topicResourceList, ...this.topics];
-                        }
-                        this.selectedTopicId = this.topics.length ? this.topics[0].id : '';
-                    })
+                    this.topics = res;
+                    this.selectedTopicId = this.topics.length ? this.topics[0].id : '';
+                }).catch((err) => {
+                    this.$toast.error(err);
                 })
             },
 
