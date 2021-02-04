@@ -237,9 +237,9 @@
 
                 <div class="course-titles">
                     <div class="label">Предметы</div>
-                    <span v-for="course in studentDetail.courses">
-                        {{ course[langObj[currentLang]] }},
-                    </span>
+                    <div v-for="course in studentDetail.courses">
+                        {{ course[langObj[currentLang]] +' - '+ course.personTitle }}
+                    </div>
                 </div>
                 <div class="btn-actions">
 				    <v-btn color="primary" @click="showDetailModal = false">Закрыть</v-btn>
