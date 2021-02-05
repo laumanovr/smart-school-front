@@ -15,6 +15,11 @@ export class StudentCourseService extends BaseApiService {
         return this.sendPostRequest(url, data);
     }
 
+    getListInterfaceByClass(data) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/student-course/list/interface/filter`;
+        return this.sendPostRequest(url, data);
+    }
+
     getByStudentIdAndChronicle(studentId, chronicleId) {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/student-course/list/student-interface/${studentId}/chronicle/${chronicleId}`;
         return this.sendGetRequest(url);
@@ -23,6 +28,11 @@ export class StudentCourseService extends BaseApiService {
     getByStudentId(studentId) {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/student-course/list/student/${studentId}`;
         return this.sendGetRequest(url);
+    }
+
+    removeStudCourse(studentCourseId) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/student-course/${studentCourseId}`;
+        return this.sendDeleteRequest(url);
     }
 
     deleteWithArray(data) {
