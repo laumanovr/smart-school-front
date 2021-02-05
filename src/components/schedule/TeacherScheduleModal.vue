@@ -174,6 +174,7 @@
 
             //
             changeClass() {
+                this.sendScheduleObj.groupTitle = '';
                 this.sendScheduleObj.grouped = false;
                 this.students = [];
             },
