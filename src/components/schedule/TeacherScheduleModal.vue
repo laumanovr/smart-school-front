@@ -3,78 +3,52 @@
         <PreLoader v-if="isLoading"/>
         <div class="lesson-day">{{objDay[sendScheduleObj.weekDay]}} - {{'Урок ' + selectedShiftTime.name}}</div>
         <v-form ref="scheduleForm" v-if="!classViewSchedule">
-            <template v-if="dataObj.mode == 'create' || dataObj.mode == 'edit'">
-                <h4>{{dataObj.mode == 'create' ? 'Добавить расписание' : 'Редактировать расписание' }}</h4>
-                <div class="delete-schedule" v-if="dataObj.mode == 'edit'">
-                    <DeleteIcon @click="removeSchedule"/>
+            <div class="form-data">
+                <div class="main">
+                    <div class="teacher-title">{{ teacherTitleCourse }}</div>
+                    <template v-if="dataObj.mode == 'create' || dataObj.mode == 'edit'">
+                        <h4>{{dataObj.mode == 'create' ? 'Добавить расписание' : 'Редактировать расписание' }}</h4>
+                        <div class="delete-schedule" v-if="dataObj.mode == 'edit'">
+                            <DeleteIcon @click="removeSchedule"/>
+                        </div>
+                        <div class="content">
+                            <v-select
+                                :items="classes"
+                                :rules="required"
+                                item-text="classTitle"
+                                item-value="id"
+                                label="Выбрать класс"
+                                v-model="sendScheduleObj.classId"
+                                @change="changeClass"
+                            />
+                            <label for="group" class="is-group" v-if="sendScheduleObj.classId">
+                                <span>Группа</span>
+                                <input
+                                    id="group"
+                                    type="checkbox"
+                                    v-model="sendScheduleObj.grouped"
+                                    @change="getSelectedClassStudents"
+                                >
+                            </label>
+                        </div>
+                    </template>
                 </div>
-                <div class="content">
-                    <v-select
-                        :items="classes"
-                        :rules="required"
-                        item-text="classTitle"
-                        item-value="id"
-                        label="Выбрать класс"
-                        v-model="sendScheduleObj.classId"
-                    ></v-select>
-
-                    <div class="with-group">
-                        <label for="group" class="is-group">
-                            <span>Группа</span>
-                            <input id="group" type="checkbox" v-model="sendScheduleObj.grouped">
+                <div class="select-student" v-if="sendScheduleObj.grouped">
+                    <v-text-field :rules="required" label="Название группы" v-model="sendScheduleObj.groupTitle"/>
+                    <div class="student" v-for="student in students" :key="student.id">
+                        <label :for="student.id">
+                            <input
+                                :id="student.id"
+                                type="checkbox"
+                                v-model="student.checked"
+                                @change="deleteStudentCourse($event, student)"
+                            >
+                            <span>{{ student.fullName }}</span>
                         </label>
-                        <template v-if="sendScheduleObj.grouped">
-                            <v-text-field :rules="required" label="Название" v-model="sendScheduleObj.groupTitle"/>
-                        </template>
-                        <div
-                            class="add-group-class"
-                            v-if="sendScheduleObj.grouped && dataObj.originGrouped && dataObj.mode == 'edit' && dataObj.showAddGroup"
-                            @click="addGroupScheduleMode"
-                        >
-                            Добавить класс к группе
-                        </div>
                     </div>
                 </div>
-            </template>
-
-            <template v-if="dataObj.mode == 'addGroupClass'">
-                <h4>Добавить класс к группе: {{sendScheduleObj.groupTitle}}</h4>
-                <div class="content">
-                    <v-select
-                        :items="classes"
-                        :rules="required"
-                        item-text="classTitle"
-                        item-value="id"
-                        label="Выбрать класс"
-                        v-model="sendScheduleObj.classId"
-                    ></v-select>
-                </div>
-            </template>
-
-            <template v-if="dataObj.mode == 'groupedClasses'">
-                <div class="content">
-                    <div class="group-info">Группа: {{groupedSchedules[0].groupTitle}}</div>
-                    <div class="group-info">Классы:</div>
-                    <div class="groups">
-                        <div
-                            class="group"
-                            v-for="schedule in groupedSchedules"
-                            :key="schedule.id"
-                            @click="editScheduleMode(schedule, false)"
-                        >
-                            {{schedule.classTitle}}
-                        </div>
-                    </div>
-                    <div class="btn-actions">
-                        <v-btn color="primary" @click="addGroupScheduleMode">
-                            Добавить еще класс к этой группе
-                        </v-btn>
-                        <v-btn class="close" color="red" @click="$emit('close')">Отмена</v-btn>
-                    </div>
-                </div>
-            </template>
-
-            <div class="btn-actions" v-if="dataObj.mode != 'groupedClasses'">
+            </div>
+            <div class="btn-actions">
                 <v-btn color="red" @click="$emit('close')">Отмена</v-btn>
                 <v-btn color="green" @click="onSave">Сохранить</v-btn>
             </div>
@@ -106,6 +80,9 @@
 <script>
     import DeleteIcon from '@/components/icons/DeleteIcon';
     import PreLoader from '@/components/preloader/PreLoader';
+    import StudentCourseService from '@/_services/student-course.service';
+    import {StudentService} from '@/_services/student.service';
+    const studentService = new StudentService();
 
     export default {
         props: {
@@ -114,11 +91,9 @@
             sendScheduleObj: Object,
             selectedShiftTime: Object,
             classes: Array,
-            groupedSchedules: Array,
-            originGrouped: Boolean,
-            showAddGroup: Boolean,
             classViewSchedule: Boolean,
-            allTeachers: Array
+            allTeachers: Array,
+            teacherTitleCourse: String
         },
         components: {
             DeleteIcon,
@@ -135,9 +110,15 @@
                 isLoading: false,
                 dataObj: {
                     mode: this.mode,
-                    originGrouped: this.originGrouped,
-                    showAddGroup: this.showAddGroup
-                }
+                },
+                students: [],
+                studentCourseBatchArr: [],
+                studentCourseRequest: {
+                    chronicleId: 0,
+                    classId: 0,
+                    courseId: 0,
+                    instructorId: 0
+                },
             }
         },
         computed: {
@@ -151,27 +132,12 @@
                 return this.$root.$i18n.locale;
             }
         },
+        async created() {
+            if (this.mode === 'edit' && this.sendScheduleObj.grouped) {
+                this.getSavedStudentCourses();
+            }
+        },
         methods: {
-            addGroupScheduleMode() {
-                this.dataObj.mode = 'addGroupClass';
-                this.sendScheduleObj.classId = '';
-            },
-
-            editScheduleMode(schedule, showAddGroup) {
-                this.sendScheduleObj.chronicleId = this.school.chronicleId;
-                this.sendScheduleObj.weekDay = schedule.weekDay;
-                this.sendScheduleObj.shiftTimeId = schedule.shiftTimeId;
-                this.sendScheduleObj.instructorId = schedule.instructorId;
-                this.sendScheduleObj.courseId = schedule.courseId;
-                this.sendScheduleObj.classId = schedule.classId;
-                this.sendScheduleObj.grouped = schedule.grouped;
-                this.sendScheduleObj.groupTitle = schedule.groupTitle;
-                this.sendScheduleObj.id = schedule.id;
-                this.dataObj.mode = 'edit';
-                this.dataObj.showAddGroup = showAddGroup;
-                this.dataObj.originGrouped = schedule.grouped;
-            },
-
             getTeacherAndCourseName(teacher) {
                 return teacher[this.langObj[this.currentLang]] + ' - ' + teacher.instructorTitle;
             },
@@ -191,6 +157,7 @@
                     this.$nextTick(() => {
                         setTimeout(() => {
                             this.$emit('close', {type: 'save', mode: this.dataObj.mode});
+                            this.submitSaveStudentCourse();
                         }, 10)
                     });
                 }
@@ -204,15 +171,142 @@
                     }, 10);
                 });
             },
+
+            //
+            changeClass() {
+                this.sendScheduleObj.grouped = false;
+                this.students = [];
+            },
+
+            getSelectedClassStudents(e) {
+                if (e.currentTarget.checked) {
+                    this.getSavedStudentCourses();
+                }
+            },
+
+            fetchClassStudents() {
+                this.isLoading = true;
+                studentService.getByClass(this.sendScheduleObj.classId).then((res) => {
+                    this.students = res.map((student) => {
+                        student.fullName = student.surname + ' ' + student.name;
+                        return student;
+                    });
+                }).catch((err) => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                });
+            },
+
+            async getSavedStudentCourses() {
+                await this.fetchClassStudents();
+                this.isLoading = true;
+                this.studentCourseRequest.classId = this.sendScheduleObj.classId;
+                this.studentCourseRequest.instructorId = this.sendScheduleObj.instructorId;
+                this.studentCourseRequest.courseId = this.sendScheduleObj.courseId;
+                this.studentCourseRequest.chronicleId = this.school.chronicleId;
+                setTimeout(() => {
+                    StudentCourseService.getListInterfaceByClass(this.studentCourseRequest).then((res) => {
+                        res.forEach((studentCourse) => {
+                            this.students = this.students.map((student) => {
+                                if (studentCourse.studentId === student.id) {
+                                    student.checked = true;
+                                    student.originChecked = true;
+                                    student.studentCourseId = studentCourse.id;
+                                }
+                                return student;
+                            });
+                        });
+                        this.isLoading = false;
+                    }).catch((err) => {
+                        this.$toast.error(err);
+                        this.isLoading = false;
+                    })
+                });
+            },
+
+            async submitSaveStudentCourse() {
+                this.studentCourseBatchArr = [];
+                if (this.sendScheduleObj.grouped) {
+                    this.students.filter((i) => i.checked).forEach((student) => {
+                        const studentCourse = {
+                            archived: false,
+                            chronicleId: this.school.chronicleId,
+                            classId: student.classId,
+                            courseId: this.sendScheduleObj.courseId,
+                            instructorId: this.sendScheduleObj.instructorId,
+                            studentId: student.id
+                        };
+                        this.studentCourseBatchArr.push(studentCourse);
+                    });
+                    if (this.studentCourseBatchArr.length) {
+                        try {
+                            await StudentCourseService.createBatch(this.studentCourseBatchArr);
+                        }
+                        catch (err) {
+                            this.$toast.error(err);
+                        }
+                    }
+                }
+            },
+
+            deleteStudentCourse(e, student) {
+                if (!e.currentTarget.checked && student.originChecked) {
+                    StudentCourseService.removeStudCourse(student.studentCourseId).then(() => {
+                        student.originChecked = false;
+                    });
+                }
+            },
+
         }
     }
 </script>
 
 <style lang="scss">
     .modal-container {
+        max-height: 550px;
+        overflow-y: auto;
+        .form-data {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            .main {
+                min-width: 400px;
+            }
+            .select-student {
+                min-width: 350px;
+                max-height: 300px;
+                overflow-y: auto;
+                margin-left: 15px;
+                padding-left: 15px;
+                border-left: 1px solid #b7b7b7;
+                .student {
+                    border-bottom: 1px solid #c3c3c3;
+                    padding: 5px 0;
+                    label {
+                        display: flex;
+                        align-items: center;
+                        cursor: pointer;
+                    }
+                    span {
+                        margin-left: 8px;
+                        font-size: 17px;
+                        width: 90%;
+                        display: inline-block;
+                        white-space: nowrap;
+                        overflow-x: hidden;
+                        text-overflow: ellipsis;
+                    }
+                }
+            }
+        }
         .lesson-day {
             text-align: center;
             font-weight: bold;
+        }
+        .teacher-title {
+            text-align: center;
+            font-weight: bold;
+            margin: 10px 0;
         }
         .delete-schedule {
             transform: translateY(-20px);
@@ -241,6 +335,7 @@
                 margin-right: 15px;
                 background: #2196F3;
                 cursor: pointer;
+                text-align: center;
             }
         }
         .group-info {
@@ -272,6 +367,10 @@
             .close {
                 margin-top: 10px;
             }
+        }
+        .v-select__selections {
+            height: 40px;
+            overflow: hidden;
         }
     }
 </style>
