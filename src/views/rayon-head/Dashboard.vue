@@ -93,7 +93,7 @@
                 <td>{{ i + 1 }}</td>
                 <td>{{ data.schoolName }}</td>
                 <td>{{ data[getSpecificRoleCount()] }}</td>
-                <td>{{ data.uniqueUsers.length }}</td>
+                <td>{{ data.totalActive }}</td>
                 <td>{{ data.inPercent }}%</td>
             </tr>
             </tbody>
@@ -226,28 +226,20 @@
                 this.analyticsData = [];
                 this.currentRole = this.roles.find((role) => role.id === this.trackObj.roleId).code;
 
-                AnalyticsService.userTrackPage(
+                AnalyticsService.trackPageListRayono(
                     `${this.trackObj.startDate} 24:00`,
                     `${this.trackObj.endDate} 24:00`,
-                    this.trackObj.roleId
+                    this.trackObj.roleId,
+                    this.headRayonId,
+                    this.trackObj.schoolId
                 ).then((res) => {
                     this.analyticsData = res.map((school) => {
-                        school.uniqueUsers = [];
                         school.totalStudents = !school.totalStudents ? 0 : school.totalStudents;
-                        if (school.active) {
-                            school.uniqueUsers = school.active.filter((obj, index, selfArr) =>
-                                index === selfArr.findIndex((el) =>
-                                    (el['userId'] === obj['userId'])
-                                ));
-                        }
-                        school.inPercent = this.countPercent(school.uniqueUsers.length, school[this.getSpecificRoleCount()]);
+                        school.totalInstructors = !school.totalInstructors ? 0 : school.totalInstructors;
+                        school.totalActive = !school.totalActive ? 0 : school.totalActive;
+                        school.inPercent = this.countPercent(school.totalActive, school[this.getSpecificRoleCount()]);
                         return school;
                     }).sort((a, b) => b.inPercent - a.inPercent);
-
-                    if (this.trackObj.schoolId) {
-                        // Filter by school
-                        this.analyticsData = this.analyticsData.filter((school) => school.schoolId === this.trackObj.schoolId);
-                    }
                     this.isLoading = false;
                 }).catch((err) => {
                     this.$toast.error(err);
