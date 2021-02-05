@@ -84,12 +84,13 @@
                             <div class="classes">
                                 <template v-for="time in shiftTimes">
                                     <span
-                                        class="hasClass"
-                                        :class="{'group-color': getSpecificSchedule(day.day, time.id, teacher).length > 1}"
                                         v-if="getSpecificSchedule(day.day, time.id, teacher).length"
+                                        class="hasClass"
+                                        :class="{'group-color': getSpecificSchedule(day.day, time.id, teacher)[0].grouped}"
                                         @click="openScheduleModal(
                                             'edit', day.day, time.id, teacher,
-                                            getSpecificSchedule(day.day, time.id, teacher))"
+                                            getSpecificSchedule(day.day, time.id, teacher)
+                                            )"
                                     >
                                      {{ getSpecificSchedule(day.day, time.id, teacher)[0].classTitle.replace(' ', '') }}
                                     </span>
@@ -240,8 +241,6 @@
                 ],
                 mode: '',
                 classViewSchedule: false,
-                showAddGroup: false,
-                originGrouped: false,
                 showFixedHeader: false,
                 showScrollArrows: true,
                 manualScroll: true,
@@ -252,7 +251,6 @@
                 allShifts: [],
                 shiftTimes: [],
                 allTeachers: [],
-                groupedSchedules: [],
                 teacherLabelWidth: 0,
                 courseLabelWidth: 0,
                 selectedShiftId: 0
@@ -414,14 +412,16 @@
                     this.sendScheduleObj.grouped = false;
                     this.sendScheduleObj.groupTitle = '';
                 } else {
-                    if (schedules.length > 1) {
-                        this.sendScheduleObj.groupTitle = schedules[0].groupTitle;
-                        this.sendScheduleObj.grouped = schedules[0].grouped;
-                        this.groupedSchedules = schedules;
-                        this.mode = 'groupedClasses';
-                    } else {
-                        this.editScheduleMode(schedules[0], true);
-                    }
+                    this.sendScheduleObj.chronicleId = this.school.chronicleId;
+                    this.sendScheduleObj.weekDay = schedules[0].weekDay;
+                    this.sendScheduleObj.shiftTimeId = schedules[0].shiftTimeId;
+                    this.sendScheduleObj.instructorId = schedules[0].instructorId;
+                    this.sendScheduleObj.courseId = schedules[0].courseId;
+                    this.sendScheduleObj.classId = schedules[0].classId;
+                    this.sendScheduleObj.grouped = schedules[0].grouped;
+                    this.sendScheduleObj.groupTitle = schedules[0].groupTitle;
+                    this.sendScheduleObj.id = schedules[0].id;
+                    this.mode = 'edit';
                 }
                 this.$nextTick(() => {
                     setTimeout(() => {
@@ -433,12 +433,10 @@
                                 sendScheduleObj: this.sendScheduleObj,
                                 selectedShiftTime: this.selectedShiftTime,
                                 classes: this.classes,
-                                groupedSchedules: this.groupedSchedules,
-                                originGrouped: this.originGrouped,
-                                showAddGroup: this.showAddGroup,
-                                classViewSchedule: this.classViewSchedule
+                                classViewSchedule: this.classViewSchedule,
+                                teacherTitleCourse: teacher.instructorTitle +'-'+ teacher.courseTitle
                             },
-                            {height: 'auto', width: '440px', clickToClose: false},
+                            {height: 'auto', width: '800px', clickToClose: false},
                             {'before-close': this.onScheduleModalAction}
                         )
                     }, 30)
@@ -454,21 +452,6 @@
                         this.removeSchedule(event.params.scheduleId);
                     }
                 }
-            },
-
-            editScheduleMode(schedule, showAddGroup) {
-                this.sendScheduleObj.chronicleId = this.school.chronicleId;
-                this.sendScheduleObj.weekDay = schedule.weekDay;
-                this.sendScheduleObj.shiftTimeId = schedule.shiftTimeId;
-                this.sendScheduleObj.instructorId = schedule.instructorId;
-                this.sendScheduleObj.courseId = schedule.courseId;
-                this.sendScheduleObj.classId = schedule.classId;
-                this.sendScheduleObj.grouped = schedule.grouped;
-                this.sendScheduleObj.groupTitle = schedule.groupTitle;
-                this.sendScheduleObj.id = schedule.id;
-                this.mode = 'edit';
-                this.showAddGroup = showAddGroup;
-                this.originGrouped = schedule.grouped;
             },
 
             submit() {
