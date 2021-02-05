@@ -11,6 +11,12 @@ export class AnalyticsService extends BaseApiService {
         return this.sendGetRequest(url);
     }
 
+    trackPageListRayono(startDate, endDate, roleId, rayonId, schoolId='') {
+        const baseUrl = `${process.env.VUE_APP_BASE_URL}/v1/user-track-page/list-rayon`;
+        const url = baseUrl + `?startDate=${startDate}&endDate=${endDate}&roleId=${roleId}&rayonId=${rayonId}&schoolId=${schoolId}`;
+        return this.sendGetRequest(url);
+    }
+
     quarterAverage(chronicleId, schoolId='', quarterId='', rayonId='') {
         const baseUrl = `${process.env.VUE_APP_BASE_URL}/v1/analytic/quarter-grade`;
         const url = baseUrl + `?chronicleId=${chronicleId}&schoolId=${schoolId}&quarterId=${quarterId}&rayonId=${rayonId}`;
