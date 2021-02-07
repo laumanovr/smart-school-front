@@ -1,19 +1,6 @@
 <template>
     <div class="dashboard__body">
         <PreLoader v-if="isLoading"/>
-        <!--<div>-->
-        <!--<div>-->
-        <!--<div>-->
-        <!--<img src="../../assets/images/temporary/teacher-active.svg" alt="">-->
-        <!--</div>-->
-        <!--<div>-->
-        <!--<img src="../../assets/images/temporary/lesson-lost.svg" alt="">-->
-        <!--<img src="../../assets/images/temporary/lesson-hours.svg" alt="">-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--<img src="../../assets/images/temporary/std-avg.svg" alt="">-->
-        <!--<img src="../../assets/images/temporary/school-perf.svg" alt="">-->
-        <!--</div>-->
 
         <div class="header-title">
             <h3>Аналитика</h3>
