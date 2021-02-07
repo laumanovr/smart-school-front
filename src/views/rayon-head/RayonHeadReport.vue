@@ -9,6 +9,7 @@
             <table class="table bordered">
                 <thead>
                 <tr>
+                    <th>№</th>
                     <th class="school">Школа</th>
                     <th>Движение учащихся</th>
                     <th>Качество знаний</th>
@@ -16,7 +17,8 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="school in rayonSchools" :key="school.id">
+                <tr v-for="(school, i) in rayonSchools" :key="school.id">
+                    <td>{{ i + 1 }}</td>
                     <td class="school">{{ school.name }}</td>
                     <td>
                         <button class="show" @click="getSchoolData(school, 'activity')">Показать</button>
@@ -193,6 +195,9 @@
                     position: sticky;
                     top: -1px;
                     background: #fff;
+                }
+                th, td {
+                    padding: 0 15px;
                 }
                 .school {
                     width: 500px;
