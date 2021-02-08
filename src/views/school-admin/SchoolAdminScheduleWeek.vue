@@ -412,6 +412,7 @@
                     this.sendScheduleObj.classId = '';
                     this.sendScheduleObj.grouped = false;
                     this.sendScheduleObj.groupTitle = '';
+                    this.sendScheduleObj.replace = false;
                 } else {
                     this.sendScheduleObj.chronicleId = this.school.chronicleId;
                     this.sendScheduleObj.weekDay = schedules[0].weekDay;
@@ -421,6 +422,7 @@
                     this.sendScheduleObj.classId = schedules[0].classId;
                     this.sendScheduleObj.grouped = schedules[0].grouped;
                     this.sendScheduleObj.groupTitle = schedules[0].groupTitle;
+                    this.sendScheduleObj.replace = schedules[0].replace;
                     this.sendScheduleObj.id = schedules[0].id;
                     this.mode = 'edit';
                 }
@@ -572,6 +574,7 @@
                 } else {
                     this.sendScheduleObj.grouped = schedule.grouped;
                     this.sendScheduleObj.groupTitle = schedule.groupTitle;
+                    this.sendScheduleObj.replace = schedule.replace;
                     this.sendScheduleObj.id = schedule.id;
                     const instrCours = this.allTeachers.find((teacher) =>
                         teacher.instructorId === schedule.instructorId &&
