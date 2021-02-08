@@ -208,6 +208,7 @@
                     groupTitle: '',
                     grouped: false,
                     archived: false,
+                    replace: false,
                     instrCourseId: ''
                 },
                 langObj: {
@@ -436,7 +437,7 @@
                                 classViewSchedule: this.classViewSchedule,
                                 teacherTitleCourse: teacher.instructorTitle +'-'+ teacher.courseTitle
                             },
-                            {height: 'auto', width: '800px', clickToClose: false},
+                            {height: 'auto', width: '800px'},
                             {'before-close': this.onScheduleModalAction}
                         )
                     }, 30)
@@ -590,7 +591,7 @@
                                 allTeachers: this.allTeachers,
                                 classViewSchedule: this.classViewSchedule
                             },
-                            {height: 'auto', width: '450px', clickToClose: false},
+                            {height: 'auto', width: '450px'},
                             {'before-close': this.onScheduleModalAction}
                         );
                     }, 30);
