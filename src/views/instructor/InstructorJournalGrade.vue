@@ -354,7 +354,7 @@
                 this.monthDataRequest.classId = klass.classId;
                 this.monthDataRequest.instructorId = this.userProfile.personId;
                 this.monthDataRequest.chronicleId = this.school.chronicleId;
-                this.gradeRequest.searchRequest.instructorId = this.userProfile.personId;
+                this.gradeRequest.searchRequest.instructorId = klass.replace ? null : this.userProfile.personId;
                 this.gradeRequest.searchRequest.chronicleId = this.school.chronicleId;
                 this.gradeRequest.searchRequest.from = this.getFirstDateOfMonth();
                 this.gradeRequest.searchRequest.to = this.getLastDateOfMonth();
