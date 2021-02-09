@@ -448,7 +448,7 @@
 
             onScheduleModalAction(event) {
                 if (event.params) {
-                    if (event.params.mode) {
+                    if (event.params.type) {
                         this.mode = event.params.mode;
                         if (event.params.type === 'save') {
                             this.submit();
