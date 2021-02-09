@@ -209,6 +209,7 @@
                     grouped: false,
                     archived: false,
                     replace: false,
+                    replaceDate: '',
                     instrCourseId: ''
                 },
                 langObj: {
