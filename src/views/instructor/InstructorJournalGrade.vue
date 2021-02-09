@@ -334,15 +334,6 @@
                 this.allCourses = allClasses;
             },
 
-            filterCourses(selectedClass) {
-                this.instructorCourses = this.allCourses.filter((course) => course.classId === selectedClass.classId);
-                this.monthDataRequest.courseId = this.instructorCourses.length ? this.instructorCourses[0].courseId : 0;
-                if (this.monthDataRequest.courseId) {
-                    this.fetchInstructorTopics();
-                    this.fetchGradeReasons(this.instructorCourses[0].adminCourseId);
-                }
-            },
-
             async onChangeClass(klass) {
                 if (!klass) {
                     this.$toast.info('У вас нет классов!');
@@ -359,7 +350,14 @@
                 this.gradeRequest.searchRequest.from = this.getFirstDateOfMonth();
                 this.gradeRequest.searchRequest.to = this.getLastDateOfMonth();
                 this.filterCourses(klass);
+            },
+
+            async filterCourses(selectedClass) {
+                this.instructorCourses = this.allCourses.filter((course) => course.classId === selectedClass.classId);
+                this.monthDataRequest.courseId = this.instructorCourses.length ? this.instructorCourses[0].courseId : 0;
                 if (this.monthDataRequest.courseId) {
+                    this.fetchInstructorTopics();
+                    this.fetchGradeReasons(this.instructorCourses[0].adminCourseId);
                     await this.fetchCurrentMonthSchedule();
                     await this.fetchStudentGrades();
                 } else {
