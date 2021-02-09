@@ -3,54 +3,72 @@
         <PreLoader v-if="isLoading"/>
         <div class="lesson-day">{{objDay[sendScheduleObj.weekDay]}} - {{'Урок ' + selectedShiftTime.name}}</div>
         <v-form ref="scheduleForm" v-if="!classViewSchedule">
-            <div class="form-data">
-                <div class="main">
-                    <div class="teacher-title">{{ teacherTitleCourse }}</div>
-                    <template v-if="dataObj.mode == 'create' || dataObj.mode == 'edit'">
-                        <h4>{{dataObj.mode == 'create' ? 'Добавить расписание' : 'Редактировать расписание' }}</h4>
-                        <div class="delete-schedule" v-if="dataObj.mode == 'edit'">
-                            <DeleteIcon @click="removeSchedule"/>
-                        </div>
-                        <div class="content">
-                            <v-select
-                                :items="classes"
-                                :rules="required"
-                                item-text="classTitle"
-                                item-value="id"
-                                label="Выбрать класс"
-                                v-model="sendScheduleObj.classId"
-                                @change="changeClass"
-                            />
-                            <label for="group" class="is-group" v-if="sendScheduleObj.classId">
-                                <span>Группа</span>
+            <template v-if="!isArchiveMode">
+                <div class="form-data">
+                    <div class="main">
+                        <div class="teacher-title">{{ teacherTitleCourse }}</div>
+                        <template v-if="dataObj.mode == 'create' || dataObj.mode == 'edit'">
+                            <h4>{{dataObj.mode == 'create' ? 'Добавить расписание' : 'Редактировать расписание' }}</h4>
+                            <div class="delete-schedule" v-if="dataObj.mode == 'edit'">
+                                <span class="archive" @click="isArchiveMode=true">Отправить в архив</span>
+                                <DeleteIcon @click="removeSchedule"/>
+                            </div>
+                            <div class="content">
+                                <v-select
+                                    :items="classes"
+                                    :rules="required"
+                                    item-text="classTitle"
+                                    item-value="id"
+                                    label="Выбрать класс"
+                                    v-model="sendScheduleObj.classId"
+                                    @change="changeClass"
+                                />
+                                <div class="checkboxes" v-if="sendScheduleObj.classId">
+                                    <label for="group" class="is-group">
+                                        <span>Группа</span>
+                                        <input
+                                            id="group"
+                                            type="checkbox"
+                                            v-model="sendScheduleObj.grouped"
+                                            @change="getSelectedClassStudents"
+                                        >
+                                    </label>
+                                    <div class="replace-btn">
+                                        <label for="replace-s">
+                                            <input id="replace-s" type="checkbox" v-model="sendScheduleObj.replace">
+                                            Замена учителя
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    <div class="select-student" v-if="sendScheduleObj.grouped">
+                        <v-text-field :rules="required" label="Название группы" v-model="sendScheduleObj.groupTitle"/>
+                        <div class="student" v-for="student in students" :key="student.id">
+                            <label :for="student.id">
                                 <input
-                                    id="group"
+                                    :id="student.id"
                                     type="checkbox"
-                                    v-model="sendScheduleObj.grouped"
-                                    @change="getSelectedClassStudents"
+                                    v-model="student.checked"
+                                    @change="deleteStudentCourse($event, student)"
                                 >
+                                <span>{{ student.fullName }}</span>
                             </label>
                         </div>
-                    </template>
-                </div>
-                <div class="select-student" v-if="sendScheduleObj.grouped">
-                    <v-text-field :rules="required" label="Название группы" v-model="sendScheduleObj.groupTitle"/>
-                    <div class="student" v-for="student in students" :key="student.id">
-                        <label :for="student.id">
-                            <input
-                                :id="student.id"
-                                type="checkbox"
-                                v-model="student.checked"
-                                @change="deleteStudentCourse($event, student)"
-                            >
-                            <span>{{ student.fullName }}</span>
-                        </label>
                     </div>
                 </div>
-            </div>
-            <div class="btn-actions">
-                <v-btn color="red" @click="$emit('close')">Отмена</v-btn>
-                <v-btn color="green" @click="onSave">Сохранить</v-btn>
+                <div class="btn-actions">
+                    <v-btn color="red" @click="$emit('close')">Отмена</v-btn>
+                    <v-btn color="green" @click="onSave">Сохранить</v-btn>
+                </div>
+            </template>
+            <div class="confirm-archive" v-if="isArchiveMode">
+                <h4>Архивировать все расписания по данному классу, предмету и учителю?</h4>
+                <div class="btn-actions">
+                    <v-btn color="red" @click="isArchiveMode=false">Отмена</v-btn>
+                    <v-btn color="green" @click="archiveSchedule">Да</v-btn>
+                </div>
             </div>
         </v-form>
 
@@ -83,6 +101,7 @@
     import StudentCourseService from '@/_services/student-course.service';
     import {StudentService} from '@/_services/student.service';
     const studentService = new StudentService();
+    import ScheduleWeekService from '@/_services/schedule-week.service';
 
     export default {
         props: {
@@ -119,6 +138,7 @@
                     courseId: 0,
                     instructorId: 0
                 },
+                isArchiveMode: false
             }
         },
         computed: {
@@ -133,7 +153,7 @@
             }
         },
         async created() {
-            if (this.mode === 'edit' && this.sendScheduleObj.grouped) {
+            if (!this.classViewSchedule && this.mode === 'edit' && this.sendScheduleObj.grouped) {
                 this.getSavedStudentCourses();
             }
         },
@@ -258,6 +278,25 @@
                 }
             },
 
+            archiveSchedule() {
+                this.onSelectScheduleCourse(this.sendScheduleObj.instrCourseId);
+                this.isLoading = true;
+                const archiveObj = {
+                    classId: this.sendScheduleObj.classId,
+                    courseId: this.sendScheduleObj.courseId,
+                    instructorId: this.sendScheduleObj.instructorId,
+                    replaceDate: new Date().toLocaleDateString('ru')
+                };
+                ScheduleWeekService.archiveSchedules(archiveObj).then(() => {
+                    this.$emit('close', {archived: true, archiveData: archiveObj});
+                    this.$toast.success('Успешно отправлены в архив!');
+                    this.isLoading = false;
+                }).catch((err) => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                })
+            }
+
         }
     }
 </script>
@@ -299,6 +338,11 @@
                     }
                 }
             }
+            .checkboxes {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
         }
         .lesson-day {
             text-align: center;
@@ -310,8 +354,19 @@
             margin: 10px 0;
         }
         .delete-schedule {
-            transform: translateY(-20px);
-            text-align: right;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            .archive {
+                background: #ff0000;
+                color: #fff;
+                padding: 3px 5px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 13px;
+                font-weight: bold;
+            }
         }
         .add-group-class {
             border: 1px solid;
@@ -372,6 +427,21 @@
         .v-select__selections {
             height: 40px;
             overflow: hidden;
+        }
+        .replace-btn {
+            text-align: right;
+            label {
+                border: 1px solid #024377;
+                padding: 3px 5px;
+                border-radius: 4px;
+                color: #024377;
+                cursor: pointer;
+                font-size: 14px;
+                input {
+                    margin-right: 4px;
+                    transform: translateY(1px);
+                }
+            }
         }
     }
 </style>
