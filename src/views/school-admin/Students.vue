@@ -567,7 +567,7 @@ export default {
         prepareExport() {
             this.exportHeaders = ['Ф.И.О', 'Класс', 'Пол', 'Дата рождения', 'Логин/Пароль'];
             this.exportRows = this.students.map(i => {
-                return [`${i.surname} ${i.name}`, i.classTitle, i.gender === 1 ? 'М' : 'Ж', i.dateOfBirth, i.username];
+                return [`${i.surname} ${i.name}`, i.classTitle, i.gender ? 'Ж' : 'М', i.dateOfBirth, i.username];
             });
             this.exportName = 'Умная школа: Ученики';
         },
