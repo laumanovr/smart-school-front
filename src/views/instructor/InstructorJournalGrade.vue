@@ -359,8 +359,12 @@
                 this.gradeRequest.searchRequest.from = this.getFirstDateOfMonth();
                 this.gradeRequest.searchRequest.to = this.getLastDateOfMonth();
                 this.filterCourses(klass);
-                await this.fetchCurrentMonthSchedule();
-                await this.fetchStudentGrades();
+                if (this.monthDataRequest.courseId) {
+                    await this.fetchCurrentMonthSchedule();
+                    await this.fetchStudentGrades();
+                } else {
+                    this.isLoading = false;
+                }
             },
 
             async onChangeCourse() {
