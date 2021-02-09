@@ -35,7 +35,12 @@
                                     </label>
                                     <div class="replace-btn">
                                         <label for="replace-s">
-                                            <input id="replace-s" type="checkbox" v-model="sendScheduleObj.replace">
+                                            <input
+                                                id="replace-s"
+                                                type="checkbox"
+                                                v-model="sendScheduleObj.replace"
+                                                @change="setReplaceDate"
+                                            >
                                             Замена учителя
                                         </label>
                                     </div>
@@ -90,7 +95,12 @@
             />
             <div class="replace-btn">
                 <label for="replace">
-                    <input id="replace" type="checkbox" v-model="sendScheduleObj.replace">
+                    <input
+                        id="replace"
+                        type="checkbox"
+                        v-model="sendScheduleObj.replace"
+                        @change="setReplaceDate"
+                    >
                     Замена учителя
                 </label>
             </div>
@@ -282,6 +292,14 @@
                     StudentCourseService.removeStudCourse(student.studentCourseId).then(() => {
                         student.originChecked = false;
                     });
+                }
+            },
+
+            setReplaceDate(e) {
+                if (e.currentTarget.checked) {
+                    this.sendScheduleObj.replaceDate = new Date().toLocaleDateString('ru');
+                } else {
+                    this.sendScheduleObj.replaceDate = '';
                 }
             },
 
