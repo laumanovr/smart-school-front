@@ -447,13 +447,23 @@
             },
 
             onScheduleModalAction(event) {
-                if (event.params) {
+                if (event.params.mode) {
                     this.mode = event.params.mode;
                     if (event.params.type === 'save') {
                         this.submit();
                     } else {
                         this.removeSchedule(event.params.scheduleId);
                     }
+                }
+                if (event.params.archiveData) {
+                    this.allSchedules = this.allSchedules.filter((item) => {
+                        const equal = item.instructorId === event.params.archiveData.instructorId &&
+                                      item.courseId === event.params.archiveData.courseId &&
+                                      item.classId === event.params.archiveData.classId;
+                        if (!equal) {
+                            return item;
+                        }
+                    });
                 }
             },
 
@@ -571,6 +581,7 @@
                 this.sendScheduleObj.classId = klass.id;
                 if (mode === 'create') {
                     this.sendScheduleObj.instrCourseId = '';
+                    this.sendScheduleObj.replace = false;
                 } else {
                     this.sendScheduleObj.grouped = schedule.grouped;
                     this.sendScheduleObj.groupTitle = schedule.groupTitle;
