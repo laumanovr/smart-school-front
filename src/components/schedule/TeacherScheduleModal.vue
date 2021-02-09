@@ -76,6 +76,7 @@
         <v-form ref="scheduleForm" v-if="classViewSchedule">
             <h4>{{mode == 'create' ? 'Добавить предмет' : 'Редактировать' }}</h4>
             <div class="delete-schedule" v-if="mode == 'edit'">
+                <span></span>
                 <DeleteIcon @click="removeSchedule"/>
             </div>
             <v-autocomplete
@@ -87,6 +88,12 @@
                 v-model="sendScheduleObj.instrCourseId"
                 @change="onSelectScheduleCourse"
             />
+            <div class="replace-btn">
+                <label for="replace">
+                    <input id="replace" type="checkbox" v-model="sendScheduleObj.replace">
+                    Замена учителя
+                </label>
+            </div>
             <div class="btn-actions">
                 <v-btn color="red" @click="$emit('close')">Отмена</v-btn>
                 <v-btn color="green" @click="onSave" :disabled="!sendScheduleObj.instrCourseId">Сохранить</v-btn>
@@ -279,7 +286,6 @@
             },
 
             archiveSchedule() {
-                this.onSelectScheduleCourse(this.sendScheduleObj.instrCourseId);
                 this.isLoading = true;
                 const archiveObj = {
                     classId: this.sendScheduleObj.classId,
@@ -288,7 +294,7 @@
                     replaceDate: new Date().toLocaleDateString('ru')
                 };
                 ScheduleWeekService.archiveSchedules(archiveObj).then(() => {
-                    this.$emit('close', {archived: true, archiveData: archiveObj});
+                    this.$emit('close', {archiveData: archiveObj});
                     this.$toast.success('Успешно отправлены в архив!');
                     this.isLoading = false;
                 }).catch((err) => {
