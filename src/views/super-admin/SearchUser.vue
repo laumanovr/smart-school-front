@@ -272,19 +272,23 @@
             },
 
             searchUsersByFio() {
-                if (this.$refs.userForm.validate()) {
-                    this.isLoading = true;
-                    userService.searchUser(this.userSearch).then((res) => {
-                        this.foundUsers = res;
-                        this.isLoading = false;
-                        if (!res.length) {
-                            this.$toast.info('Ничего не найдено!');
-                        }
-                    }).catch((err) => {
-                        this.$toast.error(err);
-                        this.isLoading = false;
-                    });
-                }
+                this.userSearch.lastName = this.userSearch.lastName ? this.userSearch.lastName.trim() : '';
+                this.userSearch.firstName = this.userSearch.firstName ? this.userSearch.firstName.trim() : '';
+                setTimeout(() => {
+                    if (this.$refs.userForm.validate()) {
+                        this.isLoading = true;
+                        userService.searchUser(this.userSearch).then((res) => {
+                            this.foundUsers = res;
+                            this.isLoading = false;
+                            if (!res.length) {
+                                this.$toast.info('Ничего не найдено!');
+                            }
+                        }).catch((err) => {
+                            this.$toast.error(err);
+                            this.isLoading = false;
+                        });
+                    }
+                });
             },
 
             toggleActivateModal() {
