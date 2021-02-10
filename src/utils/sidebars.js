@@ -225,6 +225,11 @@ export default {
             route: '/school-admin/chat'
         },
         {
+            name: 'Архив',
+            icon: 'students.svg',
+            route: '/school-admin/archive-users'
+        },
+        {
             name: 'Библиотека',
             icon: 'library.svg',
             route: '/school-admin/library'
