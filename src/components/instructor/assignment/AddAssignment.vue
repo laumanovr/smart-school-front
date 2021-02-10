@@ -33,7 +33,11 @@
 
             <div class="attach-file" v-if="isEdit && assignment.attachmentList.length">
                 <v-text-field v-model="assignment.attachmentList[0].originalFilename" readonly label="Файл"/>
-                <span class="download" @click="downloadFile">СКАЧАТЬ</span>
+                <div class="attach-btn">
+                    <span class="download" @click="downloadFile">Скачать</span>
+                    <span class="delete__confirm" v-if="!isConfirmDelete" @click="isConfirmDelete=true">Удалить?</span>
+                    <span class="delete__file" v-if="isConfirmDelete" @click="deleteFile">Да Удалить</span>
+                </div>
             </div>
 
 			<div class="add-topic__item">
@@ -85,6 +89,7 @@ export default {
 			],
 			menu2: false,
 			deadline: moment().format('YYYY-MM-DD'),
+            isConfirmDelete: false
 		}
 	},
 	computed: {
@@ -168,6 +173,18 @@ export default {
                 this.$toast.error(err);
                 this.$emit('loading', false);
             })
+        },
+
+        deleteFile() {
+	        this.isLoading = true;
+            assignmentService.deleteAttachFile(this.assignment.attachmentList[0].attachmentId).then(() => {
+                this.assignment.attachmentList = [];
+                this.isLoading = false;
+                this.$toast.success('Успешно удалено');
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.$emit('loading', false);
+            });
         }
 	}
 }
@@ -209,19 +226,30 @@ export default {
 
         .attach-file {
             position: relative;
-            .download {
+            .attach-btn {
                 display: none;
                 position: absolute;
-                top: 15px;
-                left: 0;
+                top: 18px;
                 right: 0;
-                text-align: center;
                 background: #80808054;
-                cursor: pointer;
-                color: #1111f7;
+                color: #fff;
+                font-weight: bold;
+                .download {
+                    background: #2196f3;
+                    padding: 3px 8px;
+                    margin-right: 10px;
+                    border-radius: 3px;
+                    cursor: pointer;
+                }
+                .delete__confirm, .delete__file {
+                    background: #d40000;
+                    padding: 3px 8px;
+                    border-radius: 3px;
+                    cursor: pointer;
+                }
             }
             &:hover {
-                .download {
+                .attach-btn {
                     display: block;
                 }
                 .v-text-field {
