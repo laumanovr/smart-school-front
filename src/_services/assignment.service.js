@@ -29,13 +29,6 @@ export  class AssignmentService extends BaseApiService {
       return this.sendPostRequest(url, formData);
   }
 
-  attachFile(assignmentId, file) {
-      const url = `${process.env.VUE_APP_BASE_URL}/v1/assignment/add-file/${assignmentId}`;
-      const formData = new FormData();
-      formData.append('files', file);
-      return this.sendPostRequest(url, formData);
-  }
-
   edit(data) {
       const url = `${process.env.VUE_APP_BASE_URL}/v1/assignment/edit/${data.id}`;
       const formData = new FormData();
@@ -43,6 +36,18 @@ export  class AssignmentService extends BaseApiService {
           formData.append(key, data[key]);
       }
       return this.sendPostRequest(url, formData);
+  }
+
+  attachFile(assignmentId, file) {
+      const url = `${process.env.VUE_APP_BASE_URL}/v1/assignment/add-file/${assignmentId}`;
+      const formData = new FormData();
+      formData.append('files', file);
+      return this.sendPostRequest(url, formData);
+  }
+
+  deleteAttachFile(attachId) {
+      const url = `${process.env.VUE_APP_BASE_URL}/v1/assignment/attachment/${attachId}`;
+      return this.sendDeleteRequest(url);
   }
 
   getByInstructor (id) {
