@@ -237,8 +237,9 @@
 
                 <div class="course-titles">
                     <div class="label">Предметы</div>
-                    <div v-for="course in studentDetail.courses">
-                        {{ course[langObj[currentLang]] +' - '+ course.personTitle }}
+                    <div class="student-course" v-for="(course, i) in studentDetail.courses" :key="i">
+                        <span>{{ course[langObj[currentLang]] +' - '+ course.personTitle }}</span>
+                        <TrashIcon @click="deleteOneStudentCourse(course.id, i)"/>
                     </div>
                 </div>
                 <div class="btn-actions">
@@ -743,6 +744,18 @@ export default {
             }
         },
 
+        deleteOneStudentCourse(studentCourseId, index) {
+            this.isLoading = true;
+            StudentCourseService.removeStudCourse(studentCourseId).then(() => {
+                this.studentDetail.courses.splice(index, 1);
+                this.isLoading = false;
+                this.$toast.success('Успешно удалено!');
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.isLoading = false;
+            });
+        },
+
         closeRefreshCourseModal() {
             this.$modal.hide('refresh-course-modal');
         },
@@ -1069,6 +1082,13 @@ export default {
     .label {
         font-size: 13px;
         color: #838080;
+    }
+    .student-course {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #b4b4b4;
+        margin-bottom: 7px;
     }
 }
 
