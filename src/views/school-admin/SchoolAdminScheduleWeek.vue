@@ -315,11 +315,9 @@
             fetchScheduleData() {
                 this.allSchedules = [];
                 ScheduleWeekService.getAllBySchoolAndShift(this.school.id, this.currentShiftId).then((res) => {
-                    //
-                    const tempRes = res;
-                    console.log(tempRes);
-                    debugger
-                    //
+                    //temp
+                    console.log(res.filter((schedule) => schedule.instructorId === 103581 && schedule.courseId === 2118))
+                    //temp
                     this.allSchedules = res.map((schedule) => {
                         schedule.classTitle = schedule.classLevel + schedule.classLabel;
                         schedule.weekDay = this.objNumDays[schedule.weekDay];
