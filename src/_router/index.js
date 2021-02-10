@@ -516,6 +516,11 @@ const routes = [
                 path: 'set-init-quarter',
                 component: loadComponent('school-admin/school-preset/SetInitQuarter')
             },
+            {
+                name: 'archiveUsers',
+                path: 'archive-users',
+                component: loadComponent('school-admin/ArchiveUsers')
+            }
 		],
 	},
 
