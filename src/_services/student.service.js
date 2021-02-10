@@ -5,8 +5,8 @@ export class StudentService extends BaseApiService {
         super();
     }
 
-    getAllBySchool(schoolId, query='') {
-        const url = `${process.env.VUE_APP_BASE_URL}/v1/student/list/school/${schoolId}?query=${query}`;
+    getAllBySchool(schoolId, query='', archived=false) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/student/list/school/${schoolId}?archived=${archived}&query=${query}`;
         return this.sendGetRequest(url);
     }
 
