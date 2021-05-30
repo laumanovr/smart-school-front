@@ -37,6 +37,13 @@
                 :classes="allClasses"
             />
         </template>
+        <template v-if="reportType === 'assignment'">
+            <AssignmentReport
+                :allChronicleYears="allChronicleYears"
+                :schoolQuarters="schoolQuarters"
+                :classes="allClasses"
+            />
+        </template>
     </div>
 </template>
 
@@ -45,6 +52,7 @@
     import AllClassActivityReport from '@/components/report/AllClassActivityReport';
     import ClassStatementReport from '@/components/report/ClassStatementReport';
     import ClassAttendanceReport from '@/components/report/ClassAttendanceReport';
+    import AssignmentReport from '@/components/report/AssignmentReport';
     import {ChronicleService} from '@/_services/chronicle.service';
     const chronicleService = new ChronicleService();
     import {QuarterService} from '@/_services/quarter.service';
@@ -56,7 +64,8 @@
             AllClassesQualityReport,
             AllClassActivityReport,
             ClassStatementReport,
-            ClassAttendanceReport
+            ClassAttendanceReport,
+            AssignmentReport
         },
         data() {
             return {
@@ -68,7 +77,8 @@
                     {title: 'Отчет по движению', type: 'activity'},
                     {title: 'Отчет по качеству знаний', type: 'performance'},
                     {title: 'Ведомость успеваемости', type: 'statement'},
-                    {title: 'Отчет посещаемости', type: 'attendance'}
+                    {title: 'Отчет посещаемости', type: 'attendance'},
+                    {title: 'Отчет по домашкам', type: 'assignment'}
                 ]
             }
         },
