@@ -53,12 +53,14 @@
                     <tr>
                         <th>Предмет</th>
                         <th class="avg-grade">Оценка</th>
+                        <th class="avg-grade">Пропуски</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr v-for="(item, i) in classPerformances" :key="i">
                         <td>{{ item[langObj[currentLang]] }}</td>
                         <td class="avg-grade">{{ item.averageGrade.toFixed(1) }}</td>
+                        <td class="avg-grade">{{item.absentCount}}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -166,10 +168,27 @@ export default {
             this.isLoading = true;
 	        AnalyticsService.getClassPerformance(this.selectedClassId, this.selectedQuarterId).then((res) => {
                 this.classPerformances = res.filter((item) => item.courseTitle);
-                this.isLoading = false;
+                this.fetchClassAttendance();
             }).catch((err) => {
 	            this.$toast.error(err);
 	            this.isLoading = false;
+            })
+        },
+
+        fetchClassAttendance() {
+            AnalyticsService.fetchClassAttendancePerformance(this.selectedClassId, this.selectedQuarterId).then((res) => {
+                res.forEach((item) => {
+                    this.classPerformances = this.classPerformances.map((perform) => {
+                       if (item.courseCode === perform.courseCode) {
+                           perform.absentCount = item.averageGrade;
+                       }
+                       return perform;
+                    });
+                });
+                this.isLoading = false;
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.isLoading = false;
             })
         }
     }
@@ -272,8 +291,8 @@ export default {
                         height: 40px;
                         padding: 0;
                         &.avg-grade {
-                            width: 65px;
-                            max-width: 65px;
+                            width: 80px;
+                            max-width: 80px;
                         }
                     }
                 }
