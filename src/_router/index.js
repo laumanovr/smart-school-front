@@ -520,6 +520,14 @@ const routes = [
                 name: 'archiveUsers',
                 path: 'archive-users',
                 component: loadComponent('school-admin/ArchiveUsers')
+            },
+            {
+                name: 'studyMaterial',
+                path: 'study-material',
+                component: loadComponent('school-admin/StudyMaterial'),
+                meta: {
+                    requireAuth: true
+                }
             }
 		],
 	},
