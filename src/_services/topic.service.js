@@ -36,4 +36,9 @@ export  class TopicService extends BaseApiService {
         const url = baseUrl + `?courseId=${courseId}&quarterId=${quarterId}&classId=${classId}&classLevel=${classLevel}`;
         return this.sendGetRequest(url);
     }
+
+    importData(body) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/topic/import`;
+        return this.sendPostRequest(url, body);
+    }
 }
