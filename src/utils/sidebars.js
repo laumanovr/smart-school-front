@@ -234,6 +234,11 @@ export default {
             icon: 'library.svg',
             route: '/school-admin/library'
         },
+        {
+            name: 'Учебные материалы',
+            icon: 'report.svg',
+            route: '/school-admin/study-material'
+        }
     ],
 
     director: [
