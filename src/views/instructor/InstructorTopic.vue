@@ -40,6 +40,7 @@
                             <span class="export-custom-btn" @click="toggleExportModal"></span>
                         </div>
                     </div>
+                    <SmartButton v-if="topic.courseId" @clicked="toggleImportModal">Импорт тем</SmartButton>
 				</template>
 				<template v-slot:head>
 					<th></th>
@@ -169,6 +170,22 @@
                 </div>
             </div>
         </modal>
+
+        <modal name="import-topic-modal" height="auto">
+            <div class="modal-container">
+                <h4>Импорт тем</h4>
+                <v-file-input
+                    chips show-size
+                    accept="*"
+                    label="Загрузить файл"
+                    v-model="importTopic.file"
+                />
+                <div class="btn-actions">
+                    <v-btn color="red" @click="toggleImportModal">Отмена</v-btn>
+                    <v-btn color="green" @click="submitImport">Загрузить</v-btn>
+                </div>
+            </div>
+        </modal>
 	</div>
 </template>
 
@@ -240,7 +257,16 @@ export default {
             exportTopics: [],
             exportName: '',
             selectedQuarterId: '',
-            totalElemNum: 0
+            totalElemNum: 0,
+            importTopic: {
+                chronicleId: '',
+                classId: '',
+                classLevel: '',
+                courseId: '',
+                instructorId: '',
+                schoolId: '',
+                file: ''
+            }
 		}
 	},
 	computed: {
@@ -261,6 +287,28 @@ export default {
     },
 
 	methods: {
+        toggleImportModal() {
+            this.importTopic.schoolId = this.school.id;
+            this.importTopic.chronicleId = this.school.chronicleId;
+            this.importTopic.instructorId = this.userProfile.personId;
+            this.importTopic.courseId = this.topic.courseId;
+            this.importTopic.classId = this.currentClass.classId;
+            this.importTopic.classLevel = this.currentClass.classLevel;
+            this.importTopic.file = '';
+            this.$modal.toggle('import-topic-modal');
+        },
+
+        submitImport() {
+            const formData = new FormData();
+            Object.entries(this.importTopic).map(item => formData.append(item[0], item[1]));
+            topicService.importData(formData).then(() => {
+                this.$toast.success('Успешно загружено');
+                this.toggleImportModal();
+            }).catch(err => {
+                this.$toast.error(err);
+            });
+        },
+
 	    getSchoolQuarters() {
 	        quarterService.getBySchoolAndChronicle(this.school.id, this.school.chronicleId).then((res) => {
 	            this.quarters = res.sort((a, b) => a.semester - b.semester);
