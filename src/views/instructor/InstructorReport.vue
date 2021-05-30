@@ -39,6 +39,13 @@
                 :schoolQuarters="schoolQuarters"
             />
         </template>
+        <template v-if="reportType === 'assignment'">
+            <InstructorAssignmentReport
+                :allChronicleYears="allChronicleYears"
+                :classes="instrClasses"
+                :schoolQuarters="schoolQuarters"
+            />
+        </template>
     </div>
 </template>
 
@@ -54,13 +61,15 @@
     import {QuarterService} from '@/_services/quarter.service';
     const quarterService = new QuarterService();
     import ScheduleWeekService from '@/_services/schedule-week.service';
+    import InstructorAssignmentReport from '@/components/report/InstructorAssignmentReport';
 
     export default {
         components: {
             ClassQualityKnowledgeReport,
             StudentActivityReport,
             ClassStatementReport,
-            ClassAttendanceReport
+            ClassAttendanceReport,
+            InstructorAssignmentReport
         },
         data() {
             return {
@@ -78,7 +87,8 @@
                     {title: 'Отчет по движению', type: 'activity'},
                     {title: 'Отчет по качеству знаний', type: 'performance'},
                     {title: 'Ведомость успеваемости', type: 'statement'},
-                    {title: 'Отчет посещаемости', type: 'attendance'}
+                    {title: 'Отчет посещаемости', type: 'attendance'},
+                    {title: 'Отчет по ДЗ', type: 'assignment'}
                 ]
             }
         },
