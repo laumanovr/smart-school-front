@@ -69,6 +69,22 @@ export class AnalyticsService extends BaseApiService {
         const url = baseUrl + `?chronicleId=${chronicleId}&quarterId=${quarterId}&classId=${classId}`;
         return this.sendGetRequest(url);
     }
+
+    // ASSIGNMENT
+    fetchAssignmentReport(schoolId, startDate='', endDate='') {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/analytic/assignment/school/${schoolId}?startDate=${startDate}&endDate=${endDate}`;
+        return this.sendGetRequest(url);
+    }
+
+    fetchInstructorAssignmentReport(instrId, startDate='', endDate='') {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/analytic/assignment/instructor/${instrId}?startDate=${startDate}&endDate=${endDate}`;
+        return this.sendGetRequest(url);
+    }
+
+    fetchClassAttendancePerformance(classId, quarterId) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/analytic/class-attendance-performance?classId=${classId}&quarterId=${quarterId}`;
+        return this.sendGetRequest(url);
+    }
 }
 
 export default new AnalyticsService();
