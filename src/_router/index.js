@@ -528,6 +528,11 @@ const routes = [
                 meta: {
                     requireAuth: true
                 }
+            },
+            {
+                name: 'replaceTeacher',
+                path: 'replace-teacher',
+                component: loadComponent('school-admin/ReplaceInstructor')
             }
 		],
 	},

@@ -238,6 +238,11 @@ export default {
             name: 'Учебные материалы',
             icon: 'report.svg',
             route: '/school-admin/study-material'
+        },
+        {
+            name: 'Замена учителя',
+            icon: 'teachers.svg',
+            route: '/school-admin/replace-teacher'
         }
     ],
 
