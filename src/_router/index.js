@@ -716,6 +716,14 @@ const routes = [
                     requireAuth: true
                 }
             },
+            {
+                name: 'instructorForm',
+                path: 'forms',
+                component: loadComponent('instructor/InstructorForm'),
+                meta: {
+                    requireAuth: true
+                }
+            }
         ],
     },
 
