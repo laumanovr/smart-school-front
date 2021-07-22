@@ -345,6 +345,11 @@ export default {
             icon: 'message.svg',
             route: '/instructor/chat'
         },
+        {
+            name: 'Формы Мин.Образа',
+            icon: 'book-open.svg',
+            route: '/instructor/forms'
+        }
     ],
 
     rayonHead: [
