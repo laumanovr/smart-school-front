@@ -54,5 +54,10 @@ export class ScheduleWeekService extends BaseApiService {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/schedule/replacement/create`;
         return this.sendPostRequest(url, body);
     }
+
+    getAllReplacedSchedule(schoolId, chronicleId) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/schedule/replacement/list/school/${schoolId}/chrocile/${chronicleId}?size=300`;
+        return this.sendGetRequest(url);
+    }
 }
 export default new ScheduleWeekService();
