@@ -376,6 +376,7 @@ export default {
 
 	data() {
 		return {
+		    cyrillicRegex: /^[аАбБвВгГдДеЕёЁжЖзЗиИйЙкКлЛмМнНоОпПрРсСтТуУфФхХцЦчЧшШщЩъЪыЫьЬэЭюЮяЯ]+$/,
             langObj: {
                 ru: 'courseTitle',
                 kg: 'courseTitleKG',
@@ -383,10 +384,12 @@ export default {
             },
             firstLastNameRule: [
                 v => !!v || 'Обязательное поле',
-                v => !/\d/.test(v) || 'Должно быть без цифр'
+                v => !/\d/.test(v) || 'Должно быть без цифр',
+                v => this.cyrillicRegex.test(v) || 'Только кириллица'
             ],
             middleNameRule: [
-                v => !/\d/.test(v) || 'Должно быть без цифр'
+                v => !/\d/.test(v) || 'Должно быть без цифр',
+                v => this.cyrillicRegex.test(v) || 'Только кириллица'
             ],
 			isAddFile: false,
 			isMassDeleting: false,
