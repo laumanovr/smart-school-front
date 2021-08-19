@@ -833,6 +833,7 @@ export default {
                 this.studentObj.gender = item.gender === 0 ? 'MALE' : 'FEMALE';
 				this.studentObj.phone = res.phone ? res.phone.replace('+', '') : '';
                 this.studentObj.pin = res.pin;
+                this.studentObj.placeOfBirth = res.placeOfBirth;
                 this.isAddStudentModal = true;
                 this.isStudentEdit = true;
                 this.isLoading = false;
