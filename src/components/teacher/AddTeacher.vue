@@ -196,7 +196,7 @@
                         this.user.pin = this.user.pin.replaceAll('.', '');
                         this.user.roles = this.roles.filter(i => i.code === 'ROLE_INSTRUCTOR').map(i => i.id);
                         this.user.schoolId = this.userProfile.schools[0].id;
-                        this.user.phone = this.user.phone.replace(/[(_)]/g, '');
+                        this.user.phone = this.user.phone.slice(1).replace(/[(_)]/g, '');
                         if (this.isEdit) {
                             this.personEdit(this.user);
                         } else {
