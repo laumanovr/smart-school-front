@@ -919,7 +919,6 @@ export default {
             this.studentObj.pin = this.studentObj.pin.replaceAll('.', '');
 			this.studentObj.schoolId = this.userProfile.schools[0].id;
 			this.studentObj.chronicleYearId = this.userProfile.schools[0].chronicleId;
-            this.studentObj.phone = this.studentObj.phone.replace(/[(_)]/g, '');
 			this.studentObj.roles = this.roles.filter(i => i.code === 'ROLE_STUDENT').map(i => i.id);
 			const d = {
 				classId: this.studentObj.classId,
@@ -929,7 +928,7 @@ export default {
 				middleName: this.studentObj.middleName,
 				gender: this.studentObj.gender,
                 pin: this.studentObj.pin,
-                phone: this.studentObj.phone.replace(/[(_)]/g, ''),
+                phone: this.studentObj.phone.slice(1).replace(/[(_)]/g, ''),
 				id: this.studentObj.id
 			};
 			if (this.isStudentEdit) {
@@ -950,7 +949,7 @@ export default {
 						this.parentPersonObj.roles = this.roles.filter(i => i.code === 'ROLE_PARENT').map(i => i.id);
 						return studentParentService.getByStudent(this.studentObj.id)
 					}).then(res => {
-                        this.parentPersonObj.phone = this.parentPersonObj.phone.replace(/[(_)]/g, '');
+                        this.parentPersonObj.phone = this.parentPersonObj.phone.slice(1).replace(/[(_)]/g, '');
 						if (res._embedded) {
 							this.parentPersonObj.id = res._embedded.studentParentResourceList[0].parentId;
 							return personService.edit(this.parentPersonObj)
@@ -969,41 +968,43 @@ export default {
                         this.isLoading = false;
 					}).catch(err => this.$toast.error(err))
 				}).catch(err => this.$toast.error(err));
-			} else
-				studentService.create(this.studentObj).then((res) => {
-					let studentId = parseInt(res.message);
-					this.studentClassObj.classId = this.studentObj.classId;
-					this.studentClassObj.studentId = studentId;
+			} else {
+                this.studentObj.phone = this.studentObj.phone.slice(1).replace(/[(_)]/g, '');
+                studentService.create(this.studentObj).then((res) => {
+                    let studentId = parseInt(res.message);
+                    this.studentClassObj.classId = this.studentObj.classId;
+                    this.studentClassObj.studentId = studentId;
 
-					 studentClassService.create(this.studentClassObj).then((res) => {
-						this.fetchStudents(true);
-						this.isAddStudentModal = false;
-						this.$toast.success('Успешно');
+                    studentClassService.create(this.studentClassObj).then((res) => {
+                        this.fetchStudents(true);
+                        this.isAddStudentModal = false;
+                        this.$toast.success('Успешно');
                         this.isLoading = false;
-					}).catch(err => {
-						this.$toast.error(err);
-                         this.isLoading = false;
-					});
+                    }).catch(err => {
+                        this.$toast.error(err);
+                        this.isLoading = false;
+                    });
 
-					this.parentPersonObj.roles = this.roles.filter(i => i.code === 'ROLE_PARENT').map(i => i.id);
-                    this.parentPersonObj.phone = this.parentPersonObj.phone.replace(/[(_)]/g, '');
-					personService.create(this.parentPersonObj).then((res) => {
-						const studentParent = {
-							personId: parseInt(res.message),
-							parentalType: this.parentPersonObj.gender === 'MALE' ? 'FATHER' : 'MOTHER',
-							studentId: this.studentClassObj.studentId
-						};
-						studentParentService.create(studentParent).then((res) => {
-							console.log(res.message);
-						}).catch(err => {
-							this.$toast.error(err);
+                    this.parentPersonObj.roles = this.roles.filter(i => i.code === 'ROLE_PARENT').map(i => i.id);
+                    this.parentPersonObj.phone = this.parentPersonObj.phone.slice(1).replace(/[(_)]/g, '');
+                    personService.create(this.parentPersonObj).then((res) => {
+                        const studentParent = {
+                            personId: parseInt(res.message),
+                            parentalType: this.parentPersonObj.gender === 'MALE' ? 'FATHER' : 'MOTHER',
+                            studentId: this.studentClassObj.studentId
+                        };
+                        studentParentService.create(studentParent).then((res) => {
+                            console.log(res.message);
+                        }).catch(err => {
+                            this.$toast.error(err);
                             this.isLoading = false;
-						})
-					}).catch(err => {
-						this.$toast.error(err);
+                        })
+                    }).catch(err => {
+                        this.$toast.error(err);
                         this.isLoading = false;
-					})
-				})
+                    })
+                })
+            }
 		},
 
 		onLeftClick() {
