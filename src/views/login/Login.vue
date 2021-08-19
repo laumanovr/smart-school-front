@@ -106,7 +106,7 @@ export default {
         onError(message) {
             if (message) {
                 this.isLoading = false;
-                this.$toast.error(message);
+                this.$toast.error('Неправильный логин или пароль!');
                 this.$store.state.account.onError = '';
             }
         }
