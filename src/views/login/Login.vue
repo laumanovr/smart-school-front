@@ -50,6 +50,7 @@
                 </form>
             </div>
         </div>
+        <div class="supported-by">Разработчик: Государственное предприятие "Инфоком"</div>
     </div>
 </template>
 
@@ -139,6 +140,11 @@ export default {
         &:hover {
             border-color: royalblue;
         }
+    }
+    .supported-by {
+        text-align: right;
+        font-weight: bold;
+        transform: translate(-20px, -30px);
     }
 }
 .login-page {
