@@ -120,7 +120,7 @@
 					<v-text-field v-model="studentObj.middleName" :rules="middleNameRule" label="Отчество"></v-text-field>
 				</div>
 
-				<div>
+				<div class="gender-select">
 					<v-radio-group v-model="studentObj.gender" :mandatory="false" :rules="required" row>
 						<v-radio label="М" value="MALE"></v-radio>
 						<v-radio label="Ж" value="FEMALE"></v-radio>
@@ -129,7 +129,7 @@
 
                 <div class="input-mask date">
                     <label>Дата рождения</label>
-                    <masked-input v-model="studentObj.dateOfBirth" mask="11.11.1111" placeholder="ДД.ММ.ГГГГ" />
+                    <masked-input v-model="studentObj.dateOfBirth" mask="11.11.1111" placeholder="ДД.ММ.ГГГГ" disabled/>
                 </div>
 
 				<div>
@@ -875,6 +875,10 @@ export default {
             if (this.validDatePin) {
                 this.studentObj.dateOfBirth = this.studentObj.pin.slice(2, 12);
             }
+            if (this.validFirstNum) {
+                this.studentObj.gender = this.studentObj.pin[0] === '1' ? 'FEMALE' : 'MALE';
+                this.$forceUpdate();
+            }
         },
 
         checkIsStudentExist() {
@@ -1192,5 +1196,9 @@ export default {
             margin: 20px 0;
         }
     }
+}
+
+.gender-select {
+    pointer-events: none;
 }
 </style>
