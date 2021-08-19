@@ -98,28 +98,26 @@
 						<img src="../../assets/images/icons/edit.svg">
 					</button>
 				</div>
-
+                <div class="pin-field">
+                    <div class="input-mask">
+                        <label>ПИН/ИНН</label>
+                        <masked-input
+                            v-model="studentObj.pin"
+                            mask="1.11.11.1111.11111"
+                            placeholder="0.00.00.0000.00000"
+                            @blur.native="checkPin"
+                        />
+                    </div>
+                    <div class="pin-error" v-if="!validFirstNum">1-ая цифра должна быть 1 или 2</div>
+                    <div class="pin-error" v-if="!validDatePin">
+                        со 2-ой по 9-ый должны быть валидными,
+                        а последние 5 цифр произвольные
+                    </div>
+                </div>
 				<div>
 					<v-text-field v-model="studentObj.name" :rules="firstLastNameRule" label="Имя"></v-text-field>
 					<v-text-field v-model="studentObj.surname" :rules="firstLastNameRule" label="Фамилия"></v-text-field>
 					<v-text-field v-model="studentObj.middleName" :rules="middleNameRule" label="Отчество"></v-text-field>
-
-                    <div class="pin-field">
-                        <div class="input-mask">
-                            <label>ПИН/ИНН</label>
-                            <masked-input
-                                v-model="studentObj.pin"
-                                mask="1.11.11.1111.11111"
-                                placeholder="0.00.00.0000.00000"
-                                @blur.native="checkPin"
-                            />
-                        </div>
-                        <div class="pin-error" v-if="!validFirstNum">1-ая цифра должна быть 1 или 2</div>
-                        <div class="pin-error" v-if="!validDatePin">
-                            со 2-ой по 9-ый должны быть валидными,
-                            а последние 5 цифр произвольные
-                        </div>
-                    </div>
 				</div>
 
 				<div>
@@ -147,7 +145,14 @@
 				</div>
 
 				<div class="spacer">
-					<v-text-field v-model="studentObj.phone" label="Номер телефона" type="number"></v-text-field>
+                    <div class="input-mask">
+                        <label>Телефон ученика</label>
+                        <masked-input
+                            v-model="studentObj.phone"
+                            mask="\0\(111)111111"
+                            placeholder="0(555)123456"
+                        />
+                    </div>
 				</div>
 
 				<div class="parent">
@@ -161,7 +166,14 @@
 				</div>
 
 				<div>
-					<v-text-field v-model="parentPersonObj.phone" label="Телефон родителя" type="number"></v-text-field>
+                    <div class="input-mask">
+                        <label>Телефон родителя</label>
+                        <masked-input
+                            v-model="parentPersonObj.phone"
+                            mask="\0\(111)111111"
+                            placeholder="0(555)123456"
+                        />
+                    </div>
 				</div>
 
 				<div class="form-footer">
@@ -894,6 +906,7 @@ export default {
             this.studentObj.pin = this.studentObj.pin.replaceAll('.', '');
 			this.studentObj.schoolId = this.userProfile.schools[0].id;
 			this.studentObj.chronicleYearId = this.userProfile.schools[0].chronicleId;
+            this.studentObj.phone = this.studentObj.phone.replace(/[(_)]/g, '');
 			this.studentObj.roles = this.roles.filter(i => i.code === 'ROLE_STUDENT').map(i => i.id);
 			const d = {
 				classId: this.studentObj.classId,
@@ -903,7 +916,7 @@ export default {
 				middleName: this.studentObj.middleName,
 				gender: this.studentObj.gender,
                 pin: this.studentObj.pin,
-                phone: this.studentObj.phone,
+                phone: this.studentObj.phone.replace(/[(_)]/g, ''),
 				id: this.studentObj.id
 			};
 			if (this.isStudentEdit) {
@@ -924,6 +937,7 @@ export default {
 						this.parentPersonObj.roles = this.roles.filter(i => i.code === 'ROLE_PARENT').map(i => i.id);
 						return studentParentService.getByStudent(this.studentObj.id)
 					}).then(res => {
+                        this.parentPersonObj.phone = this.parentPersonObj.phone.replace(/[(_)]/g, '');
 						if (res._embedded) {
 							this.parentPersonObj.id = res._embedded.studentParentResourceList[0].parentId;
 							return personService.edit(this.parentPersonObj)
@@ -959,6 +973,7 @@ export default {
 					});
 
 					this.parentPersonObj.roles = this.roles.filter(i => i.code === 'ROLE_PARENT').map(i => i.id);
+                    this.parentPersonObj.phone = this.parentPersonObj.phone.replace(/[(_)]/g, '');
 					personService.create(this.parentPersonObj).then((res) => {
 						const studentParent = {
 							personId: parseInt(res.message),
