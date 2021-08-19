@@ -30,7 +30,14 @@
                 </div>
 
             <div class="spacer">
-                <v-text-field v-model="schoolObj.phone" label="Номер телефона" type="number"></v-text-field>
+                <div class="input-mask">
+                    <label>Телефон</label>
+                    <masked-input
+                        v-model="schoolObj.phone"
+                        mask="\0\(111)111111"
+                        placeholder="0(555)123456"
+                    />
+                </div>
             </div>
 
             <div>
@@ -98,6 +105,7 @@
     const quarterService = new QuarterService();
     import {SchoolService} from '@/_services/school.service';
     const schoolService = new SchoolService();
+    import MaskedInput from 'vue-masked-input';
 
     export default {
         name: 'AboutSchool',
@@ -107,7 +115,8 @@
             SmartSearchInput,
             SmartButton,
             SuperAdminSchoolHead,
-            SmartTable
+            SmartTable,
+            MaskedInput
         },
 
         data() {
@@ -198,6 +207,7 @@
 
             updateSchoolInfo() {
                 this.userProfile.schools[0] = this.schoolObj;
+                this.schoolObj.phone = this.schoolObj.phone.slice(1).replace(/[(_)]/g, '');
                 schoolService.update(this.schoolObj).then(() => {
                     this.$toast.success('Успешно');
                     this.$store.dispatch('account/updateProfileData', this.userProfile);
