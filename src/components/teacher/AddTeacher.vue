@@ -111,34 +111,39 @@
                 default: false
             }
         },
-        data: () => ({
-            required: [
-                v => !!v || 'Input is required'
-            ],
-            firstLastNameRule: [
-                v => !!v || 'Обязательное поле',
-                v => !/\d/.test(v) || 'Должно быть без цифр'
-            ],
-            middleNameRule: [
-                v => !/\d/.test(v) || 'Должно быть без цифр'
-            ],
-            roles: [],
-            languages: [],
-            menu2: false,
-            isLoading: false,
-            mainMode: 'main',
-            resetUser: {
-                enabled: true,
-                languageId: 0,
-                name: '',
-                password: '',
+        data() {
+            return {
+                cyrillicRegex: /^[аАбБвВгГдДеЕёЁжЖзЗиИйЙкКлЛмМнНоОпПрРсСтТуУфФхХцЦчЧшШщЩъЪыЫьЬэЭюЮяЯ]+$/,
+                required: [
+                    v => !!v || 'Input is required'
+                ],
+                firstLastNameRule: [
+                    v => !!v || 'Обязательное поле',
+                    v => !/\d/.test(v) || 'Должно быть без цифр',
+                    v => this.cyrillicRegex.test(v) || 'Только кириллица'
+                ],
+                middleNameRule: [
+                    v => !/\d/.test(v) || 'Должно быть без цифр',
+                    v => this.cyrillicRegex.test(v) || 'Только кириллица'
+                ],
                 roles: [],
-                surname: ''
-            },
-            resetPassMode: '',
-            validFirstNum: true,
-            validDatePin: true
-        }),
+                languages: [],
+                menu2: false,
+                isLoading: false,
+                mainMode: 'main',
+                resetUser: {
+                    enabled: true,
+                    languageId: 0,
+                    name: '',
+                    password: '',
+                    roles: [],
+                    surname: ''
+                },
+                resetPassMode: '',
+                validFirstNum: true,
+                validDatePin: true
+            }
+        },
         computed: {
             userProfile() {
                 return this.$store.state.account.profile;
