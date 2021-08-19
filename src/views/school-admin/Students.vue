@@ -164,9 +164,9 @@
                         <span :class="{'active': parentPersonObj.gender == 'FEMALE'}" @click="setParentGender('FEMALE')">Мать</span>
                         <span :class="{'active': parentPersonObj.gender == 'MALE'}" @click="setParentGender('MALE')">Отец</span>
                     </template>
-					<v-text-field v-model="parentPersonObj.name" label="Имя Родителя" :rules="required"/>
-					<v-text-field v-model="parentPersonObj.surname" label="Фамилия Родителя" :rules="required"/>
-					<v-text-field v-model="parentPersonObj.middleName" label="Отчество Родителя" :rules="required"/>
+					<v-text-field v-model="parentPersonObj.name" label="Имя Родителя" :rules="firstLastNameRule"/>
+					<v-text-field v-model="parentPersonObj.surname" label="Фамилия Родителя" :rules="firstLastNameRule"/>
+					<v-text-field v-model="parentPersonObj.middleName" label="Отчество Родителя" :rules="middleNameRule"/>
 				</div>
 
 				<div>
