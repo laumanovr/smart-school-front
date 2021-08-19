@@ -132,6 +132,10 @@
                     <masked-input v-model="studentObj.dateOfBirth" mask="11.11.1111" placeholder="ДД.ММ.ГГГГ" disabled/>
                 </div>
 
+                <div>
+                    <v-text-field label="Место рождения" v-model="studentObj.placeOfBirth"/>
+                </div>
+
 				<div>
 					<v-select
 						v-model="studentObj.classId"
@@ -415,6 +419,7 @@ export default {
 				schoolId: 0,
 				surname: '',
 				username: '',
+                placeOfBirth: '',
 				roles: [
 					0
 				],
