@@ -51,7 +51,14 @@
                 </div>
 
                 <div class="spacer">
-                    <v-text-field label="Номер телефона" v-model="user.phone" type="number"/>
+                    <div class="input-mask">
+                        <label>Телефон</label>
+                        <masked-input
+                            v-model="user.phone"
+                            mask="\0\(111)111111"
+                            placeholder="0(555)123456"
+                        />
+                    </div>
                 </div>
 
                 <div class="form-footer">
@@ -189,6 +196,7 @@
                         this.user.pin = this.user.pin.replaceAll('.', '');
                         this.user.roles = this.roles.filter(i => i.code === 'ROLE_INSTRUCTOR').map(i => i.id);
                         this.user.schoolId = this.userProfile.schools[0].id;
+                        this.user.phone = this.user.phone.replace(/[(_)]/g, '');
                         if (this.isEdit) {
                             this.personEdit(this.user);
                         } else {
