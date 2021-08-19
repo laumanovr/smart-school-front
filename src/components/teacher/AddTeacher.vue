@@ -12,15 +12,6 @@
                         <img src="../../assets/images/icons/edit.svg">
                     </button>
                 </div>
-                <div>
-                    <v-text-field :rules="firstLastNameRule" label="Имя" v-model="user.name"></v-text-field>
-                </div>
-                <div>
-                    <v-text-field :rules="firstLastNameRule" label="Фамилия" v-model="user.surname"></v-text-field>
-                </div>
-                <div>
-                    <v-text-field :rules="middleNameRule" label="Отчество" v-model="user.middleName"></v-text-field>
-                </div>
                 <div class="pin-field">
                     <div class="input-mask">
                         <label>ПИН/ИНН</label>
@@ -38,6 +29,16 @@
                     </div>
                 </div>
                 <div>
+                    <v-text-field :rules="firstLastNameRule" label="Имя" v-model="user.name"></v-text-field>
+                </div>
+                <div>
+                    <v-text-field :rules="firstLastNameRule" label="Фамилия" v-model="user.surname"></v-text-field>
+                </div>
+                <div>
+                    <v-text-field :rules="middleNameRule" label="Отчество" v-model="user.middleName"></v-text-field>
+                </div>
+
+                <div class="gender-select">
                     <v-radio-group :mandatory="false" :rules="required" row v-model="user.gender">
                         <v-radio label="М" value="MALE"></v-radio>
                         <v-radio label="Ж" value="FEMALE"></v-radio>
@@ -46,7 +47,7 @@
 
                 <div class="input-mask date">
                     <label>Дата рождения</label>
-                    <masked-input v-model="user.dob" mask="11.11.1111" placeholder="ДД.ММ.ГГГГ"/>
+                    <masked-input v-model="user.dob" mask="11.11.1111" placeholder="ДД.ММ.ГГГГ" disabled/>
                 </div>
 
                 <div class="spacer">
@@ -170,6 +171,10 @@
                 if (this.validDatePin) {
                     this.user.dob = this.user.pin.slice(2, 12);
                 }
+                if (this.validFirstNum) {
+                    this.user.gender = this.user.pin[0] === '1' ? 'FEMALE' : 'MALE';
+                    this.$forceUpdate();
+                }
             },
 
             submit() {
@@ -271,5 +276,9 @@
         border-radius: 5px;
         color: #656565;
         cursor: pointer;
+    }
+
+    .gender-select {
+        pointer-events: none;
     }
 </style>
