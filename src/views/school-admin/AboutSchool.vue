@@ -17,6 +17,15 @@
                 <v-text-field v-model="schoolObj.pin" :rules="required" label="Пин школы" type="number"></v-text-field>
             </div>
 
+            <v-select
+                :items="chronicleYearList"
+                :rules="required"
+                item-text="selectorTitle"
+                item-value="id"
+                label="Академический год"
+                v-model="schoolObj.chronicleYearId"
+            />
+
                 <div>
                     <v-select
                         :rules="required"
@@ -106,6 +115,8 @@
     import {SchoolService} from '@/_services/school.service';
     const schoolService = new SchoolService();
     import MaskedInput from 'vue-masked-input';
+    import {ChronicleService} from '@/_services/chronicle.service';
+    const chronicleService = new ChronicleService();
 
     export default {
         name: 'AboutSchool',
@@ -139,6 +150,7 @@
                 allRegions: [],
                 allRayons: [],
                 schoolQuarters: [],
+                chronicleYearList: [],
                 schoolTypes: [
                     {value: 'PRIVATE', text: 'Частная'},
                     {value: 'PUBLIC', text: 'Государственная'},
@@ -161,6 +173,7 @@
             this.fetchRayons();
             this.getQuartersBySchool();
             this.getRayonById();
+            this.fetchChronicleYearList();
         },
 
         mounted() {
@@ -181,6 +194,12 @@
             getQuartersBySchool() {
                 quarterService.getBySchoolAndChronicle(this.school.id, this.school.chronicleId).then((res) => {
                     this.schoolQuarters = res.sort((a, b) => a.semester - b.semester);
+                }).catch((err) => this.$toast.error(err.message));
+            },
+
+            fetchChronicleYearList() {
+                chronicleService.list().then((res) => {
+                    this.chronicleYearList = res;
                 }).catch((err) => this.$toast.error(err.message));
             },
 
