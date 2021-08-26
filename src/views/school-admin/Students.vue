@@ -91,12 +91,9 @@
 		</SmartTable>
 		<v-dialog v-if="isAddStudentModal" id="add-form" v-model="isAddStudentModal" width="546">
 			<v-form ref="studentForm" @submit.prevent="checkIsStudentExist">
-				<div class="form-head">
-					<span><h2>{{isStudentEdit ? 'Редактировать ученика' : 'Добавить ученика'}}</h2></span>
-					<img alt="" src="../../assets/images/profile-icon.svg">
-					<button class="profile-edit">
-						<img src="../../assets/images/icons/edit.svg">
-					</button>
+				<div class="form-head d-flex">
+					<h2>{{isStudentEdit ? 'Редактировать ученика' : 'Добавить ученика'}}</h2>
+					<img src="../../assets/images/profile-icon.svg">
 				</div>
                 <div class="pin-field">
                     <div class="input-mask">
@@ -179,6 +176,25 @@
                         />
                     </div>
 				</div>
+
+                <div class="attach-file">
+                    <label class="add-file" for="input-file">
+                        + Файл
+                        <input type="file" id="input-file" @change="prepareAttachment">
+                    </label>
+                    <div class="files">
+                        <div class="d-flex" v-for="(file, i) in attachFiles" :key="i">
+                            <span class="name">{{file.originalTitle}}</span>
+                            <TrashIcon @click="deleteAttachment(file.id, i)"/>
+                            <img
+                                src="../../assets/images/icons/download.svg"
+                                class="download-file"
+                                @click="downloadAttachment(file)"
+                                v-if="isStudentEdit"
+                            >
+                        </div>
+                    </div>
+                </div>
 
 				<div class="form-footer">
                     <div class="btn-actions">
@@ -360,6 +376,7 @@ import ScheduleWeekService from '@/_services/schedule-week.service';
 import TrashIcon from '@/components/icons/TrashIcon';
 import MaskedInput from 'vue-masked-input';
 import GradeService from '@/_services/grade.service';
+import FileService from '@/_services/file.service';
 
 export default {
 	components: {
@@ -512,7 +529,10 @@ export default {
                 reason: ''
             },
             validFirstNum: true,
-            validDatePin: true
+            validDatePin: true,
+            attachFiles: [],
+            fileSelect: {},
+            formData: new FormData()
 		}
 	},
 
@@ -819,6 +839,7 @@ export default {
             this.parentPersonObj.middleName = '';
             this.parentPersonObj.phone = '';
             this.parentPersonObj.gender = 'FEMALE';
+            this.attachFiles = [];
 		},
 
 		onEditStudent(item) {
@@ -851,6 +872,7 @@ export default {
                     this.parentPersonObj.gender = 'FEMALE';
                     this.parentPersonObj.phone = '';
                 }
+                this.fetchStudentAttachments();
             }).catch(err => {
                 this.isLoading = false;
                 this.$toast.error(err);
@@ -911,6 +933,70 @@ export default {
                 this.$toast.error(err);
                 this.isLoading = false;
             })
+        },
+
+        fetchStudentAttachments() {
+            studentService.getAttaches(this.studentObj.id).then((res) => {
+                this.attachFiles = res;
+            }).catch((err) => {
+                this.$toast.error(err);
+            });
+        },
+
+        prepareAttachment(e) {
+            this.fileSelect = e.target.files[0];
+            this.formData = new FormData();
+            if (this.isStudentEdit) {
+                this.formData.append('files', this.fileSelect);
+                this.submitAttachments(this.studentObj.id);
+                return;
+            }
+            this.attachFiles.push({originalTitle: this.fileSelect.name, file: this.fileSelect});
+        },
+
+        submitAttachments(studentId) {
+            if (!this.isStudentEdit) {
+                this.attachFiles.forEach((item) => this.formData.append('files', item.file));
+            }
+            studentService.attachFile(studentId, this.formData).then(() => {
+                this.$toast.success('Файл прикреплен!');
+                if (this.isStudentEdit) {
+                    this.fetchStudentAttachments();
+                }
+            }).catch((err) => {
+               this.$toast.error(err);
+            });
+        },
+
+        deleteAttachment(fileId, index) {
+            this.attachFiles.splice(index, 1);
+            if (this.isStudentEdit) {
+                this.isLoading = true;
+                studentService.deleteFile(fileId).then(() => {
+                    this.$toast.success('Успешно Удалено!');
+                    this.isLoading = false;
+                }).catch((err) => {
+                    this.$toast.error(err);
+                    this.isLoading = false;
+                });
+            }
+        },
+
+        downloadAttachment(file) {
+            this.isLoading = true;
+            FileService.downloadFile(file.fileUrl).then((res) => res.blob()).then((blob) => {
+                const link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = file.originalTitle.replace(' ', '');
+                document.body.appendChild(link);
+                link.click();
+                window.URL.revokeObjectURL(link.href);
+                link.remove();
+                this.isLoading = false;
+            }).catch((err) => {
+                this.$toast.error(err);
+                this.isLoading = false;
+            });
         },
 
 		submitStudent() {
@@ -974,7 +1060,9 @@ export default {
                     let studentId = parseInt(res.message);
                     this.studentClassObj.classId = this.studentObj.classId;
                     this.studentClassObj.studentId = studentId;
-
+                    if (this.attachFiles.length) {
+                        this.submitAttachments(studentId);
+                    }
                     studentClassService.create(this.studentClassObj).then((res) => {
                         this.fetchStudents(true);
                         this.isAddStudentModal = false;
@@ -1182,6 +1270,35 @@ export default {
                 color: #fff;
                 cursor: default;
             }
+        }
+    }
+    .attach-file {
+        .add-file {
+            background: #557fff;
+            color: #fff;
+            padding: 2px 7px;
+            font-size: 13px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #input-file {
+            display: none;
+        }
+        .files {
+            margin-top: 15px;
+            .name {
+                max-width: 95%;
+                white-space: nowrap;
+                overflow-x: hidden;
+                text-overflow: ellipsis;
+            }
+            .delete-icon {
+                margin: 2px 8px 0 10px;
+            }
+        }
+        .download-file {
+            width: 13px;
+            cursor: pointer;
         }
     }
 }
