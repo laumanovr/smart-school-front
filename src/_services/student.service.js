@@ -80,4 +80,19 @@ export class StudentService extends BaseApiService {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/student-class/create`;
         return this.sendPostRequest(url, body);
     }
+
+    attachFile(studentId, formData) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/student/attachment/${studentId}/create`;
+        return this.sendPostRequest(url, formData);
+    }
+
+    getAttaches(studentId) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/student/attachment/${studentId}`;
+        return this.sendGetRequest(url);
+    }
+
+    deleteFile(fileId) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/student/attachment?id=${fileId}`;
+        return this.sendDeleteRequest(url, {});
+    }
 }
