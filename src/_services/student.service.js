@@ -95,4 +95,9 @@ export class StudentService extends BaseApiService {
         const url = `${process.env.VUE_APP_BASE_URL}/v1/student/attachment?id=${fileId}`;
         return this.sendDeleteRequest(url, {});
     }
+
+    raiseAllClassLevels(schoolId, chronicleId) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/student/raise/school/${schoolId}?chronicleId=${chronicleId}`;
+        return this.sendPostRequest(url, {});
+    }
 }
