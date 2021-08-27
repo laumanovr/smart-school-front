@@ -14,7 +14,7 @@ export default {
 .smart-btn {
     background: linear-gradient(180deg, #4A27F3 0%, #339DFA 100%);
     border-radius: 24px;
-    padding: 7px 15px;
+    padding: 7px 12px;
     font-style: normal;
     font-weight: 300;
     font-size: 14px;
