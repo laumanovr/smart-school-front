@@ -30,4 +30,14 @@ export  class SchoolService extends BaseApiService {
         const url = baseUrl + `?page=${page}&regionId=${regionId}&rayonId=${rayonId}&query=${query}&size=${size}`;
         return this.sendGetRequest(url);
     }
+
+    presetCheck(body) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/school-preset/check`;
+        return this.sendPostRequest(url, body);
+    }
+
+    presetCreate(body) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/school-preset/create`;
+        return this.sendPostRequest(url, body);
+    }
 }
