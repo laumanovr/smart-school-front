@@ -225,8 +225,9 @@
             },
 
             updateSchoolInfo() {
+                this.schoolObj.chronicleId = this.schoolObj.chronicleYearId;
                 this.userProfile.schools[0] = this.schoolObj;
-                this.schoolObj.phone = this.schoolObj.phone.slice(1).replace(/[(_)]/g, '');
+                this.schoolObj.phone = this.schoolObj.phone.length > 9 ? this.schoolObj.phone.slice(1).replace(/[(_)]/g, '') : this.schoolObj.phone;
                 schoolService.update(this.schoolObj).then(() => {
                     this.$toast.success('Успешно');
                     this.$store.dispatch('account/updateProfileData', this.userProfile);
