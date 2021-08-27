@@ -59,6 +59,7 @@
                     <SmartButton @clicked="openRefreshClassCourseModal">
                         Обновить уроки
                     </SmartButton>
+                    <SmartButton @clicked="toggleRaiseClassModal">Поднять учеников</SmartButton>
                 </div>
 			</template>
 			<template v-slot:head>
@@ -341,6 +342,17 @@
                 </div>
             </div>
         </modal>
+
+        <!--RAISE CLASS MODAL-->
+        <modal name="raise-class-modal" height="auto">
+            <div class="modal-container">
+                <h4>Поднять уровень класса у всех учеников?</h4>
+                <div class="btn-actions">
+                    <v-btn color="red" @click="toggleRaiseClassModal">Отмена</v-btn>
+                    <v-btn color="green" @click="submitRaiseClass">Поднять</v-btn>
+                </div>
+            </div>
+        </modal>
 	</div>
 </template>
 
@@ -377,6 +389,8 @@ import TrashIcon from '@/components/icons/TrashIcon';
 import MaskedInput from 'vue-masked-input';
 import GradeService from '@/_services/grade.service';
 import FileService from '@/_services/file.service';
+import {SchoolService} from '@/_services/school.service';
+const schoolService = new SchoolService();
 
 export default {
 	components: {
@@ -532,7 +546,14 @@ export default {
             validDatePin: true,
             attachFiles: [],
             fileSelect: {},
-            formData: new FormData()
+            formData: new FormData(),
+            addPresetObj: {
+                chronicleId: 0,
+                isClassRaised: true,
+                isPreset: true,
+                schoolId: 0,
+                stepNumber: 4
+            }
 		}
 	},
 
@@ -1095,6 +1116,38 @@ export default {
             }
 		},
 
+        toggleRaiseClassModal() {
+            this.$modal.toggle('raise-class-modal');
+        },
+
+        submitRaiseClass() {
+            this.isLoading = true;
+            const presetObj = {chronicleId: this.school.chronicleId, schoolId: this.school.id};
+            schoolService.presetCheck(presetObj).then((res) => {
+                if (Object.values(res).length) {
+                    this.$toast.info('На текущий год, классы уже подняты!');
+                    this.toggleRaiseClassModal();
+                    this.isLoading = false;
+                    return;
+                }
+                studentService.raiseAllClassLevels(this.school.id, this.school.chronicleId).then(() => {
+                    this.addPresetObj.schoolId = this.school.id;
+                    this.addPresetObj.chronicleId = this.school.chronicleId;
+                    schoolService.presetCreate(this.addPresetObj).then(() => {
+                        this.$toast.success('Все классы учеников подняты на один уровень!');
+                        this.toggleRaiseClassModal();
+                        this.fetchStudents(true);
+                    }).catch((err) => {
+                        this.$toast.error(err);
+                    });
+                }).catch((err) => {
+                    this.$toast.error(err);
+                });
+            }).catch((err) => {
+                this.$toast.error(err);
+            });
+        },
+
 		onLeftClick() {
 //			this.currentPage--;
 //			this.fetchStudents(this.currentPage - 1);
@@ -1165,7 +1218,7 @@ export default {
             }
         }
         .smart-btn {
-            margin-left: 20px;
+            margin-left: 18px;
         }
     }
 
