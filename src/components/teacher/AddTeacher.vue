@@ -4,13 +4,10 @@
         <template v-if="mainMode == 'main'">
             <v-form @submit.prevent="submit" ref="form">
                 <div class="reset-pass" v-if="isEdit" @click="resetPassword('confirm')">Сбросить пароль</div>
-                <div class="form-head">
-                    <span v-if="!isEdit"><h3>Добавить учителя</h3></span>
-                    <span v-else><h3>Редактировать учителя</h3></span>
+                <div class="form-head d-flex">
+                    <h3 v-if="!isEdit">Добавить учителя</h3>
+                    <h3 v-else>Редактировать учителя</h3>
                     <img alt="" src="../../assets/images/profile-icon.svg">
-                    <button class="profile-edit">
-                        <img src="../../assets/images/icons/edit.svg">
-                    </button>
                 </div>
                 <div class="pin-field">
                     <div class="input-mask">
