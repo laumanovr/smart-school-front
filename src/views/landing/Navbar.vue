@@ -34,7 +34,7 @@
                 <!--</li>-->
             </ul>
             <router-link :to="{name:'login'}" class="sign">
-                войти <img src="@/assets/images/landing/next.svg" alt="next ">
+                Войти <img src="@/assets/images/landing/next.svg" alt="next ">
             </router-link>
         </div>
         <i class="fa fa-bars" @click="ShowMenu"></i>
@@ -94,7 +94,6 @@
         background: #FFFFFF;
         box-shadow: 0 5px 25px rgba(75, 93, 104, 0.1);
         font-weight: bold;
-        text-transform: uppercase;
         font-size: 16px;
         text-decoration: none;
         margin-left: 20px;
