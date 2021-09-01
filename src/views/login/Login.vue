@@ -1,9 +1,9 @@
 <template>
     <div class="login-container">
-        <!--<router-link to="/" class="home-btn">-->
-            <!--<img src="@/assets/images/landing/next.svg" class="left" alt="next">-->
-            <!--<span class="to-home-page">На главную</span>-->
-        <!--</router-link>-->
+        <router-link to="/" class="home-btn">
+            <img src="@/assets/images/landing/next.svg" class="left" alt="next">
+            <span class="to-home-page">На главную</span>
+        </router-link>
         <div class="login-page">
             <PreLoader v-if="isLoading"/>
             <div class="login-page__images">
