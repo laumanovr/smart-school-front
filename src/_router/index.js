@@ -19,12 +19,73 @@ const loadComponent = path => () => import(`@/views/${path}.vue`);
 Vue.use(VueRouter);
 
 const routes = [
-    //TEMP
+    // LANDING
     {
         path: '/',
-        redirect: '/login'
+        name: 'home',
+        component: loadComponent('landing/MainPage'),
+        meta: {
+            requireAuth: false
+        }
     },
-    //TEMP
+    {
+        path: '/landing/about',
+        name: 'about',
+        component: loadComponent('landing/AboutProject'),
+        meta: {
+            requireAuth: false
+        }
+    },
+    {
+        path: '/landing/support',
+        name: 'support',
+        component: loadComponent('landing/Support'),
+        meta: {
+            requireAuth: false
+        }
+    },
+    {
+        path: '/landing/opportunity',
+        name: 'opportunity',
+        component: loadComponent('landing/Opportunities'),
+        meta: {
+            requireAuth: false
+        }
+    },
+    {
+        path: '/landing/teacher-opportunity',
+        name: 'teacherOpportunity',
+        component: loadComponent('landing/TeacherOpportunity'),
+        meta: {
+            requireAuth: false
+        }
+    },
+    {
+        path: '/landing/gos-opportunity',
+        name: 'gosOpportunity',
+        component: loadComponent('landing/GosOpportunity'),
+        meta: {
+            requireAuth: false
+        }
+    },
+    {
+        path: '/landing/parent-opportunity',
+        name: 'parentOpportunity',
+        component: loadComponent('landing/ParentOpportunity'),
+        meta: {
+            requireAuth: false
+        }
+    },
+    {
+        path: '/landing/student-opportunity',
+        name: 'studentOpportunity',
+        component: loadComponent('landing/StudentOpportunity'),
+        meta: {
+            requireAuth: false
+        }
+    },
+
+    // LOGIN
 	{
 		path: '/login',
 		name: 'login',
@@ -64,72 +125,6 @@ const routes = [
                 }
             }
         ]
-    },
-
-    // LANDING
-    {
-        path: '/landing-smart-school',
-        name: 'home',
-        component: loadComponent('landing/MainPage'),
-        meta: {
-            requireAuth: false
-        }
-    },
-    {
-        path: '/landing-smart-school/about',
-        name: 'about',
-        component: loadComponent('landing/AboutProject'),
-        meta: {
-            requireAuth: false
-        }
-    },
-    {
-        path: '/landing-smart-school/support',
-        name: 'support',
-        component: loadComponent('landing/Support'),
-        meta: {
-            requireAuth: false
-        }
-    },
-    {
-        path: '/landing-smart-school/opportunity',
-        name: 'opportunity',
-        component: loadComponent('landing/Opportunities'),
-        meta: {
-            requireAuth: false
-        }
-    },
-    {
-        path: '/landing-smart-school/teacher-opportunity',
-        name: 'teacherOpportunity',
-        component: loadComponent('landing/TeacherOpportunity'),
-        meta: {
-            requireAuth: false
-        }
-    },
-    {
-        path: '/landing-smart-school/gos-opportunity',
-        name: 'gosOpportunity',
-        component: loadComponent('landing/GosOpportunity'),
-        meta: {
-            requireAuth: false
-        }
-    },
-    {
-        path: '/landing-smart-school/parent-opportunity',
-        name: 'parentOpportunity',
-        component: loadComponent('landing/ParentOpportunity'),
-        meta: {
-            requireAuth: false
-        }
-    },
-    {
-        path: '/landing-smart-school/student-opportunity',
-        name: 'studentOpportunity',
-        component: loadComponent('landing/StudentOpportunity'),
-        meta: {
-            requireAuth: false
-        }
     },
 
     // SUPER-ADMIN
