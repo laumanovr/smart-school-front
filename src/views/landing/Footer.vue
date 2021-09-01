@@ -2,17 +2,17 @@
     <div class="FooterContent">
         <div class="LandingFooterMenu">
             <div class="footerRow">
-                <div class="FooterCols SmartSchoolFooterCols" style="width: 250px">
+                <div class="FooterCols SmartSchoolFooterCols" style="width: 320px">
                     <div class="footerSmartShool">
                         <img src="@/assets/images/landing/LogoSmart.svg" alt="LogoSmart">
                         <span class="SmartSchoolFooter">“Умная Школа”</span>
                     </div>
                     <span class="Contact">
-                        <span class="tel">+996 502 222 261</span>
-                        <span class="mail">gpsocservis@gmail.com</span>
+                        <span class="tel">(0312) 98-61-90, 98-61-91</span>
+                        <span class="mail">support@infocom.kg</span>
                     </span>
                     <span class="Address">
-                        <span>Уметалиева 41</span>
+                        <span>Чокона Валиханова 2 (Чолпон-Атинская)</span>
                         <span>Бишкек, Кыргызстан</span>
                     </span>
                 </div>
