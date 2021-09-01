@@ -2,13 +2,13 @@
     <div class="footerContent">
         <div class="footerr">
             <div class="UpdateDate">
-                <p>© 2020. Все права защищены.</p>
+                <p>© 2021. Все права защищены.</p>
             </div>
             <div class="SocService">
-                <p class="">Проект “Умная Школа” <span class="spanbr"/>осуществлен ГП “Соцсервис” при ГКИТиС КР</p>
+                <p class="">Проект “Умная Школа” <span class="spanbr"/>осуществлен ГП “Инфоком” при ГРС ППКР</p>
             </div>
             <div class="SocServiceImg">
-                <img src="@/assets/images/landing/socservice.svg">
+                <img src="../../assets/images/infocom-logo.png">
             </div>
         </div>
     </div>
@@ -64,9 +64,11 @@
     }
 
     .SocServiceImg {
-        display: inline-block;
-        float: right;
-        height: 100px;
+        display: flex;
+        justify-content: flex-end;
+        margin-right: 20px;
+        height: 55px;
+        align-items: flex-end;
     }
 
     .spanbr {
