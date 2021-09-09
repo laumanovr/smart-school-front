@@ -38,7 +38,7 @@
                     </div>
                     <div>
                         <div class="login-page__form__item center top-mg">
-                            <button>ВОЙТИ</button>
+                            <button>Войти</button>
                         </div>
                         <div class="login-page__form__item center">
                         </div>
