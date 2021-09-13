@@ -88,7 +88,6 @@ import {InstructorCourseService} from '@/_services/instructor-course.service'
 const instructorCourseService = new InstructorCourseService();
 import ScheduleWeekService from '@/_services/schedule-week.service';
 import PreLoader from '@/components/preloader/PreLoader';
-import StudentCourseService from '@/_services/student-course.service';
 import moment from 'moment';
 
 export default {
@@ -214,24 +213,9 @@ export default {
             this.replaceObj.shiftTimeId = dateObj.shiftTimeId;
         },
 
-        async addInstrCourseToClass() {
-            const addCourseObj = {
-                chronicleId: this.school.chronicleId,
-                classId: this.replaceObj.classId,
-                courseId: this.replaceObj.courseId,
-                instructorId: this.replaceObj.personId
-            };
-            try {
-                await StudentCourseService.addCourseToClass(addCourseObj);
-            } catch (err) {
-                this.$toast.error(err);
-            }
-        },
-
         submitReplace() {
             if (this.$refs.replaceForm.validate()) {
                 this.isLoading = true;
-                this.addInstrCourseToClass();
                 ScheduleWeekService.replaceForOneDay(this.replaceObj).then(() => {
                     this.fetchAllReplacedSchedules();
                     this.isLoading = false;
