@@ -45,8 +45,16 @@
                                 {{currentMonthDays[0].day.slice(0, 2)}} -
                                 {{currentMonthDays[currentMonthDays.length - 1].day.slice(0, 2)}}
                             </span>
-                            <PlayArrowIcon class="date-arrow left" @click="filterGradesByMonth('prev', true)"/>
-                            <PlayArrowIcon class="date-arrow" @click="filterGradesByMonth('next', true)"/>
+                            <PlayArrowIcon
+                                class="date-arrow left"
+                                @click="filterGradesByMonth('prev', true)"
+                                :class="{'blocked': currentMonthDays[0].disabled}"
+                            />
+                            <PlayArrowIcon
+                                class="date-arrow"
+                                @click="filterGradesByMonth('next', true)"
+                                :class="{'blocked': currentMonthDays[0].disabled}"
+                            />
                         </th>
                     </tr>
                     </thead>
@@ -345,7 +353,7 @@
                 this.monthDataRequest.classId = klass.classId;
                 this.monthDataRequest.instructorId = this.userProfile.personId;
                 this.monthDataRequest.chronicleId = this.school.chronicleId;
-                this.gradeRequest.searchRequest.instructorId = klass.replace ? null : this.userProfile.personId;
+                this.gradeRequest.searchRequest.instructorId = (klass.replace || klass.isAllDay) ? null : this.userProfile.personId;
                 this.gradeRequest.searchRequest.chronicleId = this.school.chronicleId;
                 this.gradeRequest.searchRequest.from = this.getFirstDateOfMonth();
                 this.gradeRequest.searchRequest.to = this.getLastDateOfMonth();
@@ -424,6 +432,24 @@
             },
 
             fetchCurrentMonthSchedule() {
+                if (this.selectedClassObj.isAllDay) {
+                    this.currentMonthDays = [];
+                    this.allCourses.filter((klass) => {
+                        return klass.classId === this.selectedClassObj.classId;
+                    }).sort((a, b) => {
+                        const aDate = new Date(moment(a.replacementDate, 'DD.MM.YYYY'));
+                        const bDate = new Date(moment(b.replacementDate, 'DD.MM.YYYY'));
+                        return aDate - bDate;
+                    }).forEach((item) => {
+                        this.currentMonthDays.push({
+                            day: item.replacementDate,
+                            shiftTimeId: item.shiftTimeId,
+                            shiftTimeTitle: item.shiftTimeName,
+                            disabled: true
+                        });
+                    });
+                    return;
+                }
                 ScheduleWeekService.getCurrentMonth(this.scheduleMonthNumber, this.monthDataRequest)
                     .then((res) => {
                         this.currentMonthDays = res.map((item) => {
@@ -587,7 +613,6 @@
                         });
                     }
                 });
-                console.log('allStudentsList: ', this.studentGrades);
             },
 
             filterGradesByMonth(nav, mainArrow) {
@@ -805,6 +830,9 @@
                             line-height: 37px;
                             &.left {
                                 margin: 0 8px;
+                            }
+                            &.blocked {
+                                pointer-events: none;
                             }
                         }
                     }
