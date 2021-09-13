@@ -5,7 +5,7 @@
 			<button
 				v-for="item in classes"
 				:key="item.id"
-				:class="{ 'active' : item.id === clas.id }"
+				:class="{'active': item.id === clas.id, 'replaced': item.isAllDay}"
 				class="class-select-header__item"
 				@click="onClassClick(item)"
 			>
@@ -103,20 +103,22 @@ export default {
 		margin: 0 5px;
 		padding: 15px 8px;
         white-space: nowrap;
-
 		&:hover {
 			background: rgba(#339DFA, 0.2);
 			border-radius: 5px;
 		}
-
-		&.active {
-			background: linear-gradient(180deg, #4A27F3 0%, #339DFA 100%);
-			border-radius: 5px;
-			font-size: 18px;
-			line-height: 21px;
-			letter-spacing: 0.01em;
-			color: #FFFFFF;
-		}
+        &.replaced {
+            background: #efefef;
+            border-radius: 15px;
+        }
+        &.active {
+            background: linear-gradient(180deg, #4A27F3 0%, #339DFA 100%);
+            border-radius: 5px;
+            font-size: 18px;
+            line-height: 21px;
+            letter-spacing: 0.01em;
+            color: #FFFFFF;
+        }
 	}
 }
 </style>
