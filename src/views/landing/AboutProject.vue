@@ -7,7 +7,7 @@
             </div>
             <div class="AboutProject">
                 <h3>
-                    Проект “Умная Школа”
+                    Проект «Умная Школа»
                 </h3>
                 <p>
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit.

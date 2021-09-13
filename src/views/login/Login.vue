@@ -50,7 +50,7 @@
                 </form>
             </div>
         </div>
-        <div class="supported-by">Разработчик: Государственное предприятие "Инфоком"</div>
+        <div class="supported-by">Разработчик: Государственное предприятие «Инфоком»</div>
     </div>
 </template>
 

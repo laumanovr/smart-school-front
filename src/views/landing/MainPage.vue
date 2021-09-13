@@ -6,11 +6,11 @@
                 <img class="col-6-img" src="@/assets/images/landing/Classroom1.png" alt="Classroom Blackboard">
                 <div>
                     <span class="SmartSchoolSpan">
-                        <span class="SmartSchoolSpanBold">“Умная Школа”</span>
+                        <span class="SmartSchoolSpanBold">«Умная Школа»</span>
                          - единая платформа <span class="spanbr"></span>
                         для учителей, родителей и школьников.
                     </span>
-                    <p class="Sm">“Умная Школа” предоставляет удобные сервисы <span class="spanbr"/> и приложение,
+                    <p class="Sm">«Умная Школа» предоставляет удобные сервисы <span class="spanbr"/> и приложение,
                         которые доступны 24 часа в сутки,<span class="spanbr"/> 7 дней в неделю, 365 дней в году!</p>
                 </div>
                 <div>
@@ -35,7 +35,7 @@
                     <img src="@/assets/images/landing/KidsStudyingfromHome1.png" alt="KidsStudyingfromHome1">
                 </div>
                 <div class="SmartSchoolThis">
-                    <span class="SmartSchoolThisIs">“Умная Школа” - это:</span>
+                    <span class="SmartSchoolThisIs">«Умная Школа» - это:</span>
                     <ul class="SmartSchoolThisdiv">
                         <li>современное электронное обучение</li>
                         <li>круглосуточный доступ к расписанию уроков,<br/> журналу и домашним заданиям 24/7</li>
@@ -66,7 +66,7 @@
                     Скачайте наше приложение!
                 </h3>
                 <p>
-                    Использование “Умная Школа” безопасно, удобно и доступно каждому!
+                    Использование «Умная Школа» безопасно, удобно и доступно каждому!
                 </p>
                 <img src="@/assets/images/landing/phone.png" alt="phone">
             </div>

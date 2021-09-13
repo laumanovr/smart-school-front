@@ -5,7 +5,7 @@
                 <p>© 2021. Все права защищены.</p>
             </div>
             <div class="SocService">
-                <p class="">Проект “Умная Школа” <span class="spanbr"/>осуществлен ГП “Инфоком” при ГРС ППКР</p>
+                <p class="">Проект «Умная Школа» <span class="spanbr"/>осуществлен ГП «Инфоком» при ГРС ППКР</p>
             </div>
             <div class="SocServiceImg">
                 <img src="../../assets/images/infocom-logo.png">

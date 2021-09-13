@@ -5,7 +5,7 @@
                 <div class="FooterCols SmartSchoolFooterCols" style="width: 320px">
                     <div class="footerSmartShool">
                         <img src="@/assets/images/landing/LogoSmart.svg" alt="LogoSmart">
-                        <span class="SmartSchoolFooter">“Умная Школа”</span>
+                        <span class="SmartSchoolFooter">«Умная Школа»</span>
                     </div>
                     <span class="Contact">
                         <span class="tel">(0312) 98-61-90, 98-61-91</span>
