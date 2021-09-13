@@ -39,12 +39,21 @@ export default {
 	created() {
 		if (this.showClass) {
 			this.fetchScheduleWeek(this.userProfile.personId).then((res) => {
-                this.classes = res.filter((obj, index, selfArr) =>
-                    index === selfArr.findIndex((el) =>
-                        (el['classId'] === obj['classId'])
-                    )).sort((a, b) => a.classLevel - b.classLevel);
-				this.onClassClick(this.classes[0]);
-				this.$emit('allClasses', res);
+			    ScheduleWeekService.getReplacedByInstructor(this.userProfile.personId).then((data) => {
+                    const replaced = data._embedded ? data._embedded.instructorScheduleReplacementResourceList : [];
+                    replaced.forEach((item) => {
+                       item.classLevel = item.classTitle.split(" ")[0];
+                       item.classLabel = item.classTitle.split(" ")[1];
+                    });
+                    this.classes = [...res, ...replaced].filter((obj, index, selfArr) =>
+                        index === selfArr.findIndex((el) =>
+                            (el['classId'] === obj['classId'])
+                        )).sort((a, b) => a.classLevel - b.classLevel);
+                    this.onClassClick(this.classes[0]);
+                    this.$emit('allClasses', [...res, ...replaced]);
+                }).catch((err) => {
+                   this.$toast.error(err);
+                });
 			});
 		}
 	},
