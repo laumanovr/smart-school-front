@@ -1,7 +1,8 @@
 <template>
     <div class="nav">
-        <div class="logo">
+        <div class="logo d-flex align-center">
             <img src="@/assets/images/landing/logo2.png" alt="logo2">
+            <h4>АИС «Умная Школа»</h4>
         </div>
         <div class="menu" id="showMenu" ref="showMenu">
             <i class="fa fa-close" @click="RemoveMenu"></i>
@@ -63,7 +64,7 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     .nav {
         box-sizing: border-box;
         width: 100%;
@@ -84,6 +85,10 @@
         display: inline-block;
         margin: 0;
         padding: 0;
+        h4 {
+            color: #0355ad;
+            margin: 0 0 0 18px;
+        }
     }
 
     /*Войти буттон*/
