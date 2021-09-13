@@ -56,7 +56,12 @@ export class ScheduleWeekService extends BaseApiService {
     }
 
     getAllReplacedSchedule(schoolId, chronicleId) {
-        const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/schedule/replacement/list/school/${schoolId}/chrocile/${chronicleId}?size=300`;
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/schedule/replacement/list/school/${schoolId}/chrocile/${chronicleId}?size=500`;
+        return this.sendGetRequest(url);
+    }
+
+    getReplacedByInstructor(instrId) {
+        const url = `${process.env.VUE_APP_BASE_URL}/v1/instructor/schedule/replacement/list/instructor/${instrId}?size=300`;
         return this.sendGetRequest(url);
     }
 }
