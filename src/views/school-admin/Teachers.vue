@@ -63,7 +63,7 @@
             v-if="isAddUser"
             id="add-form"
             v-model="isAddUser"
-            width="546"
+            width="800"
         >
             <AddTeacher :is-edit="isEdit" :user="user" @close="onCloseModal" @hide="isAddUser=false"/>
         </v-dialog>
