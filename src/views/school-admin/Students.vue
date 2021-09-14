@@ -90,7 +90,7 @@
 				         src="../../assets/images/icons/trash.svg" @click="onDeleteStudent(item)"></td>
 			</template>
 		</SmartTable>
-		<v-dialog v-if="isAddStudentModal" id="add-form" v-model="isAddStudentModal" width="546">
+		<v-dialog v-if="isAddStudentModal" id="add-form" v-model="isAddStudentModal" width="800">
 			<v-form ref="studentForm" @submit.prevent="checkIsStudentExist">
 				<div class="form-head d-flex">
 					<h2>{{isStudentEdit ? 'Редактировать ученика' : 'Добавить ученика'}}</h2>
@@ -1314,9 +1314,9 @@ export default {
         span {
             border: 1px solid #7d7d7d;
             font-size: 14px;
-            padding: 2px 5px;
+            padding: 10px 15px;
             border-radius: 4px;
-            margin-right: 3px;
+            margin-right: 5px;
             cursor: pointer;
             &.active {
                 background: #1976d2;
