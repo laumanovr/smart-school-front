@@ -1,9 +1,14 @@
 <template>
     <div class="login-container">
-        <router-link to="/" class="home-btn">
-            <img src="@/assets/images/landing/next.svg" class="left" alt="next">
-            <span class="to-home-page">На главную</span>
-        </router-link>
+        <div class="head-text">
+            <router-link to="/" class="home-btn">
+                <img src="@/assets/images/landing/next.svg" class="left" alt="next">
+                <span class="to-home-page">На главную</span>
+            </router-link>
+            <div class="top">Министерство образования и науки Кыргызской Республики</div>
+            <div class="bottom">Автоматизированная информационная система «Умная Школа»</div>
+        </div>
+
         <div class="login-page">
             <PreLoader v-if="isLoading"/>
             <div class="login-page__images">
@@ -119,23 +124,35 @@ export default {
 .login-container {
     position: relative;
     background: linear-gradient(180deg, #F6FAFD 0%, #FFFFFF 19.4%);
+    .head-text {
+        font-size: 19px;
+        padding: 10px 0 0 12px;
+        .top {
+            padding: 7px 0;
+            border-bottom: 1px solid #9f9f9f;
+            color: #424242;
+            margin-bottom: 3px;
+        }
+        .bottom {
+            color: #1976d2;
+        }
+    }
     .home-btn {
-        position: absolute;
-        top: 10px;
-        left: 12px;
+        display: inline-flex;
         background: #fff;
-        padding: 6px 12px;
+        padding: 4px 12px;
         border-radius: 50px;
         border: 1px solid #eee;
         cursor: pointer;
         text-decoration: none;
+        font-size: 15px;
         .left {
             transform: rotate(180deg);
             margin-right: 8px;
         }
         .to-home-page {
             background: #fff;
-            font-size: 18px;
+            font-size: 15px;
         }
         &:hover {
             border-color: royalblue;
@@ -149,7 +166,7 @@ export default {
 }
 .login-page {
   font-family: 'Inter', sans-serif;
-  background: linear-gradient(180deg, #F6FAFD 0%, #FFFFFF 19.4%);
+  /*background: linear-gradient(180deg, #F6FAFD 0%, #FFFFFF 19.4%);*/
   display: flex;
   align-items: center;
   justify-content: space-around;
